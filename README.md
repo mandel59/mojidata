@@ -15,7 +15,7 @@ The following data are included:
 The source code of Mojidata is available under the MIT license.
 
 Some resources are downloaded during build and bundled with the
-package. See download.txt for the downloaded files and the source URLs of them.
+package. See [download.txt](download.txt) for the downloaded files and the source URLs of them.
 
 Each of these resources is available under its own license.
 
