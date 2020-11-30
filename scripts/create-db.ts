@@ -279,18 +279,28 @@ async function createAj1(db: import("better-sqlite3").Database) {
     ]
 
     for (const cmap of cmaps) {
-        db.exec(`drop table if exists "aj1_${cmap}"`)
-        db.exec(`create table "aj1_${cmap}" (
-            "CID" TEXT NOT NULL,
-            "${cmap}" TEXT NOT NULL,
+        db.exec(`create temporary table "aj1_${cmap}" (
+            "CID" INTEGER NOT NULL,
+            "UCS" TEXT NOT NULL,
             "vertical" INTEGER NOT NULL
         )`)
     }
 
+    db.exec(`drop table if exists "aj1"`)
+    db.exec(`create table "aj1" (
+        "CID" INTEGER NOT NULL,
+        "UCS" TEXT NOT NULL,
+        "vertical" INTEGER NOT NULL,
+        "UniJIS" INTEGER NOT NULL,
+        "UniJIS2004" INTEGER NOT NULL,
+        "UniJISX0213" INTEGER NOT NULL,
+        "UniJISX02132004" INTEGER NOT NULL
+    )`)
+
     const insert = Object.fromEntries(cmaps.map(cmap => [
         cmap,
         db.prepare(
-            `INSERT INTO "aj1_${cmap}" ("CID", "${cmap}", "vertical")
+            `INSERT INTO "aj1_${cmap}" ("CID", "UCS", "vertical")
             VALUES (?, ?, ?)`)
     ]))
 
@@ -310,7 +320,7 @@ async function createAj1(db: import("better-sqlite3").Database) {
                 if (utf32s !== '*') for (const utf32 of utf32s.split(/,/g)) {
                     const vertical = Number(utf32.slice(-1) === "v")
                     insert[cmap].run([
-                        `CID+${cid}`,
+                        cid,
                         String.fromCodePoint(parseInt(vertical ? utf32.slice(0, -1) : utf32, 16)),
                         vertical
                     ])
@@ -319,10 +329,22 @@ async function createAj1(db: import("better-sqlite3").Database) {
         }
     })
 
-    for (const cmap of cmaps) {
-        db.exec(`create index aj1_${cmap}_CID on aj1_${cmap} (CID)`)
-        db.exec(`create index aj1_${cmap}_${cmap} on aj1_${cmap} (${cmap})`)
-    }
+    db.exec(`insert into aj1 (CID, UCS, vertical, UniJIS, UniJIS2004, UniJISX0213, UniJISX02132004)
+        select CID, UCS, vertical, sum(UniJIS), sum(UniJIS2004), sum(UniJISX0213), sum(UniJISX02132004)
+        from (
+            select CID, UCS, vertical, 1 as UniJIS, 0 as UniJIS2004, 0 as UniJISX0213, 0 as UniJISX02132004 from aj1_UniJIS
+            UNION ALL
+            select CID, UCS, vertical, 0, 1, 0, 0 from aj1_UniJIS2004
+            UNION ALL
+            select CID, UCS, vertical, 0, 0, 1, 0 from aj1_UniJISX0213
+            UNION ALL
+            select CID, UCS, vertical, 0, 0, 0, 1 from aj1_UniJISX02132004
+        )
+        group by CID, UCS, vertical
+    `)
+
+    db.exec(`create index aj1_CID on aj1 (CID)`)
+    db.exec(`create index aj1_UCS on aj1 (UCS)`)
 }
 
 async function vacuum(db: import("better-sqlite3").Database) {
