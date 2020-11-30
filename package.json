@@ -1,7 +1,9 @@
 {
-  "name": "mojidata",
+  "name": "@mandel59/mojidata",
   "version": "0.1.0",
-  "description": "",
+  "description": "Character Database for Japanese Text Processing",
+  "homepage": "https://github.com/mandel59/mojidata/",
+  "repository": "github:mandel59/mojidata",
   "files": [
     "dist/*",
     "licenses/*"
