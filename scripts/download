@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eu
+cd "$(dirname "$0")/.."
+
+function main () {
+    read name sha1sum url
+    if test -z "$name"; then exit 1; fi
+    if test -f "cache/$name" && echo "$sha1sum cache/$name" | sha1sum --status -c -; then exit 0; fi
+
+    mkdir -p cache
+    curl -LsSf "$url" -o "cache/$name.tmp"
+    echo "$sha1sum cache/$name.tmp" | sha1sum --status -c -
+    mv "cache/$name.tmp" "cache/$name"
+}
+
+grep -v -E '^#|^\s*$' download.txt | sort -k 1b,1 | join -j 1 - <(echo "$1") | main

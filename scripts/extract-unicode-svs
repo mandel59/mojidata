@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+scripts/download StandardizedVariants.txt
+mkdir -p resources/unicode
+
+function write_svs () {
+    echo SVS,CJKCI
+    perl -wl -e 'while (<>) { print $1, "_", $2, ",U+", $3 if /([^; ]+) ([^; ]+);\s*CJK COMPATIBILITY IDEOGRAPH-([^;]+);/; }' cache/StandardizedVariants.txt
+}
+
+write_svs >resources/unicode/svs.csv

@@ -1,0 +1,8 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+scripts/download MJShrinkMapVer.1.2.0.zip
+mkdir -p resources
+unzip -o cache/MJShrinkMapVer.1.2.0.zip -d resources/mjsm

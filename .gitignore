@@ -1,0 +1,5 @@
+/cache
+/resources
+/dist
+/mojidata-*.tgz
+node_modules

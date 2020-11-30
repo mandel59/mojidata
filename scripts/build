@@ -1,0 +1,10 @@
+#!/bin/bash
+set -eu
+cd "$(dirname "$0")/.."
+
+scripts/extract-mji
+scripts/extract-mjsm
+scripts/extract-unicode-svs
+scripts/extract-unicode-ivs
+scripts/download cid2code.txt
+npx ts-node scripts/create-db.ts

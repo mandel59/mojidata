@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+scripts/download IVD_Sequences.txt
+mkdir -p resources/unicode
+
+function write_ivs () {
+    echo IVS,collection,code
+    perl -wl -e 'while (<>) { print $1, "_", $2, ",", $3, ",", $4 if /^([^\s;]+) ([^\s;]+); ([^\s;]+); ([^\s]+)$/; }' cache/IVD_Sequences.txt
+}
+
+write_ivs >resources/unicode/ivs.csv
