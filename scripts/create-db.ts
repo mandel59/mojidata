@@ -358,6 +358,12 @@ async function createAj1(db: import("better-sqlite3").Database) {
 
     db.exec(`create index aj1_CID on aj1 (CID)`)
     db.exec(`create index aj1_UCS on aj1 (UCS)`)
+
+    for (const hv of ["H", "V"]) {
+        for (const cmap of cmaps) {
+            db.exec(`CREATE VIEW aj1_${cmap}_${hv} AS SELECT CID, UCS FROM aj1 WHERE ${cmap} AND ${hv === "V" ? "vertical" : "NOT vertical"}`)
+        }
+    }
 }
 
 async function vacuum(db: import("better-sqlite3").Database) {
