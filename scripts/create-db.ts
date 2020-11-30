@@ -214,7 +214,7 @@ async function createMjsm(db: import("better-sqlite3").Database) {
 
 async function createIvs(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "ivs"`)
-    db.exec(`create table "ivs" (
+    db.exec(`create temporary table "ivs" (
         "IVS" TEXT NOT NULL,
         "collection" TEXT NOT NULL,
         "code" TEXT NOT NULL
@@ -238,8 +238,21 @@ async function createIvs(db: import("better-sqlite3").Database) {
         }
     })
 
-    db.exec(`create index ivs_IVS on ivs (IVS)`)
-    db.exec(`create index ivs_collection_code on ivs (collection, code)`)
+    const collections = db.prepare("select distinct collection from ivs").pluck().all()
+
+    for (const collection of collections) {
+        if (collection === "Adobe-Japan1") {
+            db.exec(`create table "ivs_${collection}" (IVS TEXT PRIMARY KEY, CID INTEGER NOT NULL)`)
+            db.exec(`insert into "ivs_${collection}" (IVS, CID)
+                select IVS, cast(substr(code, 5) as integer) from ivs where collection = 'Adobe-Japan1'`)
+            db.exec(`create index "ivs_${collection}_CID" on "ivs_${collection}" (CID)`)
+        } else {
+            db.exec(`create table "ivs_${collection}" (IVS TEXT PRIMARY KEY, code TEXT NOT NULL)`)
+            db.exec(`insert into "ivs_${collection}" (IVS, code)
+                select IVS, code from ivs where collection = '${collection}'`)
+            db.exec(`create index "ivs_${collection}_code" on ivs (code)`)
+        }
+    }
 }
 
 async function createSvs(db: import("better-sqlite3").Database) {
