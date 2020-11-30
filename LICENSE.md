@@ -2,7 +2,8 @@ The source code of Mojidata is available under the MIT license.
 
 ---
 
-Mojidata
+## Mojidata License
+
 Copyright (c) 2020 Ryusei Yamaguchi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,26 +32,29 @@ Each of these resources is available under its own license.
 
 ---
 
-CMap Resources
+## CMap Resources
+
 Copyright 1990-2019 Adobe. All rights reserved.
 
-CMap Resources are available under the BSD-3-Clause License.
-See license/cmap-resources.txt
+CMap Resources are available under the BSD-3-Clause License.<br>
+See [licenses/cmap-resources.txt](licenses/cmap-resources.txt)
 
 ---
 
-MJ文字情報一覧表 List of MJ Characters
-MJ縮退マップ MJ Map
+## MJ文字情報一覧表 List of MJ Characters
+## MJ縮退マップ MJ Map
+
 Copyright © IPA 独立行政法人情報処理推進機構 Information-technology Promotion Agency, Japan.
 
-These works are available under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP).
-See https://creativecommons.org/licenses/by-sa/2.1/jp/legalcode or
+These works are available under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP).<br>
+See https://creativecommons.org/licenses/by-sa/2.1/jp/legalcode or<br>
 for the human readable summary: https://creativecommons.org/licenses/by-sa/2.1/jp/
 
 ---
 
-Unicode Data Files
+## Unicode Data Files
+
 Copyright © 1991-2020 Unicode, Inc. All rights reserved.
 
-Unicode Data Files are available under the Unicode License Agreement (Unicode-DFS-2016).
-See licenses/unicode.txt
+Unicode Data Files are available under the Unicode License Agreement (Unicode-DFS-2016).<br>
+See [licenses/unicode.txt](licenses/unicode.txt)

@@ -19,4 +19,4 @@ package. See download.txt for the downloaded files and the source URLs of them.
 
 Each of these resources is available under its own license.
 
-See [LICENSE](./LICENSE) for details.
+See [LICENSE.md](LICENSE.md) for details.
