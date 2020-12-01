@@ -425,7 +425,7 @@ async function createAj1(db: import("better-sqlite3").Database) {
                 `CREATE VIEW "aj1_${cmap}_${hv}" AS
                 SELECT "CID", "UCS"
                 FROM "aj1"
-                WHERE "${cmap}" AND "${hv === "V" ? "vertical" : "NOT vertical"}"
+                WHERE "${cmap}" AND ${hv === "V" ? '"vertical"' : 'NOT "vertical"'}
             `))
         }
     }
