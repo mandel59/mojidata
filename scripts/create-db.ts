@@ -3,6 +3,9 @@ import path from "path"
 import { promisify } from "util"
 import parse from "csv-parse"
 import Database from "better-sqlite3"
+import sqlFormatter from "sql-formatter"
+
+const format = sqlFormatter.format
 
 function parseUCS(code: string) {
     return String.fromCodePoint(parseInt(code.slice(2), 16))
@@ -25,7 +28,7 @@ async function transaction(db: import("better-sqlite3").Database, callback: () =
 
 async function createMji(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "mji"`)
-    db.exec(`create table "mji" (
+    db.exec(format(`CREATE TABLE "mji" (
         "MJ文字図形名" TEXT PRIMARY KEY,
         "対応するUCS" TEXT,
         "実装したUCS" TEXT,
@@ -51,20 +54,20 @@ async function createMji(db: import("better-sqlite3").Database) {
         "大漢語林" INTEGER,
         "更新履歴" TEXT,
         "備考" TEXT
-    )`)
+    )`))
 
     db.exec(`drop table if exists "mji_reading"`)
-    db.exec(`create table "mji_reading" (
+    db.exec(format(`CREATE TABLE "mji_reading" (
         "MJ文字図形名" TEXT NOT NULL,
         "読み" TEXT NOT NULL
-    )`)
+    )`))
 
     db.exec(`drop table if exists "mji_rsindex"`)
-    db.exec(`create table "mji_rsindex" (
+    db.exec(format(`CREATE TABLE "mji_rsindex" (
         "MJ文字図形名" TEXT NOT NULL,
         "部首" INTEGER NOT NULL,
         "内画数" INTEGER NOT NULL
-    )`)
+    )`))
 
     const mjipath = path.join(__dirname, "../resources/mji/mji.00601.csv")
     const stream = fs.createReadStream(mjipath).pipe(parse({
@@ -147,11 +150,11 @@ async function createMji(db: import("better-sqlite3").Database) {
         }
     })
 
-    db.exec(`create index mji_対応するUCS on mji (対応するUCS)`)
-    db.exec(`create index mji_reading_MJ文字図形名 on mji_reading (MJ文字図形名)`)
-    db.exec(`create index mji_reading_読み on mji_reading (読み)`)
-    db.exec(`create index mji_rsindex_MJ文字図形名 on mji_rsindex (MJ文字図形名)`)
-    db.exec(`create index mji_rsindex_部首_内画数 on mji_rsindex (部首, 内画数)`)
+    db.exec(`CREATE INDEX "mji_対応するUCS" ON "mji" ("対応するUCS")`)
+    db.exec(`CREATE INDEX "mji_reading_MJ文字図形名" ON "mji_reading" ("MJ文字図形名")`)
+    db.exec(`CREATE INDEX "mji_reading_読み" ON "mji_reading" ("読み")`)
+    db.exec(`CREATE INDEX "mji_rsindex_MJ文字図形名" ON "mji_rsindex" ("MJ文字図形名")`)
+    db.exec(`CREATE INDEX "mji_rsindex_部首_内画数" ON "mji_rsindex" ("部首", "内画数")`)
 }
 
 async function createMjsm(db: import("better-sqlite3").Database) {
@@ -171,35 +174,35 @@ async function createMjsm(db: import("better-sqlite3").Database) {
         db.exec(`drop table if exists "mjsm_${table}"`)
         if (table === "法務省告示582号別表第四_一"
             || table === "法務省告示582号別表第四_二") {
-            db.exec(`create table "mjsm_${table}" (
+            db.exec(format(`CREATE TABLE "mjsm_${table}" (
                 "MJ文字図形名" TEXT NOT NULL,
                 "縮退UCS" TEXT NOT NULL,
                 "縮退X0213" TEXT NOT NULL,
                 "順位" INTEGER NOT NULL
-            )`)
+            )`))
             const insert = db.prepare(
                 `INSERT INTO "mjsm_${table}"
                 ("MJ文字図形名", "縮退UCS", "縮退X0213", "順位")
                 VALUES (@mj, @ucs, @x0213, @rank)`)
             return [table, insert]
         } else if (table === "戸籍統一文字情報_親字正字") {
-            db.exec(`create table "mjsm_${table}" (
+            db.exec(format(`CREATE TABLE "mjsm_${table}" (
                 "MJ文字図形名" TEXT NOT NULL,
                 "縮退UCS" TEXT NOT NULL,
                 "縮退X0213" TEXT NOT NULL,
                 "ホップ数" INTEGER NOT NULL
-            )`)
+            )`))
             const insert = db.prepare(
                 `INSERT INTO "mjsm_${table}"
                 ("MJ文字図形名", "縮退UCS", "縮退X0213", "ホップ数")
                 VALUES (@mj, @ucs, @x0213, @hop)`)
             return [table, insert]
         } else {
-            db.exec(`create table "mjsm_${table}" (
+            db.exec(format(`CREATE TABLE "mjsm_${table}" (
                 "MJ文字図形名" TEXT NOT NULL,
                 "縮退UCS" TEXT NOT NULL,
                 "縮退X0213" TEXT NOT NULL
-            )`)
+            )`))
             const insert = db.prepare(
                 `INSERT INTO "mjsm_${table}"
                 ("MJ文字図形名", "縮退UCS", "縮退X0213")
@@ -209,10 +212,10 @@ async function createMjsm(db: import("better-sqlite3").Database) {
     }))
 
     db.exec(`drop table if exists "mjsm_note"`)
-    db.exec(`create table "mjsm_note" (
+    db.exec(format(`CREATE TABLE "mjsm_note" (
         "MJ文字図形名" TEXT PRIMARY KEY,
         "参考情報" TEXT
-    )`)
+    )`))
     const insert_note = db.prepare(
         `INSERT INTO "mjsm_note" ("MJ文字図形名", "参考情報")
         VALUES (?, ?)`)
@@ -257,9 +260,9 @@ async function createMjsm(db: import("better-sqlite3").Database) {
     })
 
     for (const table of tables) {
-        db.exec(`create index "mjsm_${table}_MJ文字図形名" on "mjsm_${table}" (MJ文字図形名)`)
-        db.exec(`create index "mjsm_${table}_縮退UCS" on "mjsm_${table}" (縮退UCS)`)
-        db.exec(`create index "mjsm_${table}_縮退X0213" on "mjsm_${table}" (縮退X0213)`)
+        db.exec(`CREATE INDEX "mjsm_${table}_MJ文字図形名" ON "mjsm_${table}" ("MJ文字図形名")`)
+        db.exec(`CREATE INDEX "mjsm_${table}_縮退UCS" ON "mjsm_${table}" ("縮退UCS")`)
+        db.exec(`CREATE INDEX "mjsm_${table}_縮退X0213" ON "mjsm_${table}" ("縮退X0213")`)
     }
 }
 
@@ -293,22 +296,28 @@ async function createIvs(db: import("better-sqlite3").Database) {
 
     for (const collection of collections) {
         if (collection === "Adobe-Japan1") {
-            db.exec(`create table "ivs_${collection}" (IVS TEXT PRIMARY KEY, CID INTEGER NOT NULL)`)
+            db.exec(format(`CREATE TABLE "ivs_${collection}" (
+                "IVS" TEXT PRIMARY KEY,
+                "CID" INTEGER NOT NULL
+            )`))
             db.exec(`insert into "ivs_${collection}" (IVS, CID)
                 select IVS, cast(substr(code, 5) as integer) from ivs where collection = 'Adobe-Japan1'`)
-            db.exec(`create index "ivs_${collection}_CID" on "ivs_${collection}" (CID)`)
+            db.exec(`CREATE INDEX "ivs_${collection}_CID" ON "ivs_${collection}" ("CID")`)
         } else {
-            db.exec(`create table "ivs_${collection}" (IVS TEXT PRIMARY KEY, code TEXT NOT NULL)`)
-            db.exec(`insert into "ivs_${collection}" (IVS, code)
+            db.exec(format(`CREATE TABLE "ivs_${collection}" (
+                "IVS" TEXT PRIMARY KEY,
+                "code" TEXT NOT NULL
+            )`))
+            db.exec(`insert into "ivs_${collection}" ("IVS", "code")
                 select IVS, code from ivs where collection = '${collection}'`)
-            db.exec(`create index "ivs_${collection}_code" on ivs (code)`)
+            db.exec(`CREATE INDEX "ivs_${collection}_code" ON "ivs" ("code")`)
         }
     }
 }
 
 async function createSvs(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "svs_cjkci"`)
-    db.exec(`create table "svs_cjkci" (
+    db.exec(`CREATE TABLE "svs_cjkci" (
         "SVS" TEXT PRIMARY KEY,
         "CJKCI" TEXT NOT NULL
     )`)
@@ -330,7 +339,7 @@ async function createSvs(db: import("better-sqlite3").Database) {
         }
     })
 
-    db.exec(`create index svs_cjkci_CJKCI on svs_cjkci (CJKCI)`)
+    db.exec(`CREATE INDEX "svs_cjkci_CJKCI" ON "svs_cjkci" ("CJKCI")`)
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {
@@ -351,7 +360,7 @@ async function createAj1(db: import("better-sqlite3").Database) {
     }
 
     db.exec(`drop table if exists "aj1"`)
-    db.exec(`create table "aj1" (
+    db.exec(format(`CREATE TABLE "aj1" (
         "CID" INTEGER NOT NULL,
         "UCS" TEXT NOT NULL,
         "vertical" INTEGER NOT NULL,
@@ -359,7 +368,7 @@ async function createAj1(db: import("better-sqlite3").Database) {
         "UniJIS2004" INTEGER NOT NULL,
         "UniJISX0213" INTEGER NOT NULL,
         "UniJISX02132004" INTEGER NOT NULL
-    )`)
+    )`))
 
     const insert = Object.fromEntries(cmaps.map(cmap => [
         cmap,
@@ -407,12 +416,17 @@ async function createAj1(db: import("better-sqlite3").Database) {
         group by CID, UCS, vertical
     `)
 
-    db.exec(`create index aj1_CID on aj1 (CID)`)
-    db.exec(`create index aj1_UCS on aj1 (UCS)`)
+    db.exec(`CREATE INDEX "aj1_CID" ON "aj1" ("CID")`)
+    db.exec(`CREATE INDEX "aj1_UCS" ON "aj1" ("UCS")`)
 
     for (const hv of ["H", "V"]) {
         for (const cmap of cmaps) {
-            db.exec(`CREATE VIEW aj1_${cmap}_${hv} AS SELECT CID, UCS FROM aj1 WHERE ${cmap} AND ${hv === "V" ? "vertical" : "NOT vertical"}`)
+            db.exec(format(
+                `CREATE VIEW "aj1_${cmap}_${hv}" AS
+                SELECT "CID", "UCS"
+                FROM "aj1"
+                WHERE "${cmap}" AND "${hv === "V" ? "vertical" : "NOT vertical"}"
+            `))
         }
     }
 }
