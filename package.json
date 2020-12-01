@@ -5,6 +5,7 @@
   "homepage": "https://github.com/mandel59/mojidata/",
   "repository": "github:mandel59/mojidata",
   "files": [
+    "download.txt",
     "dist/*",
     "licenses/*"
   ],
