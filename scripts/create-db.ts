@@ -155,26 +155,64 @@ async function createMji(db: import("better-sqlite3").Database) {
 }
 
 async function createMjsm(db: import("better-sqlite3").Database) {
-    db.exec(`drop table if exists "mjsm"`)
-    db.exec(`create table "mjsm" (
-        "MJ文字図形名" TEXT,
-        "縮退UCS" TEXT NOT NULL,
-        "縮退X0213" TEXT NOT NULL,
-        "規則" TEXT NOT NULL,
-        "種別" TEXT,
-        "付記" TEXT,
-        "ホップ数" INTEGER,
-        "表" TEXT,
-        "順位" TEXT
-    )`)
+    const tables = [
+        "法務省告示582号別表第四_一",
+        "法務省告示582号別表第四_二",
+        "戸籍統一文字情報_親字正字",
+        "民一2842号通達別表_誤字俗字正字一覧表_俗字",
+        "民一2842号通達別表_誤字俗字正字一覧表_別字",
+        "民一2842号通達別表_誤字俗字正字一覧表_無印",
+        "民二5202号通知別表_正字俗字等対照表",
+        "読み字形による類推",
+        "辞書類等による関連字",
+    ]
+
+    const insert = Object.fromEntries(tables.map(table => {
+        db.exec(`drop table if exists "mjsm_${table}"`)
+        if (table === "法務省告示582号別表第四_一"
+            || table === "法務省告示582号別表第四_二") {
+            db.exec(`create table "mjsm_${table}" (
+                "MJ文字図形名" TEXT NOT NULL,
+                "縮退UCS" TEXT NOT NULL,
+                "縮退X0213" TEXT NOT NULL,
+                "順位" INTEGER NOT NULL
+            )`)
+            const insert = db.prepare(
+                `INSERT INTO "mjsm_${table}"
+                ("MJ文字図形名", "縮退UCS", "縮退X0213", "順位")
+                VALUES (@mj, @ucs, @x0213, @rank)`)
+            return [table, insert]
+        } else if (table === "戸籍統一文字情報_親字正字") {
+            db.exec(`create table "mjsm_${table}" (
+                "MJ文字図形名" TEXT NOT NULL,
+                "縮退UCS" TEXT NOT NULL,
+                "縮退X0213" TEXT NOT NULL,
+                "ホップ数" INTEGER NOT NULL
+            )`)
+            const insert = db.prepare(
+                `INSERT INTO "mjsm_${table}"
+                ("MJ文字図形名", "縮退UCS", "縮退X0213", "ホップ数")
+                VALUES (@mj, @ucs, @x0213, @hop)`)
+            return [table, insert]
+        } else {
+            db.exec(`create table "mjsm_${table}" (
+                "MJ文字図形名" TEXT NOT NULL,
+                "縮退UCS" TEXT NOT NULL,
+                "縮退X0213" TEXT NOT NULL
+            )`)
+            const insert = db.prepare(
+                `INSERT INTO "mjsm_${table}"
+                ("MJ文字図形名", "縮退UCS", "縮退X0213")
+                VALUES (@mj, @ucs, @x0213)`)
+            return [table, insert]
+        }
+    }))
+
     db.exec(`drop table if exists "mjsm_note"`)
     db.exec(`create table "mjsm_note" (
         "MJ文字図形名" TEXT PRIMARY KEY,
         "参考情報" TEXT
     )`)
-    const insert = db.prepare(
-        `INSERT INTO "mjsm" ("MJ文字図形名", "縮退UCS", "縮退X0213", "規則", "種別", "付記", "ホップ数", "表", "順位")
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     const insert_note = db.prepare(
         `INSERT INTO "mjsm_note" ("MJ文字図形名", "参考情報")
         VALUES (?, ?)`)
@@ -192,24 +230,37 @@ async function createMjsm(db: import("better-sqlite3").Database) {
                 const mappings = record[rule]
                 if (mappings) {
                     for (const mapping of mappings) {
-                        const JIS_X_0213 = mapping["JIS X 0213"]
-                        const UCS = parseUCS(mapping["UCS"])
+                        const 縮退X0213 = mapping["JIS X 0213"]
+                        const 縮退UCS = parseUCS(mapping["UCS"])
                         const 規則 = rule
                         const 種別 = mapping["種別"]
                         const 表 = mapping["表"]
                         const 付記 = mapping["付記"]
                         const ホップ数 = mapping["ホップ数"]
                         const 順位 = mapping["順位"]
-                        insert.run([MJ文字図形名, UCS, JIS_X_0213, 規則, 種別, 付記, ホップ数, 表, 順位])
+                        const table = [種別 || 規則, 表 || 付記]
+                            .filter(x => x)
+                            .join("_")
+                            .replace(/ /g, '_')
+                            .replace(/・/g, '')
+                        insert[table].run({
+                            mj: MJ文字図形名,
+                            ucs: 縮退UCS,
+                            x0213: 縮退X0213,
+                            hop: ホップ数,
+                            rank: 順位 ? 順位[1] : undefined
+                        })
                     }
                 }
             }
         }
     })
 
-    db.exec(`create index mjsm_MJ文字図形名 on mjsm (MJ文字図形名)`)
-    db.exec(`create index mjsm_縮退UCS on mjsm (縮退UCS)`)
-    db.exec(`create index mjsm_縮退X0213 on mjsm (縮退X0213)`)
+    for (const table of tables) {
+        db.exec(`create index "mjsm_${table}_MJ文字図形名" on "mjsm_${table}" (MJ文字図形名)`)
+        db.exec(`create index "mjsm_${table}_縮退UCS" on "mjsm_${table}" (縮退UCS)`)
+        db.exec(`create index "mjsm_${table}_縮退X0213" on "mjsm_${table}" (縮退X0213)`)
+    }
 }
 
 async function createIvs(db: import("better-sqlite3").Database) {
