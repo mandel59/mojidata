@@ -11,7 +11,8 @@
   "scripts": {
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build"
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE.md",
