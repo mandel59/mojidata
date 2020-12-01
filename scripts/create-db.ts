@@ -159,6 +159,7 @@ async function createMji(db: import("better-sqlite3").Database) {
 
 async function createMjsm(db: import("better-sqlite3").Database) {
     const tables = [
+        "JIS包摂規準UCS統合規則",
         "法務省告示582号別表第四_一",
         "法務省告示582号別表第四_二",
         "戸籍統一文字情報_親字正字",
@@ -221,7 +222,7 @@ async function createMjsm(db: import("better-sqlite3").Database) {
         VALUES (?, ?)`)
 
     const shrinkmap = JSON.parse((await promisify(fs.readFile)(path.join(__dirname, "../resources/mjsm/MJShrinkMap.1.2.0.json"))).toString())
-    const ruleKeys = ["JIS包摂基準・UCS統合規則", "法務省戸籍法関連通達・通知", "法務省告示582号別表第四", "辞書類等による関連字", "読み・字形による類推"]
+    const ruleKeys = ["JIS包摂規準・UCS統合規則", "法務省戸籍法関連通達・通知", "法務省告示582号別表第四", "辞書類等による関連字", "読み・字形による類推"]
     await transaction(db, async () => {
         for (const record of shrinkmap.content) {
             const MJ文字図形名 = record["MJ文字図形名"]
