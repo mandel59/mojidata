@@ -13,7 +13,7 @@
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
     "test": "ava",
-    "prepare": "npm run build"
+    "prepare": "npm run clean && npm run build && npm run test"
   },
   "author": "Ryusei Yamaguchi",
   "license": "SEE LICENSE IN LICENSE.md",
