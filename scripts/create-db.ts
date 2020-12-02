@@ -265,6 +265,40 @@ async function createMjsm(db: import("better-sqlite3").Database) {
         db.exec(`CREATE INDEX "mjsm_${table}_縮退UCS" ON "mjsm_${table}" ("縮退UCS")`)
         db.exec(`CREATE INDEX "mjsm_${table}_縮退X0213" ON "mjsm_${table}" ("縮退X0213")`)
     }
+
+    db.exec(format(
+        `CREATE VIEW "mjsm" AS\n`
+        + tables.map(table => {
+            if (table === "法務省告示582号別表第四_一"
+                || table === "法務省告示582号別表第四_二") {
+                return `SELECT
+                    "MJ文字図形名",
+                    "縮退UCS",
+                    "縮退X0213",
+                    '${table}' AS "表",
+                    "順位",
+                    NULL AS "ホップ数"
+                    FROM "mjsm_${table}"`
+            } else if (table === "戸籍統一文字情報_親字正字") {
+                return `SELECT
+                    "MJ文字図形名",
+                    "縮退UCS",
+                    "縮退X0213",
+                    '${table}' AS "表",
+                    NULL AS "順位",
+                    "ホップ数"
+                    FROM "mjsm_${table}"`
+            } else {
+                return `SELECT
+                    "MJ文字図形名",
+                    "縮退UCS",
+                    "縮退X0213",
+                    '${table}' AS "表",
+                    NULL AS "順位",
+                    NULL AS "ホップ数"
+                    FROM "mjsm_${table}"`
+            }
+        }).join(`\nUNION ALL\n`)))
 }
 
 async function createIvs(db: import("better-sqlite3").Database) {
