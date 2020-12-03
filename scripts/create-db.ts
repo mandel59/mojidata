@@ -52,7 +52,6 @@ async function createMji(db: import("better-sqlite3").Database) {
         "新大字典" INTEGER,
         "大字源" INTEGER,
         "大漢語林" INTEGER,
-        "更新履歴" TEXT,
         "備考" TEXT
     )`))
 
@@ -67,6 +66,12 @@ async function createMji(db: import("better-sqlite3").Database) {
         "MJ文字図形名" TEXT NOT NULL,
         "部首" INTEGER NOT NULL,
         "内画数" INTEGER NOT NULL
+    )`))
+
+    db.exec(`drop table if exists "mji_changelog"`)
+    db.exec(format(`CREATE TABLE "mji_changelog" (
+        "MJ文字図形名" TEXT NOT NULL,
+        "更新履歴" TEXT NOT NULL
     )`))
 
     const mjipath = path.join(__dirname, "../resources/mji/mji.00601.csv")
@@ -110,7 +115,6 @@ async function createMji(db: import("better-sqlite3").Database) {
         "新大字典",
         "大字源",
         "大漢語林",
-        "更新履歴",
         "備考",
     ]
     function renameColumns(column: string) {
@@ -130,6 +134,9 @@ async function createMji(db: import("better-sqlite3").Database) {
     const insert_rsindex = db.prepare(
         `INSERT INTO "mji_rsindex" ("MJ文字図形名", "部首", "内画数")
         VALUES (?, ?, ?)`)
+    const insert_changelog = db.prepare(
+        `INSERT INTO "mji_changelog" ("MJ文字図形名", "更新履歴")
+        VALUES (?, ?)`)
 
     await transaction(db, async () => {
         const radicalKey = [1, 2, 3, 4].map(i => `部首${i}(参考)`)
@@ -140,6 +147,12 @@ async function createMji(db: import("better-sqlite3").Database) {
                 const readings = row["読み(参考)"].split(/・/g)
                 for (const reading of readings) {
                     insert_reading.run([row["MJ文字図形名"], reading])
+                }
+            }
+            if (row["更新履歴"]) {
+                const changelog = row["更新履歴"].split(/;/g)
+                for (const entry of changelog) {
+                    insert_changelog.run([row["MJ文字図形名"], entry])
                 }
             }
             for (let i = 0; i < 4; i++) {
@@ -159,6 +172,7 @@ async function createMji(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "mji_reading_読み" ON "mji_reading" ("読み")`)
     db.exec(`CREATE INDEX "mji_rsindex_MJ文字図形名" ON "mji_rsindex" ("MJ文字図形名")`)
     db.exec(`CREATE INDEX "mji_rsindex_部首_内画数" ON "mji_rsindex" ("部首", "内画数")`)
+    db.exec(`CREATE INDEX "mji_changelog_MJ文字図形名" ON "mji_changelog" ("MJ文字図形名")`)
 }
 
 async function createMjsm(db: import("better-sqlite3").Database) {
