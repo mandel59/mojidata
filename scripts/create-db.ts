@@ -151,6 +151,10 @@ async function createMji(db: import("better-sqlite3").Database) {
     })
 
     db.exec(`CREATE INDEX "mji_対応するUCS" ON "mji" ("対応するUCS")`)
+    db.exec(`CREATE INDEX "mji_実装したUCS" ON "mji" ("実装したUCS")`)
+    db.exec(`CREATE INDEX "mji_実装したMoji_JohoコレクションIVS" ON "mji" ("実装したMoji_JohoコレクションIVS")`)
+    db.exec(`CREATE INDEX "mji_実装したSVS" ON "mji" ("実装したSVS")`)
+    db.exec(`CREATE INDEX "mji_対応する互換漢字" ON "mji" ("対応する互換漢字")`)
     db.exec(`CREATE INDEX "mji_reading_MJ文字図形名" ON "mji_reading" ("MJ文字図形名")`)
     db.exec(`CREATE INDEX "mji_reading_読み" ON "mji_reading" ("読み")`)
     db.exec(`CREATE INDEX "mji_rsindex_MJ文字図形名" ON "mji_rsindex" ("MJ文字図形名")`)
