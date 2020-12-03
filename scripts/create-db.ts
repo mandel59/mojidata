@@ -377,6 +377,39 @@ async function createSvs(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "svs_cjkci_CJKCI" ON "svs_cjkci" ("CJKCI")`)
 }
 
+async function createCjkRadicals(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "radicals"`)
+    db.exec(format(`CREATE TABLE "radicals" (
+        "部首" INTEGER PRIMARY KEY,
+        "部首漢字" TEXT NOT NULL
+    )`))
+    const insert = db.prepare(
+        `INSERT INTO "radicals" ("部首", "部首漢字")
+        VALUES (?, ?)`)
+
+    const csvpath = path.join(__dirname, "../cache/CJKRadicals.txt")
+    const stream = fs.createReadStream(csvpath).pipe(parse({
+        columns: false,
+        skipEmptyLines: true,
+        comment: "#",
+        delimiter: "; ",
+    }))
+
+    await transaction(db, async () => {
+        for await (const record of stream) {
+            const radical = record[0]
+            const radical_simplified = radical.substr(-1) === "'"
+            if (radical_simplified) continue
+            const radical_number = parseInt(radical, 10)
+            const cjkui = String.fromCodePoint(parseInt(record[2], 16))
+            insert.run([
+                radical_number,
+                cjkui
+            ])
+        }
+    })
+}
+
 async function createAj1(db: import("better-sqlite3").Database) {
     // See https://moji-memo.hatenablog.jp/entry/20090713/1247476330
     const cmaps = [
@@ -478,6 +511,7 @@ async function main() {
     await createMjsm(db)
     await createIvs(db)
     await createSvs(db)
+    await createCjkRadicals(db)
     await createAj1(db)
     await vacuum(db)
 }

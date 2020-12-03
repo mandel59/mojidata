@@ -12,6 +12,7 @@ mji.00601-xlsx.zip d8f653ef91980267588ba3e7ab06688bb4577cb4 https://moji.or.jp/w
 MJShrinkMapVer.1.2.0.zip cd0b0781412327c6e91296dac1e9783d9854ce9a https://moji.or.jp/wp-content/mojikiban/oscdl/MJShrinkMapVer.1.2.0.zip
 
 ## Unicode Character Database <https://unicode.org/ucd/>
+CJKRadicals.txt 278e6c0ba9228fd835d93cb9d2fb84241719228c https://www.unicode.org/Public/13.0.0/ucd/CJKRadicals.txt
 StandardizedVariants.txt b67a8e0994b446f95a406266315dd415c64d2bb4 https://www.unicode.org/Public/13.0.0/ucd/StandardizedVariants.txt
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 IVD_Sequences.txt 91698bdd5a0d966b1dc8706acc9c6f71cd81b936 https://unicode.org/ivd/data/2020-11-06/IVD_Sequences.txt
