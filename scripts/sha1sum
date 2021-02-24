@@ -1,0 +1,8 @@
+#!/bin/bash
+if type sha1sum >/dev/null 2>&1; then
+    sha1sum "$@"
+elif type shasum >/dev/null 2>&1; then
+    shasum "$@"
+else
+    exit 1
+fi
