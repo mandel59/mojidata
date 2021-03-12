@@ -16,7 +16,7 @@
     "prepare": "npm run clean && npm run build && npm run test"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-DFS-2016",
   "devDependencies": {
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^14.14.7",
