@@ -366,6 +366,15 @@ async function createIvs(db: import("better-sqlite3").Database) {
             db.exec(`CREATE INDEX "ivs_${collection}_code" ON "ivs" ("code")`)
         }
     }
+
+    db.exec(`drop table if exists "ivs"`)
+    db.exec(`CREATE VIEW "ivs" AS `
+        + `SELECT IVS, 'Adobe-Japan1' AS collection, 'CID+' || CID AS code FROM "ivs_Adobe-Japan1"`
+        + ` UNION ALL `
+        + collections
+            .filter(collection => collection !== "Adobe-Japan1")
+            .map(collection => `SELECT IVS, '${collection}' AS collection, code FROM "ivs_${collection}"`)
+            .join(` UNION ALL `))
 }
 
 async function createSvs(db: import("better-sqlite3").Database) {
