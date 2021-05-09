@@ -437,6 +437,67 @@ async function createCjkRadicals(db: import("better-sqlite3").Database) {
     })
 }
 
+async function createUSource(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "usource"`)
+    db.exec(`drop table if exists "usource_source"`)
+    db.exec(`drop table if exists "usource_comment"`)
+    db.exec(format(`CREATE TABLE "usource" (
+        "U-source ID" TEXT PRIMARY KEY,
+        "status" TEXT NOT NULL,
+        "UCS" TEXT,
+        "RS" TEXT NOT NULL,
+        "VKXDP" TEXT NOT NULL,
+        "IDS" TEXT,
+        "comments" TEXT NOT NULL
+    )`))
+    db.exec(format(`CREATE TABLE "usource_source" (
+        "U-source ID" TEXT,
+        "source" TEXT NOT NULL
+    )`))
+    const insert = db.prepare(
+        `INSERT INTO "usource" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments")
+        VALUES (?, ?, ?, ?, ?, ?, ?)`)
+    const insert_source = db.prepare(
+        `INSERT INTO "usource_source" ("U-source ID", "source")
+            VALUES (?, ?)`)
+
+    const csvpath = path.join(__dirname, "../cache/USourceData.txt")
+    const stream = fs.createReadStream(csvpath).pipe(parse({
+        columns: false,
+        skipEmptyLines: true,
+        comment: "#",
+        delimiter: "\t",
+    }))
+
+    await transaction(db, async () => {
+        for await (const [line] of stream) {
+            // ids and comments may include semicolon.
+            const [id, status, codepoint, rs, vkxdp, ids, sources, ...comments]
+                = (line as string)
+                    // treat entity references in IDS
+                    .replace(/&([^;]+);/g, "<<$1>>")
+                    .split(/;/g)
+            const ucs = codepoint
+                ? String.fromCodePoint(parseInt(codepoint.substr(2), 16))
+                : null
+            insert.run([
+                id,
+                status,
+                ucs,
+                rs,
+                vkxdp,
+                ids ? ids.replace(/<<([^>]+)>>/g, "&$1;") : null,
+                comments.join(";"),
+            ])
+            for (const source of sources.split(/\*/g)) {
+                if (source) {
+                    insert_source.run([id, source])
+                }
+            }
+        }
+    })
+}
+
 async function createAj1(db: import("better-sqlite3").Database) {
     // See https://moji-memo.hatenablog.jp/entry/20090713/1247476330
     const cmaps = [
@@ -539,6 +600,7 @@ async function main() {
     await createIvs(db)
     await createSvs(db)
     await createCjkRadicals(db)
+    await createUSource(db)
     await createAj1(db)
     await vacuum(db)
 }
