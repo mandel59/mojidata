@@ -591,18 +591,32 @@ async function vacuum(db: import("better-sqlite3").Database) {
     db.exec("VACUUM")
 }
 
+function time<X extends any[], Y>(func: (...args: X) => Promise<Y>): (...args: X) => Promise<Y> {
+    const name = func.name
+    console.time(name)
+    return async (...args) => {
+        try {
+            return await func(...args)
+        } finally {
+            console.timeEnd(name)
+        }
+    }
+}
+
 async function main() {
     await promisify(fs.mkdir)(path.join(__dirname, "../dist"), { recursive: true })
     const dbpath = path.join(__dirname, "../dist/moji.db")
     const db = new Database(dbpath)
-    await createMji(db)
-    await createMjsm(db)
-    await createIvs(db)
-    await createSvs(db)
-    await createCjkRadicals(db)
-    await createUSource(db)
-    await createAj1(db)
-    await vacuum(db)
+    console.time("ALL")
+    await time(createMji)(db)
+    await time(createMjsm)(db)
+    await time(createIvs)(db)
+    await time(createSvs)(db)
+    await time(createCjkRadicals)(db)
+    await time(createUSource)(db)
+    await time(createAj1)(db)
+    await time(vacuum)(db)
+    console.timeEnd("ALL")
 }
 
 main().catch(err => {
