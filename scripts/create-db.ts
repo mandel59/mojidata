@@ -451,7 +451,7 @@ async function createUSource(db: import("better-sqlite3").Database) {
         "comments" TEXT NOT NULL
     )`))
     db.exec(format(`CREATE TABLE "usource_source" (
-        "U-source ID" TEXT,
+        "U-source ID" TEXT NOT NULL,
         "source" TEXT NOT NULL
     )`))
     const insert = db.prepare(
