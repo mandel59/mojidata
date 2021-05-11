@@ -3,6 +3,8 @@ import path from "path"
 import Database from "better-sqlite3"
 import { tokenizeIDS } from "./lib/ids-tokenizer"
 import { IDSDecomposer } from "./lib/ids-decomposer"
+import { argparse } from "./lib/argparse"
+const { argv, options } = argparse(process.argv.slice(2))
 
 const dbpath = path.join(__dirname, "../dist/moji.db")
 const db = new Database(dbpath)
@@ -18,11 +20,15 @@ const find = db.prepare(
     from idsfind_fts
     where IDS_tokens MATCH $query`).pluck()
 
-const query = process.argv.slice(2)
+const query = argv
     .map(c =>
         `(${Array.from(decomposer.decomposeTokens(tokenizeIDS(c)), tokens => `"${tokens.join(" ")}"`)
             .join(" OR ")})`)
     .join(" AND ")
+
+if (options.get("--debug")) {
+    console.log(query)
+}
 
 function drain(ws: Writable) {
     return new Promise(resolve => {

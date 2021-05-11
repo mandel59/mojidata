@@ -1,18 +1,8 @@
 import path from "path"
 import { tokenizeIDS } from "./lib/ids-tokenizer"
 import { IDSDecomposer } from "./lib/ids-decomposer"
-
-const argv = process.argv.slice(2).filter(arg => !arg.startsWith("-"))
-const options: Set<string> = new Set(
-    process.argv.slice(2).flatMap(arg => {
-        if (arg.startsWith("--")) {
-            return [arg]
-        }
-        if (arg[0] === "-") {
-            return Array.from(arg.slice(1), flag => "-" + flag)
-        }
-        return []
-    }))
+import { argparse } from "./lib/argparse"
+const { argv, options } = argparse(process.argv.slice(2))
 if (argv.length === 0) {
     throw new Error("no arg")
 }
@@ -20,7 +10,7 @@ if (argv.length === 0) {
 const dbpath = path.join(__dirname, "../dist/moji.db")
 const decomposer
     = new IDSDecomposer(dbpath, {
-        expandZVariant: options.has("-z") || options.has("--expandZVariant")
+        expandZVariant: Boolean(options.get("-z") || options.get("--expandZVariant"))
     })
 
 for (const arg of argv) {
