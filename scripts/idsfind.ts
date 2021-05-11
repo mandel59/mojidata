@@ -14,10 +14,9 @@ if (!process.argv[2]) {
 }
 
 const find = db.prepare(
-    `select UCS
-    from idsfind
-    join idsfind_fts on idsfind.id = idsfind_fts.docid
-    where idsfind_fts MATCH $query`).pluck()
+    `select char(docid) AS UCS
+    from idsfind_fts
+    where IDS_tokens MATCH $query`).pluck()
 
 const query = process.argv.slice(2)
     .map(c =>

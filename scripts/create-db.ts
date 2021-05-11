@@ -638,9 +638,12 @@ async function createIDS(db: import("better-sqlite3").Database) {
         }
     })
 
+    db.exec(`CREATE INDEX "ids_UCS" ON "ids" ("UCS")`)
+    db.exec(`CREATE INDEX "ids_comment_UCS" ON "ids_comment" ("UCS")`)
+
     const decomposer = new IDSDecomposer(dbpath)
 
-    db.exec(`CREATE TABLE "idsfind" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
+    db.exec(`CREATE TEMPORARY TABLE "idsfind" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
     const insert_idsfind = db.prepare<{ id: number | null, ucs: string, tokens: string }>(`INSERT INTO "idsfind" VALUES ($id, $ucs, $tokens)`)
     const codepoints = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM ids ORDER BY codepoint`).pluck().all()
     transactionSync(db, () => {
@@ -651,15 +654,15 @@ async function createIDS(db: import("better-sqlite3").Database) {
         }
     })
 
+    db.exec(`drop table if exists "idsfind_fts"`)
     db.exec(format(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
-        content="idsfind",
+        content="",
         tokenize=unicode61 "tokenchars={}&-;${Array.from(symbols_in_ids).join("")}",
         "IDS_tokens"
     )`).replace(/ = /g, "="))
-    db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('rebuild')`)
-
-    db.exec(`CREATE INDEX "ids_UCS" ON "ids" ("UCS")`)
-    db.exec(`CREATE INDEX "ids_comment_UCS" ON "ids_comment" ("UCS")`)
+    db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT id AS docid, IDS_tokens FROM idsfind`)
+    db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('optimize')`)
+    db.exec(`DROP TABLE idsfind`)
 }
 
 async function vacuum(db: import("better-sqlite3").Database) {
