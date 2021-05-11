@@ -7,7 +7,7 @@ import { IDSDecomposer } from "./lib/ids-decomposer"
 const dbpath = path.join(__dirname, "../dist/moji.db")
 const db = new Database(dbpath)
 const decomposer
-    = new IDSDecomposer(dbpath)
+    = new IDSDecomposer(dbpath, { expandZVariant: true })
 
 if (!process.argv[2]) {
     throw new Error("no arg")
