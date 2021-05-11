@@ -57,11 +57,13 @@ export class IDSDecomposer {
                     .map(({ UCS, value }) => {
                         return [
                             UCS as string,
-                            (value as string)
-                                .split(/ /g)
-                                .map(x =>
-                                    String.fromCodePoint(
-                                        parseInt(x.substr(2), 16)))]
+                            [
+                                UCS,
+                                ...(value as string)
+                                    .split(/ /g)
+                                    .map(x =>
+                                        String.fromCodePoint(
+                                            parseInt(x.substr(2), 16)))]]
                     }))
         }
         db.exec(`detach database moji`)
