@@ -499,6 +499,59 @@ async function createUSource(db: import("better-sqlite3").Database) {
     })
 }
 
+async function createUnihan(db: import("better-sqlite3").Database) {
+    for (const table of db.prepare(
+        `select tbl_name
+        from sqlite_master
+        where type = 'table' and tbl_name glob 'unihan_k*'`
+    ).pluck().all() as string[]) {
+        db.exec(`drop table if exists "${table.replace(/"/g, '""')}"`)
+    }
+
+    const createTable = (property: string) => {
+        db.exec(format(`CREATE TABLE "unihan_${property}" (
+            "id" INTEGER PRIMARY KEY,
+            "UCS" TEXT GENERATED ALWAYS AS (char(id)) VIRTUAL,
+            "value" TEXT NOT NULL
+        )`))
+    }
+
+    const unihanFileNames = fs.readdirSync(path.join(__dirname, "../resources/unihan"))
+
+    const insertMap: Map<string, import("better-sqlite3").Statement<[string, string]>> = new Map()
+
+    const getInsert = (property: string) => {
+        const insert = insertMap.get(property)
+        if (insert) return insert
+        createTable(property)
+        const newInsert = db.prepare(
+            `INSERT INTO "unihan_${property}" (id, value)
+            VALUES (?, ?)`)
+        insertMap.set(property, newInsert)
+        return newInsert
+    }
+
+    await transaction(db, async () => {
+        for (const filename of unihanFileNames) {
+            const csvpath = path.join(__dirname, "../resources/unihan", filename)
+            const stream = fs.createReadStream(csvpath).pipe(parse({
+                columns: false,
+                skipEmptyLines: true,
+                comment: "#",
+                delimiter: "\t",
+            }))
+            for await (const [codepoint, property, value] of stream) {
+                const id = parseInt(codepoint.substr(2), 16)
+                const insert = getInsert(property)
+                insert.run([
+                    id,
+                    value
+                ])
+            }
+        }
+    })
+}
+
 async function createAj1(db: import("better-sqlite3").Database) {
     // See https://moji-memo.hatenablog.jp/entry/20090713/1247476330
     const cmaps = [
@@ -701,6 +754,7 @@ async function main() {
     await time(createSvs)(db)
     await time(createCjkRadicals)(db)
     await time(createUSource)(db)
+    await time(createUnihan)(db)
     await time(createAj1)(db)
     await time(createIDS)(db)
     await time(vacuum)(db)

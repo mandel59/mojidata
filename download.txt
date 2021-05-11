@@ -20,6 +20,7 @@ MJShrinkMapVer.1.2.0.zip cd0b0781412327c6e91296dac1e9783d9854ce9a https://moji.o
 CJKRadicals.txt 278e6c0ba9228fd835d93cb9d2fb84241719228c https://www.unicode.org/Public/13.0.0/ucd/CJKRadicals.txt
 StandardizedVariants.txt b67a8e0994b446f95a406266315dd415c64d2bb4 https://www.unicode.org/Public/13.0.0/ucd/StandardizedVariants.txt
 USourceData.txt 0a521e822deeef4803ba9dec8aa4b9582baefe0f https://www.unicode.org/Public/13.0.0/ucd/USourceData.txt
+Unihan.zip 0cd0c360d75c722205756c2f640b70e693e483b6 https://www.unicode.org/Public/13.0.0/ucd/Unihan.zip
 
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 ## License: Unicode-DFS-2016
