@@ -5,6 +5,7 @@ import parse from "csv-parse"
 import Database from "better-sqlite3"
 import sqlFormatter from "sql-formatter"
 import { IDSDecomposer } from "./lib/ids-decomposer"
+import { transactionSync, transaction } from "./lib/dbutils"
 
 const format = sqlFormatter.format
 
@@ -16,17 +17,6 @@ function parseUCS(code: string) {
 
 function parseVS(code: string) {
     return String.fromCodePoint(...code.split('_').map(code => parseInt(code, 16)))
-}
-
-async function transaction(db: import("better-sqlite3").Database, callback: () => Promise<void>) {
-    db.exec("begin")
-    try {
-        await callback()
-        db.exec("commit")
-    } catch (err) {
-        db.exec("rollback")
-        throw err
-    }
 }
 
 async function createMji(db: import("better-sqlite3").Database) {
@@ -649,7 +639,18 @@ async function createIDS(db: import("better-sqlite3").Database) {
     })
 
     const decomposer = new IDSDecomposer(dbpath)
-    decomposer.createDecomposedTable(db, "idsfind")
+
+    db.exec(`CREATE TABLE "idsfind" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
+    const insert_idsfind = db.prepare<{ id: number | null, ucs: string, tokens: string }>(`INSERT INTO "idsfind" VALUES ($id, $ucs, $tokens)`)
+    const codepoints = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM ids ORDER BY codepoint`).pluck().all()
+    transactionSync(db, () => {
+        for (const id of codepoints) {
+            const ucs = String.fromCodePoint(id)
+            const tokens = Array.from(decomposer.decomposeAll(ucs)).flat().join(' ')
+            insert_idsfind.run({ id, ucs, tokens })
+        }
+    })
+
     db.exec(format(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
         content="idsfind",
         tokenize=unicode61 "tokenchars={}&-;${Array.from(symbols_in_ids).join("")}",

@@ -1,5 +1,4 @@
 import Database from "better-sqlite3"
-import { transactionSync } from "./dbutils"
 import { tokenizeIDS } from "./ids-tokenizer"
 
 function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
@@ -110,16 +109,5 @@ export class IDSDecomposer {
         for (const decomposed of allDecomposed) {
             yield decomposed.flat()
         }
-    }
-    createDecomposedTable(db: import("better-sqlite3").Database, table: string) {
-        db.exec(`CREATE TABLE "${table}" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
-        const insert = db.prepare<{ id: number | null, ucs: string, tokens: string }>(`INSERT INTO ${table} VALUES ($id, $ucs, $tokens)`)
-        transactionSync(db, () => {
-            for (const id of this.db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as id FROM tempids ORDER BY id`).pluck().iterate()) {
-                const ucs = String.fromCodePoint(id)
-                const tokens = Array.from(this.decomposeAll(ucs)).flat().join(' ')
-                insert.run({ id, ucs, tokens })
-            }
-        })
     }
 }
