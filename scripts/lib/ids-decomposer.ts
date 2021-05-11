@@ -2,7 +2,7 @@ import Database from "better-sqlite3"
 import { transactionSync } from "./dbutils"
 import { tokenizeIDS } from "./ids-tokenizer"
 
-function* allCombinations<T>(list: Array<() => Generator<T>>): Generator<T[]> {
+function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
     if (list.length === 0) {
         return
     }
@@ -18,6 +18,24 @@ function* allCombinations<T>(list: Array<() => Generator<T>>): Generator<T[]> {
             yield [item, ...restItems]
         }
     }
+}
+
+const tokenArgs: Partial<Record<string, number>> = {
+    "〾": 1,
+    "⿰": 2,
+    "⿱": 2,
+    "⿲": 3,
+    "⿳": 3,
+    "⿴": 2,
+    "⿵": 2,
+    "⿶": 2,
+    "⿷": 2,
+    "⿸": 2,
+    "⿹": 2,
+    "⿺": 2,
+    "⿻": 2,
+    "↔": 1,
+    "↷": 1,
 }
 
 export class IDSDecomposer {
@@ -65,9 +83,30 @@ export class IDSDecomposer {
             }
         }
     }
+    *mapDecomposeAll(tokens: string[]): Generator<() => Iterable<string[]>> {
+        let argCount = 0
+        let i = 0
+        while (i < tokens.length) {
+            const token = tokens[i++]
+            argCount += tokenArgs[token] ?? -1
+            if (token === "〾") {
+                const quotedTokens: string[] = []
+                quotedTokens.push(token)
+                const endCount = argCount - 1
+                while (argCount > endCount) {
+                    const token = tokens[i++]
+                    argCount += tokenArgs[token] ?? -1
+                    quotedTokens.push(token)
+                }
+                const tokensList = [quotedTokens]
+                yield () => tokensList
+                continue
+            }
+            yield () => this.decomposeAll(token)
+        }
+    }
     *decomposeTokens(tokens: string[]): Generator<string[]> {
-        const allDecomposed = allCombinations(
-            tokens.map(char => () => this.decomposeAll(char)))
+        const allDecomposed = allCombinations(Array.from(this.mapDecomposeAll(tokens)))
         for (const decomposed of allDecomposed) {
             yield decomposed.flat()
         }
