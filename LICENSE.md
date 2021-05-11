@@ -58,3 +58,10 @@ Copyright © 1991-2020 Unicode, Inc. All rights reserved.
 
 Unicode Data Files are available under the Unicode License Agreement (Unicode-DFS-2016).<br>
 See [licenses/unicode.txt](licenses/unicode.txt)
+
+---
+
+## Ideographic Description Sequences (IDS) for CJK Unified Ideographs
+
+This file is not copyrighted, and may be used freely for any purpose without asking permission.<br>
+See the notes in the text file (IDS.TXT).

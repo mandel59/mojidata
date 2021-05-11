@@ -4,8 +4,11 @@ import { promisify } from "util"
 import parse from "csv-parse"
 import Database from "better-sqlite3"
 import sqlFormatter from "sql-formatter"
+import { IDSDecomposer } from "./lib/ids-decomposer"
 
 const format = sqlFormatter.format
+
+const dbpath = path.join(__dirname, "../dist/moji.db")
 
 function parseUCS(code: string) {
     return String.fromCodePoint(parseInt(code.slice(2), 16))
@@ -587,7 +590,79 @@ async function createAj1(db: import("better-sqlite3").Database) {
     }
 }
 
+async function createIDS(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "ids_fts"`)
+    db.exec(`drop table if exists "ids"`)
+    db.exec(`drop table if exists "ids_comment"`)
+
+    db.exec(format(`CREATE TABLE "ids" (
+        "UCS" TEXT NOT NULL,
+        "source" TEXT NOT NULL,
+        "IDS" TEXT NOT NULL
+    )`))
+    db.exec(format(`CREATE TABLE "ids_comment" (
+        "UCS" TEXT NOT NULL,
+        "comment" TEXT NOT NULL
+    )`))
+
+    const insert = db.prepare(`INSERT INTO "ids"
+        ("UCS", "source", "IDS") VALUES (?, ?, ?)`)
+
+    const insert_comment = db.prepare(`INSERT INTO "ids_comment"
+        ("UCS", "comment") VALUES (?, ?)`)
+
+    const datapath = path.join(__dirname, "../cache/IDS.TXT")
+    const stream = fs.createReadStream(datapath).pipe(parse({
+        columns: false,
+        comment: "#",
+        delimiter: "\t",
+        skip_empty_lines: true,
+        relax_column_count: true,
+    }))
+
+    const symbols_in_ids = new Set()
+
+    await transaction(db, async () => {
+        for await (const record of stream) {
+            const [codepoint, ucs, ...idslist] = record as string[]
+            for (const field of idslist) {
+                try {
+                    if (field.startsWith("^")) {
+                        const m = /\^([^\$]+)\$\(([^\)]+)\)/.exec(field)
+                        if (!m) throw new Error("syntax Error")
+                        const ids = m[1]
+                        const source = m[2]
+                        insert.run([ucs, source, ids])
+                        ids.match(/[\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
+                    } else if (field.startsWith("*")) {
+                        const comments = field.slice(1).split(/;/g)
+                        for (const comment of comments) {
+                            insert_comment.run([ucs, comment])
+                        }
+                    }
+                } catch (err) {
+                    console.error(codepoint)
+                    throw err
+                }
+            }
+        }
+    })
+
+    const decomposer = new IDSDecomposer(dbpath)
+    decomposer.createDecomposedTable(db, "idsfind")
+    db.exec(format(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
+        content="idsfind",
+        tokenize=unicode61 "tokenchars={}&-;${Array.from(symbols_in_ids).join("")}",
+        "IDS_tokens"
+    )`).replace(/ = /g, "="))
+    db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('rebuild')`)
+
+    db.exec(`CREATE INDEX "ids_UCS" ON "ids" ("UCS")`)
+    db.exec(`CREATE INDEX "ids_comment_UCS" ON "ids_comment" ("UCS")`)
+}
+
 async function vacuum(db: import("better-sqlite3").Database) {
+    db.exec("PRAGMA journal_mode = DELETE")
     db.exec("VACUUM")
 }
 
@@ -605,9 +680,9 @@ function time<X extends any[], Y>(func: (...args: X) => Promise<Y>): (...args: X
 
 async function main() {
     await promisify(fs.mkdir)(path.join(__dirname, "../dist"), { recursive: true })
-    const dbpath = path.join(__dirname, "../dist/moji.db")
     const db = new Database(dbpath)
     console.time("ALL")
+    db.exec("PRAGMA journal_mode = WAL")
     await time(createMji)(db)
     await time(createMjsm)(db)
     await time(createIvs)(db)
@@ -615,6 +690,7 @@ async function main() {
     await time(createCjkRadicals)(db)
     await time(createUSource)(db)
     await time(createAj1)(db)
+    await time(createIDS)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")
 }
