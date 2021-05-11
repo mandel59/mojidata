@@ -277,6 +277,7 @@ async function createMjsm(db: import("better-sqlite3").Database) {
         db.exec(`CREATE INDEX "mjsm_${table}_縮退X0213" ON "mjsm_${table}" ("縮退X0213")`)
     }
 
+    db.exec(`drop view if exists "mjsm"`)
     db.exec(format(
         `CREATE VIEW "mjsm" AS\n`
         + tables.map(table => {
@@ -313,14 +314,13 @@ async function createMjsm(db: import("better-sqlite3").Database) {
 }
 
 async function createIvs(db: import("better-sqlite3").Database) {
-    db.exec(`drop table if exists "ivs"`)
-    db.exec(`create temporary table "ivs" (
+    db.exec(`create temporary table "tempivs" (
         "IVS" TEXT NOT NULL,
         "collection" TEXT NOT NULL,
         "code" TEXT NOT NULL
     )`)
     const insert = db.prepare(
-        `INSERT INTO "ivs" ("IVS", "collection", "code")
+        `INSERT INTO "tempivs" ("IVS", "collection", "code")
         VALUES (?, ?, ?)`)
 
     const mjipath = path.join(__dirname, "../resources/unicode/ivs.csv")
@@ -338,7 +338,15 @@ async function createIvs(db: import("better-sqlite3").Database) {
         }
     })
 
-    const collections = db.prepare("select distinct collection from ivs").pluck().all()
+    const collections = db.prepare("select distinct collection from tempivs").pluck().all()
+
+    for (const table of db.prepare(
+        `select tbl_name
+        from sqlite_master
+        where type = 'table' and tbl_name glob 'ivs_*'`
+    ).pluck().all() as string[]) {
+        db.exec(`drop table if exists "${table.replace(/"/g, '""')}"`)
+    }
 
     for (const collection of collections) {
         if (collection === "Adobe-Japan1") {
@@ -347,7 +355,7 @@ async function createIvs(db: import("better-sqlite3").Database) {
                 "CID" INTEGER NOT NULL
             )`))
             db.exec(`insert into "ivs_${collection}" (IVS, CID)
-                select IVS, cast(substr(code, 5) as integer) from ivs where collection = 'Adobe-Japan1'`)
+                select IVS, cast(substr(code, 5) as integer) from tempivs where collection = 'Adobe-Japan1'`)
             db.exec(`CREATE INDEX "ivs_${collection}_CID" ON "ivs_${collection}" ("CID")`)
         } else {
             db.exec(format(`CREATE TABLE "ivs_${collection}" (
@@ -355,12 +363,12 @@ async function createIvs(db: import("better-sqlite3").Database) {
                 "code" TEXT NOT NULL
             )`))
             db.exec(`insert into "ivs_${collection}" ("IVS", "code")
-                select IVS, code from ivs where collection = '${collection}'`)
-            db.exec(`CREATE INDEX "ivs_${collection}_code" ON "ivs" ("code")`)
+                select IVS, code from tempivs where collection = '${collection}'`)
+            db.exec(`CREATE INDEX "ivs_${collection}_code" ON "ivs_${collection}" ("code")`)
         }
     }
 
-    db.exec(`drop table if exists "ivs"`)
+    db.exec(`drop view if exists "ivs"`)
     db.exec(`CREATE VIEW "ivs" AS `
         + `SELECT IVS, 'Adobe-Japan1' AS collection, 'CID+' || CID AS code FROM "ivs_Adobe-Japan1"`
         + ` UNION ALL `
