@@ -35,9 +35,8 @@ export class IDSDecomposer {
         this.lookupIDSStatement = db.prepare(
             `select IDS_tokens
             from tempids
-            where
-                UCS = $char
-                and IDS_tokens not glob '*？*'`).pluck()
+            where UCS = $char
+            order by rowid`).pluck()
     }
     *decompose(char: string): Generator<string[]> {
         const alltokens = this.lookupIDSStatement.all({ char }) as string[]
@@ -45,8 +44,15 @@ export class IDSDecomposer {
             yield [char]
             return
         }
+        let unknownid = 0
         for (const tokens of alltokens) {
-            yield tokens.split(/ /g)
+            yield tokens.split(/ /g).map(token => {
+                if (token === "？") {
+                    return `&c-${char}-${++unknownid};`
+                } else {
+                    return token
+                }
+            })
         }
     }
     *decomposeAll(char: string): Generator<string[]> {
