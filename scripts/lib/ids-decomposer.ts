@@ -2,18 +2,19 @@ import Database from "better-sqlite3"
 import { transactionSync } from "./dbutils"
 import { tokenizeIDS } from "./ids-tokenizer"
 
-function* allCombinations<T>(list: Generator<T>[]): Generator<T[]> {
+function* allCombinations<T>(list: Array<() => Generator<T>>): Generator<T[]> {
     if (list.length === 0) {
         return
     }
-    if (list.length === 1) {
-        for (const item of list[0]) {
+    const [first, ...rest] = list
+    if (rest.length === 0) {
+        for (const item of first()) {
             yield [item]
         }
         return
     }
-    for (const restItems of allCombinations(list.slice(1))) {
-        for (const item of list[0]) {
+    for (const restItems of allCombinations(rest)) {
+        for (const item of first()) {
             yield [item, ...restItems]
         }
     }
@@ -66,7 +67,7 @@ export class IDSDecomposer {
     }
     *decomposeTokens(tokens: string[]): Generator<string[]> {
         const allDecomposed = allCombinations(
-            tokens.map(char => this.decomposeAll(char)))
+            tokens.map(char => () => this.decomposeAll(char)))
         for (const decomposed of allDecomposed) {
             yield decomposed.flat()
         }
