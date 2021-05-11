@@ -20,11 +20,19 @@ const find = db.prepare(
     from idsfind_fts
     where IDS_tokens MATCH $query`).pluck()
 
-const query = argv
-    .map(c =>
-        `(${Array.from(decomposer.decomposeTokens(tokenizeIDS(c)), tokens => `"${tokens.join(" ")}"`)
-            .join(" OR ")})`)
-    .join(" AND ")
+function buildQuery(list: string[], operator = "AND") {
+    return "(" + list
+        .map(c =>
+            `(${Array.from(decomposer.decomposeTokens(tokenizeIDS(c)), tokens => `"${tokens.join(" ")}"`)
+                .join(" OR ")})`)
+        .join(` ${operator} `) + ")"
+}
+
+const notclause = options.has("--not")
+    ? " NOT " + buildQuery(options.get("--not")!.split(/[ ,]/g), "OR")
+    : ""
+
+const query = buildQuery(argv) + notclause
 
 if (options.get("--debug")) {
     console.log(query)
