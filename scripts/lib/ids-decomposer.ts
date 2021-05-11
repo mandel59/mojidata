@@ -83,16 +83,14 @@ export class IDSDecomposer {
         }
     }
     *mapDecomposeAll(tokens: string[]): Generator<() => Iterable<string[]>> {
-        let argCount = 0
         let i = 0
         while (i < tokens.length) {
             const token = tokens[i++]
-            argCount += tokenArgs[token] ?? -1
             if (token === "〾") {
                 const quotedTokens: string[] = []
                 quotedTokens.push(token)
-                const endCount = argCount - 1
-                while (argCount > endCount) {
+                let argCount = 1
+                while (argCount > 0) {
                     const token = tokens[i++]
                     argCount += tokenArgs[token] ?? -1
                     quotedTokens.push(token)
