@@ -9,6 +9,7 @@ The following data are included:
 - Unicode Ideographic Variation Database
 - MJ文字情報一覧表 (List of MJ Characters)
 - MJ縮退マップ (MJ Map)
+- Ideographic Description Sequences (IDS) for CJK Unified Ideographs
 
 ## License
 
