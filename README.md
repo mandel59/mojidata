@@ -4,12 +4,21 @@ This package provides SQLite database about Japanese characters.
 
 The following data are included:
 
-- Adobe-Japan1 CMap Resources
-- Unicode Standardized Variants
-- Unicode Ideographic Variation Database
-- MJ文字情報一覧表 (List of MJ Characters)
-- MJ縮退マップ (MJ Map)
-- Ideographic Description Sequences (IDS) for CJK Unified Ideographs
+- [Adobe], [Adobe-Japan1 CMap Resources](https://github.com/adobe-type-tools/cmap-resources) (aj1)
+- [Unicode], [Unicode Character Database](https://www.unicode.org/reports/tr44/)
+    - CJK Radicals (radicals)
+    - Standardized Variants (svs)
+    - [U-Source](https://www.unicode.org/reports/tr45/) Data (usource)
+    - [Unicode Han Database](https://www.unicode.org/reports/tr38/) (unihan)
+- [Unicode], [Ideographic Variation Database](https://unicode.org/ivd/) (ivs)
+- [CITPC], [List of MJ Characters](https://moji.or.jp/mojikiban/mjlist/) (mji)
+- [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
+- [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
+
+[Adobe]: https://www.adobe.com/
+[Unicode]: https://home.unicode.org/
+[CITPC]: https://moji.or.jp/mojikiban/
+[BabelStone]: https://www.babelstone.co.uk/Fonts/Han.html
 
 ## License
 
