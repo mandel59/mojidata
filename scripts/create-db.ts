@@ -408,12 +408,18 @@ async function createSvs(db: import("better-sqlite3").Database) {
 async function createCjkRadicals(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "radicals"`)
     db.exec(format(`CREATE TABLE "radicals" (
-        "部首" INTEGER PRIMARY KEY,
-        "部首漢字" TEXT NOT NULL
+        "radical" TEXT GENERATED ALWAYS AS ("radical_number" || CASE WHEN "radical_simplified" THEN '''' ELSE '' END) VIRTUAL,
+        "radical_number" INTEGER NOT NULL,
+        "radical_simplified" INTEGER NOT NULL CHECK ("radical_simplified" IN (0, 1)),
+        "radical_character" TEXT NOT NULL,
+        "radical_CJKUI" TEXT NOT NULL,
+        "部首" INTEGER GENERATED ALWAYS AS (CASE WHEN NOT "radical_simplified" THEN "radical_number" END) VIRTUAL,
+        "部首漢字" TEXT GENERATED ALWAYS AS ("radical_CJKUI") VIRTUAL,
+        PRIMARY KEY ("radical_number", "radical_simplified")
     )`))
     const insert = db.prepare(
-        `INSERT INTO "radicals" ("部首", "部首漢字")
-        VALUES (?, ?)`)
+        `INSERT INTO "radicals" ("radical_number", "radical_simplified", "radical_character", "radical_CJKUI")
+        VALUES (?, ?, ?, ?)`)
 
     const csvpath = path.join(__dirname, "../cache/CJKRadicals.txt")
     const stream = fs.createReadStream(csvpath).pipe(parse({
@@ -426,13 +432,15 @@ async function createCjkRadicals(db: import("better-sqlite3").Database) {
     await transaction(db, async () => {
         for await (const record of stream) {
             const radical = record[0]
-            const radical_simplified = radical.substr(-1) === "'"
-            if (radical_simplified) continue
+            const radical_simplified = Number(radical.substr(-1) === "'")
             const radical_number = parseInt(radical, 10)
-            const cjkui = String.fromCodePoint(parseInt(record[2], 16))
+            const radical_character = String.fromCodePoint(parseInt(record[1], 16))
+            const radical_cjkui = String.fromCodePoint(parseInt(record[2], 16))
             insert.run([
                 radical_number,
-                cjkui
+                radical_simplified,
+                radical_character,
+                radical_cjkui,
             ])
         }
     })
