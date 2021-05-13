@@ -9,7 +9,7 @@ const { argv, options } = argparse(process.argv.slice(2))
 
 const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
-    = new IDSDecomposer(mojidb, { expandZVariant: true })
+    = new IDSDecomposer(mojidb)
 
 const dbpath = path.join(__dirname, "../idsfind.db")
 const db = new Database(dbpath)

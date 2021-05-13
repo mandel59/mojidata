@@ -21,7 +21,7 @@ db.exec(`DETACH DATABASE moji`)
 db.exec(`CREATE TEMPORARY TABLE "idsfind" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
 const insert_idsfind = db.prepare<{ id: number | null, ucs: string, tokens: string }>(`INSERT INTO "idsfind" VALUES ($id, $ucs, $tokens)`)
 
-const decomposer = new IDSDecomposer(mojidb)
+const decomposer = new IDSDecomposer(mojidb, { expandZVariant: true })
 transactionSync(db, () => {
     for (const id of codepoints) {
         const ucs = String.fromCodePoint(id)
