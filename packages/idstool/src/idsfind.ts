@@ -6,7 +6,7 @@ import { IDSDecomposer } from "./lib/ids-decomposer"
 import { argparse } from "./lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
 
-const dbpath = path.join(__dirname, "../dist/moji.db")
+const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const db = new Database(dbpath)
 const decomposer
     = new IDSDecomposer(dbpath, { expandZVariant: true })

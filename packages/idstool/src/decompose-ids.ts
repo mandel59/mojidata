@@ -7,7 +7,7 @@ if (argv.length === 0) {
     throw new Error("no arg")
 }
 
-const dbpath = path.join(__dirname, "../dist/moji.db")
+const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
     = new IDSDecomposer(dbpath, {
         expandZVariant: Boolean(options.get("-z") || options.get("--expandZVariant"))
