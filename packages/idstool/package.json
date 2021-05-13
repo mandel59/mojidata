@@ -1,5 +1,5 @@
 {
-  "name": "idstool",
+  "name": "@mandel59/idstool",
   "version": "0.3.0",
   "description": "Manipurate CJK ideograph structures",
   "repository": {
