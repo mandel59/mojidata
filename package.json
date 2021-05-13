@@ -1,9 +1,11 @@
 {
     "name": "mojidata-workspace",
     "version": "0.3.0",
+    "private": true,
     "workspaces": {
         "packages": [
-            "packages/*"
+            "packages/mojidata",
+            "packages/idstool"
         ]
     }
 }
