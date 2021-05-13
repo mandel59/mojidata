@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { tokenizeIDS } from "../lib/ids-tokenizer"
 import { IDSDecomposer } from "../lib/ids-decomposer"
 import { argparse } from "../lib/argparse"

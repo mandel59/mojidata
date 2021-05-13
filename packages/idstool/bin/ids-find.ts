@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import type { Writable } from "stream"
 import path from "path"
 import Database from "better-sqlite3"
