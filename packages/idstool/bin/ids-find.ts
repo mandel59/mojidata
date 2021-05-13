@@ -1,15 +1,17 @@
 import type { Writable } from "stream"
 import path from "path"
 import Database from "better-sqlite3"
-import { tokenizeIDS } from "./lib/ids-tokenizer"
-import { IDSDecomposer } from "./lib/ids-decomposer"
-import { argparse } from "./lib/argparse"
+import { tokenizeIDS } from "../lib/ids-tokenizer"
+import { IDSDecomposer } from "../lib/ids-decomposer"
+import { argparse } from "../lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
 
-const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
-const db = new Database(dbpath)
+const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
-    = new IDSDecomposer(dbpath, { expandZVariant: true })
+    = new IDSDecomposer(mojidb, { expandZVariant: true })
+
+const dbpath = path.join(__dirname, "../idsfind.db")
+const db = new Database(dbpath)
 
 if (!process.argv[2]) {
     throw new Error("no arg")

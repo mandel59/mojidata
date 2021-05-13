@@ -1,7 +1,6 @@
-import path from "path"
-import { tokenizeIDS } from "./lib/ids-tokenizer"
-import { IDSDecomposer } from "./lib/ids-decomposer"
-import { argparse } from "./lib/argparse"
+import { tokenizeIDS } from "../lib/ids-tokenizer"
+import { IDSDecomposer } from "../lib/ids-decomposer"
+import { argparse } from "../lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
 if (argv.length === 0) {
     throw new Error("no arg")
