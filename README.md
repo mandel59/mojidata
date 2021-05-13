@@ -8,6 +8,7 @@ The following data are included:
 - [Unicode], [Unicode Character Database](https://www.unicode.org/reports/tr44/)
     - CJK Radicals (radicals)
     - Standardized Variants (svs)
+    - Equivalent Unified Ideograph (radeqv)
     - [U-Source](https://www.unicode.org/reports/tr45/) Data (usource)
     - [Unicode Han Database](https://www.unicode.org/reports/tr38/) (unihan)
 - [Unicode], [Ideographic Variation Database](https://unicode.org/ivd/) (ivs)

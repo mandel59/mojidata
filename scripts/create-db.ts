@@ -446,6 +446,60 @@ async function createCjkRadicals(db: import("better-sqlite3").Database) {
     })
 }
 
+async function createRadicalEquivalents(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "radeqv"`)
+    db.exec(format(`CREATE TABLE "radeqv" (
+        "radical_character" TEXT PRIMARY KEY,
+        "radical_CJKUI" TEXT
+    )`))
+    const insert = db.prepare(
+        `INSERT INTO "radeqv" ("radical_character", "radical_CJKUI")
+        VALUES (?, ?)`)
+
+    const csvpath = path.join(__dirname, "../cache/EquivalentUnifiedIdeograph.txt")
+    const content = fs.readFileSync(csvpath)
+    const lines = content.toString().split("\n")
+    const list: [number, number | null][] = lines
+        .map(line => line.replace(/#.*/, ""))
+        .filter(line => !/^\s*$/.test(line))
+        .flatMap(line => {
+            let [codes, equiv] = line.split(";", 2)
+            let [code1, code2] = codes.split("..", 2)
+            equiv = equiv?.trim()
+            code1 = code1?.trim()
+            code2 = code2?.trim()
+            if (equiv && code1) {
+                if (!code2) {
+                    return [[parseInt(code1, 16), parseInt(equiv, 16)]]
+                } else {
+                    return [
+                        [parseInt(code1, 16), parseInt(equiv, 16)],
+                        [parseInt(code2, 16), parseInt(equiv, 16)]
+                    ]
+                }
+            } else {
+                throw new Error("format error")
+            }
+        })
+    const noEquivList: [number, number | null][] = lines
+        .flatMap(line => {
+            const m = /^# ([\dA-F]{4,5}); CJK [\w ]+$/.exec(line)
+            if (!m) return []
+            return [[parseInt(m[1], 16), null]]
+        })
+
+    await transaction(db, async () => {
+        for await (const record of [...list, ...noEquivList]) {
+            const radical_character_code = record[0]
+            const radical_cjkui_code = record[1]
+            insert.run([
+                String.fromCodePoint(radical_character_code),
+                radical_cjkui_code && String.fromCodePoint(radical_cjkui_code),
+            ])
+        }
+    })
+}
+
 async function createUSource(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "usource"`)
     db.exec(`drop table if exists "usource_source"`)
@@ -761,6 +815,7 @@ async function main() {
     await time(createIvs)(db)
     await time(createSvs)(db)
     await time(createCjkRadicals)(db)
+    await time(createRadicalEquivalents)(db)
     await time(createUSource)(db)
     await time(createUnihan)(db)
     await time(createAj1)(db)
