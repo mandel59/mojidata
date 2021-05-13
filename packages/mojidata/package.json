@@ -3,7 +3,11 @@
   "version": "0.3.0",
   "description": "Character Database for Japanese Text Processing",
   "homepage": "https://github.com/mandel59/mojidata/",
-  "repository": "github:mandel59/mojidata",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/mojidata"
+  },
   "files": [
     "README.md",
     "LICENSE.md",
