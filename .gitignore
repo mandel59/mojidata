@@ -1,6 +1,6 @@
-/cache
-/resources
-/dist
-/*.tgz
+cache
+resources
+dist
+*.tgz
 node_modules
 *.js
