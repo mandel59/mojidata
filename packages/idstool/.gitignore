@@ -1,0 +1,7 @@
+cache
+resources
+dist
+*.tgz
+node_modules
+*.js
+*.db
