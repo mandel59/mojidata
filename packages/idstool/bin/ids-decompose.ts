@@ -10,7 +10,8 @@ if (argv.length === 0) {
 const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
     = new IDSDecomposer(dbpath, {
-        expandZVariant: Boolean(options.get("-z") || options.get("--expandZVariant"))
+        expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
+        normalizeRadicals: !Boolean(options.get("-R")),
     })
 
 for (const arg of argv) {

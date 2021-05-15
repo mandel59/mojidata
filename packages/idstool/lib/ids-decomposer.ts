@@ -19,6 +19,19 @@ function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
     }
 }
 
+const radicals = new Map([
+    ["牜", "牛"],
+    ["𤣩", "玉"],
+    ["礻", "示"],
+    ["𥫗", "竹"],
+    ["糹", "糸"],
+    ["⺼", "肉"],
+    ["艹", "艸"],
+    ["訁", "言"],
+    ["釒", "金"],
+    ["飠", "食"],
+])
+
 const tokenArgs: Partial<Record<string, number>> = {
     "〾": 1,
     "⿰": 2,
@@ -37,13 +50,20 @@ const tokenArgs: Partial<Record<string, number>> = {
     "↷": 1,
 }
 
+export type IDSDecomposerOptions = {
+    expandZVariants?: boolean
+    normalizeRadicals?: boolean
+}
+
 export class IDSDecomposer {
     db: import("better-sqlite3").Database
     lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
-    expandZVariant: boolean
+    expandZVariants: boolean
+    normalizeRadicals: boolean
     zvar?: Map<string, string[]>
-    constructor(dbpath: string, options: { expandZVariant?: boolean } = {}) {
-        this.expandZVariant = options.expandZVariant ?? false
+    constructor(dbpath: string, options: IDSDecomposerOptions = {}) {
+        this.expandZVariants = options.expandZVariants ?? false
+        this.normalizeRadicals = options.normalizeRadicals ?? true
         const db = new Database(":memory:")
         const tokenize = (s: string) => tokenizeIDS(s).join(' ')
         db.function("tokenize", tokenize)
@@ -51,7 +71,7 @@ export class IDSDecomposer {
         db.exec(`create table tempids (UCS, IDS_tokens)`)
         db.exec(`create index tempids_UCS on tempids (UCS)`)
         db.exec(`insert into tempids select UCS, tokenize(IDS) as IDS_tokens FROM moji.ids`)
-        if (this.expandZVariant) {
+        if (this.expandZVariants) {
             this.zvar = new Map(
                 db.prepare(`select UCS, value FROM moji.unihan_kZVariant`).all()
                     .map(({ UCS, value }) => {
@@ -74,8 +94,18 @@ export class IDSDecomposer {
             where UCS = $char
             order by rowid`).pluck()
     }
+    expand(token: string) {
+        return this.zvar?.get(token) ?? [token]
+    }
+    normalize(token: string) {
+        if (this.normalizeRadicals) {
+            return radicals.get(token) ?? token
+        } else {
+            return token
+        }
+    }
     *decompose(token: string): Generator<string[]> {
-        const chars = this.zvar?.get(token) ?? [token]
+        const chars = this.expand(token)
         for (const char of chars) {
             const alltokens = this.lookupIDSStatement.all({ char }) as string[]
             if (alltokens.length === 0) {
@@ -88,7 +118,7 @@ export class IDSDecomposer {
                     if (token === "？") {
                         return `&c-${char}-${++unknownid};`
                     } else {
-                        return token
+                        return this.normalize(token)
                     }
                 })
             }
