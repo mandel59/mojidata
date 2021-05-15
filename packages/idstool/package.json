@@ -7,11 +7,9 @@
     "url": "https://github.com/mandel59/mojidata.git",
     "directory": "packages/idstool"
   },
-  "main": "lib/index.js",
   "files": [
     "bin/*.js",
     "lib/*.js",
-    "idsfind.js",
     "idsfind.db",
     "README.md",
     "LICENSE.md"

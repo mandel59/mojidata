@@ -18,17 +18,24 @@ for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids`).pluck().iterate() a
 }
 db.exec(`DETACH DATABASE moji`)
 
-db.exec(`CREATE TEMPORARY TABLE "idsfind" (id INTEGER PRIMARY KEY, UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
-const insert_idsfind = db.prepare<{ id: number | null, ucs: string, tokens: string }>(`INSERT INTO "idsfind" VALUES ($id, $ucs, $tokens)`)
+db.exec(`drop table if exists "idsfind"`)
+db.exec(`CREATE TABLE "idsfind" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
+db.exec(`CREATE INDEX "idsfind_UCS" ON "idsfind" (UCS)`)
+db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
+const insert_idsfind = db.prepare<{ ucs: string, tokens: string }>(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
 const decomposer = new IDSDecomposer(mojidb, { expandZVariants: true })
 transactionSync(db, () => {
     for (const id of codepoints) {
         const ucs = String.fromCodePoint(id)
-        const tokens = Array.from(decomposer.decomposeAll(ucs)).flat().join(' ')
-        insert_idsfind.run({ id, ucs, tokens })
+        const alltokens = decomposer.decomposeAll(ucs)
+        for (const tokens of alltokens) {
+            insert_idsfind.run({ ucs, tokens: tokens.join(' ') })
+        }
     }
 })
+
+db.exec(`INSERT INTO idsfind (UCS, IDS_tokens) SELECT DISTINCT UCS, IDS_tokens FROM idsfind_temp`)
 
 db.exec(`drop table if exists "idsfind_fts"`)
 db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
@@ -36,7 +43,6 @@ db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
     tokenize=unicode61 "tokenchars={}&-;${Array.from(symbols_in_ids).join("")}",
     "IDS_tokens"
 )`)
-db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT id AS docid, IDS_tokens FROM idsfind`)
+db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT unicode(UCS) AS docid, group_concat(IDS_tokens, ' ') FROM idsfind GROUP BY unicode(UCS)`)
 db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('optimize')`)
-db.exec(`DROP TABLE idsfind`)
 db.exec(`VACUUM`)
