@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "prepare": "webpack",
+    "build": "webpack",
     "start": "webpack serve"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
   "devDependencies": {
     "html-webpack-plugin": "^5.3.1",
     "sql.js-httpvfs": "0.8.9",
+    "vercel": "^22.0.1",
     "webpack": "^5.37.0",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
