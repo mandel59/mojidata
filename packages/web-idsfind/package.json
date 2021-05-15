@@ -1,0 +1,20 @@
+{
+  "name": "@mandel59/web-idsfind",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "prepare": "webpack",
+    "start": "webpack serve"
+  },
+  "dependencies": {
+    "@mandel59/idstool": "0.3.0"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^5.3.1",
+    "sql.js-httpvfs": "0.8.9",
+    "webpack": "^5.37.0",
+    "webpack-cli": "^4.7.0",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
