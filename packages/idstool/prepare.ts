@@ -44,5 +44,8 @@ db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
     "IDS_tokens"
 )`)
 db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT unicode(UCS) AS docid, group_concat(IDS_tokens, ' ') FROM idsfind GROUP BY unicode(UCS)`)
+
+db.exec(`PRAGMA journal_mode = delete`)
+db.exec(`PRAGMA page_size = 1024`)
 db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('optimize')`)
 db.exec(`VACUUM`)
