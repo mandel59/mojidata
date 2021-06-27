@@ -783,6 +783,7 @@ function time<X extends any[], Y>(func: (...args: X) => Promise<Y>): (...args: X
 
 async function main() {
     await promisify(fs.mkdir)(path.join(__dirname, "../dist"), { recursive: true })
+    await promisify(fs.rm)(dbpath, { force: true })
     const db = new Database(dbpath)
     console.time("ALL")
     db.exec("PRAGMA journal_mode = WAL")
