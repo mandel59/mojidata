@@ -16,6 +16,6 @@ const decomposer
 
 for (const arg of argv) {
     for (const tokens of decomposer.decomposeTokens(tokenizeIDS(arg))) {
-        console.log(tokens.join(' '))
+        console.log(tokens.join(''))
     }
 }
