@@ -741,10 +741,10 @@ async function createIDS(db: import("better-sqlite3").Database) {
             for (const field of idslist) {
                 try {
                     if (field.startsWith("^")) {
-                        const m = /\^([^\$]+)\$\(([^\)]+)\)/.exec(field)
+                        const m = /\^([^\$]+)\$(?:\(([^\)]+)\))?/.exec(field)
                         if (!m) throw new Error("syntax Error")
                         const ids = m[1]
-                        const source = m[2]
+                        const source = m[2] ?? ""
                         insert.run([ucs, source, ids])
                     } else if (field.startsWith("*")) {
                         const comments = field.slice(1).split(/;/g)
