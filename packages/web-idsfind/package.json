@@ -8,7 +8,7 @@
     "start": "webpack serve"
   },
   "dependencies": {
-    "@mandel59/idstool": "0.3.2"
+    "@mandel59/idstool": "0.3.3"
   },
   "devDependencies": {
     "html-webpack-plugin": "^5.3.1",
