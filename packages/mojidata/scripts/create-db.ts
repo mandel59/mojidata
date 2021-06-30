@@ -616,10 +616,10 @@ async function createUnihan(db: import("better-sqlite3").Database) {
     const properties = Array.from(insertMap.keys())
     db.exec(format(
         `CREATE VIEW "unihan" AS
-        SELECT "id", "property", "value"
+        SELECT "id", "UCS", "property", "value"
         FROM (\n${
             properties
-                .map(k => `SELECT '${k}' AS "property", "id", "value" FROM "unihan_${k}"`)
+                .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "unihan_${k}"`)
                 .join(`\nUNION ALL\n`)
         }\n)`))
 }
