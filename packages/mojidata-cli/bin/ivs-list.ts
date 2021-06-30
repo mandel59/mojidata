@@ -10,7 +10,8 @@ if (argv.length === 0) {
 }
 
 for (const arg of argv) {
-    for (const c of arg.match(/\p{sc=Han}/gu) ?? []) {
+    for (const c of arg) {
+        if (c <= '\u00ff') continue
         printIvsList(c)
     }
 }
