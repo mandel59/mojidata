@@ -4,5 +4,6 @@ set -eu
 cd "$(dirname "$0")/.."
 
 scripts/download Unihan.zip
+rm -rf resources/unihan
 mkdir -p resources/unihan
 unzip -o cache/Unihan.zip -d resources/unihan
