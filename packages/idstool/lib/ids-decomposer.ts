@@ -1,4 +1,5 @@
 import Database from "better-sqlite3"
+import { tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
 function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
@@ -55,35 +56,17 @@ const radicals = new Map([
     ["⺻", "聿"],
 ])
 
-const tokenArgs: Partial<Record<string, number>> = {
-    "〾": 1,
-    "⿰": 2,
-    "⿱": 2,
-    "⿲": 3,
-    "⿳": 3,
-    "⿴": 2,
-    "⿵": 2,
-    "⿶": 2,
-    "⿷": 2,
-    "⿸": 2,
-    "⿹": 2,
-    "⿺": 2,
-    "⿻": 2,
-    "↔": 1,
-    "↷": 1,
-}
-
 export type IDSDecomposerOptions = {
     expandZVariants?: boolean
     normalizeRadicals?: boolean
 }
 
 export class IDSDecomposer {
-    db: import("better-sqlite3").Database
-    lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
-    expandZVariants: boolean
-    normalizeRadicals: boolean
-    zvar?: Map<string, string[]>
+    private db: import("better-sqlite3").Database
+    private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
+    readonly expandZVariants: boolean
+    readonly normalizeRadicals: boolean
+    private zvar?: Map<string, string[]>
     constructor(dbpath: string, options: IDSDecomposerOptions = {}) {
         this.expandZVariants = options.expandZVariants ?? false
         this.normalizeRadicals = options.normalizeRadicals ?? true
@@ -117,17 +100,17 @@ export class IDSDecomposer {
             where UCS = $char
             order by rowid`).pluck()
     }
-    expand(token: string) {
+    private expand(token: string) {
         return this.zvar?.get(token) ?? [token]
     }
-    normalize(token: string) {
+    private normalize(token: string) {
         if (this.normalizeRadicals) {
             return radicals.get(token) ?? token
         } else {
             return token
         }
     }
-    *decompose(token: string): Generator<string[]> {
+    private *decompose(token: string): Generator<string[]> {
         const chars = this.expand(token)
         for (const char of chars) {
             const alltokens = this.lookupIDSStatement.all({ char }) as string[]
@@ -159,7 +142,7 @@ export class IDSDecomposer {
             }
         }
     }
-    *mapDecomposeAll(tokens: string[]): Generator<() => Iterable<string[]>> {
+    private *mapDecomposeAll(tokens: string[]): Generator<() => Iterable<string[]>> {
         let i = 0
         while (i < tokens.length) {
             const token = tokens[i++]
@@ -169,7 +152,7 @@ export class IDSDecomposer {
                 let argCount = 1
                 while (argCount > 0) {
                     const token = tokens[i++]
-                    argCount += tokenArgs[token] ?? -1
+                    argCount += (tokenArgs[token] ?? 0) - 1
                     quotedTokens.push(token)
                 }
                 const tokensList = [quotedTokens]
