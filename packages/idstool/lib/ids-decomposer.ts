@@ -20,56 +20,17 @@ function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
     }
 }
 
-const radicals = new Map([
-    ["亻", "人"],
-    ["氵", "水"],
-    ["扌", "手"],
-    ["𧾷", "足"],
-    ["灬", "火"],
-    ["爫", "爪"],
-    ["衤", "衣"],
-    ["牜", "牛"],
-    ["犭", "犬"],
-    ["𤣩", "玉"],
-    ["礻", "示"],
-    ["𥫗", "竹"],
-    ["糹", "糸"],
-    ["纟", "糸"],
-    ["⺼", "肉"],
-    ["艹", "艸"],
-    ["訁", "言"],
-    ["讠", "言"],
-    ["釒", "金"],
-    ["飠", "食"],
-    ["钅", "金"],
-    ["饣", "食"],
-    ["⺄", "乙"],
-    ["⺆", "冂"],
-    ["⺈", "刀"],
-    ["⺊", "卜"],
-    ["⺌", "小"],
-    ["⺗", "心"],
-    ["忄", "心"],
-    ["⺝", "月"],
-    ["⺶", "羊"],
-    ["⺸", "羊"],
-    ["⺻", "聿"],
-])
-
 export type IDSDecomposerOptions = {
     expandZVariants?: boolean
-    normalizeRadicals?: boolean
 }
 
 export class IDSDecomposer {
     private db: import("better-sqlite3").Database
     private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
     readonly expandZVariants: boolean
-    readonly normalizeRadicals: boolean
     private zvar?: Map<string, string[]>
     constructor(dbpath: string, options: IDSDecomposerOptions = {}) {
         this.expandZVariants = options.expandZVariants ?? false
-        this.normalizeRadicals = options.normalizeRadicals ?? true
         const db = new Database(":memory:")
         const tokenize = (s: string) => tokenizeIDS(s).join(' ')
         db.function("tokenize", tokenize)
@@ -104,11 +65,7 @@ export class IDSDecomposer {
         return this.zvar?.get(token) ?? [token]
     }
     private normalize(token: string) {
-        if (this.normalizeRadicals) {
-            return radicals.get(token) ?? token
-        } else {
-            return token
-        }
+        return token
     }
     private *decompose(token: string): Generator<string[]> {
         const chars = this.expand(token)

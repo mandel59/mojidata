@@ -12,7 +12,6 @@ const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
     = new IDSDecomposer(dbpath, {
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
-        normalizeRadicals: !Boolean(options.get("-R")),
     })
 
 for (const arg of argv) {
