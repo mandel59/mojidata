@@ -149,8 +149,11 @@ export class IDSDecomposer {
     }
     *decomposeAll(char: string): Generator<string[]> {
         for (const tokens of this.decompose(char)) {
-            if (tokens.length === 1 || tokens[0] === '〾') {
+            if (tokens.length === 1) {
                 yield tokens
+            } else if (tokens[0] === '〾') {
+                // treat the char as an atomic component
+                yield [char]
             } else {
                 yield* this.decomposeTokens(tokens)
             }
