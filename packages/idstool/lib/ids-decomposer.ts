@@ -135,7 +135,7 @@ export class IDSDecomposer {
             if (tokens.length === 1 && tokens[0] === char) {
                 // atomic component (whose IDS is the character itself)
                 yield tokens
-            } else if (tokens[0] === '〾') {
+            } else if (tokens[0] === '〾' || tokens[0] === '⊖') {
                 // treat the char as an atomic component
                 yield [char]
             } else {

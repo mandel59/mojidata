@@ -14,6 +14,7 @@ export const tokenArgs: Partial<Record<string, number>> = {
     "⿻": 2,
     "↔": 1,
     "↷": 1,
+    "⊖": 2,
     "@L": 1,
     "@R": 1,
     "@T": 1,
