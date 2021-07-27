@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idstool",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Manipurate CJK ideograph structures",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "0.3.3",
+    "@mandel59/mojidata": "0.3.4",
     "better-sqlite3": "^7.1.1"
   },
   "devDependencies": {
