@@ -29,4 +29,4 @@ IVD_Sequences.txt 91698bdd5a0d966b1dc8706acc9c6f71cd81b936 https://unicode.org/i
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs <https://babelstone.co.uk/CJK/IDS.TXT>
 ## Not copyrighted
-IDS.TXT 0359116855d3450d44fa7ef9749dd6611ead7082 https://raw.githubusercontent.com/mandel59/babelstone-ids/f9eda6c98ad821dad7a50c47a21951b5d90c1703/IDS.TXT
+IDS.TXT 733a6327a56760bb50e693659ce54e926dd30bac https://raw.githubusercontent.com/mandel59/babelstone-ids/fac863cc02336ee1c448bfafb905dd31bc85ca61/IDS.TXT
