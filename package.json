@@ -2,6 +2,9 @@
     "name": "mojidata-workspace",
     "version": "0.3.0",
     "private": true,
+    "scripts": {
+        "build": "(cd packages/mojidata && yarn) && (cd packages/idstool && yarn) && (cd packages/mojidata-cli && yarn)"
+    },
     "workspaces": {
         "packages": [
             "packages/*"
