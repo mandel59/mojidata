@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import Database = require("better-sqlite3")
 const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 
