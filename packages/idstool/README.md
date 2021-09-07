@@ -3,8 +3,8 @@
 ## Commands
 
 ```
-ids-find IDS [...IDS]
-ids-decompose IDS
+ids-find IDS [IDS ...]
+ids-decompose IDS [IDS ...]
 ```
 
 ## License

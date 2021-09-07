@@ -9,7 +9,7 @@ if (argv.length === 0) {
     process.exit(1)
 }
 function showUsage() {
-    console.log("usage: ids-decompose CHAR [CHAR...]")
+    console.log("usage: ids-decompose IDS [IDS ...]")
 }
 
 const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")

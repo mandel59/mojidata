@@ -11,7 +11,7 @@ if (argv.length === 0) {
     process.exit(1)
 }
 function showUsage() {
-    console.log("usage: ids-find IDS [IDS...]")
+    console.log("usage: ids-find IDS [IDS ...]")
 }
 
 const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
