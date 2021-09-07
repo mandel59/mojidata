@@ -6,15 +6,18 @@ import { tokenizeIDS } from "../lib/ids-tokenizer"
 import { query } from "../lib/idsfind-query"
 import { argparse } from "../lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
+if (argv.length === 0) {
+    showUsage()
+    process.exit(1)
+}
+function showUsage() {
+    console.log("usage: ids-find IDS [IDS...]")
+}
 
 const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 
 const dbpath = path.join(__dirname, "../idsfind.db")
 const db = new Database(dbpath)
-
-if (!process.argv[2]) {
-    throw new Error("no arg")
-}
 
 db.function("tokenizeIDS", (ids: string) => JSON.stringify(tokenizeIDS(ids)))
 

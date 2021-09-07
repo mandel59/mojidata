@@ -5,7 +5,11 @@ import { IDSDecomposer } from "../lib/ids-decomposer"
 import { argparse } from "../lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
 if (argv.length === 0) {
-    throw new Error("no arg")
+    showUsage()
+    process.exit(1)
+}
+function showUsage() {
+    console.log("usage: ids-decompose CHAR [CHAR...]")
 }
 
 const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
