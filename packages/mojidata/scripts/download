@@ -5,12 +5,16 @@ cd "$(dirname "$0")/.."
 function main () {
     read name sha1sum url
     if test -z "$name"; then exit 1; fi
-    if test -f "cache/$name" && echo "$sha1sum  cache/$name" | scripts/sha1sum --status -c -; then exit 0; fi
+    if test -e "cache/$name" && test -f "cache/.sha1sum/$sha1sum" && echo "$sha1sum  cache/$name" | scripts/sha1sum --status -c -; then exit 0; fi
 
-    mkdir -p cache
-    curl -LsSf "$url" -o "cache/$name.tmp"
-    echo "$sha1sum  cache/$name.tmp" | scripts/sha1sum --status -c -
-    mv "cache/$name.tmp" "cache/$name"
+    if ! test -f "cache/.sha1sum/$sha1sum" || ! echo "$sha1sum  cache/.sha1sum/$sha1sum" | scripts/sha1sum --status -c -; then
+        mkdir -p cache/.sha1sum
+        curl -LsSf "$url" -o "cache/.sha1sum/$sha1sum.tmp"
+        echo "$sha1sum  cache/.sha1sum/$sha1sum.tmp" | scripts/sha1sum --status -c -
+        mv "cache/.sha1sum/$sha1sum.tmp" "cache/.sha1sum/$sha1sum"
+    fi
+    rm -f "cache/$name"
+    ln -s ".sha1sum/$sha1sum" "cache/$name"
 }
 
 grep -v -E '^#|^\s*$' download.txt | sort -k 1b,1 | join -j 1 - <(echo "$1") | main
