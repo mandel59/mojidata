@@ -3,11 +3,10 @@ import path from "path"
 import { promisify } from "util"
 import parse from "csv-parse"
 import Database from "better-sqlite3"
-import sqlFormatter from "sql-formatter"
-import { IDSDecomposer } from "./lib/ids-decomposer"
-import { transactionSync, transaction } from "./lib/dbutils"
+import { format as formatSQL } from "sql-formatter"
+import { transaction } from "./lib/dbutils"
 
-const format = sqlFormatter.format
+const format = (sql: string) => formatSQL(sql, { language: 'mysql' })
 
 const dbpath = path.join(__dirname, "../dist/moji.db")
 

@@ -26,14 +26,13 @@
   "devDependencies": {
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^14.14.7",
-    "@types/sql-formatter": "^2.3.0",
-    "ava": "^3.13.0",
-    "better-sqlite3": "^7.1.1",
-    "csv": "^5.3.2",
-    "sql-formatter": "^2.3.3",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.5",
-    "xlsx": "^0.16.8"
+    "ava": "^3.15.0",
+    "better-sqlite3": "^7.4.3",
+    "csv": "^5.5.3",
+    "sql-formatter": "^4.0.2",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2",
+    "xlsx": "^0.17.1"
   },
   "ava": {
     "extensions": [
