@@ -525,7 +525,7 @@ async function createUSource(db: import("better-sqlite3").Database) {
         `INSERT INTO "usource_source" ("U-source ID", "source")
             VALUES (?, ?)`)
 
-    const csvpath = path.join(__dirname, "../cache/USourceData-14.0.0d4.txt")
+    const csvpath = path.join(__dirname, "../cache/USourceData-14.0.0.txt")
     const stream = fs.createReadStream(csvpath).pipe(parse({
         columns: false,
         skipEmptyLines: true,

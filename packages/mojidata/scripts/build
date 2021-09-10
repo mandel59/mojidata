@@ -10,7 +10,6 @@ scripts/extract-unihan
 scripts/download CJKRadicals.txt
 scripts/download EquivalentUnifiedIdeograph.txt
 scripts/download cid2code.txt
-#scripts/download USourceData.txt
-scripts/download USourceData-14.0.0d4.txt
+scripts/download USourceData-14.0.0.txt
 scripts/download IDS.TXT
 npx ts-node scripts/create-db.ts
