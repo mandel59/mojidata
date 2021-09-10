@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "test": "(cd packages/mojidata && yarn test) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
-        "build": "(cd packages/mojidata && yarn) && (cd packages/idstool && yarn) && (cd packages/mojidata-cli && yarn)"
+        "build": "(cd packages/mojidata && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare)"
     },
     "workspaces": {
         "packages": [
