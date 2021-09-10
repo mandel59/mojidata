@@ -19,7 +19,7 @@
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
     "test": "ava",
-    "prepare": "npm run clean && npm run build && npm run test"
+    "prepare": "bash scripts/clean && bash scripts/build"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-DFS-2016",
