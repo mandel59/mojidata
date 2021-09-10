@@ -17,11 +17,11 @@ MJShrinkMapVer.1.2.0.zip cd0b0781412327c6e91296dac1e9783d9854ce9a https://moji.o
 
 ## Unicode Character Database <https://unicode.org/ucd/>
 ## License: Unicode-DFS-2016
-CJKRadicals.txt 278e6c0ba9228fd835d93cb9d2fb84241719228c https://www.unicode.org/Public/13.0.0/ucd/CJKRadicals.txt
-StandardizedVariants.txt b67a8e0994b446f95a406266315dd415c64d2bb4 https://www.unicode.org/Public/13.0.0/ucd/StandardizedVariants.txt
-EquivalentUnifiedIdeograph.txt 12da18312f5e6c9da71107e504ba576bcf036aa4 https://www.unicode.org/Public/13.0.0/ucd/EquivalentUnifiedIdeograph.txt
-USourceData.txt 0a521e822deeef4803ba9dec8aa4b9582baefe0f https://www.unicode.org/Public/13.0.0/ucd/USourceData.txt
-Unihan.zip 0cd0c360d75c722205756c2f640b70e693e483b6 https://www.unicode.org/Public/13.0.0/ucd/Unihan.zip
+CJKRadicals.txt 2ddb8a21dad0c11b6a40fab7ebc71da101ec8d4e https://www.unicode.org/Public/14.0.0/ucd/CJKRadicals.txt
+StandardizedVariants.txt 0cf9dc194d9f489da471cdc1d14d81cd61b6f8af https://www.unicode.org/Public/14.0.0/ucd/StandardizedVariants.txt
+EquivalentUnifiedIdeograph.txt e3ea4a3756a5418c9b5913b9b55437745ae4d84d https://www.unicode.org/Public/14.0.0/ucd/EquivalentUnifiedIdeograph.txt
+USourceData.txt 165c5239a6185ce408f6814377f0f037a42b0aa5 https://www.unicode.org/Public/14.0.0/ucd/USourceData.txt
+Unihan.zip dca7bc52798e52d8c4170b4531736bd327cc2f9a https://www.unicode.org/Public/14.0.0/ucd/Unihan.zip
 
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 ## License: Unicode-DFS-2016
@@ -29,4 +29,4 @@ IVD_Sequences.txt 91698bdd5a0d966b1dc8706acc9c6f71cd81b936 https://unicode.org/i
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs <https://babelstone.co.uk/CJK/IDS.TXT>
 ## Not copyrighted
-IDS.TXT ae48329f24eb8239191a539a932a18cd2cbee3b2 https://raw.githubusercontent.com/mandel59/babelstone-ids/30f2aa82b6f3c6a4f1db0c9bcd526c0f9af6c789/IDS.TXT
+IDS.TXT 38eb24415109501504b9a79a41db3a50ba008a34 https://raw.githubusercontent.com/mandel59/babelstone-ids/9c35d990232769d983f03efd56c16916c87dd94d/IDS.TXT

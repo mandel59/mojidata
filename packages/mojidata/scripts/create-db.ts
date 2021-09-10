@@ -510,15 +510,17 @@ async function createUSource(db: import("better-sqlite3").Database) {
         "RS" TEXT NOT NULL,
         "VKXDP" TEXT NOT NULL,
         "IDS" TEXT,
-        "comments" TEXT NOT NULL
+        "comments" TEXT NOT NULL,
+        "TS" INTEGER,
+        "FRS" INTEGER
     )`))
     db.exec(format(`CREATE TABLE "usource_source" (
         "U-source ID" TEXT NOT NULL,
         "source" TEXT NOT NULL
     )`))
     const insert = db.prepare(
-        `INSERT INTO "usource" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments")
-        VALUES (?, ?, ?, ?, ?, ?, ?)`)
+        `INSERT INTO "usource" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments", "TS", "FRS")
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     const insert_source = db.prepare(
         `INSERT INTO "usource_source" ("U-source ID", "source")
             VALUES (?, ?)`)
@@ -534,7 +536,8 @@ async function createUSource(db: import("better-sqlite3").Database) {
     await transaction(db, async () => {
         for await (const [line] of stream) {
             // ids and comments may include semicolon.
-            const [id, status, codepoint, rs, vkxdp, ids, sources, ...comments]
+            const [id, status, codepoint, rs, vkxdp, ids, sources, comments,
+                totalStrokes, firstResidualStroke]
                 = (line as string)
                     // treat entity references in IDS
                     .replace(/&([^;]+);/g, "<<$1>>")
@@ -542,19 +545,26 @@ async function createUSource(db: import("better-sqlite3").Database) {
             const ucs = codepoint
                 ? String.fromCodePoint(parseInt(codepoint.substr(2), 16))
                 : null
-            insert.run([
-                id,
-                status,
-                ucs,
-                rs,
-                vkxdp,
-                ids ? ids.replace(/<<([^>]+)>>/g, "&$1;") : null,
-                comments.join(";"),
-            ])
-            for (const source of sources.split(/\*/g)) {
-                if (source) {
-                    insert_source.run([id, source])
+            try {
+                insert.run([
+                    id,
+                    status,
+                    ucs,
+                    rs,
+                    vkxdp,
+                    ids ? ids.replace(/<<([^>]+)>>/g, "&$1;") : null,
+                    comments,
+                    totalStrokes || null,
+                    firstResidualStroke || null,
+                ])
+                for (const source of sources.split(/\*/g)) {
+                    if (source) {
+                        insert_source.run([id, source])
+                    }
                 }
+            } catch (err) {
+                console.log(id)
+                throw err
             }
         }
     })
@@ -616,10 +626,9 @@ async function createUnihan(db: import("better-sqlite3").Database) {
     db.exec(format(
         `CREATE VIEW "unihan" AS
         SELECT "id", "UCS", "property", "value"
-        FROM (\n${
-            properties
-                .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "unihan_${k}"`)
-                .join(`\nUNION ALL\n`)
+        FROM (\n${properties
+            .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "unihan_${k}"`)
+            .join(`\nUNION ALL\n`)
         }\n)`))
 }
 
