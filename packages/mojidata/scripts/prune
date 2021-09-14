@@ -1,0 +1,9 @@
+#!/bin/bash
+# prune: remove unused cache files from cache/.sha1sum
+set -eu
+cd "$(dirname "$0")/.."
+fgrep -v \
+    -f <(find cache -type l -exec readlink {} + | xargs basename) \
+    <(find cache/.sha1sum -type f -exec basename {} \;) \
+    | xargs printf 'cache/.sha1sum/%s\n' \
+    | xargs rm
