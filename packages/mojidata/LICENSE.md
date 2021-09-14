@@ -26,9 +26,9 @@ SOFTWARE.
 
 ---
 
-The following resources are downloaded during build and bundled with the
-package. See [download.txt](download.txt) for the downloaded files and the source URLs of them.
-Each of these resources is available under its own license.
+The following resources are bundled with the package. See
+[download.txt](download.txt) for the bundled resources and the source URLs of
+them. Each of these resources is available under its own license.
 
 ---
 
