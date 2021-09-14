@@ -26,6 +26,7 @@
     "better-sqlite3": "^7.4.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.4.0",
     "@types/node": "^14.14.7",
     "ava": "^3.15.0",
     "ts-node": "^10.2.1",

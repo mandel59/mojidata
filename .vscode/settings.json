@@ -1,4 +1,8 @@
 {
-    "files.eol": "\n",
-    "files.insertFinalNewline": true
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  }
 }

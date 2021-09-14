@@ -6,4 +6,4 @@ cd "$(dirname "$0")/.."
 scripts/download mji.00601-xlsx.zip
 mkdir -p resources
 unzip -o cache/mji.00601-xlsx.zip -d resources/mji
-npx ts-node scripts/xlsx2csv.ts resources/mji/mji.00601.xlsx resources/mji/mji.00601.csv
+ts-node --transpile-only scripts/xlsx2csv.ts resources/mji/mji.00601.xlsx resources/mji/mji.00601.csv

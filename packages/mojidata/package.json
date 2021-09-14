@@ -28,7 +28,7 @@
     "@types/node": "^14.14.7",
     "ava": "^3.15.0",
     "better-sqlite3": "^7.4.3",
-    "csv": "^5.5.3",
+    "csv-parse": "^4.16.3",
     "sql-formatter": "^4.0.2",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.2",

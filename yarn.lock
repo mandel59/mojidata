@@ -94,6 +94,7 @@ __metadata:
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
     "@mandel59/mojidata": 0.4.0
+    "@types/better-sqlite3": ^7.4.0
     "@types/node": ^14.14.7
     ava: ^3.15.0
     better-sqlite3: ^7.4.3
@@ -113,7 +114,7 @@ __metadata:
     "@types/node": ^14.14.7
     ava: ^3.15.0
     better-sqlite3: ^7.4.3
-    csv: ^5.5.3
+    csv-parse: ^4.16.3
     sql-formatter: ^4.0.2
     ts-node: ^10.2.1
     typescript: ^4.4.2
@@ -239,6 +240,13 @@ __metadata:
   dependencies:
     "@types/integer": "*"
   checksum: bfe1497040d29c554d859cddef709de0f40cca168f6f7c9f3c74268bcf0aaeff42ecfef0e23f72b3ba569c9b4ee1c23f28390f2d8521d5b8a7f9a61d7486627e
+  languageName: node
+  linkType: hard
+
+"@types/better-sqlite3@npm:^7.4.0":
+  version: 7.4.0
+  resolution: "@types/better-sqlite3@npm:7.4.0"
+  checksum: d549de04eb2cdedea216dee041ae7df07e437ff2008b829254175b283058e71a6e478523275b414efc693dd21c5acda045e7e8e8f2be209d413ac6556c9fef90
   languageName: node
   linkType: hard
 
@@ -1827,36 +1835,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-generate@npm:^3.4.3":
-  version: 3.4.3
-  resolution: "csv-generate@npm:3.4.3"
-  checksum: 868dc630e8bcabf42d3d1ef22c09fb783de72d7e5929854aad0323f44059b1747edf8a2724e32fdc5008396e2ea38d5c45df0b0e3a1b506e3ab34f76f3e2fb3a
-  languageName: node
-  linkType: hard
-
 "csv-parse@npm:^4.16.3":
   version: 4.16.3
   resolution: "csv-parse@npm:4.16.3"
   checksum: 5ad7790fc31c32ca1623bad1a54906134ba44fa109e8dd2dfda440bf7e9fd93610d9076a78f45c872701bfafdf7f93c9b75500c09d7efd6611d863f1d45ec69f
-  languageName: node
-  linkType: hard
-
-"csv-stringify@npm:^5.6.5":
-  version: 5.6.5
-  resolution: "csv-stringify@npm:5.6.5"
-  checksum: f93e1444857416081de3d86765b62e4c4f7c110974ad6bbcb0031d7db39b6624847ac9ee5705726e7011346f32f3696f27299b74b23a6c2b083adff0dd2755fe
-  languageName: node
-  linkType: hard
-
-"csv@npm:^5.5.3":
-  version: 5.5.3
-  resolution: "csv@npm:5.5.3"
-  dependencies:
-    csv-generate: ^3.4.3
-    csv-parse: ^4.16.3
-    csv-stringify: ^5.6.5
-    stream-transform: ^2.1.3
-  checksum: 0decc2d0d7a0abf127f4556d6f3cef5a54015b78d348608b5e8f42256c2bd0a021f34f1efc9723b2cd162680917de4c0b3967bfb65a07305eca0827654ca727e
   languageName: node
   linkType: hard
 
@@ -4145,13 +4127,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"mixme@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "mixme@npm:0.5.1"
-  checksum: b26e7953945469b5813a455259032d47f6401608855886155d82fe07ab519365ecb2b4eac57e6bb6455015600045194396ce74dbb2a37c8650519fef2a64abde
-  languageName: node
-  linkType: hard
-
 "mkdirp-classic@npm:^0.5.2, mkdirp-classic@npm:^0.5.3":
   version: 0.5.3
   resolution: "mkdirp-classic@npm:0.5.3"
@@ -5632,15 +5607,6 @@ fsevents@~2.3.2:
   dependencies:
     duplexer: ~0.1.1
   checksum: 844b622cfe8b9de45a6007404f613b60aaf85200ab9862299066204242f89a7c8033b1c356c998aa6cfc630f6cd9eba119ec1c6dc1f93e245982be4a847aee7d
-  languageName: node
-  linkType: hard
-
-"stream-transform@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "stream-transform@npm:2.1.3"
-  dependencies:
-    mixme: ^0.5.1
-  checksum: 26ce872a6812d5c784fa1f042bfd403644bc1c019f64627b5012c4544830a5570bef98b47225b38120c5878b326f3d1a213cd999a2285c98b536e5e202ca5bdf
   languageName: node
   linkType: hard
 
