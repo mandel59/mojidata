@@ -1,20 +1,20 @@
 #!/bin/bash
-set -eu
+set -eux
 cd "$(dirname "$0")/.."
 
 function main () {
     read name sha1sum url
     if test -z "$name"; then exit 1; fi
-    if test -e "cache/$name" && test -f "cache/.sha1sum/$sha1sum" && echo "$sha1sum  cache/$name" | scripts/sha1sum --status -c -; then exit 0; fi
-
-    if ! test -f "cache/.sha1sum/$sha1sum" || ! echo "$sha1sum  cache/.sha1sum/$sha1sum" | scripts/sha1sum --status -c -; then
+    cachefile="${name%.*}-${sha1sum}.${name##*.}"
+    if test -e "cache/$name" && test -f "cache/.sha1sum/$cachefile" && echo "$sha1sum  cache/$name" | scripts/sha1sum --status -c -; then exit 0; fi
+    if ! test -f "cache/.sha1sum/$cachefile" || ! echo "$sha1sum  cache/.sha1sum/$cachefile" | scripts/sha1sum --status -c -; then
         mkdir -p cache/.sha1sum
-        curl -LsSf "$url" -o "cache/.sha1sum/$sha1sum.tmp"
-        echo "$sha1sum  cache/.sha1sum/$sha1sum.tmp" | scripts/sha1sum --status -c -
-        mv "cache/.sha1sum/$sha1sum.tmp" "cache/.sha1sum/$sha1sum"
+        curl -LsSf "$url" -o "cache/.sha1sum/$cachefile.tmp"
+        echo "$sha1sum  cache/.sha1sum/$cachefile.tmp" | scripts/sha1sum --status -c -
+        mv "cache/.sha1sum/$cachefile.tmp" "cache/.sha1sum/$cachefile"
     fi
     rm -f "cache/$name"
-    ln -s ".sha1sum/$sha1sum" "cache/$name"
+    ln -s ".sha1sum/$cachefile" "cache/$name"
 }
 
 grep -v -E '^#|^\s*$' download.txt | sort -k 1b,1 | join -j 1 - <(echo "$1") | main
