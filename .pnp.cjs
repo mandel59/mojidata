@@ -55,6 +55,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {
           "packageLocation": "./",
           "packageDependencies": [
+            ["@types/node", "npm:16.9.1"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"]
           ],
           "linkType": "SOFT",
         }]
@@ -144,11 +146,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mandel59/idstool", "workspace:packages/idstool"],
             ["@mandel59/mojidata", "workspace:packages/mojidata"],
             ["@types/better-sqlite3", "npm:5.4.2"],
-            ["@types/node", "npm:14.17.4"],
+            ["@types/node", "npm:16.9.1"],
             ["ava", "npm:3.15.0"],
             ["better-sqlite3", "npm:7.4.3"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["zx", "npm:4.2.0"]
           ],
           "linkType": "SOFT",
@@ -160,13 +162,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@mandel59/mojidata", "workspace:packages/mojidata"],
             ["@types/better-sqlite3", "npm:5.4.2"],
-            ["@types/node", "npm:14.17.4"],
+            ["@types/node", "npm:16.9.1"],
             ["ava", "npm:3.15.0"],
             ["better-sqlite3", "npm:7.4.3"],
             ["csv-parse", "npm:4.16.3"],
             ["sql-formatter", "npm:4.0.2"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["xlsx", "npm:0.17.1"]
           ],
           "linkType": "SOFT",
@@ -179,11 +181,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mandel59/mojidata-cli", "workspace:packages/mojidata-cli"],
             ["@mandel59/mojidata", "workspace:packages/mojidata"],
             ["@types/better-sqlite3", "npm:7.4.0"],
-            ["@types/node", "npm:14.17.4"],
+            ["@types/node", "npm:16.9.1"],
             ["ava", "npm:3.15.0"],
             ["better-sqlite3", "npm:7.4.3"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["zx", "npm:4.2.0"]
           ],
           "linkType": "SOFT",
@@ -195,8 +197,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@mandel59/web-idsfind", "workspace:packages/web-idsfind"],
             ["@mandel59/idstool", "workspace:packages/idstool"],
+            ["@types/node", "npm:16.9.1"],
             ["html-webpack-plugin", "virtual:451070c8474ecbb05e7ebb5dabbc5f8db682893dd69ea597a888655d0b28c6ef443fbbe8d3081bc62b46b23e7642f29418555434d59471d0d9351876a94e99c8#npm:5.3.2"],
             ["sql.js-httpvfs", "npm:0.8.11"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["vercel", "npm:23.1.2"],
             ["webpack", "virtual:451070c8474ecbb05e7ebb5dabbc5f8db682893dd69ea597a888655d0b28c6ef443fbbe8d3081bc62b46b23e7642f29418555434d59471d0d9351876a94e99c8#npm:5.52.1"],
             ["webpack-cli", "virtual:451070c8474ecbb05e7ebb5dabbc5f8db682893dd69ea597a888655d0b28c6ef443fbbe8d3081bc62b46b23e7642f29418555434d59471d0d9351876a94e99c8#npm:4.8.0"],
@@ -451,13 +455,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/node", [
-        ["npm:14.17.4", {
-          "packageLocation": "./.yarn/cache/@types-node-npm-14.17.4-52a7500a10-a0bbe14327.zip/node_modules/@types/node/",
-          "packageDependencies": [
-            ["@types/node", "npm:14.17.4"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:15.12.5", {
           "packageLocation": "./.yarn/cache/@types-node-npm-15.12.5-bfb1f4b853-4550941a5d.zip/node_modules/@types/node/",
           "packageDependencies": [
@@ -469,6 +466,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-node-npm-16.7.13-08a1515fa1-15dc28aa44.zip/node_modules/@types/node/",
           "packageDependencies": [
             ["@types/node", "npm:16.7.13"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:16.9.1", {
+          "packageLocation": "./.yarn/cache/@types-node-npm-16.9.1-bde6d3b0c9-41afcf183a.zip/node_modules/@types/node/",
+          "packageDependencies": [
+            ["@types/node", "npm:16.9.1"]
           ],
           "linkType": "HARD",
         }]
@@ -4864,7 +4868,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         ["workspace:.", {
           "packageLocation": "./",
           "packageDependencies": [
-            ["mojidata-workspace", "workspace:."]
+            ["mojidata-workspace", "workspace:."],
+            ["@types/node", "npm:16.9.1"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"]
           ],
           "linkType": "SOFT",
         }]
@@ -6900,7 +6906,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@tsconfig/node12", "npm:1.0.9"],
             ["@tsconfig/node14", "npm:1.0.1"],
             ["@tsconfig/node16", "npm:1.0.2"],
-            ["@types/node", "npm:14.17.4"],
+            ["@types/node", "npm:16.9.1"],
             ["@types/swc__core", null],
             ["@types/swc__wasm", null],
             ["@types/typescript", null],
@@ -6910,7 +6916,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["create-require", "npm:1.1.1"],
             ["diff", "npm:4.0.2"],
             ["make-error", "npm:1.3.6"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["yn", "npm:3.1.1"]
           ],
           "packagePeers": [
@@ -7010,10 +7016,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "HARD",
         }],
-        ["patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b", {
-          "packageLocation": "./.yarn/cache/typescript-patch-70ef91d456-3109ae2570.zip/node_modules/typescript/",
+        ["patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b", {
+          "packageLocation": "./.yarn/cache/typescript-patch-2d83eeb1af-28ab98313a.zip/node_modules/typescript/",
           "packageDependencies": [
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"]
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"]
           ],
           "linkType": "HARD",
         }]
