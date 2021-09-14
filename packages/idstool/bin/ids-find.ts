@@ -14,8 +14,6 @@ function showUsage() {
     console.log("usage: ids-find IDS [IDS ...]")
 }
 
-const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
-
 const dbpath = path.join(__dirname, "../idsfind.db")
 const db = new Database(dbpath)
 
