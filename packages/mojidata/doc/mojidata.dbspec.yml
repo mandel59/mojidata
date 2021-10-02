@@ -1,0 +1,3250 @@
+dbspec: draft-00
+title: Mojidata
+description: |
+  # Mojidata - Character Database for Japanese Text Processing
+
+  This package provides SQLite database about Japanese characters.
+
+  The following data are included:
+
+  - [Adobe], [Adobe-Japan1 CMap Resources](https://github.com/adobe-type-tools/cmap-resources) (aj1)
+  - [Unicode], [Unicode Character Database](https://www.unicode.org/reports/tr44/)
+      - CJK Radicals (radicals)
+      - Standardized Variants (svs)
+      - Equivalent Unified Ideograph (radeqv)
+      - [U-Source](https://www.unicode.org/reports/tr45/) Data (usource)
+      - [Unicode Han Database](https://www.unicode.org/reports/tr38/) (unihan)
+  - [Unicode], [Ideographic Variation Database](https://unicode.org/ivd/) (ivs)
+  - [CITPC], [List of MJ Characters](https://moji.or.jp/mojikiban/mjlist/) (mji)
+  - [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
+  - [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
+
+  [Adobe]: https://www.adobe.com/
+  [Unicode]: https://home.unicode.org/
+  [CITPC]: https://moji.or.jp/mojikiban/
+  [BabelStone]: https://www.babelstone.co.uk/Fonts/Han.html
+
+  ## License
+
+  The source code of Mojidata is available under the MIT license.
+
+  Some resources are downloaded during build and bundled with the
+  package. See [download.txt](download.txt) for the downloaded files and the source URLs of them.
+
+  Each of these resources is available under its own license.
+
+  See [LICENSE.md](LICENSE.md) for details.
+meta:
+  author: Ryusei Yamaguchi
+target:
+  dialect: sqlite
+  version: "3.36.0"
+tables:
+  aj1:
+    type: table
+    title: aj1
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+      - vertical
+      - UniJIS
+      - UniJIS2004
+      - UniJISX0213
+      - UniJISX02132004
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+      vertical:
+        type: boolean
+        title: vertical
+        description: ""
+      UniJIS:
+        type: boolean
+        title: UniJIS
+        description: ""
+      UniJIS2004:
+        type: boolean
+        title: UniJIS2004
+        description: ""
+      UniJISX0213:
+        type: boolean
+        title: UniJISX0213
+        description: ""
+      UniJISX02132004:
+        type: boolean
+        title: UniJISX02132004
+        description: ""
+  aj1_UniJIS2004_H:
+    type: view
+    title: aj1_UniJIS2004_H
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJIS2004_V:
+    type: view
+    title: aj1_UniJIS2004_V
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJISX02132004_H:
+    type: view
+    title: aj1_UniJISX02132004_H
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJISX02132004_V:
+    type: view
+    title: aj1_UniJISX02132004_V
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJISX0213_H:
+    type: view
+    title: aj1_UniJISX0213_H
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJISX0213_V:
+    type: view
+    title: aj1_UniJISX0213_V
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJIS_H:
+    type: view
+    title: aj1_UniJIS_H
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  aj1_UniJIS_V:
+    type: view
+    title: aj1_UniJIS_V
+    description: ""
+    columnOrder:
+      - CID
+      - UCS
+    columns:
+      CID:
+        type: integer
+        title: CID
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+  ids:
+    type: table
+    title: ids
+    description: ""
+    columnOrder:
+      - UCS
+      - source
+      - IDS
+    columns:
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+      source:
+        type: text
+        title: source
+        description: ""
+      IDS:
+        type: text
+        title: IDS
+        description: ""
+  ids_comment:
+    type: table
+    title: ids_comment
+    description: ""
+    columnOrder:
+      - UCS
+      - comment
+    columns:
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+      comment:
+        type: text
+        title: comment
+        description: ""
+  ivs:
+    type: view
+    title: ivs
+    description: ""
+    columnOrder:
+      - IVS
+      - collection
+      - code
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      collection:
+        title: collection
+        description: ""
+      code:
+        title: code
+        description: ""
+  ivs_Adobe-Japan1:
+    type: table
+    title: ivs_Adobe-Japan1
+    description: ""
+    columnOrder:
+      - IVS
+      - CID
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      CID:
+        type: integer
+        title: CID
+        description: ""
+  ivs_Hanyo-Denshi:
+    type: table
+    title: ivs_Hanyo-Denshi
+    description: ""
+    columnOrder:
+      - IVS
+      - code
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      code:
+        type: text
+        title: code
+        description: ""
+  ivs_KRName:
+    type: table
+    title: ivs_KRName
+    description: ""
+    columnOrder:
+      - IVS
+      - code
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      code:
+        type: text
+        title: code
+        description: ""
+  ivs_MSARG:
+    type: table
+    title: ivs_MSARG
+    description: ""
+    columnOrder:
+      - IVS
+      - code
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      code:
+        type: text
+        title: code
+        description: ""
+  ivs_Moji_Joho:
+    type: table
+    title: ivs_Moji_Joho
+    description: ""
+    columnOrder:
+      - IVS
+      - code
+    columns:
+      IVS:
+        type: text
+        title: IVS
+        description: ""
+      code:
+        type: text
+        title: code
+        description: ""
+  mji:
+    type: table
+    title: mji
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 対応するUCS
+      - 実装したUCS
+      - 実装したMoji_JohoコレクションIVS
+      - 実装したSVS
+      - 戸籍統一文字番号
+      - 住基ネット統一文字コード
+      - 入管正字コード
+      - 入管外字コード
+      - 漢字施策
+      - 対応する互換漢字
+      - X0213
+      - X0213_包摂連番
+      - X0213_包摂区分
+      - X0212
+      - MJ文字図形バージョン
+      - 登記統一文字番号
+      - 総画数
+      - 大漢和
+      - 日本語漢字辞典
+      - 新大字典
+      - 大字源
+      - 大漢語林
+      - 備考
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      対応するUCS:
+        type: text
+        title: 対応するUCS
+        description: ""
+      実装したUCS:
+        type: text
+        title: 実装したUCS
+        description: ""
+      実装したMoji_JohoコレクションIVS:
+        type: text
+        title: 実装したMoji_JohoコレクションIVS
+        description: ""
+      実装したSVS:
+        type: text
+        title: 実装したSVS
+        description: ""
+      戸籍統一文字番号:
+        type: text
+        title: 戸籍統一文字番号
+        description: ""
+      住基ネット統一文字コード:
+        type: text
+        title: 住基ネット統一文字コード
+        description: ""
+      入管正字コード:
+        type: text
+        title: 入管正字コード
+        description: ""
+      入管外字コード:
+        type: text
+        title: 入管外字コード
+        description: ""
+      漢字施策:
+        type: text
+        title: 漢字施策
+        description: ""
+      対応する互換漢字:
+        type: text
+        title: 対応する互換漢字
+        description: ""
+      X0213:
+        type: text
+        title: X0213
+        description: ""
+      X0213_包摂連番:
+        type: text
+        title: X0213_包摂連番
+        description: ""
+      X0213_包摂区分:
+        type: integer
+        title: X0213_包摂区分
+        description: ""
+      X0212:
+        type: text
+        title: X0212
+        description: ""
+      MJ文字図形バージョン:
+        type: text
+        title: MJ文字図形バージョン
+        description: ""
+      登記統一文字番号:
+        type: text
+        title: 登記統一文字番号
+        description: ""
+      総画数:
+        type: integer
+        title: 総画数
+        description: ""
+      大漢和:
+        type: integer
+        title: 大漢和
+        description: ""
+      日本語漢字辞典:
+        type: integer
+        title: 日本語漢字辞典
+        description: ""
+      新大字典:
+        type: integer
+        title: 新大字典
+        description: ""
+      大字源:
+        type: integer
+        title: 大字源
+        description: ""
+      大漢語林:
+        type: integer
+        title: 大漢語林
+        description: ""
+      備考:
+        type: text
+        title: 備考
+        description: ""
+  mji_changelog:
+    type: table
+    title: mji_changelog
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 更新履歴
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      更新履歴:
+        type: text
+        title: 更新履歴
+        description: ""
+  mji_reading:
+    type: table
+    title: mji_reading
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 読み
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      読み:
+        type: text
+        title: 読み
+        description: ""
+  mji_rsindex:
+    type: table
+    title: mji_rsindex
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 部首
+      - 内画数
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      部首:
+        type: integer
+        title: 部首
+        description: ""
+      内画数:
+        type: integer
+        title: 内画数
+        description: ""
+  mjsm:
+    type: view
+    title: mjsm
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+      - 表
+      - 順位
+      - ホップ数
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+      表:
+        title: 表
+        description: ""
+      順位:
+        title: 順位
+        description: ""
+      ホップ数:
+        title: ホップ数
+        description: ""
+  mjsm_JIS包摂規準UCS統合規則:
+    type: table
+    title: mjsm_JIS包摂規準UCS統合規則
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_note:
+    type: table
+    title: mjsm_note
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 参考情報
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      参考情報:
+        type: text
+        title: 参考情報
+        description: ""
+  mjsm_戸籍統一文字情報_親字正字:
+    type: table
+    title: mjsm_戸籍統一文字情報_親字正字
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+      - ホップ数
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+      ホップ数:
+        type: integer
+        title: ホップ数
+        description: ""
+  mjsm_民一2842号通達別表_誤字俗字正字一覧表_俗字:
+    type: table
+    title: mjsm_民一2842号通達別表_誤字俗字正字一覧表_俗字
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_民一2842号通達別表_誤字俗字正字一覧表_別字:
+    type: table
+    title: mjsm_民一2842号通達別表_誤字俗字正字一覧表_別字
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_民一2842号通達別表_誤字俗字正字一覧表_無印:
+    type: table
+    title: mjsm_民一2842号通達別表_誤字俗字正字一覧表_無印
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_民二5202号通知別表_正字俗字等対照表:
+    type: table
+    title: mjsm_民二5202号通知別表_正字俗字等対照表
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_法務省告示582号別表第四_一:
+    type: table
+    title: mjsm_法務省告示582号別表第四_一
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+      - 順位
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+      順位:
+        type: integer
+        title: 順位
+        description: ""
+  mjsm_法務省告示582号別表第四_二:
+    type: table
+    title: mjsm_法務省告示582号別表第四_二
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+      - 順位
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+      順位:
+        type: integer
+        title: 順位
+        description: ""
+  mjsm_読み字形による類推:
+    type: table
+    title: mjsm_読み字形による類推
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  mjsm_辞書類等による関連字:
+    type: table
+    title: mjsm_辞書類等による関連字
+    description: ""
+    columnOrder:
+      - MJ文字図形名
+      - 縮退UCS
+      - 縮退X0213
+    columns:
+      MJ文字図形名:
+        type: text
+        title: MJ文字図形名
+        description: ""
+      縮退UCS:
+        type: text
+        title: 縮退UCS
+        description: ""
+      縮退X0213:
+        type: text
+        title: 縮退X0213
+        description: ""
+  radeqv:
+    type: table
+    title: radeqv
+    description: ""
+    columnOrder:
+      - radical_character
+      - radical_CJKUI
+    columns:
+      radical_character:
+        type: text
+        title: radical_character
+        description: ""
+      radical_CJKUI:
+        type: text
+        title: radical_CJKUI
+        description: ""
+  radicals:
+    type: table
+    title: radicals
+    description: ""
+    columnOrder:
+      - radical
+      - radical_number
+      - radical_simplified
+      - radical_character
+      - radical_CJKUI
+      - 部首
+      - 部首漢字
+    columns:
+      radical:
+        type: text
+        generatedAlways:
+          stored: false
+        title: radical
+        description: ""
+      radical_number:
+        type: integer
+        title: radical_number
+        description: ""
+      radical_simplified:
+        type: integer
+        title: radical_simplified
+        description: ""
+      radical_character:
+        type: text
+        title: radical_character
+        description: ""
+      radical_CJKUI:
+        type: text
+        title: radical_CJKUI
+        description: ""
+      部首:
+        type: integer
+        generatedAlways:
+          stored: false
+        title: 部首
+        description: ""
+      部首漢字:
+        type: text
+        generatedAlways:
+          stored: false
+        title: 部首漢字
+        description: ""
+  svs_cjkci:
+    type: table
+    title: svs_cjkci
+    description: ""
+    columnOrder:
+      - SVS
+      - CJKCI
+    columns:
+      SVS:
+        type: text
+        title: SVS
+        description: ""
+      CJKCI:
+        type: text
+        title: CJKCI
+        description: ""
+  unihan:
+    type: view
+    title: unihan
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - property
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      property:
+        title: property
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kAccountingNumeric:
+    type: table
+    title: unihan_kAccountingNumeric
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kBigFive:
+    type: table
+    title: unihan_kBigFive
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCCCII:
+    type: table
+    title: unihan_kCCCII
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCNS1986:
+    type: table
+    title: unihan_kCNS1986
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCNS1992:
+    type: table
+    title: unihan_kCNS1992
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCangjie:
+    type: table
+    title: unihan_kCangjie
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCantonese:
+    type: table
+    title: unihan_kCantonese
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCheungBauer:
+    type: table
+    title: unihan_kCheungBauer
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCheungBauerIndex:
+    type: table
+    title: unihan_kCheungBauerIndex
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCihaiT:
+    type: table
+    title: unihan_kCihaiT
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCompatibilityVariant:
+    type: table
+    title: unihan_kCompatibilityVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kCowles:
+    type: table
+    title: unihan_kCowles
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kDaeJaweon:
+    type: table
+    title: unihan_kDaeJaweon
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kDefinition:
+    type: table
+    title: unihan_kDefinition
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kEACC:
+    type: table
+    title: unihan_kEACC
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kFenn:
+    type: table
+    title: unihan_kFenn
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kFennIndex:
+    type: table
+    title: unihan_kFennIndex
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kFourCornerCode:
+    type: table
+    title: unihan_kFourCornerCode
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kFrequency:
+    type: table
+    title: unihan_kFrequency
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB0:
+    type: table
+    title: unihan_kGB0
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB1:
+    type: table
+    title: unihan_kGB1
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB3:
+    type: table
+    title: unihan_kGB3
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB5:
+    type: table
+    title: unihan_kGB5
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB7:
+    type: table
+    title: unihan_kGB7
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGB8:
+    type: table
+    title: unihan_kGB8
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGSR:
+    type: table
+    title: unihan_kGSR
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kGradeLevel:
+    type: table
+    title: unihan_kGradeLevel
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHDZRadBreak:
+    type: table
+    title: unihan_kHDZRadBreak
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHKGlyph:
+    type: table
+    title: unihan_kHKGlyph
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHKSCS:
+    type: table
+    title: unihan_kHKSCS
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHanYu:
+    type: table
+    title: unihan_kHanYu
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHangul:
+    type: table
+    title: unihan_kHangul
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHanyuPinlu:
+    type: table
+    title: unihan_kHanyuPinlu
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kHanyuPinyin:
+    type: table
+    title: unihan_kHanyuPinyin
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIBMJapan:
+    type: table
+    title: unihan_kIBMJapan
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIICore:
+    type: table
+    title: unihan_kIICore
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRGDaeJaweon:
+    type: table
+    title: unihan_kIRGDaeJaweon
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRGDaiKanwaZiten:
+    type: table
+    title: unihan_kIRGDaiKanwaZiten
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRGHanyuDaZidian:
+    type: table
+    title: unihan_kIRGHanyuDaZidian
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRGKangXi:
+    type: table
+    title: unihan_kIRGKangXi
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_GSource:
+    type: table
+    title: unihan_kIRG_GSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_HSource:
+    type: table
+    title: unihan_kIRG_HSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_JSource:
+    type: table
+    title: unihan_kIRG_JSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_KPSource:
+    type: table
+    title: unihan_kIRG_KPSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_KSource:
+    type: table
+    title: unihan_kIRG_KSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_MSource:
+    type: table
+    title: unihan_kIRG_MSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_SSource:
+    type: table
+    title: unihan_kIRG_SSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_TSource:
+    type: table
+    title: unihan_kIRG_TSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_UKSource:
+    type: table
+    title: unihan_kIRG_UKSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_USource:
+    type: table
+    title: unihan_kIRG_USource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kIRG_VSource:
+    type: table
+    title: unihan_kIRG_VSource
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJIS0213:
+    type: table
+    title: unihan_kJIS0213
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJa:
+    type: table
+    title: unihan_kJa
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJapaneseKun:
+    type: table
+    title: unihan_kJapaneseKun
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJapaneseOn:
+    type: table
+    title: unihan_kJapaneseOn
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJinmeiyoKanji:
+    type: table
+    title: unihan_kJinmeiyoKanji
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJis0:
+    type: table
+    title: unihan_kJis0
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJis1:
+    type: table
+    title: unihan_kJis1
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kJoyoKanji:
+    type: table
+    title: unihan_kJoyoKanji
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKPS0:
+    type: table
+    title: unihan_kKPS0
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKPS1:
+    type: table
+    title: unihan_kKPS1
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKSC0:
+    type: table
+    title: unihan_kKSC0
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKSC1:
+    type: table
+    title: unihan_kKSC1
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKangXi:
+    type: table
+    title: unihan_kKangXi
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKarlgren:
+    type: table
+    title: unihan_kKarlgren
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKorean:
+    type: table
+    title: unihan_kKorean
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKoreanEducationHanja:
+    type: table
+    title: unihan_kKoreanEducationHanja
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kKoreanName:
+    type: table
+    title: unihan_kKoreanName
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kLau:
+    type: table
+    title: unihan_kLau
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kMainlandTelegraph:
+    type: table
+    title: unihan_kMainlandTelegraph
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kMandarin:
+    type: table
+    title: unihan_kMandarin
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kMatthews:
+    type: table
+    title: unihan_kMatthews
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kMeyerWempe:
+    type: table
+    title: unihan_kMeyerWempe
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kMorohashi:
+    type: table
+    title: unihan_kMorohashi
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kNelson:
+    type: table
+    title: unihan_kNelson
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kOtherNumeric:
+    type: table
+    title: unihan_kOtherNumeric
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kPhonetic:
+    type: table
+    title: unihan_kPhonetic
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kPrimaryNumeric:
+    type: table
+    title: unihan_kPrimaryNumeric
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kPseudoGB1:
+    type: table
+    title: unihan_kPseudoGB1
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kRSAdobe_Japan1_6:
+    type: table
+    title: unihan_kRSAdobe_Japan1_6
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kRSKangXi:
+    type: table
+    title: unihan_kRSKangXi
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kRSUnicode:
+    type: table
+    title: unihan_kRSUnicode
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kSBGY:
+    type: table
+    title: unihan_kSBGY
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kSemanticVariant:
+    type: table
+    title: unihan_kSemanticVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kSimplifiedVariant:
+    type: table
+    title: unihan_kSimplifiedVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kSpecializedSemanticVariant:
+    type: table
+    title: unihan_kSpecializedSemanticVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kSpoofingVariant:
+    type: table
+    title: unihan_kSpoofingVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kStrange:
+    type: table
+    title: unihan_kStrange
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTGH:
+    type: table
+    title: unihan_kTGH
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTGHZ2013:
+    type: table
+    title: unihan_kTGHZ2013
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTaiwanTelegraph:
+    type: table
+    title: unihan_kTaiwanTelegraph
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTang:
+    type: table
+    title: unihan_kTang
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTotalStrokes:
+    type: table
+    title: unihan_kTotalStrokes
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kTraditionalVariant:
+    type: table
+    title: unihan_kTraditionalVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kUnihanCore2020:
+    type: table
+    title: unihan_kUnihanCore2020
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kVietnamese:
+    type: table
+    title: unihan_kVietnamese
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kXHC1983:
+    type: table
+    title: unihan_kXHC1983
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kXerox:
+    type: table
+    title: unihan_kXerox
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  unihan_kZVariant:
+    type: table
+    title: unihan_kZVariant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      value:
+        type: text
+        title: value
+        description: ""
+  usource:
+    type: table
+    title: usource
+    description: ""
+    columnOrder:
+      - U-source ID
+      - status
+      - UCS
+      - RS
+      - VKXDP
+      - IDS
+      - comments
+      - TS
+      - FRS
+    columns:
+      U-source ID:
+        type: text
+        title: U-source ID
+        description: ""
+      status:
+        type: text
+        title: status
+        description: ""
+      UCS:
+        type: text
+        title: UCS character
+        description: ""
+      RS:
+        type: text
+        title: RS
+        description: ""
+      VKXDP:
+        type: text
+        title: VKXDP
+        description: ""
+      IDS:
+        type: text
+        title: IDS
+        description: ""
+      comments:
+        type: text
+        title: comments
+        description: ""
+      TS:
+        type: integer
+        title: TS
+        description: ""
+      FRS:
+        type: integer
+        title: FRS
+        description: ""
+  usource_source:
+    type: table
+    title: usource_source
+    description: ""
+    columnOrder:
+      - U-source ID
+      - source
+    columns:
+      U-source ID:
+        type: text
+        title: U-source ID
+        description: ""
+      source:
+        type: text
+        title: source
+        description: ""

@@ -112,6 +112,7 @@ __metadata:
   dependencies:
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
+    "@types/yaml": ^1
     ava: ^3.15.0
     better-sqlite3: ^7.4.3
     csv-parse: ^4.16.3
@@ -119,6 +120,7 @@ __metadata:
     ts-node: ^10.2.1
     typescript: ^4.4.3
     xlsx: ^0.17.1
+    yaml: ^1.10.2
   languageName: unknown
   linkType: soft
 
@@ -399,6 +401,15 @@ __metadata:
   version: 0.12.1
   resolution: "@types/retry@npm:0.12.1"
   checksum: 5f46b2556053655f78262bb33040dc58417c900457cc63ff37d6c35349814471453ef511af0cec76a540c601296cd2b22f64bab1ab649c0dacc0223765ba876c
+  languageName: node
+  linkType: hard
+
+"@types/yaml@npm:^1":
+  version: 1.9.6
+  resolution: "@types/yaml@npm:1.9.6"
+  dependencies:
+    yaml: "*"
+  checksum: 3df74c9d4028641e2ed710b627ac533e97707713ac17c665df5cc477602f77925a3ceeaf5db76c7400ea42be114609bba990079907e89219ffd905a539997469
   languageName: node
   linkType: hard
 
@@ -6627,6 +6638,13 @@ typescript@^4.4.3:
   version: 4.0.0
   resolution: "yallist@npm:4.0.0"
   checksum: 343617202af32df2a15a3be36a5a8c0c8545208f3d3dfbc6bb7c3e3b7e8c6f8e7485432e4f3b88da3031a6e20afa7c711eded32ddfb122896ac5d914e75848d5
+  languageName: node
+  linkType: hard
+
+"yaml@npm:*, yaml@npm:^1.10.2":
+  version: 1.10.2
+  resolution: "yaml@npm:1.10.2"
+  checksum: ce4ada136e8a78a0b08dc10b4b900936912d15de59905b2bf415b4d33c63df1d555d23acb2a41b23cf9fb5da41c256441afca3d6509de7247daa062fd2c5ea5f
   languageName: node
   linkType: hard
 

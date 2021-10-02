@@ -1,0 +1,512 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$ref": "#/definitions/Document",
+  "title": "Schema of DBspec Document",
+  "definitions": {
+    "Document": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["dbspec"],
+      "properties": {
+        "dbspec": { "$ref": "#/definitions/DBspecHeader" },
+        "name": { "$ref": "#/definitions/Name" },
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "target": { "$ref": "#/definitions/Target" },
+        "types": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Type" }
+          }
+        },
+        "constants": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Value" }
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Constraint" }
+          }
+        },
+        "tables": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/TableOrView" }
+          }
+        }
+      }
+    },
+    "DBspecHeader": {
+      "type": "string",
+      "description": "version number of DBspec"
+    },
+    "Name": {
+      "type": "string",
+      "description": "identifier of the entity"
+    },
+    "Title": {
+      "type": "string",
+      "description": "human readable or localized title of the entity"
+    },
+    "Description": {
+      "type": "string",
+      "description": "description of the entity",
+      "format": "markdown"
+    },
+    "Metadata": {
+      "type": "object",
+      "description": "metadata record",
+      "additionalProperties": true,
+      "properties": {
+        "author": { "type": "string" },
+        "modifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Raw": {
+      "type": "object",
+      "additionalItems": false,
+      "required": ["raw"],
+      "properties": {
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "raw": { "type": "string" }
+      }
+    },
+    "TableOrView": {
+      "oneOf": [
+        { "$ref": "#/definitions/Table" },
+        { "$ref": "#/definitions/View" }
+      ]
+    },
+    "Table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["columns"],
+      "properties": {
+        "title": { "$ref": "#/definitions/Title" },
+        "type": { "const": "table" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "name": { "$ref": "#/definitions/Name" },
+        "primaryKey": { "$ref": "#/definitions/Unique" },
+        "unique": { "$ref": "#/definitions/Unique" },
+        "foreignKeys": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ForeignKey" }
+        },
+        "columnOrder": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "columns": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Column" }
+          }
+        },
+        "constraints": { "$ref": "#/definitions/ConstraintList" },
+        "indexes": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Index" }
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "patternProperties": {
+              ".*": { "$ref": "#/definitions/ValueRef" }
+            }
+          }
+        }
+      }
+    },
+    "View": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "name": { "$ref": "#/definitions/Name" },
+        "type": { "const": "view" },
+        "columnOrder": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "referTo": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/TableRef" }
+        },
+        "columns": {
+          "type": "object",
+          "patternProperties": {
+            ".*": { "$ref": "#/definitions/Column" }
+          }
+        },
+        "query": { "type": "string" },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "patternProperties": {
+              ".*": { "$ref": "#/definitions/ValueRef" }
+            }
+          }
+        }
+      }
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "dialect": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "TypeLiteral": {
+      "type": "string",
+      "enum": [
+        "blob",
+        "text",
+        "smallint",
+        "integer",
+        "bigint",
+        "numeric",
+        "float",
+        "double",
+        "boolean",
+        "timestamp"
+      ]
+    },
+    "Type": {
+      "oneOf": [
+        { "$ref": "#/definitions/TypeLiteral" },
+        { "$ref": "#/definitions/Raw" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "type": { "$ref": "#/definitions/TypeLiteral" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "text": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "length": { "type": "integer" },
+                "characterSet": { "$ref": "#/definitions/CharacterSet" },
+                "collation": { "$ref": "#/definitions/Collation" }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["numeric"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "decimal": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "precision": { "type": "integer" },
+                "scale": { "type": "integer" }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["float"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "float": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "precision": { "type": "integer" },
+                "scale": { "type": "integer" }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["timestamp"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "timestamp": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "withTimezone": { "type": "boolean" },
+                "precision": { "type": "integer" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "TypeRef": {
+      "oneOf": [
+        { "$ref": "#/definitions/Type" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "iri-reference",
+              "pattern": "^#/types/[^/]*$"
+            }
+          }
+        }
+      ]
+    },
+    "ValueRef": {
+      "oneOf": [
+        { "$ref": "#/definitions/Value" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "iri-reference",
+              "pattern": "^#/constants/[^/]*$|^#/tables/[^/]*/columns/[^/]*$"
+            }
+          }
+        }
+      ]
+    },
+    "TableRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$ref"],
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "iri-reference",
+          "pattern": "^#/tables/[^/]*$"
+        }
+      }
+    },
+    "ColumnRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$ref"],
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "iri-reference",
+          "pattern": "^#/tables/[^/]*/columns/[^/]*$"
+        }
+      }
+    },
+    "ConstraintRef": {
+      "oneOf": [
+        { "$ref": "#/definitions/Constraint" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "format": "iri-reference",
+              "pattern": "^#/constraints/[^/]*$"
+            }
+          }
+        }
+      ]
+    },
+    "CharacterSet": {
+      "oneOf": [{ "$ref": "#/definitions/Raw" }]
+    },
+    "Collation": {
+      "oneOf": [{ "$ref": "#/definitions/Raw" }]
+    },
+    "Value": {
+      "oneOf": [
+        {
+          "type": ["string", "number", "boolean", "null"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value"],
+          "properties": {
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "value": {
+              "type": ["string", "number", "boolean", "null"]
+            }
+          }
+        },
+        { "$ref": "#/definitions/Raw" }
+      ]
+    },
+    "Constraint": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["check"],
+          "properties": {
+            "name": { "$ref": "#/definitions/Name" },
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "check": { "$ref": "#/definitions/ValueRef" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["regexp"],
+          "properties": {
+            "name": { "$ref": "#/definitions/Name" },
+            "title": { "$ref": "#/definitions/Title" },
+            "description": { "$ref": "#/definitions/Description" },
+            "meta": { "$ref": "#/definitions/Metadata" },
+            "for": { "type": "string" },
+            "regexp": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "ConstraintList": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/ConstraintRef" }
+    },
+    "Column": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "$ref": "#/definitions/Name" },
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "type": { "$ref": "#/definitions/TypeRef" },
+        "notNull": {
+          "type": "boolean",
+          "examples": [true]
+        },
+        "primaryKey": {
+          "type": "boolean",
+          "examples": [true]
+        },
+        "unique": {
+          "type": "boolean",
+          "examples": [true]
+        },
+        "foreignKey": { "$ref": "#/definitions/ColumnRef" },
+        "default": { "$ref": "#/definitions/ValueRef" },
+        "autoIncrement": {
+          "type": "boolean",
+          "examples": [true]
+        },
+        "generatedAlways": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "as": { "$ref": "#/definitions/ValueRef" },
+                "stored": { "type": "boolean", "examples": [true] }
+              }
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "constraints": { "$ref": "#/definitions/ConstraintList" }
+      }
+    },
+    "ColumnNameList": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "Unique": {
+      "oneOf": [
+        { "$ref": "#/definitions/ColumnNameList" },
+        {
+          "type": "object",
+          "items": {
+            "type": "string",
+            "columns": { "$ref": "#/definitions/ColumnNameList" },
+            "onConflict": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "ForeignKey": {
+      "type": "object",
+      "required": ["from", "to", "columns"],
+      "properties": {
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "from": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "to": { "$ref": "#/definitions/TableRef" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "Index": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["columns"],
+      "properties": {
+        "name": { "$ref": "#/definitions/Name" },
+        "title": { "$ref": "#/definitions/Title" },
+        "description": { "$ref": "#/definitions/Description" },
+        "meta": { "$ref": "#/definitions/Metadata" },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

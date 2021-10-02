@@ -163,13 +163,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mandel59/mojidata", "workspace:packages/mojidata"],
             ["@types/better-sqlite3", "npm:5.4.2"],
             ["@types/node", "npm:16.9.1"],
+            ["@types/yaml", "npm:1.9.6"],
             ["ava", "npm:3.15.0"],
             ["better-sqlite3", "npm:7.4.3"],
             ["csv-parse", "npm:4.16.3"],
             ["sql-formatter", "npm:4.0.2"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
-            ["xlsx", "npm:0.17.1"]
+            ["xlsx", "npm:0.17.1"],
+            ["yaml", "npm:1.10.2"]
           ],
           "linkType": "SOFT",
         }]
@@ -512,6 +514,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-retry-npm-0.12.1-05f3303aac-5f46b25560.zip/node_modules/@types/retry/",
           "packageDependencies": [
             ["@types/retry", "npm:0.12.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/yaml", [
+        ["npm:1.9.6", {
+          "packageLocation": "./.yarn/cache/@types-yaml-npm-1.9.6-25a1e52ff0-3df74c9d40.zip/node_modules/@types/yaml/",
+          "packageDependencies": [
+            ["@types/yaml", "npm:1.9.6"],
+            ["yaml", "npm:1.10.2"]
           ],
           "linkType": "HARD",
         }]
@@ -7629,6 +7641,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/yallist-npm-4.0.0-b493d9e907-343617202a.zip/node_modules/yallist/",
           "packageDependencies": [
             ["yallist", "npm:4.0.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["yaml", [
+        ["npm:1.10.2", {
+          "packageLocation": "./.yarn/cache/yaml-npm-1.10.2-0e780aebdf-ce4ada136e.zip/node_modules/yaml/",
+          "packageDependencies": [
+            ["yaml", "npm:1.10.2"]
           ],
           "linkType": "HARD",
         }]
