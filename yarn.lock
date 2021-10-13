@@ -114,6 +114,7 @@ __metadata:
     "@types/node": ^16.9.1
     "@types/yaml": ^1
     ava: ^3.15.0
+    axios: ^0.23.0
     better-sqlite3: ^7.4.3
     csv-parse: ^4.16.3
     sql-formatter: ^4.0.2
@@ -1041,6 +1042,15 @@ __metadata:
   bin:
     ava: cli.js
   checksum: f3e3b70e28fb7ef3d9fa3a7c512de459c3c6f8a6786949688a0162b06270c410ed3b5a844b03e040584dde235881c5372c63f99eba0310c97874815537c815c6
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.23.0":
+  version: 0.23.0
+  resolution: "axios@npm:0.23.0"
+  dependencies:
+    follow-redirects: ^1.14.4
+  checksum: 879f61022bd825da2a7ebb72410bc528683ba54c140436baa0b924b7cab02ec0919fe64a04a546f482a75f5fd570b77884f9826764a95f2fd88265e61dcb70db
   languageName: node
   linkType: hard
 
@@ -2642,6 +2652,16 @@ __metadata:
     debug:
       optional: true
   checksum: 7381a55bdc6951c5c1ab73a8da99d9fa4c0496ce72dba92cd2ac2babe0e3ebde9b81c5bca889498ad95984bc773d713284ca2bb17f1b1e1416e5f6531e39a488
+  languageName: node
+  linkType: hard
+
+"follow-redirects@npm:^1.14.4":
+  version: 1.14.4
+  resolution: "follow-redirects@npm:1.14.4"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: d4ce74cf5c6f363168b97e706b914eb9ffb6bf4d4c6d8f8330b93088d9b90e566611ddbcf0e42c8ed5fd17598dfeda1d19230d3e9d6d6c6b4d1c10ec3a0b99be
   languageName: node
   linkType: hard
 

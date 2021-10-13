@@ -19,7 +19,8 @@
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
     "test": "ava",
-    "prepare": "bash scripts/clean && bash scripts/build"
+    "prepare": "bash scripts/clean && bash scripts/build",
+    "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-DFS-2016",
@@ -28,6 +29,7 @@
     "@types/node": "^16.9.1",
     "@types/yaml": "^1",
     "ava": "^3.15.0",
+    "axios": "^0.23.0",
     "better-sqlite3": "^7.4.3",
     "csv-parse": "^4.16.3",
     "sql-formatter": "^4.0.2",
