@@ -32,4 +32,9 @@ async function main() {
     await rename(`${downloadfile}.tmp`, downloadfile)
 }
 
-main()
+if (require.main === module) {
+    main().catch(err => {
+        console.error(err)
+        process.exit(1)
+    })
+}
