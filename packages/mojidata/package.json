@@ -16,6 +16,8 @@
     "licenses/*"
   ],
   "scripts": {
+    "dryrun-gc": "ts-node --transpile-only scripts/cache-gc.ts",
+    "run-gc": "ts-node --transpile-only scripts/cache-gc.ts | sh",
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
     "test": "ava",
