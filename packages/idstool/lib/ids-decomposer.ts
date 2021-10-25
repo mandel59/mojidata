@@ -1,5 +1,5 @@
 import Database from "better-sqlite3"
-import { tokenArgs } from "./ids-operator"
+import { nodeLength, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
 function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
@@ -60,6 +60,51 @@ export class IDSDecomposer {
             from tempids
             where UCS = $char
             order by rowid`).pluck()
+        this.reduceAllSubtractions()
+    }
+    /**
+     * Replace all subtractions into IDSs not containing subtractions.
+     *
+     * examples:
+     * - replace 𠆱=⿰亻⊖斗丶 into 𠆱=⿰亻x and 斗=⿻x丶
+     * - replace 㱐=⊖武㇂ into 㱐=x and 武=⿻x㇂
+     *
+     * where x stands for a unique token
+     */
+    private reduceAllSubtractions() {
+        function* invert(char: string, subtraction: string[]): Generator<[char: string, tokens: string[]]> {
+            if (subtraction[0] !== "⊖") throw new RangeError("the first token of subtraction is not ⊖")
+            if (nodeLength(subtraction, 1) !== 1) throw new Error("unimplemented")
+            // char = ⊖ minuend subtrahend
+            // ≡ minuend = ⿻ char subtrahend
+            const minuend = subtraction[1]
+            const subtrahend = subtraction.slice(2)
+            if (nodeLength(subtrahend, 0) !== subtrahend.length) throw new RangeError("the subtrahend is not complete IDS")
+            if (subtrahend.includes("⊖")) throw new Error("unimplemented")
+            yield [minuend, ["⿻", char, ...subtrahend]]
+        }
+        function* process(char: string, tokens: string[], unknownid = 0): Generator<[char: string, tokens: string[]]> {
+            const i = tokens.indexOf("⊖")
+            if (i < 0) {
+                yield [char, tokens]
+                return
+            }
+            const eigenToken = `&s-${char}-${++unknownid};`
+            const subtraction = tokens.splice(i, nodeLength(tokens, i), eigenToken)
+            yield* process(char, tokens, unknownid)
+            yield* invert(eigenToken, subtraction)
+        }
+        const pairs: {
+            UCS: string,
+            IDS_tokens: string,
+        }[] = this.db.prepare(`select UCS, IDS_tokens from tempids where IDS_tokens glob '*⊖*'`).all()
+        this.db.prepare(`delete from tempids where IDS_tokens glob '*⊖*'`).run()
+        const insert = this.db.prepare<[UCS: string, IDS_tokens: string]>(`insert into tempids (UCS, IDS_tokens) values (?, ?)`)
+        for (const { UCS, IDS_tokens } of pairs) {
+            for (const [char, tokens] of process(UCS, IDS_tokens.split(" "))) {
+                insert.run(char, tokens.join(" "))
+            }
+        }
     }
     private expand(token: string) {
         return this.zvar?.get(token) ?? [token]
