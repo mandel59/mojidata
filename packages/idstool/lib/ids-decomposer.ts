@@ -60,7 +60,21 @@ export class IDSDecomposer {
             from tempids
             where UCS = $char
             order by rowid`).pluck()
+        this.removeRedundantEntries()
         this.reduceAllSubtractions()
+    }
+    /**
+     * Remove redundant entries.
+     *
+     * The following patterns are redundant.
+     * - x=x
+     * - x=？
+     */
+    private removeRedundantEntries() {
+        this.db.prepare(`
+            delete from tempids
+            where UCS = IDS_tokens or IDS_tokens = '？'
+        `).run()
     }
     /**
      * Replace all subtractions into IDSs not containing subtractions.
