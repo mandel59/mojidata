@@ -2,6 +2,31 @@ import Database from "better-sqlite3"
 import { nodeLength, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
+const encodeMap: Partial<Record<string, string>> = {
+    "〾": "V",
+    "⿰": "h2",
+    "⿱": "v2",
+    "⿲": "h3",
+    "⿳": "v3",
+    "⿴": "fs",
+    "⿵": "sa",
+    "⿶": "sb",
+    "⿷": "sl",
+    "⿸": "ul",
+    "⿹": "ur",
+    "⿺": "ll",
+    "⿻": "O",
+    "↔": "F",
+    "↷": "R",
+    "⊖": "S",
+}
+
+function encodeTokensToXmlName(tokens: string[]) {
+    return tokens.join("").replace(/./u, char => {
+        return encodeMap[char] ?? char
+    })
+}
+
 function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
     if (list.length === 0) {
         return
@@ -97,7 +122,7 @@ export class IDSDecomposer {
             if (subtrahend.includes("⊖")) throw new Error("unimplemented")
             yield [minuend, ["⿻", char, ...subtrahend]]
         }
-        function* process(char: string, tokens: string[], unknownid = 0): Generator<[char: string, tokens: string[]]> {
+        function* process(char: string, tokens: string[]): Generator<[char: string, tokens: string[]]> {
             const i = tokens.indexOf("⊖")
             if (i < 0) {
                 yield [char, tokens]
@@ -107,9 +132,9 @@ export class IDSDecomposer {
                 yield* invert(char, tokens)
                 return
             }
-            const eigenToken = `&s-${char}-${++unknownid};`
+            const eigenToken = `&s-${tokens[i + 1]}-${encodeTokensToXmlName(tokens.slice(i + 2, i + 2 + nodeLength(tokens, i + 2)))};`
             const subtraction = tokens.splice(i, nodeLength(tokens, i), eigenToken)
-            yield* process(char, tokens, unknownid)
+            yield* process(char, tokens)
             yield* invert(eigenToken, subtraction)
         }
         const pairs: {
