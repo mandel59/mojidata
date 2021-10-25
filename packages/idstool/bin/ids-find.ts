@@ -5,21 +5,11 @@ import Database from "better-sqlite3"
 import { tokenizeIDS } from "../lib/ids-tokenizer"
 import { query } from "../lib/idsfind-query"
 import { argparse } from "../lib/argparse"
-const { argv, options } = argparse(process.argv.slice(2))
-if (argv.length === 0) {
-    showUsage()
-    process.exit(1)
-}
+import { IDSFinder } from "../lib/ids-finder"
+
 function showUsage() {
     console.log("usage: ids-find IDS [IDS ...]")
 }
-
-const dbpath = path.join(__dirname, "../idsfind.db")
-const db = new Database(dbpath)
-
-db.function("tokenizeIDS", (ids: string) => JSON.stringify(tokenizeIDS(ids)))
-
-const find = db.prepare<{ idslist: string }>(query).pluck()
 
 function drain(ws: Writable) {
     return new Promise(resolve => {
@@ -28,9 +18,13 @@ function drain(ws: Writable) {
 }
 
 async function main() {
-    for (const result of find.iterate({
-        idslist: JSON.stringify(argv.map(arg => tokenizeIDS(arg)))
-    })) {
+    const { argv, options } = argparse(process.argv.slice(2))
+    if (argv.length === 0) {
+        showUsage()
+        process.exit(1)
+    }
+    const idsfinder = new IDSFinder()
+    for (const result of idsfinder.find(...argv)) {
         if (!process.stdout.write(result)) {
             await drain(process.stdout)
         }
