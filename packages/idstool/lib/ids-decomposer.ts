@@ -67,7 +67,7 @@ export class IDSDecomposer {
      *
      * examples:
      * - replace 𠆱=⿰亻⊖斗丶 into 𠆱=⿰亻x and 斗=⿻x丶
-     * - replace 㱐=⊖武㇂ into 㱐=x and 武=⿻x㇂
+     * - replace 㱐=⊖武㇂ into 武=⿻㱐㇂
      *
      * where x stands for a unique token
      */
@@ -87,6 +87,10 @@ export class IDSDecomposer {
             const i = tokens.indexOf("⊖")
             if (i < 0) {
                 yield [char, tokens]
+                return
+            }
+            if (i === 0) {
+                yield* invert(char, tokens)
                 return
             }
             const eigenToken = `&s-${char}-${++unknownid};`
