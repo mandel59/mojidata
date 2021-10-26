@@ -46,6 +46,7 @@ function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
 }
 
 export type IDSDecomposerOptions = {
+    mojidb?: string
     expandZVariants?: boolean
 }
 
@@ -54,12 +55,13 @@ export class IDSDecomposer {
     private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
     readonly expandZVariants: boolean
     private zvar?: Map<string, string[]>
-    constructor(dbpath: string, options: IDSDecomposerOptions = {}) {
+    constructor(options: IDSDecomposerOptions = {}) {
+        const dbpath = options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db")
         this.expandZVariants = options.expandZVariants ?? false
         const db = new Database(":memory:")
         const tokenize = (s: string) => tokenizeIDS(s).join(' ')
         db.function("tokenize", tokenize)
-        db.exec(`attach database "${dbpath}" as moji`)
+        db.prepare(`attach database ? as moji`).run(dbpath)
         db.exec(`create table tempids (UCS, IDS_tokens)`)
         db.exec(`create index tempids_UCS on tempids (UCS)`)
         db.exec(`insert into tempids select UCS, tokenize(IDS) as IDS_tokens FROM moji.ids`)

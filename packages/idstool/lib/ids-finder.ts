@@ -10,7 +10,7 @@ interface IDSFinderOptions {
 export class IDSFinder {
     private findStatement: Statement<[{ idslist: string }]>
     constructor(options: IDSFinderOptions = {}) {
-        const dbpath = options.dbpath ?? path.join(__dirname, "../idsfind.db")
+        const dbpath = options.dbpath ?? require.resolve("../idsfind.db")
         const db = new Database(dbpath)
         db.function("tokenizeIDS", (ids: string) => JSON.stringify(tokenizeIDS(ids)))
         this.findStatement = db.prepare<{ idslist: string }>(query).pluck()

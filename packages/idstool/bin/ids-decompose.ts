@@ -12,9 +12,8 @@ function showUsage() {
     console.log("usage: ids-decompose IDS [IDS ...]")
 }
 
-const dbpath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const decomposer
-    = new IDSDecomposer(dbpath, {
+    = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
     })
 
