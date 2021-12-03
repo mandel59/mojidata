@@ -148,7 +148,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:5.4.2"],
             ["@types/node", "npm:16.9.1"],
             ["ava", "npm:3.15.0"],
-            ["better-sqlite3", "npm:7.4.3"],
+            ["better-sqlite3", "npm:7.4.4"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["zx", "npm:4.2.0"]
@@ -166,7 +166,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/yaml", "npm:1.9.6"],
             ["ava", "npm:3.15.0"],
             ["axios", "npm:0.23.0"],
-            ["better-sqlite3", "npm:7.4.3"],
+            ["better-sqlite3", "npm:7.4.4"],
             ["csv-parse", "npm:4.16.3"],
             ["sql-formatter", "npm:4.0.2"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
@@ -186,7 +186,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:7.4.0"],
             ["@types/node", "npm:16.9.1"],
             ["ava", "npm:3.15.0"],
-            ["better-sqlite3", "npm:7.4.3"],
+            ["better-sqlite3", "npm:7.4.4"],
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=32657b"],
             ["zx", "npm:4.2.0"]
@@ -1327,14 +1327,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["better-sqlite3", [
-        ["npm:7.4.3", {
-          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-7.4.3-8e6eee4998/node_modules/better-sqlite3/",
+        ["npm:7.4.4", {
+          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-7.4.4-7ed5b1ad27/node_modules/better-sqlite3/",
           "packageDependencies": [
-            ["better-sqlite3", "npm:7.4.3"],
+            ["better-sqlite3", "npm:7.4.4"],
             ["bindings", "npm:1.5.0"],
             ["node-gyp", "npm:8.2.0"],
-            ["prebuild-install", "npm:6.1.3"],
-            ["tar", "npm:6.1.0"]
+            ["prebuild-install", "npm:6.1.4"],
+            ["tar", "npm:6.1.11"]
           ],
           "linkType": "HARD",
         }]
@@ -5571,10 +5571,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["prebuild-install", [
-        ["npm:6.1.3", {
-          "packageLocation": "./.yarn/cache/prebuild-install-npm-6.1.3-e1b7af2a78-b258198789.zip/node_modules/prebuild-install/",
+        ["npm:6.1.4", {
+          "packageLocation": "./.yarn/cache/prebuild-install-npm-6.1.4-dba03730c6-de4313eda8.zip/node_modules/prebuild-install/",
           "packageDependencies": [
-            ["prebuild-install", "npm:6.1.3"],
+            ["prebuild-install", "npm:6.1.4"],
             ["detect-libc", "npm:1.0.3"],
             ["expand-template", "npm:2.0.3"],
             ["github-from-package", "npm:0.0.0"],
@@ -6717,19 +6717,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["tar", [
-        ["npm:6.1.0", {
-          "packageLocation": "./.yarn/cache/tar-npm-6.1.0-21d6116ed9-0638a405b6.zip/node_modules/tar/",
-          "packageDependencies": [
-            ["tar", "npm:6.1.0"],
-            ["chownr", "npm:2.0.0"],
-            ["fs-minipass", "npm:2.1.0"],
-            ["minipass", "npm:3.1.3"],
-            ["minizlib", "npm:2.1.2"],
-            ["mkdirp", "npm:1.0.4"],
-            ["yallist", "npm:4.0.0"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:6.1.11", {
           "packageLocation": "./.yarn/cache/tar-npm-6.1.11-e6ac3cba9c-a04c07bb9e.zip/node_modules/tar/",
           "packageDependencies": [

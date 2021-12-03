@@ -32,7 +32,7 @@
     "@types/yaml": "^1",
     "ava": "^3.15.0",
     "axios": "^0.23.0",
-    "better-sqlite3": "^7.4.3",
+    "better-sqlite3": "^7.4.4",
     "csv-parse": "^4.16.3",
     "sql-formatter": "^4.0.2",
     "ts-node": "^10.2.1",

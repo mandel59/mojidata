@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@mandel59/mojidata": "0.4.0",
-    "better-sqlite3": "^7.4.3"
+    "better-sqlite3": "^7.4.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.4.0",

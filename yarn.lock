@@ -79,7 +79,7 @@ __metadata:
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^7.4.3
+    better-sqlite3: ^7.4.4
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -97,7 +97,7 @@ __metadata:
     "@types/better-sqlite3": ^7.4.0
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^7.4.3
+    better-sqlite3: ^7.4.4
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -115,7 +115,7 @@ __metadata:
     "@types/yaml": ^1
     ava: ^3.15.0
     axios: ^0.23.0
-    better-sqlite3: ^7.4.3
+    better-sqlite3: ^7.4.4
     csv-parse: ^4.16.3
     sql-formatter: ^4.0.2
     ts-node: ^10.2.1
@@ -1075,15 +1075,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^7.4.3":
-  version: 7.4.3
-  resolution: "better-sqlite3@npm:7.4.3"
+"better-sqlite3@npm:^7.4.4":
+  version: 7.4.4
+  resolution: "better-sqlite3@npm:7.4.4"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
-    prebuild-install: ^6.0.1
-    tar: ^6.1.0
-  checksum: ba33f05755e867cf71b93f7d11f79073568b641ba13d10317bc83a0e2f88a24844f1dc0bdb435bcfd5c876f8a8c58dafd39c973e90e591ed96512813dedc8857
+    prebuild-install: ^6.1.4
+    tar: ^6.1.11
+  checksum: 5ea7a1cccdc1df7cd139326dfdade220ec7d9e0c319fe711195fdeb06cccf86bc74c2c1397217bf27352917ab3c84cd691e677dd84a7d674885a9854b9cc8afa
   languageName: node
   linkType: hard
 
@@ -4771,9 +4771,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^6.0.1":
-  version: 6.1.3
-  resolution: "prebuild-install@npm:6.1.3"
+"prebuild-install@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "prebuild-install@npm:6.1.4"
   dependencies:
     detect-libc: ^1.0.3
     expand-template: ^2.0.3
@@ -4790,7 +4790,7 @@ fsevents@~2.3.2:
     tunnel-agent: ^0.6.0
   bin:
     prebuild-install: bin.js
-  checksum: b258198789209bb8df853bbc3371caa7f85ca323e180e564bd6031b02c47eee1d371657a8e54685a3674d16281ea879d7947d019acb031c641c89799a25af277
+  checksum: de4313eda821305912af922700a2db04bb8e77fe8aa9c2788550f1000c026cbefc82da468ec0c0a37764c5417bd8169dbd540928535fb38d00bb9bbd673dd217
   languageName: node
   linkType: hard
 
@@ -5845,7 +5845,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.2, tar@npm:^6.1.2":
+"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.1.2":
   version: 6.1.11
   resolution: "tar@npm:6.1.11"
   dependencies:
@@ -5856,20 +5856,6 @@ fsevents@~2.3.2:
     mkdirp: ^1.0.3
     yallist: ^4.0.0
   checksum: a04c07bb9e2d8f46776517d4618f2406fb977a74d914ad98b264fc3db0fe8224da5bec11e5f8902c5b9bcb8ace22d95fbe3c7b36b8593b7dfc8391a25898f32f
-  languageName: node
-  linkType: hard
-
-"tar@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "tar@npm:6.1.0"
-  dependencies:
-    chownr: ^2.0.0
-    fs-minipass: ^2.0.0
-    minipass: ^3.0.0
-    minizlib: ^2.1.1
-    mkdirp: ^1.0.3
-    yallist: ^4.0.0
-  checksum: 0638a405b625263e0c47e97f0ea5e871b1a549da4593e31bf1792bcc83d97c28065ed172669f186744526637ea627a424d519ddd99f3fd52b17ac75f58f43519
   languageName: node
   linkType: hard
 
