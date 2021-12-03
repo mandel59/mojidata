@@ -24,7 +24,10 @@ db.exec(`CREATE INDEX "idsfind_UCS" ON "idsfind" (UCS)`)
 db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
 const insert_idsfind = db.prepare<{ ucs: string, tokens: string }>(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
-const decomposer = new IDSDecomposer({ expandZVariants: true })
+const decomposer = new IDSDecomposer({
+    dbpath: path.join(__dirname, "idsdecompose.db"),
+    expandZVariants: true,
+})
 transactionSync(db, () => {
     for (const id of codepoints) {
         const ucs = String.fromCodePoint(id)
