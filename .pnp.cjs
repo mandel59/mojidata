@@ -156,11 +156,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT",
         }]
       ]],
+      ["@mandel59/joyokanjihyo", [
+        ["npm:1.1.1", {
+          "packageLocation": "./.yarn/cache/@mandel59-joyokanjihyo-npm-1.1.1-6532ead063-411f7012aa.zip/node_modules/@mandel59/joyokanjihyo/",
+          "packageDependencies": [
+            ["@mandel59/joyokanjihyo", "npm:1.1.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@mandel59/mojidata", [
         ["workspace:packages/mojidata", {
           "packageLocation": "./packages/mojidata/",
           "packageDependencies": [
             ["@mandel59/mojidata", "workspace:packages/mojidata"],
+            ["@mandel59/joyokanjihyo", "npm:1.1.1"],
             ["@types/better-sqlite3", "npm:5.4.2"],
             ["@types/node", "npm:16.9.1"],
             ["@types/yaml", "npm:1.9.6"],

@@ -27,6 +27,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-DFS-2016",
   "devDependencies": {
+    "@mandel59/joyokanjihyo": "^1.1.1",
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^16.9.1",
     "@types/yaml": "^1",

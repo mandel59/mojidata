@@ -89,6 +89,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mandel59/joyokanjihyo@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@mandel59/joyokanjihyo@npm:1.1.1"
+  checksum: 411f7012aad80f5841865974a02dcc59bbd72916f8127650f24748e90914ff9aab16e995e5752382eda736bd50c52a50b4d9edea0a47ef507260b9be8fe940be
+  languageName: node
+  linkType: hard
+
 "@mandel59/mojidata-cli@workspace:packages/mojidata-cli":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
@@ -110,6 +117,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
+    "@mandel59/joyokanjihyo": ^1.1.1
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     "@types/yaml": ^1

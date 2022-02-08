@@ -5,6 +5,7 @@ import parse from "csv-parse"
 import Database from "better-sqlite3"
 import { format as formatSQL } from "sql-formatter"
 import { transaction } from "./lib/dbutils"
+import joyoKanjiHyo from "@mandel59/joyokanjihyo"
 
 const format = (sql: string) => formatSQL(sql, { language: 'mysql' })
 
@@ -782,6 +783,42 @@ async function createIDS(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "ids_comment_UCS" ON "ids_comment" ("UCS")`)
 }
 
+async function createJoyoKanjiHyo(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "joyo"`)
+    db.exec(`drop table if exists "joyo_kangxi"`)
+    db.exec(`CREATE TABLE joyo (漢字 TEXT, 音訓 TEXT, 例 TEXT, 備考 TEXT, PRIMARY KEY (漢字, 音訓))`)
+    db.exec(`CREATE TABLE joyo_acceptable (漢字 TEXT PRIMARY KEY)`)
+    db.exec(`CREATE TABLE joyo_kangxi (漢字 TEXT, 康熙字典体 TEXT, PRIMARY KEY (漢字, 康熙字典体))`)
+    const insert = db.prepare(`insert into joyo (漢字, 音訓, 例, 備考) values (:subject, :reading, :examples, :note)`)
+    const insert_acceptable = db.prepare(`insert or ignore into joyo_acceptable (漢字) values (:acceptable)`)
+    const insert_kangxi = db.prepare(`insert or ignore into joyo_kangxi (漢字, 康熙字典体) values (:subject, :kangxi)`)
+    for (const record of joyoKanjiHyo) {
+        insert.run({
+            subject: record.subject,
+            reading: record.reading,
+            examples: JSON.stringify(record.examples),
+            note: record.note,
+        })
+        if (record.acceptable) {
+            insert_acceptable.run({
+                acceptable: record.acceptable
+            })
+        }
+        if (record.kangxi) {
+            for (const kangxi of record.kangxi) {
+                insert_kangxi.run({
+                    subject: record.subject,
+                    kangxi: kangxi,
+                })
+            }
+        }
+    }
+    db.exec(`CREATE INDEX "joyo_漢字" ON "joyo" ("漢字")`)
+    db.exec(`CREATE INDEX "joyo_音訓" ON "joyo" ("音訓")`)
+    db.exec(`CREATE INDEX "joyo_kangxi_漢字" ON "joyo_kangxi" ("漢字")`)
+    db.exec(`CREATE INDEX "joyo_kangxi_康熙字典体" ON "joyo_kangxi" ("康熙字典体")`)
+}
+
 async function vacuum(db: import("better-sqlite3").Database) {
     db.exec("PRAGMA journal_mode = DELETE")
     db.exec("VACUUM")
@@ -815,6 +852,7 @@ async function main() {
     await time(createUnihan)(db)
     await time(createAj1)(db)
     await time(createIDS)(db)
+    await time(createJoyoKanjiHyo)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")
 }
