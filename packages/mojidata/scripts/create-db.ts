@@ -761,7 +761,7 @@ async function createIDS(db: import("better-sqlite3").Database) {
                 try {
                     if (field.startsWith("^")) {
                         const m = /\^([^\$]+)\$\(([^\)]+)\)/.exec(field)
-                        if (!m) throw new Error("syntax Error")
+                        if (!m) throw new Error("syntax error")
                         const ids = m[1]
                         const source = m[2] ?? ""
                         insert.run([ucs, source, ids])
@@ -770,6 +770,8 @@ async function createIDS(db: import("better-sqlite3").Database) {
                         for (const comment of comments) {
                             insert_comment.run([ucs, comment])
                         }
+                    } else {
+                        throw new Error("syntax error")
                     }
                 } catch (err) {
                     console.error(codepoint)
