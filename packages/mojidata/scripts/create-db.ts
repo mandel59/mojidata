@@ -771,6 +771,13 @@ async function createIDS(db: import("better-sqlite3").Database) {
                             insert_comment.run([ucs, comment])
                         }
                     } else {
+                        if (ucs === "\u{276ad}") {
+                            const comments = field.split(/;/g)
+                            for (const comment of comments) {
+                                insert_comment.run([ucs, comment])
+                            }
+                            continue
+                        }
                         throw new Error("syntax error")
                     }
                 } catch (err) {
