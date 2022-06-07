@@ -227,8 +227,17 @@ export class IDSDecomposer {
         for (let i = tokens.length - 1; i >= 0; i--) {
             if (tokens[i] === "⿻") {
                 // compare subtokens
+                if (i + 1 >= tokens.length) {
+                    continue
+                }
                 const l1 = nodeLength(tokens, i + 1)
+                if (i + 1 + l1 >= tokens.length) {
+                    continue
+                }
                 const l2 = nodeLength(tokens, i + 1 + l1)
+                if (i + 1 + l1 + l2 > tokens.length) {
+                    continue
+                }
                 if (l1 < l2) {
                     continue
                 }
