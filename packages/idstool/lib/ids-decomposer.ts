@@ -213,10 +213,45 @@ export class IDSDecomposer {
             yield () => this.decomposeAll(token)
         }
     }
+    /**
+     * Normalize arguments of character overlaid operator.
+     * 
+     * Character overlaid operator is commutative; i.e. ⿻XY ≡ ⿻YX.
+     * This method normalize ⿻YX into ⿻XY if X < Y.
+     *
+     * This method is destructive.
+     * @param tokens
+     * @returns processed tokens (the same as input)
+     */
+    private normalizeOverlaid(tokens: string[]): string[] {
+        for (let i = tokens.length - 1; i >= 0; i--) {
+            if (tokens[i] === "⿻") {
+                // compare subtokens
+                const l1 = nodeLength(tokens, i + 1)
+                const l2 = nodeLength(tokens, i + 1 + l1)
+                if (l1 < l2) {
+                    continue
+                }
+                const s1 = tokens.slice(i + 1, i + 1 + l1)
+                const s2 = tokens.slice(i + 1 + l1, i + 1 + l1 + l2)
+                if (l1 === l2 && s1.join("") <= s2.join("")) {
+                    continue
+                }
+                // swap args
+                for (let k = 0; k < l2; k++) {
+                    tokens[i + 1 + k] = s2[k]
+                }
+                for (let k = 0; k < l1; k++) {
+                    tokens[i + 1 + l2 + k] = s1[k]
+                }
+            }
+        }
+        return tokens
+    }
     *decomposeTokens(tokens: string[]): Generator<string[]> {
         const allDecomposed = allCombinations(Array.from(this.mapDecomposeAll(tokens)))
         for (const decomposed of allDecomposed) {
-            yield decomposed.flat()
+            yield this.normalizeOverlaid(decomposed.flat())
         }
     }
 }
