@@ -16,9 +16,7 @@ export class IDSFinder {
     }
     *find(...idslist: string[]) {
         for (const result of this.findStatement.iterate({
-            idslist: JSON.stringify(
-                idslist.flatMap(ids =>
-                    ids.split('？').map(ids => tokenizeIDS(ids))))
+            idslist: JSON.stringify(idslist.map(ids => tokenizeIDS(ids)))
         })) {
             yield result as string
         }
