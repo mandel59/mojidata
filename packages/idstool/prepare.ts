@@ -43,10 +43,10 @@ db.exec(`INSERT INTO idsfind (UCS, IDS_tokens) SELECT DISTINCT UCS, IDS_tokens F
 db.exec(`drop table if exists "idsfind_fts"`)
 db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
     content="",
-    tokenize=unicode61 "tokenchars={}&-;${Array.from(symbols_in_ids).join("")}",
+    tokenize=unicode61 "tokenchars={}&-;§${Array.from(symbols_in_ids).join("")}",
     "IDS_tokens"
 )`)
-db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT unicode(UCS) AS docid, group_concat(IDS_tokens, ' ; ') FROM idsfind GROUP BY unicode(UCS)`)
+db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT unicode(UCS) AS docid, '§ ' || group_concat(IDS_tokens, ' § ') || ' §' FROM idsfind GROUP BY unicode(UCS)`)
 
 db.exec(`PRAGMA journal_mode = delete`)
 db.exec(`PRAGMA page_size = 1024`)

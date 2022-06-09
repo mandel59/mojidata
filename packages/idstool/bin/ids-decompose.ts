@@ -17,6 +17,8 @@ const decomposer
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
     })
 
+const queryMode = Boolean(options.get("-q" || options.get("--query")))
+
 for (const arg of argv) {
     const s = new Set()
     for (const tokens of decomposer.decomposeTokens(tokenizeIDS(arg))) {
@@ -24,7 +26,11 @@ for (const arg of argv) {
             const ids = Array.from(applyOperators(tokens)).join('')
             if (!s.has(ids)) {
                 s.add(ids)
-                console.log(ids)
+                if (queryMode) {
+                    console.log("§" + ids.replace(/？/g, " ") + "§")
+                } else {
+                    console.log(ids)
+                }
             }
         } catch {
             // ignore errors
