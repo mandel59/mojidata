@@ -27,7 +27,7 @@ for (const arg of argv) {
             if (!s.has(ids)) {
                 s.add(ids)
                 if (queryMode) {
-                    console.log("§" + ids.replace(/？/g, " ") + "§")
+                    console.log(`§${ids}§`)
                 } else {
                     console.log(ids)
                 }

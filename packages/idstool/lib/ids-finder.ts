@@ -12,12 +12,13 @@ export class IDSFinder {
     constructor(options: IDSFinderOptions = {}) {
         const dbpath = options.dbpath ?? require.resolve("../idsfind.db")
         const db = new Database(dbpath)
-        db.function("tokenizeIDS", (ids: string) => JSON.stringify(tokenizeIDS(ids)))
         this.findStatement = db.prepare<{ idslist: string }>(query).pluck()
     }
     *find(...idslist: string[]) {
         for (const result of this.findStatement.iterate({
-            idslist: JSON.stringify(idslist.map(ids => tokenizeIDS(ids)))
+            idslist: JSON.stringify(
+                idslist.flatMap(ids =>
+                    ids.split('？').map(ids => tokenizeIDS(ids))))
         })) {
             yield result as string
         }
