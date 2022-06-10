@@ -4,7 +4,18 @@ import { argparse } from "../lib/argparse"
 import { IDSFinder } from "../lib/ids-finder"
 
 function showUsage() {
-    console.log("usage: ids-find IDS [IDS ...]")
+    console.log("Usage:")
+    console.log("\tids-find IDS [IDS ...]")
+    console.log("\tids-find --whole=IDS [IDS ...]")
+}
+
+function showHelp() {
+    showUsage()
+    console.log("Examples:")
+    console.log("\tids-find 魚 山")
+    console.log("\tids-find ⿰日月")
+    console.log("\tids-find --whole=⿰？魚")
+    console.log("IDS Operators:\n\t⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〾↔↷")
 }
 
 function drain(ws: Writable) {
@@ -15,6 +26,10 @@ function drain(ws: Writable) {
 
 async function main() {
     const { argv, options } = argparse(process.argv.slice(2))
+    if (options.get("-h") || options.get("--help")) {
+        showHelp()
+        process.exit()
+    }
     const args = [...argv]
     const whole = options.get("--whole")
     if (typeof whole === "string" && whole !== "") {
