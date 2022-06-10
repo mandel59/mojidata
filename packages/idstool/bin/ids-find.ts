@@ -14,8 +14,11 @@ function showHelp() {
     console.log("Examples:")
     console.log("\tids-find 魚 山")
     console.log("\tids-find ⿰日月")
+    console.log("\tids-find ↷")
     console.log("\tids-find --whole=⿰？魚")
-    console.log("IDS Operators:\n\t⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻〾↔↷")
+    console.log("IDS Unary Operators:\n\t〾↔↷")
+    console.log("IDS Binary Operators:\n\t⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻")
+    console.log("IDS Ternary Operators:\n\t⿲⿳")
 }
 
 function drain(ws: Writable) {
