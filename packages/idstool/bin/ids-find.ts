@@ -15,12 +15,17 @@ function drain(ws: Writable) {
 
 async function main() {
     const { argv, options } = argparse(process.argv.slice(2))
-    if (argv.length === 0) {
+    const args = [...argv]
+    const whole = options.get("--whole")
+    if (typeof whole === "string" && whole !== "") {
+        args.unshift(`§${whole}§`)
+    }
+    if (args.length === 0) {
         showUsage()
         process.exit(1)
     }
     const idsfinder = new IDSFinder()
-    for (const result of idsfinder.find(...argv)) {
+    for (const result of idsfinder.find(...args)) {
         if (!process.stdout.write(result)) {
             await drain(process.stdout)
         }
