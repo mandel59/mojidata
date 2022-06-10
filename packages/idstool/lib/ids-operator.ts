@@ -87,3 +87,93 @@ export function* applyOperators(tokens: string[]): Generator<string, any, undefi
         }
     }
 }
+
+/**
+ * Normalize arguments of character overlaid operator.
+ * 
+ * Character overlaid operator is commutative; i.e. ⿻XY ≡ ⿻YX.
+ * This method normalize ⿻YX into ⿻XY if X < Y.
+ *
+ * This method is destructive.
+ * @param tokens
+ * @returns processed tokens (the same as input)
+ */
+export function normalizeOverlaid(tokens: string[]): string[] {
+    for (let i = tokens.length - 1; i >= 0; i--) {
+        if (tokens[i] === "⿻") {
+            // compare subtokens
+            if (i + 1 >= tokens.length) {
+                continue
+            }
+            const l1 = nodeLength(tokens, i + 1)
+            if (i + 1 + l1 >= tokens.length) {
+                continue
+            }
+            const l2 = nodeLength(tokens, i + 1 + l1)
+            if (i + 1 + l1 + l2 > tokens.length) {
+                continue
+            }
+            if (l1 < l2) {
+                continue
+            }
+            const s1 = tokens.slice(i + 1, i + 1 + l1)
+            const s2 = tokens.slice(i + 1 + l1, i + 1 + l1 + l2)
+            if (l1 === l2 && s1.join("") <= s2.join("")) {
+                continue
+            }
+            if (s1.includes("？") || s2.includes("？")) {
+                continue
+            }
+            // swap args
+            for (let k = 0; k < l2; k++) {
+                tokens[i + 1 + k] = s2[k]
+            }
+            for (let k = 0; k < l1; k++) {
+                tokens[i + 1 + l2 + k] = s1[k]
+            }
+        }
+    }
+    return tokens
+}
+
+export function* expandOverlaid(tokens: string[]): Generator<string[], void> {
+    if (tokens.length < 2) {
+        yield tokens
+        return
+    }
+    const t0 = tokens[0]
+    for (const rest of expandOverlaid(tokens.slice(1))) {
+        const tokens = [t0, ...rest]
+        if (t0 !== "⿻") {
+            yield tokens
+            continue
+        }
+        const l1 = nodeLength(rest, 0)
+        if (l1 >= rest.length) {
+            yield tokens
+            continue
+        }
+        const l2 = nodeLength(rest, l1)
+        if (l1 + l2 > rest.length) {
+            yield tokens
+            continue
+        }
+        const s1 = rest.slice(0, l1)
+        const s2 = rest.slice(l1, l1 + l2)
+        const s3 = rest.slice(l1 + l2)
+        if (rest.includes("？")) {
+            yield tokens
+            yield [t0, ...s2, ...s1, ...s3]
+            continue
+        }
+        if (l1 < l2) {
+            yield tokens
+            continue
+        }
+        if (l1 === l2 && s1.join("") <= s2.join("")) {
+            yield tokens
+            continue
+        }
+        yield [t0, ...s2, ...s1, ...s3]
+    }
+}

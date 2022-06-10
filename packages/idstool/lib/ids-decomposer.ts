@@ -1,5 +1,5 @@
 import Database from "better-sqlite3"
-import { nodeLength, tokenArgs } from "./ids-operator"
+import { nodeLength, normalizeOverlaid, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
 const encodeMap: Partial<Record<string, string>> = {
@@ -49,54 +49,6 @@ export type IDSDecomposerOptions = {
     mojidb?: string
     dbpath?: string
     expandZVariants?: boolean
-}
-
-/**
- * Normalize arguments of character overlaid operator.
- * 
- * Character overlaid operator is commutative; i.e. ⿻XY ≡ ⿻YX.
- * This method normalize ⿻YX into ⿻XY if X < Y.
- *
- * This method is destructive.
- * @param tokens
- * @returns processed tokens (the same as input)
- */
-function normalizeOverlaid(tokens: string[]): string[] {
-    for (let i = tokens.length - 1; i >= 0; i--) {
-        if (tokens[i] === "⿻") {
-            // compare subtokens
-            if (i + 1 >= tokens.length) {
-                continue
-            }
-            const l1 = nodeLength(tokens, i + 1)
-            if (i + 1 + l1 >= tokens.length) {
-                continue
-            }
-            const l2 = nodeLength(tokens, i + 1 + l1)
-            if (i + 1 + l1 + l2 > tokens.length) {
-                continue
-            }
-            if (l1 < l2) {
-                continue
-            }
-            const s1 = tokens.slice(i + 1, i + 1 + l1)
-            const s2 = tokens.slice(i + 1 + l1, i + 1 + l1 + l2)
-            if (l1 === l2 && s1.join("") <= s2.join("")) {
-                continue
-            }
-            if (s1.includes("？") || s2.includes("？")) {
-                continue
-            }
-            // swap args
-            for (let k = 0; k < l2; k++) {
-                tokens[i + 1 + k] = s2[k]
-            }
-            for (let k = 0; k < l1; k++) {
-                tokens[i + 1 + l2 + k] = s1[k]
-            }
-        }
-    }
-    return tokens
 }
 
 export class IDSDecomposer {

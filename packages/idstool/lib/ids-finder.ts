@@ -2,7 +2,7 @@ import path from "path"
 import Database, { Statement } from "better-sqlite3"
 import { tokenizeIDS } from "./ids-tokenizer"
 import { query } from "./idsfind-query"
-import { nodeLength } from "./ids-operator"
+import { expandOverlaid, nodeLength } from "./ids-operator"
 
 interface IDSFinderOptions {
     dbpath?: string
@@ -18,7 +18,7 @@ export class IDSFinder {
         this.getIDSTokensStatement = db.prepare<{ ucs: string }>(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
     *find(...idslist: string[]) {
-        const idslistTokenized = idslist.map(ids => tokenizeIDS(ids))
+        const idslistTokenized = idslist.map(ids => [...expandOverlaid(tokenizeIDS(ids))])
         for (const result of this.findStatement.iterate({ idslist: JSON.stringify(idslistTokenized) })) {
             if (this.postaudit(result, idslistTokenized)) {
                 yield result as string
@@ -63,11 +63,11 @@ export class IDSFinder {
         }
         return false
     }
-    private postaudit(result: string, idslist: string[][]) {
+    private postaudit(result: string, idslist: string[][][]) {
         for (const IDS_tokens of this.getIDSTokensStatement.all({ ucs: result })) {
             const tokens = IDS_tokens.split(' ')
-            if (idslist.every(pattern => {
-                return this.idsmatch(tokens, pattern)
+            if (idslist.every(patterns => {
+                return patterns.some(pattern => this.idsmatch(tokens, pattern))
             })) {
                 return true
             }
