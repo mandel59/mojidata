@@ -7,6 +7,7 @@ function showUsage() {
     console.log("Usage:")
     console.log("\tids-find IDS [IDS ...]")
     console.log("\tids-find --whole=IDS [IDS ...]")
+    console.log("\tids-find --help")
 }
 
 function showHelp() {
