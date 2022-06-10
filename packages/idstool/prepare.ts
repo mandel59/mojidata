@@ -14,7 +14,7 @@ db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
 const codepoints: number[] = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM moji.ids ORDER BY codepoint`).pluck().all()
 const symbols_in_ids = new Set<string>()
 for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
-    ids.match(/[\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
+    ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
 }
 db.exec(`DETACH DATABASE moji`)
 
