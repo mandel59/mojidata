@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 import type { Writable } from "stream"
-import path from "path"
-import Database from "better-sqlite3"
-import { tokenizeIDS } from "../lib/ids-tokenizer"
-import { query } from "../lib/idsfind-query"
 import { argparse } from "../lib/argparse"
 import { IDSFinder } from "../lib/ids-finder"
 
