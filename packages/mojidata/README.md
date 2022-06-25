@@ -15,11 +15,13 @@ The following data are included:
 - [CITPC], [List of MJ Characters](https://moji.or.jp/mojikiban/mjlist/) (mji)
 - [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
 - [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
+- [文化庁], [常用漢字表](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/) (joyo)
 
 [Adobe]: https://www.adobe.com/
 [Unicode]: https://home.unicode.org/
 [CITPC]: https://moji.or.jp/mojikiban/
 [BabelStone]: https://www.babelstone.co.uk/Fonts/Han.html
+[文化庁]: https://www.bunka.go.jp/
 
 ## License
 

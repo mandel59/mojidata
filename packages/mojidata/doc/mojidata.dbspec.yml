@@ -18,11 +18,13 @@ description: |
   - [CITPC], [List of MJ Characters](https://moji.or.jp/mojikiban/mjlist/) (mji)
   - [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
   - [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
+  - [文化庁], [常用漢字表](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/) (joyo)
 
   [Adobe]: https://www.adobe.com/
   [Unicode]: https://home.unicode.org/
   [CITPC]: https://moji.or.jp/mojikiban/
   [BabelStone]: https://www.babelstone.co.uk/Fonts/Han.html
+  [文化庁]: https://www.bunka.go.jp/
 
   ## License
 
@@ -344,6 +346,59 @@ tables:
       code:
         type: text
         title: code
+        description: ""
+  joyo:
+    type: table
+    title: joyo
+    description: ""
+    columnOrder:
+      - 漢字
+      - 音訓
+      - 例
+      - 備考
+    columns:
+      漢字:
+        type: text
+        title: 漢字
+        description: ""
+      音訓:
+        type: text
+        title: 音訓
+        description: ""
+      例:
+        type: text
+        title: 例
+        description: ""
+      備考:
+        type: text
+        title: 備考
+        description: ""
+  joyo_acceptable:
+    type: table
+    title: joyo_acceptable
+    description: ""
+    columnOrder:
+      - 漢字
+    columns:
+      漢字:
+        type: text
+        title: 漢字
+        description: ""
+  joyo_kangxi:
+    type: table
+    title: joyo_kangxi
+    description: ""
+    columnOrder:
+      - 漢字
+      - 康熙字典体
+    columns:
+      漢字:
+        type: text
+        title: 漢字
+        description: ""
+      康熙字典体:
+        type: text
+        title: 康熙字典体
         description: ""
   mji:
     type: table
