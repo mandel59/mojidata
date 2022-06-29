@@ -16,6 +16,7 @@ The following data are included:
 - [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
 - [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
 - [文化庁], [常用漢字表](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/) (joyo)
+- [文化庁], [同音の漢字による書きかえ](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kakuki/03/bukai03/03.html) (doon)
 
 [Adobe]: https://www.adobe.com/
 [Unicode]: https://home.unicode.org/

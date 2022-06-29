@@ -12,4 +12,5 @@ scripts/download EquivalentUnifiedIdeograph.txt
 scripts/download cid2code.txt
 scripts/download USourceData.txt
 scripts/download IDS.TXT
+scripts/download doonnokanjiniyorukakikae1956.txt
 ts-node --transpile-only scripts/create-db.ts

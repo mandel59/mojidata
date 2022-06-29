@@ -44,6 +44,7 @@ function printMojidata(s: string) {
             'unihan', (SELECT json_group_object(unihan.property, unihan.value) FROM unihan WHERE unihan.UCS = @ucs),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
+            'doon', (SELECT json_group_array(json_object('書き換える漢語', 書き換える漢語, '書き換えた漢語', 書き換えた漢語, '採用した文書', 採用した文書)) FROM doon WHERE 書き換える漢字	= @ucs OR 書き換えた漢字 = @ucs),
             'mji', (
                 SELECT json_group_array(json_object(
                     'MJ文字図形名', MJ文字図形名,

@@ -801,31 +801,59 @@ async function createJoyoKanjiHyo(db: import("better-sqlite3").Database) {
     const insert = db.prepare(`insert into joyo (漢字, 音訓, 例, 備考) values (:subject, :reading, :examples, :note)`)
     const insert_acceptable = db.prepare(`insert or ignore into joyo_acceptable (漢字) values (:acceptable)`)
     const insert_kangxi = db.prepare(`insert or ignore into joyo_kangxi (漢字, 康熙字典体) values (:subject, :kangxi)`)
-    for (const record of joyoKanjiHyo) {
-        insert.run({
-            subject: record.subject,
-            reading: record.reading,
-            examples: JSON.stringify(record.examples),
-            note: record.note,
-        })
-        if (record.acceptable) {
-            insert_acceptable.run({
-                acceptable: record.acceptable
+    await transaction(db, async () => {
+        for (const record of joyoKanjiHyo) {
+            insert.run({
+                subject: record.subject,
+                reading: record.reading,
+                examples: JSON.stringify(record.examples),
+                note: record.note,
             })
-        }
-        if (record.kangxi) {
-            for (const kangxi of record.kangxi) {
-                insert_kangxi.run({
-                    subject: record.subject,
-                    kangxi: kangxi,
+            if (record.acceptable) {
+                insert_acceptable.run({
+                    acceptable: record.acceptable
                 })
             }
+            if (record.kangxi) {
+                for (const kangxi of record.kangxi) {
+                    insert_kangxi.run({
+                        subject: record.subject,
+                        kangxi: kangxi,
+                    })
+                }
+            }
         }
-    }
+    })
     db.exec(`CREATE INDEX "joyo_漢字" ON "joyo" ("漢字")`)
     db.exec(`CREATE INDEX "joyo_音訓" ON "joyo" ("音訓")`)
     db.exec(`CREATE INDEX "joyo_kangxi_漢字" ON "joyo_kangxi" ("漢字")`)
     db.exec(`CREATE INDEX "joyo_kangxi_康熙字典体" ON "joyo_kangxi" ("康熙字典体")`)
+}
+
+async function createDoon(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "doon"`)
+    db.exec(`CREATE TABLE doon (書き換える漢字 TEXT NOT NULL, 書き換えた漢字 TEXT NOT NULL, 書き換える漢語 TEXT NOT NULL, 書き換えた漢語 TEXT NOT NULL, 採用した文書 TEXT NOT NULL)`)
+    const insert = db.prepare(`insert into doon (書き換える漢字, 書き換えた漢字, 書き換える漢語, 書き換えた漢語, 採用した文書) values (:char_from, :char_to, :word_from, :word_to, :bibliography)`)
+    const csvpath = path.join(__dirname, "../cache/doonnokanjiniyorukakikae1956.txt")
+    const stream = fs.createReadStream(csvpath).pipe(parse({
+        columns: false,
+        skipEmptyLines: true,
+        delimiter: "\t",
+        from: 2,
+    }))
+    await transaction(db, async () => {
+        for await (const [char_from, char_to, word_from, word_to, bibliography] of stream) {
+            insert.run({
+                char_from,
+                char_to,
+                word_from,
+                word_to,
+                bibliography,
+            })
+        }
+    })
+    db.exec(`CREATE INDEX "doon_書き換える漢字" ON "doon" ("書き換える漢字")`)
+    db.exec(`CREATE INDEX "doon_書き換えた漢字" ON "doon" ("書き換えた漢字")`)
 }
 
 async function vacuum(db: import("better-sqlite3").Database) {
@@ -862,6 +890,7 @@ async function main() {
     await time(createAj1)(db)
     await time(createIDS)(db)
     await time(createJoyoKanjiHyo)(db)
+    await time(createDoon)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")
 }

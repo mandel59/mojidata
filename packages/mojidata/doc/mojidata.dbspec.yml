@@ -19,6 +19,7 @@ description: |
   - [CITPC], [MJ Map](https://moji.or.jp/mojikiban/map/) (mjsm)
   - [BabelStone], Ideographic Description Sequences (IDS) for CJK Unified Ideographs (ids)
   - [文化庁], [常用漢字表](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/) (joyo)
+  - [文化庁], [同音の漢字による書きかえ](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kakuki/03/bukai03/03.html) (doon)
 
   [Adobe]: https://www.adobe.com/
   [Unicode]: https://home.unicode.org/
@@ -211,6 +212,45 @@ tables:
         type: text
         title: UCS character
         description: ""
+  doon:
+    type: table
+    title: doon
+    description: ""
+    columnOrder:
+      - 書き換える漢字
+      - 書き換えた漢字
+      - 書き換える漢語
+      - 書き換えた漢語
+      - 採用した文書
+    columns:
+      書き換える漢字:
+        type: text
+        title: 書き換える漢字
+        description: ""
+      書き換えた漢字:
+        type: text
+        title: 書き換えた漢字
+        description: ""
+      書き換える漢語:
+        type: text
+        title: 書き換える漢語
+        description: ""
+      書き換えた漢語:
+        type: text
+        title: 書き換えた漢語
+        description: ""
+      採用した文書:
+        type: text
+        title: 採用した文書
+        description: |
+          - 法: 法令用語改正例 国語審議会建議
+          - 物: 学術用語集（物理学編） 文部省編
+          - 土: 学術用語集（土木工学編） 文部省編
+          - 鉱: 学術用語集（採鉱ヤ金学編） 文部省編
+          - 化: 学術用語集（化学編） 文部省編
+          - 船: 学術用語集（船舶工学編） 文部省編
+          - 建: 学術用語集（建築学編） 文部省編
+          - 医: 医学用語集（第1次選定） 日本医学会用語整理委員会編および現在文部省学術用語分科審議会医学用語専門部会で採用のもの。
   ids:
     type: table
     title: ids
