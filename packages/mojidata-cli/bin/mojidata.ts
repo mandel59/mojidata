@@ -43,6 +43,7 @@ function printMojidata(s: string) {
             'svs_cjkci', (SELECT json_group_array(json_object('char', SVS, 'SVS', printf('%04X_%04X', unicode(SVS), unicode(substr(SVS, 2))), 'CJKCI', printf('U+%04X', unicode(CJKCI)))) FROM svs_cjkci WHERE SVS glob @ucs || '*'),
             'unihan', (SELECT json_group_object(unihan.property, unihan.value) FROM unihan WHERE unihan.UCS = @ucs),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
+            'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
             'mji', (
                 SELECT json_group_array(json_object(
                     'MJ文字図形名', MJ文字図形名,
