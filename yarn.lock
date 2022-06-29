@@ -110,6 +110,7 @@ __metadata:
     zx: ^4.2.0
   bin:
     ivs-list: bin/ivs-list.js
+    mojidata: bin/mojidata.js
   languageName: unknown
   linkType: soft
 
