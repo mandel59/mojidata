@@ -40,7 +40,14 @@ function printMojidata(s: string) {
                 'IVS', printf('%04X_%04X', unicode(ivs.IVS), unicode(substr(ivs.IVS, 2))),
                 'collection', ivs.collection,
                 'code', ivs.code)) FROM ivs WHERE ivs.IVS glob (@ucs || '*')),
-            'svs_cjkci', (SELECT json_group_array(json_object('char', SVS, 'SVS', printf('%04X_%04X', unicode(SVS), unicode(substr(SVS, 2))), 'CJKCI', printf('U+%04X', unicode(CJKCI)))) FROM svs_cjkci WHERE SVS glob @ucs || '*'),
+            'svs_cjkci', (
+                SELECT json_group_array(json_object(
+                    'SVS_char', SVS,
+                    'SVS', printf('%04X_%04X', unicode(SVS), unicode(substr(SVS, 2))),
+                    'CJKCI_char', CJKCI,
+                    'CJKCI', printf('U+%04X', unicode(CJKCI))))
+                FROM svs_cjkci
+                WHERE (SVS glob @ucs || '*') OR (CJKCI glob @ucs || '*')),
             'unihan', (SELECT json_group_object(unihan.property, unihan.value) FROM unihan WHERE unihan.UCS = @ucs),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
