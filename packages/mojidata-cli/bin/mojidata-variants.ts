@@ -92,6 +92,9 @@ function printMojidata(argv: string[]) {
         }
         return ""
     }
+    for (const c of args) {
+        addChar(c)
+    }
     for (const record of records) {
         const c1: string = record.c1
         const c2: string = record.c2
@@ -134,15 +137,14 @@ function printMojidata(argv: string[]) {
         }
         console.log("```mermaid")
         console.log("flowchart LR")
+        addChar(c0)
         for (const record of charRecords) {
             const c1: string = record.c1
             const c2: string = record.c2
             const r: string = record.r
             addChar(c1)
             addChar(c2)
-            if (c1 !== c2) {
-                addEdge(nodeId(c1), nodeId(c2), style(r), r)
-            }
+            addEdge(nodeId(c1), nodeId(c2), style(r), r)
             chars.get(c1)?.push(record)
             chars.get(c2)?.push(record)
         }
