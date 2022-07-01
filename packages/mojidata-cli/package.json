@@ -14,7 +14,8 @@
   ],
   "bin": {
     "ivs-list": "bin/ivs-list.js",
-    "mojidata": "bin/mojidata.js"
+    "mojidata": "bin/mojidata.js",
+    "mojidata-variants": "bin/mojidata-variants.js"
   },
   "scripts": {
     "test": "ava",
