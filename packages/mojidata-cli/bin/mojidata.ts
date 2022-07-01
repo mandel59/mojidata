@@ -48,7 +48,8 @@ function printMojidata(s: string) {
                     'CJKCI', printf('U+%04X', unicode(CJKCI))))
                 FROM svs_cjkci
                 WHERE (SVS glob @ucs || '*') OR (CJKCI glob @ucs || '*')),
-            'unihan', (SELECT json_group_object(unihan.property, unihan.value) FROM unihan WHERE unihan.UCS = @ucs),
+            'unihan', (SELECT json_group_object(property, value) FROM unihan WHERE unihan.id = unicode(@ucs) AND property NOT GLOB 'k*Variant'),
+            'unihan_variant', (SELECT json_group_array(CASE WHEN additional_data IS NOT NULL THEN json_array(property, printf('U+%04X', unicode(value)), value, additional_data) ELSE json_array(property, printf('U+%04X', unicode(value)), value) END) FROM unihan_variant WHERE unihan_variant.id = unicode(@ucs)),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
             'doon', (SELECT json_group_array(json_object('書きかえる漢語', 書きかえる漢語, '書きかえた漢語', 書きかえた漢語, '採用した文書', 採用した文書)) FROM doon WHERE 書きかえる漢字	= @ucs OR 書きかえた漢字 = @ucs),
@@ -64,7 +65,7 @@ function printMojidata(s: string) {
                     '入管正字コード', 入管正字コード,
                     '入管外字コード', 入管外字コード,
                     '漢字施策', 漢字施策,
-                    '対応する互換漢字', 対応する互換漢字,
+                    '対応する互換漢字', CASE WHEN 対応する互換漢字 IS NOT NULL THEN printf('U+%04X', unicode(対応する互換漢字)) END,
                     'X0213', X0213,
                     'X0213_包摂連番', X0213_包摂連番,
                     'X0213_包摂区分', X0213_包摂区分,
@@ -80,7 +81,18 @@ function printMojidata(s: string) {
                     '大字源', 大字源,
                     '大漢語林', 大漢語林,
                     '更新履歴', (SELECT json_group_array(更新履歴) FROM mji_changelog WHERE mji_changelog.MJ文字図形名 = mji.MJ文字図形名),
-                    '備考', 備考)) FROM mji WHERE mji.対応するUCS = @ucs OR mji.実装したUCS = @ucs)
+                    '備考', 備考,
+                    'mjsm', (
+                        SELECT json_group_array(json_array(
+                            mjsm.表,
+                            printf('U+%04X', unicode(mjsm.縮退UCS)),
+                            mjsm.縮退UCS))
+                        FROM mjsm
+                        WHERE mji.MJ文字図形名 = mjsm.MJ文字図形名
+                        ORDER BY mjsm.表, mjsm.順位, mjsm.ホップ数
+                    )))
+                    FROM mji
+                    WHERE mji.対応するUCS = @ucs OR mji.実装したUCS = @ucs)
         ) AS vs`).pluck().all({ ucs: c })
         for (const value of values) {
             console.log(value)
