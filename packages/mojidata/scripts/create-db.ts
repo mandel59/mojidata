@@ -631,6 +631,41 @@ async function createUnihan(db: import("better-sqlite3").Database) {
             .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "unihan_${k}"`)
             .join(`\nUNION ALL\n`)
         }\n)`))
+    db.exec(format(`
+        CREATE VIEW "unihan_variant" AS
+        WITH u AS (
+            SELECT k.id, l, UCS,
+                CASE WHEN instr(e.value, '<') THEN substr(e.value, 1, instr(e.value, '<') - 1) ELSE e.value END AS v,
+                CASE WHEN instr(e.value, '<') THEN substr(e.value, instr(e.value, '<') + 1) END AS note
+            FROM (
+                SELECT id, UCS, 'kCompatibilityVariant' AS l, value FROM unihan_kCompatibilityVariant
+                UNION ALL
+                SELECT id, UCS, 'kSemanticVariant' AS l, value FROM unihan_kSemanticVariant
+                UNION ALL
+                SELECT id, UCS, 'kSimplifiedVariant' AS l, value FROM unihan_kSimplifiedVariant
+                UNION ALL
+                SELECT id, UCS, 'kSpecializedSemanticVariant' AS l, value FROM unihan_kSpecializedSemanticVariant
+                UNION ALL
+                SELECT id, UCS, 'kSpoofingVariant' AS l, value FROM unihan_kSpoofingVariant
+                UNION ALL
+                SELECT id, UCS, 'kTraditionalVariant' AS l, value FROM unihan_kTraditionalVariant
+                UNION ALL
+                SELECT id, UCS, 'kZVariant' AS l, value FROM unihan_kZVariant
+            ) AS k
+            JOIN json_each('["' || replace(k.value, ' ', '","') || '"]') AS e
+        ), t AS (
+            SELECT id, l, UCS, note, substr('00' || substr(v, 3), -6) AS v
+            FROM u
+        ), s AS (
+            SELECT id, l, UCS, note,
+            (
+                SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
+                FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
+            ) AS v
+            FROM t
+        )
+        SELECT id, UCS, l AS property, v AS value, note AS additional_data FROM s
+    `))
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {

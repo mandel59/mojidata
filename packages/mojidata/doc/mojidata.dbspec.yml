@@ -3276,6 +3276,38 @@ tables:
         type: text
         title: value
         description: ""
+  unihan_variant:
+    type: view
+    title: unihan_variant
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - property
+      - value
+      - additional_data
+    columns:
+      id:
+        type: integer
+        title: id
+        description: ""
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: ""
+      property:
+        title: property
+        description: ""
+      value:
+        type: text
+        title: value character
+        description: ""
+      additional_data:
+        type: text
+        title: additional data
+        description: ""
   usource:
     type: table
     title: usource
