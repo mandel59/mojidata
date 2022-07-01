@@ -33,4 +33,4 @@ IDS.TXT cdc4e9bd51ef8e604a8cba0935fa99ee2372d7b9 https://raw.githubusercontent.c
 
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
 ## Public domain
-doonnokanjiniyorukakikae1956.txt c1155a89461bf058cc33cd7ebd4ab235e01905b6 https://raw.githubusercontent.com/mandel59/doonnokanjiniyorukakikae/824279443dd7abbb017340b9f4d5413e2a19f1dc/doonnokanjiniyorukakikae1956.txt
+doonnokanjiniyorukakikae1956.txt 2e500369ea3545a0948bfcf26f9658c0a519e0fc https://raw.githubusercontent.com/mandel59/doonnokanjiniyorukakikae/83802798f46947e2a26967a9a27df4746ccd0050/doonnokanjiniyorukakikae1956.txt

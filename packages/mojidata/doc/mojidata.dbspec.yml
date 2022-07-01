@@ -217,27 +217,27 @@ tables:
     title: doon
     description: ""
     columnOrder:
-      - 書き換える漢字
-      - 書き換えた漢字
-      - 書き換える漢語
-      - 書き換えた漢語
+      - 書きかえる漢字
+      - 書きかえた漢字
+      - 書きかえる漢語
+      - 書きかえた漢語
       - 採用した文書
     columns:
-      書き換える漢字:
+      書きかえる漢字:
         type: text
-        title: 書き換える漢字
+        title: 書きかえる漢字
         description: ""
-      書き換えた漢字:
+      書きかえた漢字:
         type: text
-        title: 書き換えた漢字
+        title: 書きかえた漢字
         description: ""
-      書き換える漢語:
+      書きかえる漢語:
         type: text
-        title: 書き換える漢語
+        title: 書きかえる漢語
         description: ""
-      書き換えた漢語:
+      書きかえた漢語:
         type: text
-        title: 書き換えた漢語
+        title: 書きかえた漢語
         description: ""
       採用した文書:
         type: text

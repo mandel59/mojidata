@@ -832,8 +832,8 @@ async function createJoyoKanjiHyo(db: import("better-sqlite3").Database) {
 
 async function createDoon(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "doon"`)
-    db.exec(`CREATE TABLE doon (書き換える漢字 TEXT NOT NULL, 書き換えた漢字 TEXT NOT NULL, 書き換える漢語 TEXT NOT NULL, 書き換えた漢語 TEXT NOT NULL, 採用した文書 TEXT NOT NULL)`)
-    const insert = db.prepare(`insert into doon (書き換える漢字, 書き換えた漢字, 書き換える漢語, 書き換えた漢語, 採用した文書) values (:char_from, :char_to, :word_from, :word_to, :bibliography)`)
+    db.exec(`CREATE TABLE doon (書きかえる漢字 TEXT NOT NULL, 書きかえた漢字 TEXT NOT NULL, 書きかえる漢語 TEXT NOT NULL, 書きかえた漢語 TEXT NOT NULL, 採用した文書 TEXT NOT NULL)`)
+    const insert = db.prepare(`insert into doon (書きかえる漢字, 書きかえた漢字, 書きかえる漢語, 書きかえた漢語, 採用した文書) values (:char_from, :char_to, :word_from, :word_to, :bibliography)`)
     const csvpath = path.join(__dirname, "../cache/doonnokanjiniyorukakikae1956.txt")
     const stream = fs.createReadStream(csvpath).pipe(parse({
         columns: false,
@@ -852,8 +852,8 @@ async function createDoon(db: import("better-sqlite3").Database) {
             })
         }
     })
-    db.exec(`CREATE INDEX "doon_書き換える漢字" ON "doon" ("書き換える漢字")`)
-    db.exec(`CREATE INDEX "doon_書き換えた漢字" ON "doon" ("書き換えた漢字")`)
+    db.exec(`CREATE INDEX "doon_書きかえる漢字" ON "doon" ("書きかえる漢字")`)
+    db.exec(`CREATE INDEX "doon_書きかえた漢字" ON "doon" ("書きかえた漢字")`)
 }
 
 async function vacuum(db: import("better-sqlite3").Database) {
