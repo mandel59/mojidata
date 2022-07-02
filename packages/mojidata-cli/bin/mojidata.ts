@@ -53,6 +53,17 @@ function printMojidata(s: string) {
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
             'doon', (SELECT json_group_array(json_object('書きかえる漢語', 書きかえる漢語, '書きかえた漢語', 書きかえた漢語, '採用した文書', 採用した文書)) FROM doon WHERE 書きかえる漢字	= @ucs OR 書きかえた漢字 = @ucs),
+            'nyukan', (
+                SELECT json_group_array(json_object(
+                    '正字の種類', 正字の種類,
+                    '簡体字等の文字コード等', 簡体字等の文字コード等,
+                    '簡体字等のUCS', 簡体字等のUCS,
+                    '正字の文字コード等', 正字の文字コード等,
+                    '正字のUCS', 正字のUCS,
+                    '順位', 順位))
+                FROM nyukan
+                WHERE 簡体字等のUCS = @ucs OR 正字のUCS = @ucs
+            ),
             'mji', (
                 SELECT json_group_array(json_object(
                     'MJ文字図形名', MJ文字図形名,
