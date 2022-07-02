@@ -42,7 +42,11 @@ function printMojidata(argv: string[]) {
                 SELECT ifnull(mji.実装したUCS, mji.対応するUCS) AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
                 FROM mjsm
                 JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
-                WHERE ifnull(ホップ数, 1) < 2
+                WHERE ifnull(mjsm.ホップ数, 1) < 2 AND mjsm.表 NOT GLOB '法務省告示582号*'
+                UNION ALL
+                SELECT 簡体字等のUCS AS c1, 正字のUCS AS c2, '入管正字_' || 正字の種類 AS r
+                FROM nyukan
+                WHERE 簡体字等のUCS IS NOT NULL
                 UNION ALL
                 SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
                 FROM doon
@@ -55,7 +59,7 @@ function printMojidata(argv: string[]) {
                 UNION
                 SELECT DISTINCT t.c1, t.c2, t.r
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
-                WHERE u.r NOT IN ('kSpoofingVariant', '民一2842号通達別表_誤字俗字正字一覧表_別字', '法務省告示582号別表第四_二', '同音の漢字による書きかえ')
+                WHERE u.r NOT IN ('kSpoofingVariant', '民一2842号通達別表_誤字俗字正字一覧表_別字', '入管正字_類字', '同音の漢字による書きかえ')
             )
         SELECT c1, c2, r FROM u
         `).all({ args: JSON.stringify(args) })
@@ -92,7 +96,7 @@ function printMojidata(argv: string[]) {
     const style = (r: string) => {
         if (r === "kSpoofingVariant"
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
-            || r === "法務省告示582号別表第四_二"
+            || r === "入管正字_類字"
             || r === "同音の漢字による書きかえ") {
             return "stroke-dasharray: 5 5"
         }
