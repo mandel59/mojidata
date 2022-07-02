@@ -77,7 +77,11 @@ function printMojidata(argv: string[]) {
     const nodeId = (c: string) => `u${c.codePointAt(0)?.toString(16)}`
     const addChar = (c: string) => {
         if (!chars.has(c)) {
-            console.log(`    ${nodeId(c)}(("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>"))`)
+            if (args.includes(c)) {
+                console.log(`    ${nodeId(c)}((("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>")))`)
+            } else {
+                console.log(`    ${nodeId(c)}(("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>"))`)
+            }
             chars.set(c, [])
         }
     }
