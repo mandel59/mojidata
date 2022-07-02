@@ -50,6 +50,9 @@ function printMojidata(argv: string[]) {
                 UNION ALL
                 SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
                 FROM doon
+                UNION ALL
+                SELECT 康熙字典体 AS c1, 漢字 AS c2, '常用漢字表_新字体' AS r
+                FROM joyo_kangxi
                 ORDER BY c1, c2, r
             ),
             u (c1, c2, r) AS (
