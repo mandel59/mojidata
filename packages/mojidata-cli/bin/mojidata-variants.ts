@@ -44,6 +44,9 @@ function printMojidata(argv: string[]) {
                     SELECT mji.対応するUCS AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
                     FROM mjsm
                     JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
+                    UNION ALL
+                    SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
+                    FROM doon
                     ORDER BY c1, c2, r
                 )
                 GROUP BY c1, c2
@@ -87,7 +90,8 @@ function printMojidata(argv: string[]) {
     const style = (r: string) => {
         if (r === "kSpoofingVariant"
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
-            || r === "法務省告示582号別表第四_二") {
+            || r === "法務省告示582号別表第四_二"
+            || r === "同音の漢字による書きかえ") {
             return "stroke-dasharray: 5 5"
         }
         return ""
