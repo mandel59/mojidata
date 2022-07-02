@@ -54,7 +54,7 @@ function printMojidata(argv: string[]) {
                 WHERE c1 IN (SELECT value FROM args) OR c2 IN (SELECT value FROM args)
                 UNION
                 SELECT t.c1, t.c2, t.rs
-                FROM u JOIN t ON u.c2 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
+                FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
             )
         SELECT c1, c2, j.value AS r FROM u join json_each(rs) AS j
         `).all({ args: JSON.stringify(args) })
