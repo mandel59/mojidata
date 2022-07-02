@@ -39,9 +39,10 @@ function printMojidata(argv: string[]) {
                 SELECT UCS AS c1, value AS c2, property AS r
                 FROM unihan_variant
                 UNION ALL
-                SELECT mji.対応するUCS AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
+                SELECT ifnull(mji.実装したUCS, mji.対応するUCS) AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
                 FROM mjsm
                 JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
+                WHERE ifnull(ホップ数, 1) < 2
                 UNION ALL
                 SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
                 FROM doon
