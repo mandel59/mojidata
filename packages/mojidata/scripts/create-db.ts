@@ -924,6 +924,14 @@ async function createNyukan(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "nyukan_itaiji_正字のUCS" ON "nyukan_itaiji" ("正字のUCS")`)
     db.exec(`CREATE INDEX "nyukan_ruiji_簡体字等のUCS" ON "nyukan_ruiji" ("簡体字等のUCS")`)
     db.exec(`CREATE INDEX "nyukan_ruiji_正字のUCS" ON "nyukan_ruiji" ("正字のUCS")`)
+    db.exec(format(
+        `CREATE VIEW "nyukan" AS
+        SELECT '異体字' AS 正字の種類, 簡体字等の文字コード等, 簡体字等のUCS, 正字の文字コード等, 正字のUCS, 順位
+        FROM nyukan_itaiji
+        UNION ALL
+        SELECT '類字' AS 正字の種類, 簡体字等の文字コード等, 簡体字等のUCS, 正字の文字コード等, 正字のUCS, 順位
+        FROM nyukan_ruiji
+    `))
 }
 
 async function createDoon(db: import("better-sqlite3").Database) {
