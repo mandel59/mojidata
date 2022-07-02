@@ -35,31 +35,28 @@ function printMojidata(argv: string[]) {
     const records = db.prepare(`
         WITH RECURSIVE
             args (value) AS (SELECT j.value FROM json_each(@args) AS j),
-            t (c1, c2, rs) AS (
-                SELECT c1, c2, json_group_array(r) AS rs
-                FROM (
-                    SELECT UCS AS c1, value AS c2, property AS r
-                    FROM unihan_variant
-                    UNION ALL
-                    SELECT mji.対応するUCS AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
-                    FROM mjsm
-                    JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
-                    UNION ALL
-                    SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
-                    FROM doon
-                    ORDER BY c1, c2, r
-                )
-                GROUP BY c1, c2
+            t (c1, c2, r) AS (
+                SELECT UCS AS c1, value AS c2, property AS r
+                FROM unihan_variant
+                UNION ALL
+                SELECT mji.対応するUCS AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
+                FROM mjsm
+                JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
+                UNION ALL
+                SELECT DISTINCT 書きかえる漢字 AS c1, 書きかえた漢字 AS c2, '同音の漢字による書きかえ' AS r
+                FROM doon
+                ORDER BY c1, c2, r
             ),
-            u (c1, c2, rs) AS (
-                SELECT c1, c2, rs
+            u (c1, c2, r) AS (
+                SELECT DISTINCT c1, c2, r
                 FROM t
                 WHERE c1 IN (SELECT value FROM args) OR c2 IN (SELECT value FROM args)
                 UNION
-                SELECT t.c1, t.c2, t.rs
+                SELECT DISTINCT t.c1, t.c2, t.r
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
+                WHERE u.r NOT IN ('kSpoofingVariant', '民一2842号通達別表_誤字俗字正字一覧表_別字', '法務省告示582号別表第四_二', '同音の漢字による書きかえ')
             )
-        SELECT c1, c2, j.value AS r FROM u join json_each(rs) AS j
+        SELECT c1, c2, r FROM u
         `).all({ args: JSON.stringify(args) })
     const chars = new Map<string, any[]>()
     let edgeId = 0
