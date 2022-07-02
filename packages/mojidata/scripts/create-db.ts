@@ -6,6 +6,7 @@ import Database from "better-sqlite3"
 import { format as formatSQL } from "sql-formatter"
 import { transaction } from "./lib/dbutils"
 import joyoKanjiHyo from "@mandel59/joyokanjihyo"
+import nyukanseiji from "@mandel59/nyukanseiji"
 
 const format = (sql: string) => formatSQL(sql, { language: 'mysql' })
 
@@ -865,6 +866,66 @@ async function createJoyoKanjiHyo(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "joyo_kangxi_康熙字典体" ON "joyo_kangxi" ("康熙字典体")`)
 }
 
+async function createNyukan(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "nyukan_itaiji"`)
+    db.exec(`drop table if exists "nyukan_ruiji"`)
+    db.exec(`CREATE TABLE nyukan_itaiji (簡体字等の文字コード等 TEXT, 簡体字等のUCS TEXT, 正字の文字コード等 TEXT, 正字のUCS TEXT, 順位 INTEGER, PRIMARY KEY (簡体字等の文字コード等, 順位))`)
+    db.exec(`CREATE TABLE nyukan_ruiji (簡体字等の文字コード等 TEXT, 簡体字等のUCS TEXT, 正字の文字コード等 TEXT, 正字のUCS TEXT, 順位 INTEGER, PRIMARY KEY (簡体字等の文字コード等, 順位))`)
+    const insert_itaiji = db.prepare(`insert into nyukan_itaiji (簡体字等の文字コード等, 簡体字等のUCS, 正字の文字コード等, 正字のUCS, 順位) values (:code1, :char1, :code2, :char2, :ord)`)
+    const insert_ruiji = db.prepare(`insert into nyukan_ruiji (簡体字等の文字コード等, 簡体字等のUCS, 正字の文字コード等, 正字のUCS, 順位) values (:code1, :char1, :code2, :char2, :ord)`)
+    const codeToChar = (code: string) => {
+        const p = Number.parseInt(code, 16)
+        if (0xE000 <= p && p <= 0xF8FF) {
+            return null
+        }
+        return String.fromCodePoint(p)
+    }
+    await transaction(db, async () => {
+        for (const record of nyukanseiji.table4_1) {
+            const [code1, code2, code3] = record
+            insert_itaiji.run({
+                code1,
+                char1: codeToChar(code1),
+                code2,
+                char2: codeToChar(code2),
+                ord: 1,
+            })
+            if (code3) {
+                insert_itaiji.run({
+                    code1,
+                    char1: codeToChar(code1),
+                    code2: code3,
+                    char2: codeToChar(code3),
+                    ord: 2,
+                })
+            }
+        }
+        for (const record of nyukanseiji.table4_2) {
+            const [code1, code2, code3] = record
+            insert_ruiji.run({
+                code1,
+                char1: codeToChar(code1),
+                code2,
+                char2: codeToChar(code2),
+                ord: 1,
+            })
+            if (code3) {
+                insert_ruiji.run({
+                    code1,
+                    char1: codeToChar(code1),
+                    code2: code3,
+                    char2: codeToChar(code3),
+                    ord: 2,
+                })
+            }
+        }
+    })
+    db.exec(`CREATE INDEX "nyukan_itaiji_簡体字等のUCS" ON "nyukan_itaiji" ("簡体字等のUCS")`)
+    db.exec(`CREATE INDEX "nyukan_itaiji_正字のUCS" ON "nyukan_itaiji" ("正字のUCS")`)
+    db.exec(`CREATE INDEX "nyukan_ruiji_簡体字等のUCS" ON "nyukan_ruiji" ("簡体字等のUCS")`)
+    db.exec(`CREATE INDEX "nyukan_ruiji_正字のUCS" ON "nyukan_ruiji" ("正字のUCS")`)
+}
+
 async function createDoon(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "doon"`)
     db.exec(`CREATE TABLE doon (書きかえる漢字 TEXT NOT NULL, 書きかえた漢字 TEXT NOT NULL, 書きかえる漢語 TEXT NOT NULL, 書きかえた漢語 TEXT NOT NULL, 採用した文書 TEXT NOT NULL)`)
@@ -925,6 +986,7 @@ async function main() {
     await time(createAj1)(db)
     await time(createIDS)(db)
     await time(createJoyoKanjiHyo)(db)
+    await time(createNyukan)(db)
     await time(createDoon)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")

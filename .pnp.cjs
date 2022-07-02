@@ -169,6 +169,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@mandel59/mojidata", "workspace:packages/mojidata"],\
             ["@mandel59/joyokanjihyo", "npm:1.1.1"],\
+            ["@mandel59/nyukanseiji", "npm:1.2.0"],\
             ["@types/better-sqlite3", "npm:5.4.2"],\
             ["@types/node", "npm:16.9.1"],\
             ["@types/yaml", "npm:1.9.6"],\
@@ -200,6 +201,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["zx", "npm:4.2.0"]\
           ],\
           "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@mandel59/nyukanseiji", [\
+        ["npm:1.2.0", {\
+          "packageLocation": "./.yarn/cache/@mandel59-nyukanseiji-npm-1.2.0-15ff5f7ead-c02bc89dd9.zip/node_modules/@mandel59/nyukanseiji/",\
+          "packageDependencies": [\
+            ["@mandel59/nyukanseiji", "npm:1.2.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@mandel59/web-idsfind", [\

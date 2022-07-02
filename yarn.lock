@@ -120,6 +120,7 @@ __metadata:
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
     "@mandel59/joyokanjihyo": ^1.1.1
+    "@mandel59/nyukanseiji": 1.2.0
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     "@types/yaml": ^1
@@ -134,6 +135,13 @@ __metadata:
     yaml: ^1.10.2
   languageName: unknown
   linkType: soft
+
+"@mandel59/nyukanseiji@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@mandel59/nyukanseiji@npm:1.2.0"
+  checksum: c02bc89dd979fbd024bd06d18b22c5df48e9ea80eacf54f4a076279ba908d9e5091a5727d3d7c8d3d619a5867e7789544609edefc3531af26950c6a523877320
+  languageName: node
+  linkType: hard
 
 "@mandel59/web-idsfind@workspace:packages/web-idsfind":
   version: 0.0.0-use.local
