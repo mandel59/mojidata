@@ -893,6 +893,104 @@ tables:
         type: text
         title: 縮退X0213
         description: ""
+  nyukan:
+    type: view
+    title: nyukan
+    description: ""
+    columnOrder:
+      - 正字の種類
+      - 簡体字等の文字コード等
+      - 簡体字等のUCS
+      - 正字の文字コード等
+      - 正字のUCS
+      - 順位
+    columns:
+      正字の種類:
+        type: text
+        title: 正字の種類
+        description: "別表第四の一に示されている場合は'異体字'、別表第四の二に示されている場合は'類字'。"
+      簡体字等の文字コード等:
+        type: text
+        title: 簡体字等の文字コード等
+        description: "16進数4または5桁の、簡体字等の文字コード等。UCSコードまたは別表第二に示されたPUAのコード。"
+      簡体字等のUCS:
+        type: text
+        title: 簡体字等のUCS
+        description: "簡体字等のUCS文字。簡体字等の文字コード等が別表第二の私用文字の場合はNULL。"
+      正字の文字コード等:
+        type: text
+        title: 正字の文字コード等
+        description: "16進数4または5桁の、対応する正字のUCSコード。"
+      正字のUCS:
+        type: text
+        title: 正字のUCS
+        description: "対応する正字のUCS文字。"
+      順位:
+        type: integer
+        title: 順位
+        description: "対応する正字の順位。第1順位の場合は1、第2順位の場合は2。"
+  nyukan_itaiji:
+    type: table
+    title: nyukan_itaiji
+    description: "法務省告示第582号別表第四の一に示されている簡体字等に対応する正字の異体字"
+    columnOrder:
+      - 簡体字等の文字コード等
+      - 簡体字等のUCS
+      - 正字の文字コード等
+      - 正字のUCS
+      - 順位
+    columns:
+      簡体字等の文字コード等:
+        type: text
+        title: 簡体字等の文字コード等
+        description: "16進数4または5桁の、簡体字等の文字コード。UCSコードまたは別表第二に示されたPUAのコード。"
+      簡体字等のUCS:
+        type: text
+        title: 簡体字等のUCS
+        description: "簡体字等のUCS文字。簡体字等の文字コード等が別表第二の私用文字の場合はNULL。"
+      正字の文字コード等:
+        type: text
+        title: 正字の文字コード等
+        description: "16進数4または5桁の、対応する正字のUCSコード。"
+      正字のUCS:
+        type: text
+        title: 正字のUCS
+        description: "対応する正字のUCS文字。"
+      順位:
+        type: integer
+        title: 順位
+        description: "対応する正字の順位。第1順位の場合は1、第2順位の場合は2。"
+  nyukan_ruiji:
+    type: table
+    title: nyukan_ruiji
+    description: "法務省告示第582号別表第四の二に示されている簡体字等に対応する正字の類字"
+    columnOrder:
+      - 簡体字等の文字コード等
+      - 簡体字等のUCS
+      - 正字の文字コード等
+      - 正字のUCS
+      - 順位
+    columns:
+      簡体字等の文字コード等:
+        type: text
+        title: 簡体字等の文字コード等
+        description: "16進数4または5桁の、簡体字等の文字コード。UCSコードまたは別表第二に示されたPUAのコード。"
+      簡体字等のUCS:
+        type: text
+        title: 簡体字等のUCS
+        description: "簡体字等のUCS文字。簡体字等の文字コード等が別表第二の私用文字の場合はNULL。"
+      正字の文字コード等:
+        type: text
+        title: 正字の文字コード等
+        description: "16進数4または5桁の、対応する正字のUCSコード。"
+      正字のUCS:
+        type: text
+        title: 正字のUCS
+        description: "対応する正字のUCS文字。"
+      順位:
+        type: integer
+        title: 順位
+        description: "対応する正字の順位。第1順位の場合は1、第2順位の場合は2。"
   radeqv:
     type: table
     title: radeqv
