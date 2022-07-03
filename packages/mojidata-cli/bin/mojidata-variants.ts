@@ -62,7 +62,12 @@ function printMojidata(argv: string[]) {
                 UNION
                 SELECT DISTINCT t.c1, t.c2, t.r
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
-                WHERE u.r NOT IN ('kSpoofingVariant', '民一2842号通達別表_誤字俗字正字一覧表_別字', '入管正字_類字', '同音の漢字による書きかえ')
+                WHERE u.r NOT IN (
+                    'kSpoofingVariant',
+                    'kSpecializedSemanticVariant',
+                    '民一2842号通達別表_誤字俗字正字一覧表_別字',
+                    '入管正字_類字',
+                    '同音の漢字による書きかえ')
             )
         SELECT c1, c2, r FROM u
         `).all({ args: JSON.stringify(args) })
@@ -98,6 +103,7 @@ function printMojidata(argv: string[]) {
     console.log("flowchart LR")
     const style = (r: string) => {
         if (r === "kSpoofingVariant"
+            || r === "kSpecializedSemanticVariant"
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
             || r === "入管正字_類字"
             || r === "同音の漢字による書きかえ") {
