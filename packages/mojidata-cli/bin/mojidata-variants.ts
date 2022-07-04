@@ -41,7 +41,7 @@ function printMojidata(argv: string[]) {
                 UNION ALL
                 SELECT UCS AS c1, value AS c2, 'kStrange_' || category AS r
                 FROM unihan_strange
-                WHERE category IN ('F', 'M', 'O', 'R', 'I')
+                WHERE category IN ('F', 'M', 'O', 'R', 'I') AND value IS NOT NULL
                 UNION ALL
                 SELECT ifnull(mji.実装したUCS, mji.対応するUCS) AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
                 FROM mjsm
