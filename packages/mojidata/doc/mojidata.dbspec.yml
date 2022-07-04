@@ -3374,6 +3374,33 @@ tables:
         type: text
         title: value
         description: ""
+  unihan_strange:
+    type: view
+    title: unihan_strange
+    description: ""
+    columnOrder:
+      - id
+      - UCS
+      - category
+      - value
+    columns:
+      id:
+        type: integer
+        title: id
+        description: "UCS code number"
+      UCS:
+        type: text
+        generatedAlways:
+          stored: false
+        title: UCS character
+        description: "UCS character"
+      category:
+        title: category
+        description: "kStrange category described in https://unicode.org/reports/tr38/#kStrange"
+      value:
+        type: text
+        title: value
+        description: "property value (UCS character or text)"
   unihan_variant:
     type: view
     title: unihan_variant

@@ -671,6 +671,29 @@ async function createUnihan(db: import("better-sqlite3").Database) {
         )
         SELECT id, UCS, l AS property, v AS value, note AS additional_data FROM s
     `))
+    db.exec(format(`
+        CREATE VIEW "unihan_strange" AS
+        WITH u AS (
+            SELECT t.id, t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
+            FROM unihan_kStrange AS t
+            JOIN json_each('["' || replace(t.value, ' ', '","') || '"]') AS j
+            LEFT JOIN json_each('["' || replace(substr(j.value, 3), ':', '","') || '"]') AS k ON k.value <> ''
+        ), t AS (
+            SELECT id, UCS, category,
+                CASE WHEN v GLOB 'U+*' THEN substr('00' || substr(v, 3), -6) END AS v,
+                v AS n
+            FROM u
+        ), s AS (
+            SELECT id, UCS, category,
+            CASE WHEN v IS NOT NULL THEN (
+                SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
+                FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
+            ) END AS v,
+            n
+            FROM t
+        )
+        SELECT id, UCS, category, ifnull(v, n) AS value FROM s
+    `))
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {
