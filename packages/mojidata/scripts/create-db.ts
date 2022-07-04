@@ -652,6 +652,10 @@ async function createUnihan(db: import("better-sqlite3").Database) {
                 SELECT id, UCS, 'kTraditionalVariant' AS l, value FROM unihan_kTraditionalVariant
                 UNION ALL
                 SELECT id, UCS, 'kZVariant' AS l, value FROM unihan_kZVariant
+                UNION ALL
+                SELECT id, UCS, 'kJoyoKanji' AS l, value FROM unihan_kJoyoKanji WHERE value GLOB 'U+*'
+                UNION ALL
+                SELECT id, UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM unihan_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
             ) AS k
             JOIN json_each('["' || replace(k.value, ' ', '","') || '"]') AS e
         ), t AS (
