@@ -48,7 +48,7 @@ function printMojidata(s: string) {
                     'CJKCI', printf('U+%04X', unicode(CJKCI))))
                 FROM svs_cjkci
                 WHERE (SVS glob @ucs || '*') OR (CJKCI glob @ucs || '*')),
-            'unihan', (SELECT json_group_object(property, value) FROM unihan WHERE unihan.id = unicode(@ucs) AND property NOT GLOB 'k*Variant'),
+            'unihan', (SELECT json_group_object(property, value) FROM unihan WHERE unihan.id = unicode(@ucs)),
             'unihan_variant', (SELECT json_group_array(CASE WHEN additional_data IS NOT NULL THEN json_array(property, printf('U+%04X', unicode(value)), value, additional_data) ELSE json_array(property, printf('U+%04X', unicode(value)), value) END) FROM unihan_variant WHERE unihan_variant.id = unicode(@ucs)),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
