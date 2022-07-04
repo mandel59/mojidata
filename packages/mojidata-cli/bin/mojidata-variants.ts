@@ -39,6 +39,10 @@ function printMojidata(argv: string[]) {
                 SELECT UCS AS c1, value AS c2, property AS r
                 FROM unihan_variant
                 UNION ALL
+                SELECT UCS AS c1, value AS c2, 'kStrange_' || category AS r
+                FROM unihan_strange
+                WHERE category IN ('F', 'M', 'O', 'R', 'I')
+                UNION ALL
                 SELECT ifnull(mji.実装したUCS, mji.対応するUCS) AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r
                 FROM mjsm
                 JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
@@ -62,12 +66,14 @@ function printMojidata(argv: string[]) {
                 UNION
                 SELECT DISTINCT t.c1, t.c2, t.r
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
-                WHERE u.r NOT IN (
-                    'kSpoofingVariant',
-                    'kSpecializedSemanticVariant',
-                    '民一2842号通達別表_誤字俗字正字一覧表_別字',
-                    '入管正字_類字',
-                    '同音の漢字による書きかえ')
+                WHERE
+                    u.r NOT IN (
+                        'kSpoofingVariant',
+                        'kSpecializedSemanticVariant',
+                        '民一2842号通達別表_誤字俗字正字一覧表_別字',
+                        '入管正字_類字',
+                        '同音の漢字による書きかえ')
+                    AND u.r NOT GLOB 'kStrange_?'
             )
         SELECT c1, c2, r FROM u
         `).all({ args: JSON.stringify(args) })
@@ -106,7 +112,8 @@ function printMojidata(argv: string[]) {
             || r === "kSpecializedSemanticVariant"
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
             || r === "入管正字_類字"
-            || r === "同音の漢字による書きかえ") {
+            || r === "同音の漢字による書きかえ"
+            || r.startsWith("kStrange_")) {
             return "stroke-dasharray: 5 5"
         }
         return ""
