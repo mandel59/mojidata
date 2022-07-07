@@ -13,4 +13,26 @@ scripts/download cid2code.txt
 scripts/download USourceData.txt
 scripts/download IDS.TXT
 scripts/download doonnokanjiniyorukakikae1956.txt
+scripts/download cjkvi-variants_cjkvi-simplified.txt
+scripts/download cjkvi-variants_cjkvi-variants.txt
+scripts/download cjkvi-variants_duplicate-chars.txt
+scripts/download cjkvi-variants_dypytz-variants.txt
+scripts/download cjkvi-variants_hydzd-borrowed.txt
+scripts/download cjkvi-variants_hydzd-variants.txt
+scripts/download cjkvi-variants_hyogai-variants.txt
+scripts/download cjkvi-variants_jinmei-variants.txt
+scripts/download cjkvi-variants_jisx0212-variants.txt
+scripts/download cjkvi-variants_jisx0213-variants.txt
+scripts/download cjkvi-variants_joyo-variants.txt
+scripts/download cjkvi-variants_jp-borrowed.txt
+scripts/download cjkvi-variants_jp-old-style.txt
+scripts/download cjkvi-variants_koseki-variants.txt
+scripts/download cjkvi-variants_non-cjk.txt
+scripts/download cjkvi-variants_non-cognates.txt
+scripts/download cjkvi-variants_numeric-variants.txt
+scripts/download cjkvi-variants_radical-variants.txt
+scripts/download cjkvi-variants_sawndip-variants.txt
+scripts/download cjkvi-variants_twedu-variants.txt
+scripts/download cjkvi-variants_ucs-scs.txt
+scripts/download cjkvi-variants_x0212-x0213-variants.txt
 ts-node --transpile-only scripts/create-db.ts

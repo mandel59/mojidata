@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 import { promisify } from "util"
 import parse from "csv-parse"
-import Database from "better-sqlite3"
+import Database, { Statement } from "better-sqlite3"
 import { format as formatSQL } from "sql-formatter"
 import { transaction } from "./lib/dbutils"
 import joyoKanjiHyo from "@mandel59/joyokanjihyo"
@@ -987,6 +987,97 @@ async function createDoon(db: import("better-sqlite3").Database) {
     db.exec(`CREATE INDEX "doon_書きかえた漢字" ON "doon" ("書きかえた漢字")`)
 }
 
+async function createKdpv(db: import("better-sqlite3").Database) {
+    db.exec(`drop view if exists "kdpv"`)
+    const dropTables = db.prepare(`select name from sqlite_master where type = 'table' and name glob 'kdpv_*'`).pluck().all()
+    for (const t of dropTables) {
+        db.exec(`drop table "${t.replace(/"/g, '""')}"`)
+    }
+    const filenames = (await promisify(fs.readdir)(path.join(__dirname, "../cache"), "utf-8")).filter(f => f.startsWith("cjkvi-variants_") && f.endsWith(".txt"))
+    const rels = new Map<string, Statement>()
+    const relrevs = new Map<string, string>()
+    const relnames = new Map<string | undefined, string>()
+    const getInsertToRel = (rel: string) => {
+        const i = rels.get(rel)
+        if (i) return i
+        const tname = `"kdpv_${rel.replace(/"/g, '""')}"`
+        db.exec(`CREATE TABLE ${tname} (subject TEXT NOT NULL, object TEXT NOT NULL, comment TEXT)`)
+        const st = db.prepare(`INSERT INTO ${tname} (subject, object, comment) VALUES (?, ?, ?)`)
+        rels.set(rel, st)
+        return st
+    }
+    await transaction(db, async () => {
+        for (const filename of filenames) {
+            try {
+                const csvpath = path.join(__dirname, "../cache", filename)
+                if (filename === "cjkvi-variants_jp-old-style.txt") {
+                    const stream = fs.createReadStream(csvpath).pipe(parse({
+                        columns: false,
+                        skipEmptyLines: true,
+                        relax_column_count: true,
+                        delimiter: "\t",
+                    }))
+                    relrevs.set("jp/old-style", "jp/new-style")
+                    relnames.set("jp/old-style", "旧字体")
+                    relnames.set("jp/new-style", "新字体")
+                    relrevs.set("jp/old-style/compat", "jp/new-style")
+                    relnames.set("jp/old-style/compat", "旧字体（互換漢字）")
+                    for await (const [subj, obj, compat, comment] of stream) {
+                        if (subj.startsWith("#")) {
+                            continue
+                        }
+                        const c = comment ? comment.replace(/^#\s*/, "") : null
+                        if (obj) {
+                            const insert = getInsertToRel("jp/old-style")
+                            insert.run(subj, obj, c)
+                        }
+                        if (compat) {
+                            const insert = getInsertToRel("jp/old-style/compat")
+                            insert.run(subj, compat, c)
+                        }
+                    }
+                    continue
+                }
+                const stream = fs.createReadStream(csvpath).pipe(parse({
+                    columns: false,
+                    skipEmptyLines: true,
+                    relax_column_count: true,
+                    comment: "#",
+                    delimiter: ",",
+                }))
+                for await (const [subj, rel, obj, comment] of stream) {
+                    if (rel === '<name>') {
+                        relnames.set(subj, obj)
+                    } else if (rel === '<rev>') {
+                        relrevs.set(subj, obj)
+                        relrevs.set(obj, subj)
+                    } else if (rel.startsWith('<')) {
+                        // ignore unknown meta relations
+                    } else {
+                        const insert = getInsertToRel(rel)
+                        insert.run(subj, obj, comment)
+                    }
+                }
+            } catch (err) {
+                console.error(filename)
+                throw err
+            }
+        }
+    })
+    db.exec(`CREATE TABLE "kdpv_rels" (rel TEXT NOT NULL, name TEXT, rev TEXT, rev_name TEXT)`)
+    const insert_rel = db.prepare(`INSERT INTO kdpv_rels (rel, name, rev, rev_name) VALUES (?, ?, ?, ?)`)
+    for (const rel of rels.keys()) {
+        insert_rel.run(rel, relnames.get(rel), relrevs.get(rel), relnames.get(relrevs.get(rel)))
+        const tname = `"kdpv_${rel.replace(/"/g, '""')}"`
+        db.exec(`CREATE INDEX "kdpv_${rel.replace(/"/g, '""')}_subject" ON ${tname} (subject)`)
+        db.exec(`CREATE INDEX "kdpv_${rel.replace(/"/g, '""')}_object" ON ${tname} (object)`)
+    }
+    db.exec(format(`CREATE VIEW "kdpv" AS\n${Array.from(rels.keys()).map(rel => {
+        const tname = `"kdpv_${rel.replace(/"/g, '""')}"`
+        return `SELECT subject, '${rel.replace(/'/g, "''")}' AS rel, object, comment FROM ${tname}`
+    }).join(`\nUNION ALL\n`)}`))
+}
+
 async function vacuum(db: import("better-sqlite3").Database) {
     db.exec("PRAGMA journal_mode = DELETE")
     db.exec("VACUUM")
@@ -1023,6 +1114,7 @@ async function main() {
     await time(createJoyoKanjiHyo)(db)
     await time(createNyukan)(db)
     await time(createDoon)(db)
+    await time(createKdpv)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")
 }

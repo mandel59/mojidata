@@ -42,3 +42,29 @@ doonnokanjiniyorukakikae1956.txt 2e500369ea3545a0948bfcf26f9658c0a519e0fc https:
 ## 入国管理局正字 <https://github.com/mandel59/nyukanseiji>
 ## Public domain
 ## data is fetched from @mandel59/nyukanseiji using npm
+
+## Kanji Database Project <http://kanji-database.sourceforge.net/>
+## Ideographic Variations Database <http://kanji-database.sourceforge.net/variants/variants.html>
+## License: MIT
+cjkvi-variants_cjkvi-simplified.txt fa7526f7582dc25ff3f94a17df61154a8461b9c7 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/cjkvi-simplified.txt
+cjkvi-variants_cjkvi-variants.txt 8ba24ff1fe1be8d5e4bec3b1fa7746d6608f2fa4 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/cjkvi-variants.txt
+cjkvi-variants_duplicate-chars.txt afe78cae9e73311f43aa4a996cadf776a88be7fa https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/duplicate-chars.txt
+cjkvi-variants_dypytz-variants.txt 91db35b215aaf3c4d80f970d4f648dd37ff8b29b https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/dypytz-variants.txt
+cjkvi-variants_hydzd-borrowed.txt bfcbb18ba49ab161409b594c7d5c4b44716210d9 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hydzd-borrowed.txt
+cjkvi-variants_hydzd-variants.txt c7b1a50170432cb999281a7735fc4d9ac713008d https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hydzd-variants.txt
+cjkvi-variants_hyogai-variants.txt 828ded1365ae00c63c7a485e3dcbe8fe22eb68bd https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hyogai-variants.txt
+cjkvi-variants_jinmei-variants.txt f48c82b86d5a468602128415f1e0dc950d9e09d6 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jinmei-variants.txt
+cjkvi-variants_jisx0212-variants.txt f18ec8ac77c1cea9dae8ac72dd6185d8441ef24d https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jisx0212-variants.txt
+cjkvi-variants_jisx0213-variants.txt 79ec9477c19a0cc228a71fab0cd7070263c8a9f0 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jisx0213-variants.txt
+cjkvi-variants_joyo-variants.txt 1678bda5b3e9bbb7f7e6900a7e9843f09010c323 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/joyo-variants.txt
+cjkvi-variants_jp-borrowed.txt cfe0981992cef4d133b84f51f0027b149c6a1e7c https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jp-borrowed.txt
+cjkvi-variants_jp-old-style.txt 1c567bf55217f97dc9f7ba951c8bbe4a3242c15e https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jp-old-style.txt
+cjkvi-variants_koseki-variants.txt e8bbb661d68e2ce2a61167816656dbc03efd5560 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/koseki-variants.txt
+cjkvi-variants_non-cjk.txt e324c4979d8248697e8545e4cc89a4d4f7e2139b https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/non-cjk.txt
+cjkvi-variants_non-cognates.txt a13155ac4b3afce17432a685ef2844160226abec https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/non-cognates.txt
+cjkvi-variants_numeric-variants.txt 6227bd17a824f6ad4dc622a7fd3f100377d71e51 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/numeric-variants.txt
+cjkvi-variants_radical-variants.txt beb936a1583298f75ee88e6ca9d1b82b47e692ae https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/radical-variants.txt
+cjkvi-variants_sawndip-variants.txt 62c38e8c528eff2997a36a4001ea39ad2824fdbd https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/sawndip-variants.txt
+cjkvi-variants_twedu-variants.txt 492b041fd27d554bebcd4442abed3a0c695be19e https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/twedu-variants.txt
+cjkvi-variants_ucs-scs.txt 93ea4afd0ccbd94006ac483f76586cba26764902 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/ucs-scs.txt
+cjkvi-variants_x0212-x0213-variants.txt cb3cbd8aa47e283368d59c33a17db11561d19125 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/x0212-x0213-variants.txt

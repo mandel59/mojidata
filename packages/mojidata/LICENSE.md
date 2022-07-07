@@ -26,9 +26,9 @@ SOFTWARE.
 
 ---
 
-The following resources are bundled with the package. See
-[download.txt](download.txt) for the bundled resources and the source URLs of
-them. Each of these resources is available under its own license.
+The following resources and/or their derivation may be bundled with the package.
+See [download.txt](download.txt) for the bundled resources and the source URLs
+of them. Each of these resources is available under its own license.
 
 ---
 
@@ -65,3 +65,24 @@ See [licenses/unicode.txt](licenses/unicode.txt)
 
 This file is not copyrighted, and may be used freely for any purpose without asking permission.<br>
 See the notes in the text file (IDS.TXT).
+
+---
+
+## 漢字データベースプロジェクト Kanji Database Project
+
+Copyright (c) 2014-2018 CJKVI Database
+
+The files of this project are available under the GNU GPL or the MIT License depending on files:
+
+- Available under the GNU GPL:
+    - IDSデータ (ids.txt)
+    - 説文解字注（六書音均表等を含む）データ (swjz.xml)
+    - 宋本廣韻データ (sbgy.xml)
+    - 學生字典データ (xszd.txt)
+- Available under the MIT License:
+    - All data not listed above including:
+        - 解字IDSデータ (ids-analysis.txt)
+        - 大漢和辞典関連データ
+        - 異体字データ
+
+See <http://kanji-database.sourceforge.net/index.html>
