@@ -1064,7 +1064,7 @@ async function createKdpv(db: import("better-sqlite3").Database) {
             }
         }
     })
-    db.exec(`CREATE TABLE "kdpv_rels" (rel TEXT NOT NULL, name TEXT, rev TEXT, rev_name TEXT)`)
+    db.exec(`CREATE TABLE "kdpv_rels" (rel TEXT NOT NULL PRIMARY KEY, name TEXT, rev TEXT, rev_name TEXT)`)
     const insert_rel = db.prepare(`INSERT INTO kdpv_rels (rel, name, rev, rev_name) VALUES (?, ?, ?, ?)`)
     for (const rel of rels.keys()) {
         insert_rel.run(rel, relnames.get(rel), relrevs.get(rel), relnames.get(relrevs.get(rel)))
