@@ -35,7 +35,7 @@ function printMojidata(argv: string[]) {
     const records = db.prepare(`
         WITH RECURSIVE
             args (value) AS (SELECT j.value FROM json_each(@args) AS j),
-            t (c1, c2, r) AS (
+            rels (c1, c2, r) AS (
                 SELECT UCS AS c1, value AS c2, property AS r
                 FROM unihan_variant
                 UNION ALL
@@ -57,25 +57,42 @@ function printMojidata(argv: string[]) {
                 UNION ALL
                 SELECT 康熙字典体 AS c1, 漢字 AS c2, '常用漢字表_新字体' AS r
                 FROM joyo_kangxi
+                UNION ALL
+                SELECT subject AS c1, object AS c2, rel AS r
+                FROM kdpv
+                WHERE rel IN (
+                    'cjkvi/duplicate',
+                    'cjkvi/non-cognate',
+                    'jisx0212/variant',
+                    'jisx0213/variant')
+                    AND length(subject) = 1
+                    AND length(object) = 1
                 ORDER BY c1, c2, r
             ),
-            u (c1, c2, r) AS (
-                SELECT DISTINCT c1, c2, r
+            t (c1, c2, rs, f) AS (
+                SELECT c1, c2, json_group_array(r) AS rs,
+                    max(
+                        r NOT IN (
+                            'kSpoofingVariant',
+                            'kSpecializedSemanticVariant',
+                            '民一2842号通達別表_誤字俗字正字一覧表_別字',
+                            '入管正字_類字',
+                            '同音の漢字による書きかえ',
+                            'cjkvi/non-cognate')
+                        AND r NOT GLOB 'kStrange_?'
+                    ) AS f
+                FROM rels GROUP BY c1, c2
+            ),
+            u (c1, c2, rs, f) AS (
+                SELECT DISTINCT c1, c2, rs, f
                 FROM t
                 WHERE c1 IN (SELECT value FROM args) OR c2 IN (SELECT value FROM args)
                 UNION
-                SELECT DISTINCT t.c1, t.c2, t.r
+                SELECT DISTINCT t.c1, t.c2, t.rs, t.f
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
-                WHERE
-                    u.r NOT IN (
-                        'kSpoofingVariant',
-                        'kSpecializedSemanticVariant',
-                        '民一2842号通達別表_誤字俗字正字一覧表_別字',
-                        '入管正字_類字',
-                        '同音の漢字による書きかえ')
-                    AND u.r NOT GLOB 'kStrange_?'
+                WHERE u.f
             )
-        SELECT c1, c2, r FROM u
+        SELECT c1, c2, j.value AS r FROM u JOIN json_each(u.rs) AS j
         `).all({ args: JSON.stringify(args) })
     const chars = new Map<string, any[]>()
     let edgeId = 0
@@ -113,6 +130,7 @@ function printMojidata(argv: string[]) {
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
             || r === "入管正字_類字"
             || r === "同音の漢字による書きかえ"
+            || r === "cjkvi/non-cognate"
             || r.startsWith("kStrange_")) {
             return "stroke-dasharray: 5 5"
         }
