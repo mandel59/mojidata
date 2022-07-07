@@ -103,7 +103,17 @@ function printMojidata(s: string) {
                         ORDER BY mjsm.表, mjsm.順位, mjsm.ホップ数
                     )))
                     FROM mji
-                    WHERE mji.対応するUCS = @ucs OR mji.実装したUCS = @ucs)
+                    WHERE mji.対応するUCS = @ucs OR mji.実装したUCS = @ucs),
+            'kdpv', (
+                SELECT json_group_object(rel, cs) FROM (
+                    SELECT rel, json_group_array(c) AS cs FROM (
+                        SELECT DISTINCT rel, object AS c FROM kdpv WHERE subject = @ucs
+                        UNION
+                        SELECT DISTINCT ifnull(rev, '~' || kdpv.rel) AS rel, subject AS c FROM kdpv LEFT JOIN kdpv_rels ON kdpv_rels.rel = kdpv.rel WHERE object = @ucs
+                    )
+                    GROUP BY rel
+                )
+            )
         ) AS vs`).pluck().all({ ucs: c })
         for (const value of values) {
             console.log(value)
