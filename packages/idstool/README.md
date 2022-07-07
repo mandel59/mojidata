@@ -1,4 +1,4 @@
-# Mojidata IDS tools
+# Mojidata IDS Tools
 
 ## Commands
 

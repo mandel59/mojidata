@@ -2,8 +2,9 @@
 
 ## Packages
 
-- [Mojidata](packages/mojidata)
-- [idstool](packages/idstool)
+- [Mojidata Character Database](packages/mojidata)
+- [Mojidata CLI](packages/mojidata-cli)
+- [Mojidata IDS Tools](packages/idstool)
 
 ## Build
 

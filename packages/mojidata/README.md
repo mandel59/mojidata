@@ -1,6 +1,6 @@
-# Mojidata - Character Database for Japanese Text Processing
+# Mojidata Character Database
 
-This package provides SQLite database about Japanese characters.
+This package provides a SQLite database with CJKV character data.
 
 The following data are included:
 
@@ -30,7 +30,7 @@ The following data are included:
 
 The source code of Mojidata is available under the MIT license.
 
-Some resources are bundled with the package. See [download.txt](download.txt)
+Some external resources are bundled with the package. See [download.txt](download.txt)
 for the bundled resources and the source URLs of them.
 
 Each of these resources is available under its own license.
