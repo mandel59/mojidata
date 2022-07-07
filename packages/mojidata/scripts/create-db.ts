@@ -1022,8 +1022,12 @@ async function createKdpv(db: import("better-sqlite3").Database) {
                     relnames.set("jp/new-style", "新字体")
                     relrevs.set("jp/old-style/compat", "jp/new-style")
                     relnames.set("jp/old-style/compat", "旧字体（互換漢字）")
-                    for await (const [subj, obj, compat, comment] of stream) {
-                        if (subj.startsWith("#")) {
+                    for await (let [subj, obj, compat, comment] of stream) {
+                        if (subj) subj = subj.trim()
+                        if (obj) obj = obj.trim()
+                        if (compat) compat = compat.trim()
+                        if (comment) comment = comment.trim()
+                        if (subj && subj.startsWith("#")) {
                             continue
                         }
                         const c = comment ? comment.replace(/^#\s*/, "") : null
@@ -1045,7 +1049,11 @@ async function createKdpv(db: import("better-sqlite3").Database) {
                     comment: "#",
                     delimiter: ",",
                 }))
-                for await (const [subj, rel, obj, comment] of stream) {
+                for await (let [subj, rel, obj, comment] of stream) {
+                    if (subj) subj = subj.trim()
+                    if (rel) rel = rel.trim()
+                    if (obj) obj = obj.trim()
+                    if (comment) comment = comment.trim()
                     if (rel === '<name>') {
                         relnames.set(subj, obj)
                     } else if (rel === '<rev>') {
