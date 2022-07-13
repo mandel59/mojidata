@@ -1070,6 +1070,68 @@ tables:
         type: text
         title: CJKCI
         description: ""
+  tghb:
+    type: table
+    title: tghb
+    description: "通用规范汉字表"
+    columnOrder:
+      - 序号
+      - 规范字
+      - 级
+      - 笔画
+      - 註解
+    columns:
+      序号:
+        type: text
+        title: 序号
+        description: ""
+      规范字:
+        type: text
+        title: 规范字
+        description: ""
+      级:
+        type: integer
+        title: 级
+        description: ""
+      笔画:
+        type: integer
+        title: 笔画
+        description: ""
+      註解:
+        type: text
+        title: 註解
+        description: ""
+  tghb_variants:
+    type: table
+    title: tghb_variants
+    description: "通用规范汉字表 规范字与繁体字、异体字对照表"
+    columnOrder:
+      - 序号
+      - 规范字
+      - 繁体字
+      - 异体字
+      - 註解
+    columns:
+      序号:
+        type: text
+        title: 序号
+        description: ""
+      规范字:
+        type: text
+        title: 规范字
+        description: ""
+      繁体字:
+        type: text
+        title: 繁体字
+        description: ""
+      异体字:
+        type: text
+        title: 异体字
+        description: ""
+      註解:
+        type: text
+        title: 註解
+        description: ""
   unihan:
     type: view
     title: unihan

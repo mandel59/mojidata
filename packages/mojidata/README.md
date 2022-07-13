@@ -20,6 +20,7 @@ The following data are included:
 - [文化庁], [常用漢字表](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/) (joyo)
 - [文化庁], [同音の漢字による書きかえ](https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kakuki/03/bukai03/03.html) (doon)
 - [出入国在留管理庁], [在留カード等に係る漢字氏名の表記等に関する告示](https://www.moj.go.jp/isa/content/930002422.pdf) 別表第四 (nyukan)
+- [国务院], [通用规范汉字表](http://www.gov.cn/zwgk/2013-08/19/content_2469793.htm) (tghb)
 
 [Adobe]: https://www.adobe.com/
 [Unicode]: https://home.unicode.org/
@@ -28,6 +29,7 @@ The following data are included:
 [Kanji Database Project]: http://kanji-database.sourceforge.net/index.html
 [文化庁]: https://www.bunka.go.jp/
 [出入国在留管理庁]: https://www.moj.go.jp/isa/
+[国务院]: https://www.gov.cn/guowuyuan/
 
 ## License
 

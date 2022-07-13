@@ -68,3 +68,8 @@ cjkvi-variants_sawndip-variants.txt 62c38e8c528eff2997a36a4001ea39ad2824fdbd htt
 cjkvi-variants_twedu-variants.txt 492b041fd27d554bebcd4442abed3a0c695be19e https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/twedu-variants.txt
 cjkvi-variants_ucs-scs.txt 93ea4afd0ccbd94006ac483f76586cba26764902 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/ucs-scs.txt
 cjkvi-variants_x0212-x0213-variants.txt cb3cbd8aa47e283368d59c33a17db11561d19125 https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/x0212-x0213-variants.txt
+
+## 通用规范汉字表 <https://github.com/mandel59/tongyongguifanhanzibiao>
+## Public domain
+tghb.txt 4b5521c77d2be4b44d3461476df93bd9d2673787 https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/tghb.txt
+tghb_variants.txt 9a452d2251ea3a941403107004f24870d72f51ff https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/variants.txt

@@ -1086,6 +1086,61 @@ async function createKdpv(db: import("better-sqlite3").Database) {
     }).join(`\nUNION ALL\n`)}`))
 }
 
+async function createTghb(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "tghb"`)
+    db.exec(`CREATE TABLE tghb (序号 TEXT NOT NULL PRIMARY KEY, 规范字 TEXT NOT NULL, 级 INTEGER NOT NULL, 笔画 INTEGER NOT NULL, 註解 TEXT)`)
+    const insert = db.prepare(`insert into tghb (序号, 规范字, 级, 笔画, 註解) values (:num, :char, :class, :strokes, :note)`)
+    const csvpath = path.join(__dirname, "../cache/tghb.txt")
+    const stream = fs.createReadStream(csvpath).pipe(parse({
+        columns: false,
+        skipEmptyLines: true,
+        delimiter: "\t",
+        from: 2,
+    }))
+    await transaction(db, async () => {
+        for await (const [num, char, klass, strokes, note] of stream) {
+            insert.run({
+                num,
+                char,
+                class: Number.parseInt(klass),
+                strokes: Number.parseInt(strokes),
+                note: note || null,
+            })
+        }
+    })
+    db.exec(`CREATE INDEX "tghb_规范字" ON "tghb" ("规范字")`)
+    db.exec(`CREATE INDEX "tghb_笔画" ON "tghb" ("笔画")`)
+}
+
+async function createTghbVariants(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "tghb_variants"`)
+    db.exec(`CREATE TABLE tghb_variants (序号 TEXT NOT NULL, 规范字 TEXT NOT NULL, 繁体字 TEXT NOT NULL, 异体字 TEXT NOT NULL, 註解 TEXT)`)
+    const insert = db.prepare(`insert into tghb_variants (序号, 规范字, 繁体字, 异体字, 註解) values (:num, :char, :hant, :variant, :note)`)
+    const csvpath = path.join(__dirname, "../cache/tghb_variants.txt")
+    const stream = fs.createReadStream(csvpath).pipe(parse({
+        columns: false,
+        skipEmptyLines: true,
+        delimiter: "\t",
+        from: 2,
+    }))
+    await transaction(db, async () => {
+        for await (const [num, char, hant, variant, note] of stream) {
+            insert.run({
+                num,
+                char,
+                hant,
+                variant,
+                note: note || null,
+            })
+        }
+    })
+    db.exec(`CREATE INDEX "tghb_variants_序号" ON "tghb_variants" ("序号")`)
+    db.exec(`CREATE INDEX "tghb_variants_规范字" ON "tghb_variants" ("规范字")`)
+    db.exec(`CREATE INDEX "tghb_variants_繁体字" ON "tghb_variants" ("繁体字")`)
+    db.exec(`CREATE INDEX "tghb_variants_异体字" ON "tghb_variants" ("异体字")`)
+}
+
+
 async function vacuum(db: import("better-sqlite3").Database) {
     db.exec("PRAGMA journal_mode = DELETE")
     db.exec("VACUUM")
@@ -1123,6 +1178,8 @@ async function main() {
     await time(createNyukan)(db)
     await time(createDoon)(db)
     await time(createKdpv)(db)
+    await time(createTghb)(db)
+    await time(createTghbVariants)(db)
     await time(vacuum)(db)
     console.timeEnd("ALL")
 }
