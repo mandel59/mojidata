@@ -89,10 +89,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/joyokanjihyo@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@mandel59/joyokanjihyo@npm:1.1.1"
-  checksum: 411f7012aad80f5841865974a02dcc59bbd72916f8127650f24748e90914ff9aab16e995e5752382eda736bd50c52a50b4d9edea0a47ef507260b9be8fe940be
+"@mandel59/joyokanjihyo@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@mandel59/joyokanjihyo@npm:1.2.0"
+  checksum: 6f6ff28a93838eecd6e16685e20dc641adb31952b2a75ff56762a7c70a067ff7b324aed4951ac220519f4c0ceeda49230db95bbcbc977b7d616a52c03d2b854e
   languageName: node
   linkType: hard
 
@@ -119,7 +119,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
-    "@mandel59/joyokanjihyo": ^1.1.1
+    "@mandel59/joyokanjihyo": 1.2.0
     "@mandel59/nyukanseiji": 1.2.0
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1

@@ -155,10 +155,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@mandel59/joyokanjihyo", [\
-        ["npm:1.1.1", {\
-          "packageLocation": "./.yarn/cache/@mandel59-joyokanjihyo-npm-1.1.1-6532ead063-411f7012aa.zip/node_modules/@mandel59/joyokanjihyo/",\
+        ["npm:1.2.0", {\
+          "packageLocation": "./.yarn/cache/@mandel59-joyokanjihyo-npm-1.2.0-26e467457b-6f6ff28a93.zip/node_modules/@mandel59/joyokanjihyo/",\
           "packageDependencies": [\
-            ["@mandel59/joyokanjihyo", "npm:1.1.1"]\
+            ["@mandel59/joyokanjihyo", "npm:1.2.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -168,7 +168,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/mojidata/",\
           "packageDependencies": [\
             ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-            ["@mandel59/joyokanjihyo", "npm:1.1.1"],\
+            ["@mandel59/joyokanjihyo", "npm:1.2.0"],\
             ["@mandel59/nyukanseiji", "npm:1.2.0"],\
             ["@types/better-sqlite3", "npm:5.4.2"],\
             ["@types/node", "npm:16.9.1"],\
