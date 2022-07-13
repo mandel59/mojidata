@@ -13,8 +13,8 @@ test('find 焽', async t => {
     t.assert(result.stdout.includes('焽'))
 })
 
-test('decompose 灿', async t => {
+test('decompose 江', async t => {
     $.verbose = false
-    const result = await $`node bin/ids-decompose.js "灿"`
-    t.assert(result.stdout === '⿰火山\n')
+    const result = await $`node bin/ids-decompose.js "江"`
+    t.assert(result.stdout === '⿰氵工\n')
 })
