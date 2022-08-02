@@ -64,6 +64,22 @@ function printMojidata(s: string) {
                 FROM nyukan
                 WHERE 簡体字等のUCS = @ucs OR 正字のUCS = @ucs
             ),
+            'tghb', (
+                SELECT json_group_array(json_object(
+                    '序号', tghb.序号,
+                    '规范字', tghb.规范字,
+                    '级', tghb.级,
+                    '笔画', tghb.笔画,
+                    '註解', tghb.註解,
+                    '异体字', (SELECT json_group_array(json_object(
+                        '繁体字', v.繁体字,
+                        '异体字', v.异体字,
+                        '註解', v.註解
+                    )) FROM tghb_variants AS v WHERE v.规范字 = tghb.规范字)
+                ))
+                FROM tghb
+                WHERE @ucs = tghb.规范字 OR @ucs IN (SELECT v.异体字 FROM tghb_variants AS v WHERE v.规范字 = tghb.规范字)
+            ),
             'mji', (
                 SELECT json_group_array(json_object(
                     'MJ文字図形名', MJ文字図形名,
