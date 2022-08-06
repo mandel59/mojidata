@@ -501,11 +501,11 @@ async function createRadicalEquivalents(db: import("better-sqlite3").Database) {
     })
 }
 
-async function createUSource(db: import("better-sqlite3").Database) {
-    db.exec(`drop table if exists "usource"`)
-    db.exec(`drop table if exists "usource_source"`)
-    db.exec(`drop table if exists "usource_comment"`)
-    db.exec(format(`CREATE TABLE "usource" (
+async function createUSource(db: import("better-sqlite3").Database, prefix = "usource", filename = "USourceData.txt") {
+    db.exec(`drop table if exists "${prefix}"`)
+    db.exec(`drop table if exists "${prefix}_source"`)
+    db.exec(`drop table if exists "${prefix}_comment"`)
+    db.exec(format(`CREATE TABLE "${prefix}" (
         "U-source ID" TEXT PRIMARY KEY,
         "status" TEXT NOT NULL,
         "UCS" TEXT,
@@ -516,18 +516,18 @@ async function createUSource(db: import("better-sqlite3").Database) {
         "TS" INTEGER,
         "FRS" INTEGER
     )`))
-    db.exec(format(`CREATE TABLE "usource_source" (
+    db.exec(format(`CREATE TABLE "${prefix}_source" (
         "U-source ID" TEXT NOT NULL,
         "source" TEXT NOT NULL
     )`))
     const insert = db.prepare(
-        `INSERT INTO "usource" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments", "TS", "FRS")
+        `INSERT INTO "${prefix}" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments", "TS", "FRS")
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     const insert_source = db.prepare(
-        `INSERT INTO "usource_source" ("U-source ID", "source")
+        `INSERT INTO "${prefix}_source" ("U-source ID", "source")
             VALUES (?, ?)`)
 
-    const csvpath = path.join(__dirname, "../cache/USourceData.txt")
+    const csvpath = path.join(__dirname, "../cache", filename)
     const stream = fs.createReadStream(csvpath).pipe(parse({
         columns: false,
         skipEmptyLines: true,
@@ -572,24 +572,27 @@ async function createUSource(db: import("better-sqlite3").Database) {
     })
 }
 
-async function createUnihan(db: import("better-sqlite3").Database) {
+async function createUnihan(db: import("better-sqlite3").Database, prefix = "unihan", resourceName = prefix) {
+    db.exec(`drop view if exists "${prefix}"`)
+    db.exec(`drop view if exists "${prefix}_variant"`)
+    db.exec(`drop view if exists "${prefix}_strange"`)
     for (const table of db.prepare(
         `select tbl_name
         from sqlite_master
-        where type = 'table' and tbl_name glob 'unihan_k*'`
+        where type = 'table' and tbl_name glob '${prefix}_k*'`
     ).pluck().all() as string[]) {
         db.exec(`drop table if exists "${table.replace(/"/g, '""')}"`)
     }
 
     const createTable = (property: string) => {
-        db.exec(format(`CREATE TABLE "unihan_${property}" (
+        db.exec(format(`CREATE TABLE "${prefix}_${property}" (
             "id" INTEGER PRIMARY KEY,
             "UCS" TEXT GENERATED ALWAYS AS (char(id)) VIRTUAL,
             "value" TEXT NOT NULL
         )`))
     }
 
-    const unihanFileNames = fs.readdirSync(path.join(__dirname, "../resources/unihan"))
+    const unihanFileNames = fs.readdirSync(path.join(__dirname, "../resources", resourceName))
 
     const insertMap: Map<string, import("better-sqlite3").Statement<[string, string]>> = new Map()
 
@@ -598,7 +601,7 @@ async function createUnihan(db: import("better-sqlite3").Database) {
         if (insert) return insert
         createTable(property)
         const newInsert = db.prepare(
-            `INSERT INTO "unihan_${property}" (id, value)
+            `INSERT INTO "${prefix}_${property}" (id, value)
             VALUES (?, ?)`)
         insertMap.set(property, newInsert)
         return newInsert
@@ -606,7 +609,7 @@ async function createUnihan(db: import("better-sqlite3").Database) {
 
     await transaction(db, async () => {
         for (const filename of unihanFileNames) {
-            const csvpath = path.join(__dirname, "../resources/unihan", filename)
+            const csvpath = path.join(__dirname, "../resources", resourceName, filename)
             const stream = fs.createReadStream(csvpath).pipe(parse({
                 columns: false,
                 skipEmptyLines: true,
@@ -626,36 +629,36 @@ async function createUnihan(db: import("better-sqlite3").Database) {
 
     const properties = Array.from(insertMap.keys())
     db.exec(format(
-        `CREATE VIEW "unihan" AS
+        `CREATE VIEW "${prefix}" AS
         SELECT "id", "UCS", "property", "value"
         FROM (\n${properties
-            .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "unihan_${k}"`)
+            .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "${prefix}_${k}"`)
             .join(`\nUNION ALL\n`)
         }\n)`))
     db.exec(format(`
-        CREATE VIEW "unihan_variant" AS
+        CREATE VIEW "${prefix}_variant" AS
         WITH u AS (
             SELECT k.id, l, UCS,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, 1, instr(e.value, '<') - 1) ELSE e.value END AS v,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, instr(e.value, '<') + 1) END AS note
             FROM (
-                SELECT id, UCS, 'kCompatibilityVariant' AS l, value FROM unihan_kCompatibilityVariant
+                SELECT id, UCS, 'kCompatibilityVariant' AS l, value FROM ${prefix}_kCompatibilityVariant
                 UNION ALL
-                SELECT id, UCS, 'kSemanticVariant' AS l, value FROM unihan_kSemanticVariant
+                SELECT id, UCS, 'kSemanticVariant' AS l, value FROM ${prefix}_kSemanticVariant
                 UNION ALL
-                SELECT id, UCS, 'kSimplifiedVariant' AS l, value FROM unihan_kSimplifiedVariant
+                SELECT id, UCS, 'kSimplifiedVariant' AS l, value FROM ${prefix}_kSimplifiedVariant
                 UNION ALL
-                SELECT id, UCS, 'kSpecializedSemanticVariant' AS l, value FROM unihan_kSpecializedSemanticVariant
+                SELECT id, UCS, 'kSpecializedSemanticVariant' AS l, value FROM ${prefix}_kSpecializedSemanticVariant
                 UNION ALL
-                SELECT id, UCS, 'kSpoofingVariant' AS l, value FROM unihan_kSpoofingVariant
+                SELECT id, UCS, 'kSpoofingVariant' AS l, value FROM ${prefix}_kSpoofingVariant
                 UNION ALL
-                SELECT id, UCS, 'kTraditionalVariant' AS l, value FROM unihan_kTraditionalVariant
+                SELECT id, UCS, 'kTraditionalVariant' AS l, value FROM ${prefix}_kTraditionalVariant
                 UNION ALL
-                SELECT id, UCS, 'kZVariant' AS l, value FROM unihan_kZVariant
+                SELECT id, UCS, 'kZVariant' AS l, value FROM ${prefix}_kZVariant
                 UNION ALL
-                SELECT id, UCS, 'kJoyoKanji' AS l, value FROM unihan_kJoyoKanji WHERE value GLOB 'U+*'
+                SELECT id, UCS, 'kJoyoKanji' AS l, value FROM ${prefix}_kJoyoKanji WHERE value GLOB 'U+*'
                 UNION ALL
-                SELECT id, UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM unihan_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
+                SELECT id, UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM ${prefix}_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
             ) AS k
             JOIN json_each('["' || replace(k.value, ' ', '","') || '"]') AS e
         ), t AS (
@@ -672,10 +675,10 @@ async function createUnihan(db: import("better-sqlite3").Database) {
         SELECT id, UCS, l AS property, v AS value, note AS additional_data FROM s
     `))
     db.exec(format(`
-        CREATE VIEW "unihan_strange" AS
+        CREATE VIEW "${prefix}_strange" AS
         WITH u AS (
             SELECT t.id, t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
-            FROM unihan_kStrange AS t
+            FROM ${prefix}_kStrange AS t
             JOIN json_each('["' || replace(t.value, ' ', '","') || '"]') AS j
             LEFT JOIN json_each('["' || replace(substr(j.value, 3), ':', '","') || '"]') AS k ON k.value <> ''
         ), t AS (
@@ -1148,12 +1151,13 @@ async function vacuum(db: import("better-sqlite3").Database) {
 
 function time<X extends any[], Y>(func: (...args: X) => Promise<Y>): (...args: X) => Promise<Y> {
     const name = func.name
-    console.time(name)
     return async (...args) => {
+        const label = String([name, ...args.slice(1)])
+        console.time(label)
         try {
             return await func(...args)
         } finally {
-            console.timeEnd(name)
+            console.timeEnd(label)
         }
     }
 }
@@ -1171,7 +1175,9 @@ async function main() {
     await time(createCjkRadicals)(db)
     await time(createRadicalEquivalents)(db)
     await time(createUSource)(db)
+    await time(createUSource)(db, "usource_draft", "USourceData-draft.txt")
     await time(createUnihan)(db)
+    await time(createUnihan)(db, "unihan_draft")
     await time(createAj1)(db)
     await time(createIDS)(db)
     await time(createJoyoKanjiHyo)(db)
