@@ -184,7 +184,11 @@ export class IDSDecomposer {
     private normalize(token: string) {
         return token
     }
+    private atomicMemo = new Set()
     private lookupIDS(char: string, source: string): string[] {
+        if (this.atomicMemo.has(char)) {
+            return [char]
+        }
         const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
         if (alltokens.length > 0) return alltokens
         const sources = ["G", "T", "H", "K", "J", "B", "U", "*"].filter(s => s !== source)
@@ -192,6 +196,7 @@ export class IDSDecomposer {
             const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
             if (alltokens.length > 0) return alltokens
         }
+        this.atomicMemo.add(char)
         return [char]
     }
     private *decompose(token: string, source: string): Generator<string[]> {
