@@ -33,8 +33,8 @@ function printMojidata(s: string) {
             'char', @ucs,
             'UCS', printf('U+%04X', unicode(@ucs)),
             'aj1', (SELECT json_object('CID', CID) FROM aj1 WHERE aj1.UCS = @ucs),
-            'ids', (SELECT json_group_array(json_object('IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.UCS = @ucs),
-            'ids_comment', (SELECT json_group_array(ids_comment.comment) FROM ids_comment WHERE ids_comment.UCS = @ucs),
+            'ids', (SELECT json_group_array(json_object('IDS', ids.IDS, 'source', ids.source)) FROM ids_draft as ids WHERE ids.UCS = @ucs),
+            'ids_comment', (SELECT json_group_array(ids_comment.comment) FROM ids_draft_comment as ids_comment WHERE ids_comment.UCS = @ucs),
             'ivs', (SELECT json_group_array(json_object(
                 'char', ivs.IVS,
                 'IVS', printf('%04X_%04X', unicode(ivs.IVS), unicode(substr(ivs.IVS, 2))),
@@ -48,8 +48,8 @@ function printMojidata(s: string) {
                     'CJKCI', printf('U+%04X', unicode(CJKCI))))
                 FROM svs_cjkci
                 WHERE (SVS glob @ucs || '*') OR (CJKCI glob @ucs || '*')),
-            'unihan', (SELECT json_group_object(property, value) FROM unihan WHERE unihan.id = unicode(@ucs)),
-            'unihan_variant', (SELECT json_group_array(CASE WHEN additional_data IS NOT NULL THEN json_array(property, printf('U+%04X', unicode(value)), value, additional_data) ELSE json_array(property, printf('U+%04X', unicode(value)), value) END) FROM unihan_variant WHERE unihan_variant.id = unicode(@ucs)),
+            'unihan', (SELECT json_group_object(property, value) FROM unihan_draft as unihan WHERE unihan.id = unicode(@ucs)),
+            'unihan_variant', (SELECT json_group_array(CASE WHEN additional_data IS NOT NULL THEN json_array(property, printf('U+%04X', unicode(value)), value, additional_data) ELSE json_array(property, printf('U+%04X', unicode(value)), value) END) FROM unihan_draft_variant as unihan_variant WHERE unihan_variant.id = unicode(@ucs)),
             'joyo', (SELECT json_group_array(json_object('音訓', 音訓, '例', json(例), '備考', 備考)) FROM joyo WHERE joyo.漢字 = @ucs),
             'joyo_kangxi', (SELECT json_group_array(康熙字典体) FROM joyo_kangxi WHERE joyo_kangxi.漢字 = @ucs),
             'doon', (SELECT json_group_array(json_object('書きかえる漢語', 書きかえる漢語, '書きかえた漢語', 書きかえた漢語, '採用した文書', 採用した文書)) FROM doon WHERE 書きかえる漢字	= @ucs OR 書きかえた漢字 = @ucs),

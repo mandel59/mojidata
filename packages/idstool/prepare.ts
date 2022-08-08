@@ -11,9 +11,9 @@ fs.rmSync(dbpath, { force: true })
 const db = new Database(dbpath)
 
 db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
-const codepoints: number[] = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM moji.ids ORDER BY codepoint`).pluck().all()
+const codepoints: number[] = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM moji.ids_draft ORDER BY codepoint`).pluck().all()
 const symbols_in_ids = new Set<string>()
-for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
+for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids_draft`).pluck().iterate() as Iterable<string>) {
     ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
 }
 db.exec(`DETACH DATABASE moji`)
@@ -27,6 +27,7 @@ const insert_idsfind = db.prepare<{ ucs: string, tokens: string }>(`INSERT INTO 
 const decomposer = new IDSDecomposer({
     dbpath: path.join(__dirname, "idsdecompose.db"),
     expandZVariants: true,
+    idstable: "ids_draft"
 })
 transactionSync(db, () => {
     for (const id of codepoints) {

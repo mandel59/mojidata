@@ -15,6 +15,7 @@ function showUsage() {
 const decomposer
     = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
+        idstable: "ids_draft",
     })
 
 const queryMode = Boolean(options.get("-q" || options.get("--query")))
