@@ -788,28 +788,28 @@ async function createAj1(db: import("better-sqlite3").Database) {
     }
 }
 
-async function createIDS(db: import("better-sqlite3").Database) {
-    db.exec(`drop table if exists "ids_fts"`)
-    db.exec(`drop table if exists "ids"`)
-    db.exec(`drop table if exists "ids_comment"`)
+async function createIDS(db: import("better-sqlite3").Database, prefix = "ids", filename="IDS.TXT") {
+    db.exec(`drop table if exists "${prefix}_fts"`)
+    db.exec(`drop table if exists "${prefix}"`)
+    db.exec(`drop table if exists "${prefix}_comment"`)
 
-    db.exec(format(`CREATE TABLE "ids" (
+    db.exec(format(`CREATE TABLE "${prefix}" (
         "UCS" TEXT NOT NULL,
         "source" TEXT NOT NULL,
         "IDS" TEXT NOT NULL
     )`))
-    db.exec(format(`CREATE TABLE "ids_comment" (
+    db.exec(format(`CREATE TABLE "${prefix}_comment" (
         "UCS" TEXT NOT NULL,
         "comment" TEXT NOT NULL
     )`))
 
-    const insert = db.prepare(`INSERT INTO "ids"
+    const insert = db.prepare(`INSERT INTO "${prefix}"
         ("UCS", "source", "IDS") VALUES (?, ?, ?)`)
 
-    const insert_comment = db.prepare(`INSERT INTO "ids_comment"
+    const insert_comment = db.prepare(`INSERT INTO "${prefix}_comment"
         ("UCS", "comment") VALUES (?, ?)`)
 
-    const datapath = path.join(__dirname, "../cache/IDS.TXT")
+    const datapath = path.join(__dirname, "../cache", filename)
     const stream = fs.createReadStream(datapath).pipe(parse({
         columns: false,
         comment: "#",
@@ -817,8 +817,6 @@ async function createIDS(db: import("better-sqlite3").Database) {
         skip_empty_lines: true,
         relax_column_count: true,
     }))
-
-    const symbols_in_ids = new Set()
 
     await transaction(db, async () => {
         for await (const record of stream) {
@@ -834,13 +832,13 @@ async function createIDS(db: import("better-sqlite3").Database) {
                     } else if (field.startsWith("*")) {
                         const comments = field.slice(1).split(/;/g)
                         for (const comment of comments) {
-                            insert_comment.run([ucs, comment])
+                            insert_comment.run([ucs, comment.trim()])
                         }
                     } else {
                         if (ucs === "\u{276ad}") {
                             const comments = field.split(/;/g)
                             for (const comment of comments) {
-                                insert_comment.run([ucs, comment])
+                                insert_comment.run([ucs, comment.trim()])
                             }
                             continue
                         }
@@ -854,8 +852,8 @@ async function createIDS(db: import("better-sqlite3").Database) {
         }
     })
 
-    db.exec(`CREATE INDEX "ids_UCS" ON "ids" ("UCS")`)
-    db.exec(`CREATE INDEX "ids_comment_UCS" ON "ids_comment" ("UCS")`)
+    db.exec(`CREATE INDEX "${prefix}_UCS" ON "${prefix}" ("UCS")`)
+    db.exec(`CREATE INDEX "${prefix}_comment_UCS" ON "${prefix}_comment" ("UCS")`)
 }
 
 async function createJoyoKanjiHyo(db: import("better-sqlite3").Database) {
@@ -1180,6 +1178,7 @@ async function main() {
     await time(createUnihan)(db, "unihan_draft")
     await time(createAj1)(db)
     await time(createIDS)(db)
+    await time(createIDS)(db, "ids_draft", "IDS_15.TXT")
     await time(createJoyoKanjiHyo)(db)
     await time(createNyukan)(db)
     await time(createDoon)(db)
