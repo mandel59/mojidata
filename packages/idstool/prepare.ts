@@ -11,7 +11,6 @@ fs.rmSync(dbpath, { force: true })
 const db = new Database(dbpath)
 
 db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
-const codepoints: number[] = db.prepare<[]>(`SELECT DISTINCT unicode(UCS) as codepoint FROM moji.ids_draft ORDER BY codepoint`).pluck().all()
 const symbols_in_ids = new Set<string>()
 for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids_draft`).pluck().iterate() as Iterable<string>) {
     ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
@@ -27,14 +26,26 @@ const insert_idsfind = db.prepare<{ ucs: string, tokens: string }>(`INSERT INTO 
 const decomposer = new IDSDecomposer({
     dbpath: path.join(__dirname, "idsdecompose.db"),
     expandZVariants: true,
-    idstable: "ids_draft"
+    idstable: "ids_draft",
+    unihanPrefix: "unihan_draft",
 })
+
+const allCharSources = decomposer.allCharSources()
 transactionSync(db, () => {
-    for (const id of codepoints) {
-        const ucs = String.fromCodePoint(id)
-        const alltokens = decomposer.decomposeAll(ucs)
+    const n = allCharSources.length
+    console.log("total", n)
+    let i = 0
+    let p = 0
+    for (const { char, source } of allCharSources) {
+        const alltokens = decomposer.decomposeAll(char, source)
         for (const tokens of alltokens) {
-            insert_idsfind.run({ ucs, tokens: tokens.join(' ') })
+            insert_idsfind.run({ ucs: char, tokens: tokens.join(' ') })
+        }
+        i++
+        const p1 = Math.floor(i / n * 100)
+        if (p1 > p) {
+            p = p1
+            console.log("%d%% (%d/%d)", p, i, n)
         }
     }
 })
