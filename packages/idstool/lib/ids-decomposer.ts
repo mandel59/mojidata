@@ -185,7 +185,9 @@ export class IDSDecomposer {
         return token
     }
     private lookupIDS(char: string, source: string): string[] {
-        const sources = [source, ...["G", "T", "H", "K", "J", "B", "U", "*"].filter(s => s !== source)]
+        const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+        if (alltokens.length > 0) return alltokens
+        const sources = ["G", "T", "H", "K", "J", "B", "U", "*"].filter(s => s !== source)
         for (const source of sources) {
             const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
             if (alltokens.length > 0) return alltokens
