@@ -123,9 +123,9 @@ function printMojidata(s: string) {
             'kdpv', (
                 SELECT json_group_object(rel, cs) FROM (
                     SELECT rel, json_group_array(c) AS cs FROM (
-                        SELECT DISTINCT rel, object AS c FROM kdpv WHERE subject = @ucs
+                        SELECT DISTINCT rel, object AS c FROM kdpv WHERE subject glob @ucs || '*'
                         UNION
-                        SELECT DISTINCT ifnull(rev, '~' || kdpv.rel) AS rel, subject AS c FROM kdpv LEFT JOIN kdpv_rels ON kdpv_rels.rel = kdpv.rel WHERE object = @ucs
+                        SELECT DISTINCT ifnull(rev, '~' || kdpv.rel) AS rel, subject AS c FROM kdpv LEFT JOIN kdpv_rels ON kdpv_rels.rel = kdpv.rel WHERE object glob @ucs || '*'
                     )
                     GROUP BY rel
                 )
