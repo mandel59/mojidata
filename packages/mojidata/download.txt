@@ -32,7 +32,7 @@ IVD_Sequences.txt 91698bdd5a0d966b1dc8706acc9c6f71cd81b936 https://unicode.org/i
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs <https://babelstone.co.uk/CJK/IDS.TXT>
 ## Not copyrighted
 IDS.TXT ce1453ddc9600cde3486552051d796e721eb1e77 https://raw.githubusercontent.com/mandel59/babelstone-ids/3f9943a23ac50eac57f50549ebbd11ef5e322251/IDS.TXT
-IDS_15.TXT 9953e0a9943404f4ed2b3b539c090036fd7c8cad https://raw.githubusercontent.com/mandel59/babelstone-ids/d7f4db828a6362edea5fc1695c96304626f3b412/IDS.TXT
+IDS_15.TXT a6184c3441dee79d6b08a40ba36967af0e38a2b4 https://raw.githubusercontent.com/mandel59/babelstone-ids/bb96fe2ce890e193bd8ae37f27a40695321ec33f/IDS.TXT
 
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
 ## Public domain
