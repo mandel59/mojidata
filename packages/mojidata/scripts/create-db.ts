@@ -8,7 +8,9 @@ import { transaction } from "./lib/dbutils"
 import joyoKanjiHyo from "@mandel59/joyokanjihyo"
 import nyukanseiji from "@mandel59/nyukanseiji"
 
-const format = (sql: string) => formatSQL(sql, { language: 'mysql' })
+const format = (sql: string) => {
+    return formatSQL(sql, { language: 'mysql' });
+}
 
 const dbpath = path.join(__dirname, "../dist/moji.db")
 
@@ -697,6 +699,17 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         )
         SELECT id, UCS, category, ifnull(v, n) AS value FROM s
     `))
+    const sources = properties.flatMap(p => {
+        const m = p.match(/^kIRG_(\w+?)Source$/)
+        if (m) {
+            return [m[1]];
+        }
+        return [];
+    })
+    db.exec(format(`
+        CREATE VIEW "${prefix}_source" AS
+        ${sources.map(s => `SELECT id, UCS, '${s}' as source, value FROM unihan_kIRG_${s}Source`).join("\nUNION ALL\n")}
+    `));
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {
