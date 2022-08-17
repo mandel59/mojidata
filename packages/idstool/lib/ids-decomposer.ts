@@ -47,30 +47,55 @@ function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
 
 export type IDSDecomposerOptions = {
     mojidb?: string
+    idstable?: string
+    unihanPrefix?: string
     dbpath?: string
     expandZVariants?: boolean
 }
 
 export class IDSDecomposer {
     private db: import("better-sqlite3").Database
-    private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string }>
+    private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
     readonly expandZVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
         const mojidbpath = options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db")
+        const idstable = options.idstable ?? "ids"
+        const unihanPrefix = options.unihanPrefix ?? "unihan"
         const dbpath = options.dbpath ?? ":memory:"
         this.expandZVariants = options.expandZVariants ?? false
         const db = new Database(dbpath)
         const tokenize = (s: string) => tokenizeIDS(s).join(' ')
         db.function("tokenize", tokenize)
+        db.table("regexp_substr_all", {
+            parameters: ["string", "pattern"],
+            columns: ["value"],
+            rows: function* (...args: unknown[]) {
+                const [string, pattern] = args
+                if (typeof pattern !== "string") {
+                    throw new TypeError("regexp_substr_all(string, pattern): pattern is not a string")
+                }
+                if (string === null) {
+                    return
+                }
+                if (typeof string !== "string") {
+                    throw new TypeError("regexp_substr_all(string, pattern): string is not a string")
+                }
+                const re = new RegExp(pattern, "gu")
+                let m
+                while (m = re.exec(string)) {
+                    yield [m[0]]
+                }
+            }
+        })
         db.prepare(`attach database ? as moji`).run(mojidbpath)
         db.exec(`drop table if exists tempids`)
-        db.exec(`create table tempids (UCS, IDS_tokens)`)
+        db.exec(`create table tempids (UCS, source, IDS_tokens)`)
         db.exec(`create index tempids_UCS on tempids (UCS)`)
-        db.exec(`insert into tempids select UCS, tokenize(IDS) as IDS_tokens FROM moji.ids`)
+        db.exec(`insert into tempids select UCS, value as source, tokenize(IDS) as IDS_tokens FROM moji.${idstable} join regexp_substr_all(source, 'UCS2003|\\w')`)
         if (this.expandZVariants) {
             this.zvar = new Map(
-                db.prepare(`select UCS, value FROM moji.unihan_kZVariant`).all()
+                db.prepare(`select UCS, value FROM moji.${unihanPrefix}_kZVariant`).all()
                     .map(({ UCS, value }) => {
                         return [
                             UCS as string,
@@ -86,10 +111,8 @@ export class IDSDecomposer {
         db.exec(`detach database moji`)
         this.db = db
         this.lookupIDSStatement = db.prepare(
-            `select IDS_tokens
-            from tempids
-            where UCS = $char
-            order by rowid`).pluck()
+            `select distinct IDS_tokens from tempids
+            where UCS = $char and source glob $source`).pluck()
         this.removeRedundantEntries()
         this.reduceAllSubtractions()
     }
@@ -144,13 +167,14 @@ export class IDSDecomposer {
         }
         const pairs: {
             UCS: string,
+            source: string,
             IDS_tokens: string,
-        }[] = this.db.prepare(`select UCS, IDS_tokens from tempids where IDS_tokens glob '*⊖*'`).all()
+        }[] = this.db.prepare(`select UCS, source, IDS_tokens from tempids where IDS_tokens glob '*⊖*'`).all()
         this.db.prepare(`delete from tempids where IDS_tokens glob '*⊖*'`).run()
-        const insert = this.db.prepare<[UCS: string, IDS_tokens: string]>(`insert into tempids (UCS, IDS_tokens) values (?, ?)`)
-        for (const { UCS, IDS_tokens } of pairs) {
+        const insert = this.db.prepare<[UCS: string, source: string, IDS_tokens: string]>(`insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`)
+        for (const { UCS, source, IDS_tokens } of pairs) {
             for (const [char, tokens] of process(UCS, IDS_tokens.split(" "))) {
-                insert.run(char, tokens.join(" "))
+                insert.run(char, source, tokens.join(" "))
             }
         }
     }
@@ -160,14 +184,25 @@ export class IDSDecomposer {
     private normalize(token: string) {
         return token
     }
-    private *decompose(token: string): Generator<string[]> {
+    private atomicMemo = new Set()
+    private lookupIDS(char: string, source: string): string[] {
+        if (this.atomicMemo.has(char)) {
+            return [char]
+        }
+        const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+        if (alltokens.length > 0) return alltokens
+        const sources = ["G", "T", "H", "K", "J", "B", "U", "*"].filter(s => s !== source)
+        for (const source of sources) {
+            const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+            if (alltokens.length > 0) return alltokens
+        }
+        this.atomicMemo.add(char)
+        return [char]
+    }
+    private *decompose(token: string, source: string): Generator<string[]> {
         const chars = this.expand(token)
         for (const char of chars) {
-            const alltokens = this.lookupIDSStatement.all({ char }) as string[]
-            if (alltokens.length === 0) {
-                yield [char]
-                return
-            }
+            const alltokens = this.lookupIDS(char, source)
             let unknownid = 0
             for (const tokens of alltokens) {
                 yield tokens.split(/ /g).map(token => {
@@ -180,8 +215,8 @@ export class IDSDecomposer {
             }
         }
     }
-    *decomposeAll(char: string): Generator<string[]> {
-        for (const tokens of this.decompose(char)) {
+    *decomposeAll(char: string, source: string): Generator<string[]> {
+        for (const tokens of this.decompose(char, source)) {
             if (tokens.length === 1 && tokens[0] === char) {
                 // atomic component (whose IDS is the character itself)
                 yield tokens
@@ -189,11 +224,11 @@ export class IDSDecomposer {
                 // treat the char as an atomic component
                 yield [char]
             } else {
-                yield* this.decomposeTokens(tokens)
+                yield* this.decomposeTokens(tokens, source)
             }
         }
     }
-    private *mapDecomposeAll(tokens: string[]): Generator<() => Iterable<string[]>> {
+    private *mapDecomposeAll(tokens: string[], source: string): Generator<() => Iterable<string[]>> {
         let i = 0
         while (i < tokens.length) {
             const token = tokens[i++]
@@ -210,13 +245,16 @@ export class IDSDecomposer {
                 yield () => tokensList
                 continue
             }
-            yield () => this.decomposeAll(token)
+            yield () => this.decomposeAll(token, source)
         }
     }
-    *decomposeTokens(tokens: string[]): Generator<string[]> {
-        const allDecomposed = allCombinations(Array.from(this.mapDecomposeAll(tokens)))
+    *decomposeTokens(tokens: string[], source: string): Generator<string[]> {
+        const allDecomposed = allCombinations(Array.from(this.mapDecomposeAll(tokens, source)))
         for (const decomposed of allDecomposed) {
             yield normalizeOverlaid(decomposed.flat())
         }
+    }
+    allCharSources(): { char: string, source: string }[] {
+        return this.db.prepare(`select distinct UCS as char, source from tempids`).all()
     }
 }

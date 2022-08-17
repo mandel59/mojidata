@@ -16,5 +16,5 @@ test('find 焽', async t => {
 test('decompose 江', async t => {
     $.verbose = false
     const result = await $`node bin/ids-decompose.js "江"`
-    t.assert(result.stdout === '⿰氵工\n')
+    t.assert(result.stdout === '⿰氵⿱⿱一丨一\n')
 })

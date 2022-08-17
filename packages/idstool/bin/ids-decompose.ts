@@ -15,25 +15,37 @@ function showUsage() {
 const decomposer
     = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
+        idstable: "ids_draft",
+        unihanPrefix: "unihan_draft",
     })
 
 const queryMode = Boolean(options.get("-q" || options.get("--query")))
 
+const allSources = "BGHJKMPSTUVXZUCS2003"
+
+const sources = (options.get("--source") === "*" ? allSources : options.get("--source") || allSources).match(/UCS2003|\w/g)
+const showSource = Boolean(options.get("--show-source"))
+
 for (const arg of argv) {
     const s = new Set()
-    for (const tokens of decomposer.decomposeTokens(tokenizeIDS(arg))) {
-        try {
-            const ids = Array.from(applyOperators(tokens)).join('')
-            if (!s.has(ids)) {
+    for (const source of sources) {
+        for (const tokens of decomposer.decomposeTokens(tokenizeIDS(arg), source)) {
+            try {
+                const ids = Array.from(applyOperators(tokens)).join('')
+                if (!showSource && s.has(ids)) {
+                    continue
+                }
                 s.add(ids)
                 if (queryMode) {
                     console.log(`§${ids}§`)
+                } else if (showSource) {
+                    console.log(source, ids)
                 } else {
                     console.log(ids)
                 }
+            } catch {
+                // ignore errors
             }
-        } catch {
-            // ignore errors
         }
     }
 }

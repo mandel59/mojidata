@@ -6,7 +6,16 @@ commit="$(curl -Ssf \
   -H "Accept: application/vnd.github.v3+json" \
   https://api.github.com/repos/mandel59/babelstone-ids/branches/main \
   | jq -r .commit.sha)"
+commit_15="$(curl -Ssf \
+  -H "Accept: application/vnd.github.v3+json" \
+  https://api.github.com/repos/mandel59/babelstone-ids/branches/unicode15 \
+  | jq -r .commit.sha)"
+
 url="https://raw.githubusercontent.com/mandel59/babelstone-ids/$commit/IDS.TXT"
+url_15="https://raw.githubusercontent.com/mandel59/babelstone-ids/$commit_15/IDS.TXT"
+
 sum="$(curl -Ssf "$url" | scripts/sha1sum | egrep -o '[0-9a-f]+')"
-sed "s!^IDS\\.TXT .*!IDS.TXT $sum $url!" download.txt > download.txt.tmp
+sum_15="$(curl -Ssf "$url_15" | scripts/sha1sum | egrep -o '[0-9a-f]+')"
+
+sed "s!^IDS\\.TXT .*!IDS.TXT $sum $url!;s!^IDS_15\\.TXT .*!IDS_15.TXT $sum_15 $url_15!" download.txt > download.txt.tmp
 mv download.txt.tmp download.txt
