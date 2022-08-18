@@ -51,6 +51,12 @@ async function createMji(db: import("better-sqlite3").Database) {
         "備考" TEXT
     )`))
 
+    db.exec(`drop table if exists "mji_duplicated_ivs"`);
+    db.exec(format(`CREATE TABLE "mji_duplicated_ivs" (
+        "MJ文字図形名" TEXT NOT NULL,
+        "重複実装したMoji_JohoコレクションIVS" TEXT NOT NULL
+    )`));
+
     db.exec(`drop table if exists "mji_reading"`)
     db.exec(format(`CREATE TABLE "mji_reading" (
         "MJ文字図形名" TEXT NOT NULL,
@@ -80,9 +86,11 @@ async function createMji(db: import("better-sqlite3").Database) {
                 || column === "対応する互換漢字") {
                 return parseUCS(value)
             }
-            if (column === "実装したMoji_JohoコレクションIVS"
-                || column === "実装したSVS") {
-                return parseVS(value)
+            if (column === "実装したMoji_JohoコレクションIVS") {
+                return value.split(";").map(c => parseVS(c));
+            }
+            if (column === "実装したSVS") {
+                return parseVS(value);
             }
             return value
         }
@@ -124,6 +132,10 @@ async function createMji(db: import("better-sqlite3").Database) {
     const insert = db.prepare(
         `INSERT INTO "mji" (${columns.map(renameColumns).map(quote).join(",")})
         VALUES (${columns.map(() => "?").join(",")})`)
+    const insert_duplicated_ivs = db.prepare(
+        `INSERT INTO "mji_duplicated_ivs" ("MJ文字図形名", "重複実装したMoji_JohoコレクションIVS")
+        VALUES (?, ?)`
+    )
     const insert_reading = db.prepare(
         `INSERT INTO "mji_reading" ("MJ文字図形名", "読み")
         VALUES (?, ?)`)
@@ -138,7 +150,22 @@ async function createMji(db: import("better-sqlite3").Database) {
         const radicalKey = [1, 2, 3, 4].map(i => `部首${i}(参考)`)
         const strokeKey = [1, 2, 3, 4].map(i => `内画数${i}(参考)`)
         for await (const row of stream) {
-            insert.run(columns.map(column => row[column]))
+            insert.run(columns.map(column => {
+                if (column === "実装したMoji_JohoコレクションIVS") {
+                    if (row[column] != null) {
+                        let retval;
+                        for (const v of (row[column] as string[])) {
+                            if (retval == null && v.codePointAt(0) === row["対応するUCS"].codePointAt(0)) {
+                                retval = v;
+                            } else {
+                                insert_duplicated_ivs.run([row["MJ文字図形名"], v]);
+                            }
+                        }
+                        return retval;
+                    }
+                }
+                return row[column]
+            }));
             if (row["読み(参考)"]) {
                 const readings = row["読み(参考)"].split(/・/g)
                 for (const reading of readings) {
@@ -801,7 +828,7 @@ async function createAj1(db: import("better-sqlite3").Database) {
     }
 }
 
-async function createIDS(db: import("better-sqlite3").Database, prefix = "ids", filename="IDS.TXT") {
+async function createIDS(db: import("better-sqlite3").Database, prefix = "ids", filename = "IDS.TXT") {
     db.exec(`drop table if exists "${prefix}_fts"`)
     db.exec(`drop table if exists "${prefix}"`)
     db.exec(`drop table if exists "${prefix}_comment"`)
