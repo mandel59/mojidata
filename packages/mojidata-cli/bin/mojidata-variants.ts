@@ -198,6 +198,9 @@ function printMojidata(argv: string[]) {
                 } else {
                     console.log(`    ${nodeId(c)}(("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>"))`)
                 }
+                if (!cfm.get(c)) {
+                    console.log(`    style ${nodeId(c)} stroke-dasharray: 5 5`)
+                }
                 chars.set(c, [])
             }
         }
