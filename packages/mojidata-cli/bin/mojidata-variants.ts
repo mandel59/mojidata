@@ -68,7 +68,7 @@ function printMojidata(argv: string[]) {
                     AND length(subject) = 1
                     AND length(object) = 1
                 UNION ALL
-                SELECT 繁体字 AS c1, 异体字 AS c2, 'tghb_异体字' AS r
+                SELECT 异体字 AS c1, 繁体字 AS c2, 'tghb_异体字' AS r
                 FROM tghb_variants
                 WHERE 异体字 glob '?'
                 UNION ALL
