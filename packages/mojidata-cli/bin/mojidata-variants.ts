@@ -101,7 +101,7 @@ function printMojidata(argv: string[]) {
                 FROM u JOIN t ON u.c1 = t.c1 OR u.c1 = t.c2 OR u.c2 = t.c1 OR u.c2 = t.c2
                 WHERE u.f
             )
-        SELECT c1, c2, j.value AS r FROM u JOIN json_each(u.rs) AS j
+        SELECT c1, c2, f, j.value AS r FROM u JOIN json_each(u.rs) AS j
         `).all({ args: JSON.stringify(args) })
     const chars = new Map<string, any[]>()
     let edgeId = 0
@@ -123,12 +123,11 @@ function printMojidata(argv: string[]) {
     }
     const codepoint = (c: string) => `U+${c.codePointAt(0)?.toString(16).toUpperCase()}`
     const nodeId = (c: string) => `u${c.codePointAt(0)?.toString(16)}`
-    const addChar = (c: string) => {
+    const addChar = (c: string, f: boolean) => {
         if (!chars.has(c)) {
-            if (args.includes(c)) {
-                console.log(`    ${nodeId(c)}((("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>")))`)
-            } else {
-                console.log(`    ${nodeId(c)}(("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>"))`)
+            console.log(`    ${nodeId(c)}(("${c}<br/><small><a href=#35;${nodeId(c)}>${codepoint(c)}</a></small>"))`)
+            if (!f) {
+                console.log(`    style ${nodeId(c)} stroke-dasharray: 5 5`)
             }
             chars.set(c, [])
         }
@@ -149,15 +148,25 @@ function printMojidata(argv: string[]) {
         }
         return ""
     }
+    /** character-following map */
+    const cfm = new Map<string, boolean>()
     for (const c of args) {
-        addChar(c)
+        cfm.set(c, true)
+    }
+    for (const record of records) {
+        const c1: string = record.c1
+        const c2: string = record.c2
+        const f: boolean = Boolean(record.f)
+        cfm.set(c1, (cfm.get(c1) ?? false) || f)
+        cfm.set(c2, (cfm.get(c2) ?? false) || f)
+    }
+    for (const [c, f] of cfm.entries()) {
+        addChar(c, f)
     }
     for (const record of records) {
         const c1: string = record.c1
         const c2: string = record.c2
         const r: string = record.r
-        addChar(c1)
-        addChar(c2)
         if (c1 !== c2) {
             addEdge(nodeId(c1), nodeId(c2), style(r))
         }
