@@ -48,7 +48,7 @@ function printMojidata(argv: string[]) {
                 JOIN mji ON mjsm.MJ文字図形名 = mji.MJ文字図形名
                 WHERE ifnull(mjsm.ホップ数, 1) < 2 AND mjsm.表 NOT GLOB '法務省告示582号*'
                 UNION ALL
-                SELECT 簡体字等のUCS AS c1, 正字のUCS AS c2, '入管正字_' || 正字の種類 AS r
+                SELECT 簡体字等のUCS AS c1, 正字のUCS AS c2, '入管正字_' || 正字の種類 || '_第' || 順位 || '順位' AS r
                 FROM nyukan
                 WHERE 簡体字等のUCS IS NOT NULL
                 UNION ALL
@@ -84,7 +84,8 @@ function printMojidata(argv: string[]) {
                             'kSpoofingVariant',
                             'kSpecializedSemanticVariant',
                             '民一2842号通達別表_誤字俗字正字一覧表_別字',
-                            '入管正字_類字',
+                            '入管正字_類字_第1順位',
+                            '入管正字_類字_第2順位',
                             '同音の漢字による書きかえ',
                             'cjkvi/non-cognate')
                         AND r NOT GLOB 'kStrange_?'
@@ -139,7 +140,8 @@ function printMojidata(argv: string[]) {
         if (r === "kSpoofingVariant"
             || r === "kSpecializedSemanticVariant"
             || r === "民一2842号通達別表_誤字俗字正字一覧表_別字"
-            || r === "入管正字_類字"
+            || r === "入管正字_類字_第1順位"
+            || r === "入管正字_類字_第2順位"
             || r === "同音の漢字による書きかえ"
             || r === "cjkvi/non-cognate"
             || r.startsWith("kStrange_")) {
