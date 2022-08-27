@@ -67,6 +67,14 @@ function printMojidata(argv: string[]) {
                     'jisx0213/variant')
                     AND length(subject) = 1
                     AND length(object) = 1
+                UNION ALL
+                SELECT 繁体字 AS c1, 异体字 AS c2, 'tghb_异体字' AS r
+                FROM tghb_variants
+                WHERE 异体字 glob '?'
+                UNION ALL
+                SELECT 规范字 AS c1, 繁体字 AS c2, 'tghb_繁体字' AS r
+                FROM tghb_variants
+                /* END OF UNION ALL */
                 ORDER BY c1, c2, r
             ),
             t (c1, c2, rs, f) AS (
