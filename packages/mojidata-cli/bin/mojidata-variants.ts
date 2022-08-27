@@ -72,7 +72,7 @@ function printMojidata(argv: string[]) {
                 FROM tghb_variants
                 WHERE 异体字 glob '?'
                 UNION ALL
-                SELECT 规范字 AS c1, 繁体字 AS c2, 'tghb_繁体字' AS r
+                SELECT 繁体字 AS c1, 规范字 AS c2, 'tghb_规范字' AS r
                 FROM tghb_variants
                 /* END OF UNION ALL */
                 ORDER BY c1, c2, r
