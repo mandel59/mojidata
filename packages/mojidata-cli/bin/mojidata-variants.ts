@@ -106,10 +106,13 @@ function printMojidata(argv: string[]) {
     let edgeId = 0
     const edges = new Set<string>()
     const addEdge = (n1: string, n2: string, style: string) => {
+        if (n1 > n2) {
+            [n1, n2] = [n2, n1];
+        }
         const edgeUniq = `${n1}|${n2}|${style}`
         if (!edges.has(edgeUniq)) {
             console.log(`    %% edge ${edgeId}`)
-            console.log(`    ${n1} --> ${n2}`)
+            console.log(`    ${n1} --- ${n2}`)
             if (style) {
                 console.log(`    linkStyle ${edgeId} ${style}`)
             }
