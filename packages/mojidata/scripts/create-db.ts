@@ -1226,6 +1226,8 @@ async function main() {
     await time(createTghb)(db)
     await time(createTghbVariants)(db)
     await time(vacuum)(db)
+    db.close()
+    fs.chmodSync(dbpath, 0o444)
     console.timeEnd("ALL")
 }
 
