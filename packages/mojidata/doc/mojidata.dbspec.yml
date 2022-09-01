@@ -1137,19 +1137,12 @@ tables:
     title: unihan
     description: ""
     columnOrder:
-      - id
       - UCS
       - property
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       property:
@@ -1164,18 +1157,11 @@ tables:
     title: unihan_kAccountingNumeric
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1187,18 +1173,11 @@ tables:
     title: unihan_kBigFive
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1210,18 +1189,11 @@ tables:
     title: unihan_kCCCII
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1233,18 +1205,11 @@ tables:
     title: unihan_kCNS1986
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1256,18 +1221,11 @@ tables:
     title: unihan_kCNS1992
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1279,18 +1237,11 @@ tables:
     title: unihan_kCangjie
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1302,18 +1253,11 @@ tables:
     title: unihan_kCantonese
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1325,18 +1269,11 @@ tables:
     title: unihan_kCheungBauer
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1348,18 +1285,11 @@ tables:
     title: unihan_kCheungBauerIndex
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1371,18 +1301,11 @@ tables:
     title: unihan_kCihaiT
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1394,18 +1317,11 @@ tables:
     title: unihan_kCompatibilityVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1417,18 +1333,11 @@ tables:
     title: unihan_kCowles
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1440,18 +1349,11 @@ tables:
     title: unihan_kDaeJaweon
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1463,18 +1365,11 @@ tables:
     title: unihan_kDefinition
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1486,18 +1381,11 @@ tables:
     title: unihan_kEACC
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1509,18 +1397,11 @@ tables:
     title: unihan_kFenn
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1532,18 +1413,11 @@ tables:
     title: unihan_kFennIndex
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1555,18 +1429,11 @@ tables:
     title: unihan_kFourCornerCode
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1578,18 +1445,11 @@ tables:
     title: unihan_kFrequency
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1601,18 +1461,11 @@ tables:
     title: unihan_kGB0
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1624,18 +1477,11 @@ tables:
     title: unihan_kGB1
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1647,18 +1493,11 @@ tables:
     title: unihan_kGB3
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1670,18 +1509,11 @@ tables:
     title: unihan_kGB5
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1693,18 +1525,11 @@ tables:
     title: unihan_kGB7
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1716,18 +1541,11 @@ tables:
     title: unihan_kGB8
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1739,18 +1557,11 @@ tables:
     title: unihan_kGSR
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1762,18 +1573,11 @@ tables:
     title: unihan_kGradeLevel
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1785,18 +1589,11 @@ tables:
     title: unihan_kHDZRadBreak
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1808,18 +1605,11 @@ tables:
     title: unihan_kHKGlyph
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1831,18 +1621,11 @@ tables:
     title: unihan_kHKSCS
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1854,18 +1637,11 @@ tables:
     title: unihan_kHanYu
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1877,18 +1653,11 @@ tables:
     title: unihan_kHangul
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1900,18 +1669,11 @@ tables:
     title: unihan_kHanyuPinlu
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1923,18 +1685,11 @@ tables:
     title: unihan_kHanyuPinyin
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1946,18 +1701,11 @@ tables:
     title: unihan_kIBMJapan
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1969,18 +1717,11 @@ tables:
     title: unihan_kIICore
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -1992,18 +1733,11 @@ tables:
     title: unihan_kIRGDaeJaweon
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2015,18 +1749,11 @@ tables:
     title: unihan_kIRGDaiKanwaZiten
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2038,18 +1765,11 @@ tables:
     title: unihan_kIRGHanyuDaZidian
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2061,18 +1781,11 @@ tables:
     title: unihan_kIRGKangXi
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2084,18 +1797,11 @@ tables:
     title: unihan_kIRG_GSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2107,18 +1813,11 @@ tables:
     title: unihan_kIRG_HSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2130,18 +1829,11 @@ tables:
     title: unihan_kIRG_JSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2153,18 +1845,11 @@ tables:
     title: unihan_kIRG_KPSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2176,18 +1861,11 @@ tables:
     title: unihan_kIRG_KSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2199,18 +1877,11 @@ tables:
     title: unihan_kIRG_MSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2222,18 +1893,11 @@ tables:
     title: unihan_kIRG_SSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2245,18 +1909,11 @@ tables:
     title: unihan_kIRG_TSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2268,18 +1925,11 @@ tables:
     title: unihan_kIRG_UKSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2291,18 +1941,11 @@ tables:
     title: unihan_kIRG_USource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2314,18 +1957,11 @@ tables:
     title: unihan_kIRG_VSource
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2337,18 +1973,11 @@ tables:
     title: unihan_kJIS0213
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2360,18 +1989,11 @@ tables:
     title: unihan_kJa
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2383,18 +2005,11 @@ tables:
     title: unihan_kJapaneseKun
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2406,18 +2021,11 @@ tables:
     title: unihan_kJapaneseOn
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2429,18 +2037,11 @@ tables:
     title: unihan_kJinmeiyoKanji
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2452,18 +2053,11 @@ tables:
     title: unihan_kJis0
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2475,18 +2069,11 @@ tables:
     title: unihan_kJis1
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2498,18 +2085,11 @@ tables:
     title: unihan_kJoyoKanji
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2521,18 +2101,11 @@ tables:
     title: unihan_kKPS0
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2544,18 +2117,11 @@ tables:
     title: unihan_kKPS1
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2567,18 +2133,11 @@ tables:
     title: unihan_kKSC0
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2590,18 +2149,11 @@ tables:
     title: unihan_kKSC1
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2613,18 +2165,11 @@ tables:
     title: unihan_kKangXi
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2636,18 +2181,11 @@ tables:
     title: unihan_kKarlgren
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2659,18 +2197,11 @@ tables:
     title: unihan_kKorean
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2682,18 +2213,11 @@ tables:
     title: unihan_kKoreanEducationHanja
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2705,18 +2229,11 @@ tables:
     title: unihan_kKoreanName
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2728,18 +2245,11 @@ tables:
     title: unihan_kLau
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2751,18 +2261,11 @@ tables:
     title: unihan_kMainlandTelegraph
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2774,18 +2277,11 @@ tables:
     title: unihan_kMandarin
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2797,18 +2293,11 @@ tables:
     title: unihan_kMatthews
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2820,18 +2309,11 @@ tables:
     title: unihan_kMeyerWempe
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2843,18 +2325,11 @@ tables:
     title: unihan_kMorohashi
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2866,18 +2341,11 @@ tables:
     title: unihan_kNelson
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2889,18 +2357,11 @@ tables:
     title: unihan_kOtherNumeric
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2912,18 +2373,11 @@ tables:
     title: unihan_kPhonetic
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2935,18 +2389,11 @@ tables:
     title: unihan_kPrimaryNumeric
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2958,18 +2405,11 @@ tables:
     title: unihan_kPseudoGB1
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -2981,18 +2421,11 @@ tables:
     title: unihan_kRSAdobe_Japan1_6
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3004,18 +2437,11 @@ tables:
     title: unihan_kRSKangXi
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3027,18 +2453,11 @@ tables:
     title: unihan_kRSUnicode
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3050,18 +2469,11 @@ tables:
     title: unihan_kSBGY
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3073,18 +2485,11 @@ tables:
     title: unihan_kSemanticVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3096,18 +2501,11 @@ tables:
     title: unihan_kSimplifiedVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3119,18 +2517,11 @@ tables:
     title: unihan_kSpecializedSemanticVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3142,18 +2533,11 @@ tables:
     title: unihan_kSpoofingVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3165,18 +2549,11 @@ tables:
     title: unihan_kStrange
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3188,18 +2565,11 @@ tables:
     title: unihan_kTGH
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3211,18 +2581,11 @@ tables:
     title: unihan_kTGHZ2013
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3234,18 +2597,11 @@ tables:
     title: unihan_kTaiwanTelegraph
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3257,18 +2613,11 @@ tables:
     title: unihan_kTang
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3280,18 +2629,11 @@ tables:
     title: unihan_kTotalStrokes
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3303,18 +2645,11 @@ tables:
     title: unihan_kTraditionalVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3326,18 +2661,11 @@ tables:
     title: unihan_kUnihanCore2020
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3349,18 +2677,11 @@ tables:
     title: unihan_kVietnamese
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3372,18 +2693,11 @@ tables:
     title: unihan_kXHC1983
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3395,18 +2709,11 @@ tables:
     title: unihan_kXerox
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3418,18 +2725,11 @@ tables:
     title: unihan_kZVariant
     description: ""
     columnOrder:
-      - id
       - UCS
       - value
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       value:
@@ -3474,14 +2774,8 @@ tables:
       - value
       - additional_data
     columns:
-      id:
-        type: integer
-        title: id
-        description: ""
       UCS:
         type: text
-        generatedAlways:
-          stored: false
         title: UCS character
         description: ""
       property:
@@ -3500,7 +2794,7 @@ tables:
     title: usource
     description: ""
     columnOrder:
-      - U-source ID
+      - U_source_ID
       - status
       - UCS
       - RS
@@ -3510,9 +2804,9 @@ tables:
       - TS
       - FRS
     columns:
-      U-source ID:
+      U_source_ID:
         type: text
-        title: U-source ID
+        title: U_source_ID
         description: ""
       status:
         type: text
@@ -3551,12 +2845,12 @@ tables:
     title: usource_source
     description: ""
     columnOrder:
-      - U-source ID
+      - U_source_ID
       - source
     columns:
-      U-source ID:
+      U_source_ID:
         type: text
-        title: U-source ID
+        title: U_source_ID
         description: ""
       source:
         type: text

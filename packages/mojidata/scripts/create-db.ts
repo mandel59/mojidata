@@ -535,7 +535,7 @@ async function createUSource(db: import("better-sqlite3").Database, prefix = "us
     db.exec(`drop table if exists "${prefix}_source"`)
     db.exec(`drop table if exists "${prefix}_comment"`)
     db.exec(format(`CREATE TABLE "${prefix}" (
-        "U-source ID" TEXT PRIMARY KEY,
+        "U_source_ID" TEXT PRIMARY KEY,
         "status" TEXT NOT NULL,
         "UCS" TEXT,
         "RS" TEXT NOT NULL,
@@ -546,14 +546,14 @@ async function createUSource(db: import("better-sqlite3").Database, prefix = "us
         "FRS" INTEGER
     )`))
     db.exec(format(`CREATE TABLE "${prefix}_source" (
-        "U-source ID" TEXT NOT NULL,
+        "U_source_ID" TEXT NOT NULL,
         "source" TEXT NOT NULL
     )`))
     const insert = db.prepare(
-        `INSERT INTO "${prefix}" ("U-source ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments", "TS", "FRS")
+        `INSERT INTO "${prefix}" ("U_source_ID", "status", "UCS", "RS", "VKXDP", "IDS", "comments", "TS", "FRS")
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     const insert_source = db.prepare(
-        `INSERT INTO "${prefix}_source" ("U-source ID", "source")
+        `INSERT INTO "${prefix}_source" ("U_source_ID", "source")
             VALUES (?, ?)`)
 
     const csvpath = path.join(__dirname, "../cache", filename)
@@ -615,8 +615,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
 
     const createTable = (property: string) => {
         db.exec(format(`CREATE TABLE "${prefix}_${property}" (
-            "id" INTEGER PRIMARY KEY,
-            "UCS" TEXT GENERATED ALWAYS AS (char(id)) VIRTUAL,
+            "UCS" TEXT NOT NULL PRIMARY KEY,
             "value" TEXT NOT NULL
         )`))
     }
@@ -630,8 +629,8 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         if (insert) return insert
         createTable(property)
         const newInsert = db.prepare(
-            `INSERT INTO "${prefix}_${property}" (id, value)
-            VALUES (?, ?)`)
+            `INSERT INTO "${prefix}_${property}" (UCS, value)
+            VALUES (char(?), ?)`)
         insertMap.set(property, newInsert)
         return newInsert
     }
@@ -659,64 +658,64 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     const properties = Array.from(insertMap.keys())
     db.exec(format(
         `CREATE VIEW "${prefix}" AS
-        SELECT "id", "UCS", "property", "value"
+        SELECT "UCS", "property", "value"
         FROM (\n${properties
-            .map(k => `SELECT '${k}' AS "property", "id", "UCS", "value" FROM "${prefix}_${k}"`)
+            .map(k => `SELECT '${k}' AS "property", "UCS", "value" FROM "${prefix}_${k}"`)
             .join(`\nUNION ALL\n`)
         }\n)`))
     db.exec(format(`
         CREATE VIEW "${prefix}_variant" AS
         WITH u AS (
-            SELECT k.id, l, UCS,
+            SELECT l, UCS,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, 1, instr(e.value, '<') - 1) ELSE e.value END AS v,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, instr(e.value, '<') + 1) END AS note
             FROM (
-                SELECT id, UCS, 'kCompatibilityVariant' AS l, value FROM ${prefix}_kCompatibilityVariant
+                SELECT UCS, 'kCompatibilityVariant' AS l, value FROM ${prefix}_kCompatibilityVariant
                 UNION ALL
-                SELECT id, UCS, 'kSemanticVariant' AS l, value FROM ${prefix}_kSemanticVariant
+                SELECT UCS, 'kSemanticVariant' AS l, value FROM ${prefix}_kSemanticVariant
                 UNION ALL
-                SELECT id, UCS, 'kSimplifiedVariant' AS l, value FROM ${prefix}_kSimplifiedVariant
+                SELECT UCS, 'kSimplifiedVariant' AS l, value FROM ${prefix}_kSimplifiedVariant
                 UNION ALL
-                SELECT id, UCS, 'kSpecializedSemanticVariant' AS l, value FROM ${prefix}_kSpecializedSemanticVariant
+                SELECT UCS, 'kSpecializedSemanticVariant' AS l, value FROM ${prefix}_kSpecializedSemanticVariant
                 UNION ALL
-                SELECT id, UCS, 'kSpoofingVariant' AS l, value FROM ${prefix}_kSpoofingVariant
+                SELECT UCS, 'kSpoofingVariant' AS l, value FROM ${prefix}_kSpoofingVariant
                 UNION ALL
-                SELECT id, UCS, 'kTraditionalVariant' AS l, value FROM ${prefix}_kTraditionalVariant
+                SELECT UCS, 'kTraditionalVariant' AS l, value FROM ${prefix}_kTraditionalVariant
                 UNION ALL
-                SELECT id, UCS, 'kZVariant' AS l, value FROM ${prefix}_kZVariant
+                SELECT UCS, 'kZVariant' AS l, value FROM ${prefix}_kZVariant
                 UNION ALL
-                SELECT id, UCS, 'kJoyoKanji' AS l, value FROM ${prefix}_kJoyoKanji WHERE value GLOB 'U+*'
+                SELECT UCS, 'kJoyoKanji' AS l, value FROM ${prefix}_kJoyoKanji WHERE value GLOB 'U+*'
                 UNION ALL
-                SELECT id, UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM ${prefix}_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
+                SELECT UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM ${prefix}_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
             ) AS k
             JOIN json_each('["' || replace(k.value, ' ', '","') || '"]') AS e
         ), t AS (
-            SELECT id, l, UCS, note, substr('00' || substr(v, 3), -6) AS v
+            SELECT l, UCS, note, substr('00' || substr(v, 3), -6) AS v
             FROM u
         ), s AS (
-            SELECT id, l, UCS, note,
+            SELECT l, UCS, note,
             (
                 SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
                 FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
             ) AS v
             FROM t
         )
-        SELECT id, UCS, l AS property, v AS value, note AS additional_data FROM s
+        SELECT UCS, l AS property, v AS value, note AS additional_data FROM s
     `))
     db.exec(format(`
         CREATE VIEW "${prefix}_strange" AS
         WITH u AS (
-            SELECT t.id, t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
+            SELECT t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
             FROM ${prefix}_kStrange AS t
             JOIN json_each('["' || replace(t.value, ' ', '","') || '"]') AS j
             LEFT JOIN json_each('["' || replace(substr(j.value, 3), ':', '","') || '"]') AS k ON k.value <> ''
         ), t AS (
-            SELECT id, UCS, category,
+            SELECT UCS, category,
                 CASE WHEN v GLOB 'U+*' THEN substr('00' || substr(v, 3), -6) END AS v,
                 v AS n
             FROM u
         ), s AS (
-            SELECT id, UCS, category,
+            SELECT UCS, category,
             CASE WHEN v IS NOT NULL THEN (
                 SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
                 FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
@@ -724,7 +723,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
             n
             FROM t
         )
-        SELECT id, UCS, category, ifnull(v, n) AS value FROM s
+        SELECT UCS, category, ifnull(v, n) AS value FROM s
     `))
     const sources = properties.flatMap(p => {
         const m = p.match(/^kIRG_(\w+?)Source$/)
@@ -735,7 +734,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     })
     db.exec(format(`
         CREATE VIEW "${prefix}_source" AS
-        ${sources.map(s => `SELECT id, UCS, '${s}' as source, value FROM unihan_kIRG_${s}Source`).join("\nUNION ALL\n")}
+        ${sources.map(s => `SELECT UCS, '${s}' as source, value FROM unihan_kIRG_${s}Source`).join("\nUNION ALL\n")}
     `));
 }
 
