@@ -33,8 +33,8 @@ function printMojidata(s: string) {
             'char', @ucs,
             'UCS', printf('U+%04X', unicode(@ucs)),
             'aj1', (SELECT json_object('CID', CID) FROM aj1 WHERE aj1.UCS = @ucs),
-            'ids', (SELECT json_group_array(json_object('IDS', ids.IDS, 'source', ids.source)) FROM ids_draft as ids WHERE ids.UCS = @ucs),
-            'ids_comment', (SELECT json_group_array(ids_comment.comment) FROM ids_draft_comment as ids_comment WHERE ids_comment.UCS = @ucs),
+            'ids', (SELECT json_group_array(json_object('IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.UCS = @ucs),
+            'ids_comment', (SELECT json_group_array(ids_comment.comment) FROM ids_comment WHERE ids_comment.UCS = @ucs),
             'ivs', (SELECT json_group_array(json_object(
                 'char', ivs.IVS,
                 'IVS', printf('%04X_%04X', unicode(ivs.IVS), unicode(substr(ivs.IVS, 2))),

@@ -15,7 +15,7 @@ function showUsage() {
 const decomposer
     = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
-        idstable: "ids_draft",
+        idstable: "ids",
         unihanPrefix: "unihan_draft",
     })
 

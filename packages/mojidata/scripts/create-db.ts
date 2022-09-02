@@ -1217,7 +1217,6 @@ async function main() {
     await time(createUnihan)(db, "unihan_draft")
     await time(createAj1)(db)
     await time(createIDS)(db)
-    await time(createIDS)(db, "ids_draft", "IDS_15.TXT")
     await time(createJoyoKanjiHyo)(db)
     await time(createNyukan)(db)
     await time(createDoon)(db)
