@@ -37,10 +37,10 @@ function printMojidata(argv: string[]) {
             args (value) AS (SELECT j.value FROM json_each(@args) AS j),
             rels (c1, c2, r) AS (
                 SELECT UCS AS c1, value AS c2, property AS r
-                FROM unihan_draft_variant as unihan_variant
+                FROM unihan_variant as unihan_variant
                 UNION ALL
                 SELECT UCS AS c1, value AS c2, 'kStrange_' || category AS r
-                FROM unihan_draft_strange as unihan_strange
+                FROM unihan_strange as unihan_strange
                 WHERE category IN ('F', 'M', 'O', 'R', 'I') AND value IS NOT NULL
                 UNION ALL
                 SELECT ifnull(mji.実装したUCS, mji.対応するUCS) AS c1, mjsm.縮退UCS AS c2, mjsm.表 AS r

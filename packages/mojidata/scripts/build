@@ -7,12 +7,12 @@ scripts/extract-mjsm
 scripts/extract-unicode-svs
 scripts/extract-unicode-ivs
 scripts/extract-unihan
-scripts/extract-unihan-draft
+# scripts/extract-unihan-draft
 scripts/download CJKRadicals.txt
 scripts/download EquivalentUnifiedIdeograph.txt
 scripts/download cid2code.txt
 scripts/download USourceData.txt
-scripts/download USourceData-draft.txt
+# scripts/download USourceData-draft.txt
 scripts/download IDS.TXT
 scripts/download doonnokanjiniyorukakikae1956.txt
 scripts/download cjkvi-variants_cjkvi-simplified.txt

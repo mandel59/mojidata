@@ -27,7 +27,7 @@ const decomposer = new IDSDecomposer({
     dbpath: path.join(__dirname, "idsdecompose.db"),
     expandZVariants: true,
     idstable: "ids",
-    unihanPrefix: "unihan_draft",
+    unihanPrefix: "unihan",
 })
 
 const allCharSources = decomposer.allCharSources()

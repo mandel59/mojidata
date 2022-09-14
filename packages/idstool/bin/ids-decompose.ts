@@ -16,7 +16,7 @@ const decomposer
     = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
         idstable: "ids",
-        unihanPrefix: "unihan_draft",
+        unihanPrefix: "unihan",
     })
 
 const queryMode = Boolean(options.get("-q" || options.get("--query")))
