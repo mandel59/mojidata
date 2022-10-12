@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2022-10-12
 ### Changed
 - Update `IVD_Sequences.txt` to <https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt>.
 ### Fixed
