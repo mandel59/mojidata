@@ -10,6 +10,7 @@
   },
   "files": [
     "README.md",
+    "CHANGELOG.md",
     "LICENSE.md",
     "download.txt",
     "dist/*",
