@@ -502,10 +502,12 @@ async function createRadicalEquivalents(db: import("better-sqlite3").Database) {
                 if (!code2) {
                     return [[parseInt(code1, 16), parseInt(equiv, 16)]]
                 } else {
-                    return [
-                        [parseInt(code1, 16), parseInt(equiv, 16)],
-                        [parseInt(code2, 16), parseInt(equiv, 16)]
-                    ]
+                    const arr = []
+                    let eqv = parseInt(equiv, 16)
+                    for (let i = parseInt(code1, 16); i <= parseInt(code2, 16); i++) {
+                        arr.push([i, eqv] as [number, number | null])
+                    }
+                    return arr
                 }
             } else {
                 throw new Error("format error")
