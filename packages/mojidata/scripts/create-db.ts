@@ -679,7 +679,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         ['kJoyoKanji', `value FROM "${prefix}_kJoyoKanji" WHERE value GLOB 'U+*'`],
         ['kJinmeiyoKanji', `substr(value, 6) as value FROM "${prefix}_kJinmeiyoKanji" WHERE value GLOB '20??:U+*'`],
     ].filter(([t, _]) => {
-        return Boolean(db.prepare(`select ? in (select name from sqlite_schema)`).pluck().get(t));
+        return Boolean(db.prepare(`select ? in (select name from sqlite_schema)`).pluck().get(`${prefix}_${t}`));
     }).map(([t, x]) => {
         return `SELECT UCS, '${t}' AS l, ${x}`;
     });
