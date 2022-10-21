@@ -11,6 +11,7 @@
     "bin/*.js",
     "lib/*.js",
     "idsfind.db",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
   ],
