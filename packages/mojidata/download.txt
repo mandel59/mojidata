@@ -23,6 +23,8 @@ EquivalentUnifiedIdeograph.txt 7013a84c54b8528128796cd583b70fa054ec4828 https://
 USourceData.txt 6b77de6534a253c4eb4ef949fc54719ca2f02146 https://www.unicode.org/Public/15.0.0/ucd/USourceData.txt
 Unihan.zip 5a78a66e4fa649aa03c1e30dd1b7db70952923cf https://www.unicode.org/Public/15.0.0/ucd/Unihan.zip
 
+Unihan-12.1.0.zip acd68a6a27a3aa476c3944f14069cd11b0f7b2f9 https://www.unicode.org/Public/12.1.0/ucd/Unihan.zip
+
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 ## License: Unicode-DFS-2016
 IVD_Sequences.txt c0a01e49f6e5ca5f189991d358ad3c589d8a134e https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt

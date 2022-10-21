@@ -657,6 +657,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         }
     })
 
+    // Create view unihan
     const properties = Array.from(insertMap.keys())
     db.exec(format(
         `CREATE VIEW "${prefix}" AS
@@ -665,30 +666,32 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
             .map(k => `SELECT '${k}' AS "property", "UCS", "value" FROM "${prefix}_${k}"`)
             .join(`\nUNION ALL\n`)
         }\n)`))
-    db.exec(format(`
+
+    // Create view unihan_variant
+    const variantTables = [
+        ['kCompatibilityVariant', `value FROM "${prefix}_kCompatibilityVariant"`],
+        ['kSemanticVariant', `value FROM "${prefix}_kSemanticVariant"`],
+        ['kSimplifiedVariant', `value FROM "${prefix}_kSimplifiedVariant"`],
+        ['kSpecializedSemanticVariant', `value FROM "${prefix}_kSpecializedSemanticVariant"`],
+        ['kSpoofingVariant', `value FROM "${prefix}_kSpoofingVariant"`],
+        ['kTraditionalVariant', `value FROM "${prefix}_kTraditionalVariant"`],
+        ['kZVariant', `value FROM "${prefix}_kZVariant"`],
+        ['kJoyoKanji', `value FROM "${prefix}_kJoyoKanji" WHERE value GLOB 'U+*'`],
+        ['kJinmeiyoKanji', `substr(value, 6) as value FROM "${prefix}_kJinmeiyoKanji" WHERE value GLOB '20??:U+*'`],
+    ].filter(([t, _]) => {
+        return Boolean(db.prepare(`select ? in (select name from sqlite_schema)`).pluck().get(t));
+    }).map(([t, x]) => {
+        return `SELECT UCS, '${t}' AS l, ${x}`;
+    });
+    if (variantTables.length > 0) {
+        db.exec(format(`
         CREATE VIEW "${prefix}_variant" AS
         WITH u AS (
             SELECT l, UCS,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, 1, instr(e.value, '<') - 1) ELSE e.value END AS v,
                 CASE WHEN instr(e.value, '<') THEN substr(e.value, instr(e.value, '<') + 1) END AS note
             FROM (
-                SELECT UCS, 'kCompatibilityVariant' AS l, value FROM ${prefix}_kCompatibilityVariant
-                UNION ALL
-                SELECT UCS, 'kSemanticVariant' AS l, value FROM ${prefix}_kSemanticVariant
-                UNION ALL
-                SELECT UCS, 'kSimplifiedVariant' AS l, value FROM ${prefix}_kSimplifiedVariant
-                UNION ALL
-                SELECT UCS, 'kSpecializedSemanticVariant' AS l, value FROM ${prefix}_kSpecializedSemanticVariant
-                UNION ALL
-                SELECT UCS, 'kSpoofingVariant' AS l, value FROM ${prefix}_kSpoofingVariant
-                UNION ALL
-                SELECT UCS, 'kTraditionalVariant' AS l, value FROM ${prefix}_kTraditionalVariant
-                UNION ALL
-                SELECT UCS, 'kZVariant' AS l, value FROM ${prefix}_kZVariant
-                UNION ALL
-                SELECT UCS, 'kJoyoKanji' AS l, value FROM ${prefix}_kJoyoKanji WHERE value GLOB 'U+*'
-                UNION ALL
-                SELECT UCS, 'kJinmeiyoKanji' AS l, substr(value, 6) FROM ${prefix}_kJinmeiyoKanji WHERE value GLOB '20??:U+*'
+                ${variantTables.join(`\nUNION ALL\n`)}
             ) AS k
             JOIN json_each('["' || replace(k.value, ' ', '","') || '"]') AS e
         ), t AS (
@@ -704,29 +707,36 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         )
         SELECT UCS, l AS property, v AS value, note AS additional_data FROM s
     `))
-    db.exec(format(`
-        CREATE VIEW "${prefix}_strange" AS
-        WITH u AS (
-            SELECT t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
-            FROM ${prefix}_kStrange AS t
-            JOIN json_each('["' || replace(t.value, ' ', '","') || '"]') AS j
-            LEFT JOIN json_each('["' || replace(substr(j.value, 3), ':', '","') || '"]') AS k ON k.value <> ''
-        ), t AS (
-            SELECT UCS, category,
-                CASE WHEN v GLOB 'U+*' THEN substr('00' || substr(v, 3), -6) END AS v,
-                v AS n
-            FROM u
-        ), s AS (
-            SELECT UCS, category,
-            CASE WHEN v IS NOT NULL THEN (
-                SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
-                FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
-            ) END AS v,
-            n
-            FROM t
-        )
-        SELECT UCS, category, ifnull(v, n) AS value FROM s
-    `))
+    }
+
+    // Create view unihan_strange
+    if (Boolean(db.prepare(`select ? in (select name from sqlite_schema)`).pluck().get(`${prefix}_kStrange`))) {
+        db.exec(format(`
+            CREATE VIEW "${prefix}_strange" AS
+            WITH u AS (
+                SELECT t.UCS, substr(j.value, 1, 1) AS category, k.value AS v
+                FROM "${prefix}_kStrange" AS t
+                JOIN json_each('["' || replace(t.value, ' ', '","') || '"]') AS j
+                LEFT JOIN json_each('["' || replace(substr(j.value, 3), ':', '","') || '"]') AS k ON k.value <> ''
+            ), t AS (
+                SELECT UCS, category,
+                    CASE WHEN v GLOB 'U+*' THEN substr('00' || substr(v, 3), -6) END AS v,
+                    v AS n
+                FROM u
+            ), s AS (
+                SELECT UCS, category,
+                CASE WHEN v IS NOT NULL THEN (
+                    SELECT char(sum((unicode(json_extract('"\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))
+                    FROM json_each(json_array(substr(v, 1, 2), substr(v, 3, 2), substr(v, 5, 2))) AS e
+                ) END AS v,
+                n
+                FROM t
+            )
+            SELECT UCS, category, ifnull(v, n) AS value FROM s
+        `))
+    }
+
+    // Create view unihan_source
     const sources = properties.flatMap(p => {
         const m = p.match(/^kIRG_(\w+?)Source$/)
         if (m) {
@@ -736,7 +746,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     })
     db.exec(format(`
         CREATE VIEW "${prefix}_source" AS
-        ${sources.map(s => `SELECT UCS, '${s}' as source, value FROM unihan_kIRG_${s}Source`).join("\nUNION ALL\n")}
+        ${sources.map(s => `SELECT UCS, '${s}' as source, value FROM "${prefix}_kIRG_${s}Source"`).join("\nUNION ALL\n")}
     `));
 }
 
@@ -1216,6 +1226,7 @@ async function main() {
     await time(createUSource)(db)
     // await time(createUSource)(db, "usource_draft", "USourceData-draft.txt")
     await time(createUnihan)(db)
+    // await time(createUnihan)(db, "unihan_12.1.0")
     // await time(createUnihan)(db, "unihan_draft")
     await time(createAj1)(db)
     await time(createIDS)(db)

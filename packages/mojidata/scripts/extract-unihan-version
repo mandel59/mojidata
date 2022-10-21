@@ -1,0 +1,11 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+version="$1"
+
+scripts/download Unihan-"$version".zip
+rm -rf resources/unihan_"$version"
+mkdir -p resources/unihan_"$version"
+unzip -o cache/Unihan-"$version".zip -d resources/unihan_"$version"

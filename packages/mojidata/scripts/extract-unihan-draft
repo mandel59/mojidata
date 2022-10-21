@@ -1,9 +1,0 @@
-#!/bin/bash
-set -eu
-
-cd "$(dirname "$0")/.."
-
-scripts/download Unihan-draft.zip
-rm -rf resources/unihan_draft
-mkdir -p resources/unihan_draft
-unzip -o cache/Unihan-draft.zip -d resources/unihan_draft
