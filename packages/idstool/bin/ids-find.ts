@@ -49,6 +49,11 @@ async function main() {
         process.exit(1)
     }
     const idsfinder = new IDSFinder()
+    const debugQuery = options.get("--debug-query")
+    if (typeof debugQuery === "string") {
+        console.log(idsfinder.debugQuery(debugQuery, ...args))
+        return
+    }
     for (const result of idsfinder.find(...args)) {
         if (!process.stdout.write(result)) {
             await drain(process.stdout)

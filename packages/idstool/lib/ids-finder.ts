@@ -1,7 +1,7 @@
 import path from "path"
 import Database, { Statement } from "better-sqlite3"
 import { tokenizeIDS } from "./ids-tokenizer"
-import { query } from "./idsfind-query"
+import { query, makeQuery } from "./idsfind-query"
 import { expandOverlaid, nodeLength } from "./ids-operator"
 
 interface IDSFinderOptions {
@@ -9,11 +9,13 @@ interface IDSFinderOptions {
 }
 
 export class IDSFinder {
+    private db: import("better-sqlite3").Database;
     private findStatement: Statement<[{ idslist: string }]>
     private getIDSTokensStatement: Statement<[{ ucs: string }]>
     constructor(options: IDSFinderOptions = {}) {
         const dbpath = options.dbpath ?? require.resolve("../idsfind.db")
         const db = new Database(dbpath)
+        this.db = db;
         this.findStatement = db.prepare<{ idslist: string }>(query).pluck()
         this.getIDSTokensStatement = db.prepare<{ ucs: string }>(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
@@ -24,6 +26,10 @@ export class IDSFinder {
                 yield result as string
             }
         }
+    }
+    debugQuery(query: string, ...idslist: string[]) {
+        const idslistTokenized = idslist.map(ids => [...expandOverlaid(tokenizeIDS(ids))])
+        return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(idslistTokenized) });
     }
     private idsmatch(tokens: string[], pattern: string[]) {
         const matchFrom = (i: number) => {

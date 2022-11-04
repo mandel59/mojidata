@@ -1,4 +1,4 @@
-export const query = `
+export const queryContext = `
 with tokens as (
     select
         idslist.key as key0,
@@ -51,15 +51,27 @@ patterns as (
           and decomposed.key1 = combinations.key1
     )
     group by key0, key1
-)
-select char(docid) AS UCS
-from idsfind_fts
-where IDS_tokens match (
+),
+token_pattern as (
     select group_concat('(' || pattern || ')', ' AND ') as pattern
     from (
         select key0, group_concat('(' || pattern || ')', ' OR ') as pattern
         from patterns
         group by key0
     )
+),
+results as (
+    select char(docid) AS UCS
+    from idsfind_fts
+    join token_pattern
+    where IDS_tokens match pattern
 )
 `
+
+export const queryBody = `select UCS from results`
+
+export function makeQuery(queryBody: string) {
+    return `${queryContext}\n${queryBody}`
+}
+
+export const query = makeQuery(queryBody)
