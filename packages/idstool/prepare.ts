@@ -30,17 +30,12 @@ const decomposer = new IDSDecomposer({
     unihanPrefix: "unihan",
 })
 
-const allCharSources = decomposer.allCharSources()
-transactionSync(db, () => {
-    const n = allCharSources.length
-    console.log("total", n)
+function showProgressForEach<T>(array: T[], proc: (value: T) => void) {
+    const n = array.length
     let i = 0
     let p = 0
-    for (const { char, source } of allCharSources) {
-        const alltokens = decomposer.decomposeAll(char, source)
-        for (const tokens of alltokens) {
-            insert_idsfind.run({ ucs: char, tokens: tokens.join(' ') })
-        }
+    for (const value of array) {
+        proc(value)
         i++
         const p1 = Math.floor(i / n * 100)
         if (p1 > p) {
@@ -48,6 +43,27 @@ transactionSync(db, () => {
             console.log("%d%% (%d/%d)", p, i, n)
         }
     }
+}
+
+const allCharSources = decomposer.allCharSources()
+transactionSync(db, () => {
+    const n = allCharSources.length
+    console.log("total", n)
+    showProgressForEach(allCharSources, ({ char, source }) => {
+        const alltokens = decomposer.decomposeAll(char, source)
+        for (const tokens of alltokens) {
+            insert_idsfind.run({ ucs: char, tokens: tokens.join(' ') })
+        }
+    })
+    const allFallbacks = decomposer.allFallbacks()
+    const nf = allFallbacks.length
+    console.log("fallback", nf)
+    showProgressForEach(allFallbacks, ({ char, source }) => {
+        const alltokens = decomposer.decomposeAll(char, source)
+        for (const tokens of alltokens) {
+            insert_idsfind.run({ ucs: char, tokens: tokens.join(' ') })
+        }
+    })
 })
 
 db.exec(`INSERT INTO idsfind (UCS, IDS_tokens) SELECT DISTINCT UCS, IDS_tokens FROM idsfind_temp`)

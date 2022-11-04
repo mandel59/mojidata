@@ -21,6 +21,8 @@ const encodeMap: Partial<Record<string, string>> = {
     "⊖": "S",
 }
 
+const fallbackSourceOrder = ["G", "T", "H", "K", "J", "B", "U", "*"]
+
 function encodeTokensToXmlName(tokens: string[]) {
     return tokens.join("").replace(/./u, char => {
         return encodeMap[char] ?? char
@@ -186,18 +188,31 @@ export class IDSDecomposer {
     }
     private atomicMemo = new Set()
     private lookupIDS(char: string, source: string): string[] {
-        if (this.atomicMemo.has(char)) {
+        const atomicKey = `${char}${source}`
+        if (this.atomicMemo.has(atomicKey)) {
             return [char]
         }
         const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
         if (alltokens.length > 0) return alltokens
-        const sources = ["G", "T", "H", "K", "J", "B", "U", "*"].filter(s => s !== source)
+        const fallback = this.fallbackLookupIDS(char, source)
+        if (fallback) return fallback
+        this.atomicMemo.add(atomicKey)
+        return [char]
+    }
+    private fallbackMemo = new Map()
+    private fallbackLookupIDS(char: string, source: string): string[] | undefined {
+        const fallbackKey = `${char}:${source}`
+        if (this.fallbackMemo.has(fallbackKey)) {
+            return this.fallbackMemo.get(fallbackKey)
+        }
+        const sources = fallbackSourceOrder.filter(s => s !== source)
         for (const source of sources) {
             const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
-            if (alltokens.length > 0) return alltokens
+            if (alltokens.length > 0) {
+                this.fallbackMemo.set(fallbackKey, alltokens)
+                return alltokens
+            }
         }
-        this.atomicMemo.add(char)
-        return [char]
     }
     private *decompose(token: string, source: string): Generator<string[]> {
         const chars = this.expand(token)
@@ -256,5 +271,13 @@ export class IDSDecomposer {
     }
     allCharSources(): { char: string, source: string }[] {
         return this.db.prepare(`select distinct UCS as char, source from tempids`).all()
+    }
+    allFallbacks(): { char: string, source: string }[] {
+        const a = []
+        for (const k of this.fallbackMemo.keys()) {
+            const [char, source] = k.split(":")
+            a.push({ char, source })
+        }
+        return a
     }
 }
