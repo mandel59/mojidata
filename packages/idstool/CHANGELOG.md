@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Unreleased
 
 - ids-decompose: Skip IDS including "&s-".
+- ids-find: Add query debugging option `--debug-query`.
 
 ## [1.0.0] - 2022-10-12
 ### Changed
