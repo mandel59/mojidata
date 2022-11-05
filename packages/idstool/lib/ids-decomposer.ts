@@ -95,6 +95,7 @@ export class IDSDecomposer {
         db.exec(`create table tempids (UCS, source, IDS_tokens)`)
         db.exec(`create index tempids_UCS on tempids (UCS)`)
         db.exec(`insert into tempids select UCS, value as source, tokenize(IDS) as IDS_tokens FROM moji.${idstable} join regexp_substr_all(source, 'UCS2003|\\w')`)
+        db.exec(`create table tempids_UCS_source as select UCS, source from tempids`)
         if (this.expandZVariants) {
             this.zvar = new Map(
                 db.prepare(`select UCS, value FROM moji.${unihanPrefix}_kZVariant`).all()
@@ -257,7 +258,7 @@ export class IDSDecomposer {
         }
     }
     allCharSources(): { char: string, source: string }[] {
-        return this.db.prepare(`select distinct UCS as char, source from tempids`).all()
+        return this.db.prepare(`select distinct UCS as char, source from tempids_UCS_source`).all()
     }
     allFallbacks(): { char: string, source: string }[] {
         const a = []
