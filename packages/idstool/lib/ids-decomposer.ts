@@ -235,7 +235,7 @@ export class IDSDecomposer {
             if (tokens.length === 1 && tokens[0] === char) {
                 // atomic component (whose IDS is the character itself)
                 yield tokens
-            } else if (tokens[0] === '〾' || tokens[0] === '⊖') {
+            } else if (tokens[0] === '⊖') {
                 // treat the char as an atomic component
                 yield [char]
             } else {
@@ -247,19 +247,6 @@ export class IDSDecomposer {
         let i = 0
         while (i < tokens.length) {
             const token = tokens[i++]
-            if (token === "〾") {
-                const quotedTokens: string[] = []
-                quotedTokens.push(token)
-                let argCount = 1
-                while (argCount > 0) {
-                    const token = tokens[i++]
-                    argCount += (tokenArgs[token] ?? 0) - 1
-                    quotedTokens.push(token)
-                }
-                const tokensList = [quotedTokens]
-                yield () => tokensList
-                continue
-            }
             yield () => this.decomposeAll(token, source)
         }
     }
