@@ -146,7 +146,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:5.4.2"],\
             ["@types/node", "npm:16.9.1"],\
             ["ava", "npm:3.15.0"],\
-            ["better-sqlite3", "npm:7.4.4"],\
+            ["better-sqlite3", "npm:7.6.2"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=f456af"],\
             ["zx", "npm:4.2.0"]\
@@ -175,7 +175,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/yaml", "npm:1.9.6"],\
             ["ava", "npm:3.15.0"],\
             ["axios", "npm:0.23.0"],\
-            ["better-sqlite3", "npm:7.4.4"],\
+            ["better-sqlite3", "npm:7.6.2"],\
             ["csv-parse", "npm:4.16.3"],\
             ["sql-formatter", "npm:4.0.2"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
@@ -195,7 +195,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:7.4.0"],\
             ["@types/node", "npm:16.9.1"],\
             ["ava", "npm:3.15.0"],\
-            ["better-sqlite3", "npm:7.4.4"],\
+            ["better-sqlite3", "npm:7.6.2"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=f456af"],\
             ["zx", "npm:4.2.0"]\
@@ -220,7 +220,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mandel59/idstool", "workspace:packages/idstool"],\
             ["@types/node", "npm:16.9.1"],\
             ["html-webpack-plugin", "virtual:451070c8474ecbb05e7ebb5dabbc5f8db682893dd69ea597a888655d0b28c6ef443fbbe8d3081bc62b46b23e7642f29418555434d59471d0d9351876a94e99c8#npm:5.3.2"],\
-            ["sql.js-httpvfs", "npm:0.8.11"],\
+            ["sql.js-httpvfs", "npm:0.8.12"],\
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=f456af"],\
             ["vercel", "npm:23.1.2"],\
             ["webpack", "virtual:451070c8474ecbb05e7ebb5dabbc5f8db682893dd69ea597a888655d0b28c6ef443fbbe8d3081bc62b46b23e7642f29418555434d59471d0d9351876a94e99c8#npm:5.52.1"],\
@@ -1354,14 +1354,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["better-sqlite3", [\
-        ["npm:7.4.4", {\
-          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-7.4.4-7ed5b1ad27/node_modules/better-sqlite3/",\
+        ["npm:7.6.2", {\
+          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-7.6.2-a775750216/node_modules/better-sqlite3/",\
           "packageDependencies": [\
-            ["better-sqlite3", "npm:7.4.4"],\
+            ["better-sqlite3", "npm:7.6.2"],\
             ["bindings", "npm:1.5.0"],\
             ["node-gyp", "npm:8.2.0"],\
-            ["prebuild-install", "npm:6.1.4"],\
-            ["tar", "npm:6.1.11"]\
+            ["prebuild-install", "npm:7.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2357,11 +2356,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:4.2.1", {\
-          "packageLocation": "./.yarn/cache/decompress-response-npm-4.2.1-abe5b4ebe4-4e783ca4df.zip/node_modules/decompress-response/",\
+        ["npm:6.0.0", {\
+          "packageLocation": "./.yarn/cache/decompress-response-npm-6.0.0-359de2878c-d377cf47e0.zip/node_modules/decompress-response/",\
           "packageDependencies": [\
-            ["decompress-response", "npm:4.2.1"],\
-            ["mimic-response", "npm:2.1.0"]\
+            ["decompress-response", "npm:6.0.0"],\
+            ["mimic-response", "npm:3.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -2492,10 +2491,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["detect-libc", [\
-        ["npm:1.0.3", {\
-          "packageLocation": "./.yarn/cache/detect-libc-npm-1.0.3-c30ac344d4-daaaed925f.zip/node_modules/detect-libc/",\
+        ["npm:2.0.1", {\
+          "packageLocation": "./.yarn/cache/detect-libc-npm-2.0.1-2699cb2ac4-ccb05fcabb.zip/node_modules/detect-libc/",\
           "packageDependencies": [\
-            ["detect-libc", "npm:1.0.3"]\
+            ["detect-libc", "npm:2.0.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -4808,10 +4807,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:2.1.0", {\
-          "packageLocation": "./.yarn/cache/mimic-response-npm-2.1.0-037463e454-014fad6ab9.zip/node_modules/mimic-response/",\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/mimic-response-npm-3.1.0-a4a24b4e96-25739fee32.zip/node_modules/mimic-response/",\
           "packageDependencies": [\
-            ["mimic-response", "npm:2.1.0"]\
+            ["mimic-response", "npm:3.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5044,11 +5043,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["node-abi", [\
-        ["npm:2.30.0", {\
-          "packageLocation": "./.yarn/cache/node-abi-npm-2.30.0-d6aca91d32-4394c12de6.zip/node_modules/node-abi/",\
+        ["npm:3.28.0", {\
+          "packageLocation": "./.yarn/cache/node-abi-npm-3.28.0-7291733a57-ed8db5e58f.zip/node_modules/node-abi/",\
           "packageDependencies": [\
-            ["node-abi", "npm:2.30.0"],\
-            ["semver", "npm:5.7.1"]\
+            ["node-abi", "npm:3.28.0"],\
+            ["semver", "npm:7.3.5"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -5610,21 +5609,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["prebuild-install", [\
-        ["npm:6.1.4", {\
-          "packageLocation": "./.yarn/cache/prebuild-install-npm-6.1.4-dba03730c6-de4313eda8.zip/node_modules/prebuild-install/",\
+        ["npm:7.1.1", {\
+          "packageLocation": "./.yarn/cache/prebuild-install-npm-7.1.1-cb9fc9d341-dbf96d0146.zip/node_modules/prebuild-install/",\
           "packageDependencies": [\
-            ["prebuild-install", "npm:6.1.4"],\
-            ["detect-libc", "npm:1.0.3"],\
+            ["prebuild-install", "npm:7.1.1"],\
+            ["detect-libc", "npm:2.0.1"],\
             ["expand-template", "npm:2.0.3"],\
             ["github-from-package", "npm:0.0.0"],\
             ["minimist", "npm:1.2.5"],\
             ["mkdirp-classic", "npm:0.5.3"],\
             ["napi-build-utils", "npm:1.0.2"],\
-            ["node-abi", "npm:2.30.0"],\
-            ["npmlog", "npm:4.1.2"],\
+            ["node-abi", "npm:3.28.0"],\
             ["pump", "npm:3.0.0"],\
             ["rc", "npm:1.2.8"],\
-            ["simple-get", "npm:3.1.0"],\
+            ["simple-get", "npm:4.0.1"],\
             ["tar-fs", "npm:2.1.1"],\
             ["tunnel-agent", "npm:0.6.0"]\
           ],\
@@ -6313,11 +6311,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["simple-get", [\
-        ["npm:3.1.0", {\
-          "packageLocation": "./.yarn/cache/simple-get-npm-3.1.0-8c6f03c4cd-cca91a9ab2.zip/node_modules/simple-get/",\
+        ["npm:4.0.1", {\
+          "packageLocation": "./.yarn/cache/simple-get-npm-4.0.1-fa2a97645d-e4132fd27c.zip/node_modules/simple-get/",\
           "packageDependencies": [\
-            ["simple-get", "npm:3.1.0"],\
-            ["decompress-response", "npm:4.2.1"],\
+            ["simple-get", "npm:4.0.1"],\
+            ["decompress-response", "npm:6.0.0"],\
             ["once", "npm:1.4.0"],\
             ["simple-concat", "npm:1.0.1"]\
           ],\
@@ -6522,10 +6520,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["sql.js-httpvfs", [\
-        ["npm:0.8.11", {\
-          "packageLocation": "./.yarn/cache/sql.js-httpvfs-npm-0.8.11-71c336f2f7-53378f0e0b.zip/node_modules/sql.js-httpvfs/",\
+        ["npm:0.8.12", {\
+          "packageLocation": "./.yarn/cache/sql.js-httpvfs-npm-0.8.12-3dd88584ce-76b7e8947b.zip/node_modules/sql.js-httpvfs/",\
           "packageDependencies": [\
-            ["sql.js-httpvfs", "npm:0.8.11"],\
+            ["sql.js-httpvfs", "npm:0.8.12"],\
             ["comlink", "npm:4.3.1"]\
           ],\
           "linkType": "HARD"\
