@@ -39,7 +39,7 @@ async function main() {
         showHelp()
         process.exit()
     }
-    const args = [...argv]
+    const args = argv.map(x => x.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu, ""))
     const whole = options.get("--whole")
     if (typeof whole === "string" && whole !== "") {
         args.unshift(`§${whole}§`)
