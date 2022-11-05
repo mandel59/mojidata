@@ -8,6 +8,16 @@ interface IDSFinderOptions {
     dbpath?: string
 }
 
+function tokenizeIdsList(idslist: string[]) {
+    const idslistTokenized = idslist.map(tokenizeIDS).map(expandOverlaid)
+    /** ids list without variable constraints. variables are replaced into placeholder token ？ */
+    const idslistWithoutVC = idslistTokenized.map(x => x.map(y => y.map(z => /^[a-zａ-ｚ]$/.test(z) ? "？" : z)))
+    return {
+        forQuery: idslistWithoutVC,
+        forAudit: idslistTokenized,
+    }
+}
+
 export class IDSFinder {
     private db: import("better-sqlite3").Database;
     private findStatement: Statement<[{ idslist: string }]>
@@ -20,19 +30,20 @@ export class IDSFinder {
         this.getIDSTokensStatement = db.prepare<{ ucs: string }>(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
     *find(...idslist: string[]) {
-        const idslistTokenized = idslist.map(ids => [...expandOverlaid(tokenizeIDS(ids))])
-        for (const result of this.findStatement.iterate({ idslist: JSON.stringify(idslistTokenized) })) {
-            if (this.postaudit(result, idslistTokenized)) {
+        const tokenized = tokenizeIdsList(idslist)
+        for (const result of this.findStatement.iterate({ idslist: JSON.stringify(tokenized.forQuery) })) {
+            if (this.postaudit(result, tokenized.forAudit)) {
                 yield result as string
             }
         }
     }
     debugQuery(query: string, ...idslist: string[]) {
-        const idslistTokenized = idslist.map(ids => [...expandOverlaid(tokenizeIDS(ids))])
-        return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(idslistTokenized) });
+        const tokenized = tokenizeIdsList(idslist)
+        return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(tokenized.forQuery) });
     }
     private idsmatch(tokens: string[], pattern: string[]) {
         const matchFrom = (i: number) => {
+            const vars = new Map<string, string[]>()
             let k = i
             loop: for (let j = 0; j < pattern.length; j++) {
                 if (pattern[j] === '§') {
@@ -41,6 +52,19 @@ export class IDSFinder {
                     }
                 } else if (pattern[j] === '？') {
                     k += nodeLength(tokens, k)
+                    continue loop
+                } else if (/^[a-zａ-ｚ]$/.test(pattern[j])) {
+                    const varname = pattern[j]
+                    const l = nodeLength(tokens, k)
+                    const slice = vars.get(varname)
+                    if (slice) {
+                        if (!slice.every((t, offset) => t === tokens[k + offset])) {
+                            return false
+                        }
+                    } else {
+                        vars.set(varname, tokens.slice(k, k + l))
+                    }
+                    k += l
                     continue loop
                 }
                 const ts = this.getIDSTokensStatement.all({ ucs: pattern[j] })

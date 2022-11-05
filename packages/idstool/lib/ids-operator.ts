@@ -136,13 +136,13 @@ export function normalizeOverlaid(tokens: string[]): string[] {
     return tokens
 }
 
-export function* expandOverlaid(tokens: string[]): Generator<string[], void> {
+function* _expandOverlaid(tokens: string[]): Generator<string[], void> {
     if (tokens.length < 2) {
         yield tokens
         return
     }
     const t0 = tokens[0]
-    for (const rest of expandOverlaid(tokens.slice(1))) {
+    for (const rest of _expandOverlaid(tokens.slice(1))) {
         const tokens = [t0, ...rest]
         if (t0 !== "⿻") {
             yield tokens
@@ -161,7 +161,7 @@ export function* expandOverlaid(tokens: string[]): Generator<string[], void> {
         const s1 = rest.slice(0, l1)
         const s2 = rest.slice(l1, l1 + l2)
         const s3 = rest.slice(l1 + l2)
-        if (rest.includes("？")) {
+        if (rest.some(x => /^[？a-zａ-ｚ]$/.test(x))) {
             yield tokens
             yield [t0, ...s2, ...s1, ...s3]
             continue
@@ -176,4 +176,8 @@ export function* expandOverlaid(tokens: string[]): Generator<string[], void> {
         }
         yield [t0, ...s2, ...s1, ...s3]
     }
+}
+
+export function expandOverlaid(tokens: string[]): string[][] {
+    return [..._expandOverlaid(tokens)]
 }
