@@ -95,6 +95,7 @@ export class IDSDecomposer {
         db.exec(`create table tempids (UCS, source, IDS_tokens)`)
         db.exec(`create index tempids_UCS on tempids (UCS)`)
         db.exec(`insert into tempids select UCS, value as source, tokenize(IDS) as IDS_tokens FROM moji.${idstable} join regexp_substr_all(source, 'UCS2003|\\w')`)
+        db.exec(`drop table if exists tempids_UCS_source`)
         db.exec(`create table tempids_UCS_source as select UCS, source from tempids`)
         if (this.expandZVariants) {
             this.zvar = new Map(
