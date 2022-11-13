@@ -118,7 +118,7 @@ const queryExpressions = [
         FROM mji
         WHERE mji.対応するUCS = @ucs OR mji.実装したUCS = @ucs)`],
     ['kdpv', `(
-        SELECT json_group_object(rel, cs) FROM (
+        SELECT json_group_object(rel, json(cs)) FROM (
             SELECT rel, json_group_array(c) AS cs FROM (
                 SELECT DISTINCT rel, object AS c FROM kdpv WHERE subject glob @ucs || '*'
                 UNION
