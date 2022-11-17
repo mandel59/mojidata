@@ -60,7 +60,7 @@ export type IDSDecomposerOptions = {
 export class IDSDecomposer {
     private db: import("better-sqlite3").Database
     private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
-    private fallbackIsNeededStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
+    private insertFallbackStatement: import("better-sqlite3").Statement<{ char: string, source: string, fallback: string }>
     readonly expandZVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
@@ -117,13 +117,13 @@ export class IDSDecomposer {
         }
         db.exec(`detach database moji`)
         db.exec(`drop table if exists fallback_is_needed`)
-        db.exec(`create table fallback_is_needed(UCS, source)`)
+        db.exec(`create table fallback(UCS, source, fallback)`)
         this.db = db
         this.lookupIDSStatement = db.prepare(
             `select distinct IDS_tokens from tempids
             where UCS = $char and source glob $source`).pluck()
-        this.fallbackIsNeededStatement = db.prepare(
-            `insert into fallback_is_needed(UCS, source) values ($char, $source)`)
+        this.insertFallbackStatement = db.prepare(
+            `insert into fallback(UCS, source, fallback) values ($char, $source, $fallback)`)
         this.replaceSingleWildcardToCharItself()
         this.reduceAllSubtractions()
     }
@@ -220,11 +220,16 @@ export class IDSDecomposer {
         if (this.fallbackMemo.has(fallbackKey)) {
             return this.fallbackMemo.get(fallbackKey)
         }
-        this.fallbackIsNeededStatement.run({ char, source })
+        const alltokens = this.lookupIDSStatement.all({ char, source: "*" }) as string[]
+        if (alltokens.length === 1) {
+            this.fallbackMemo.set(fallbackKey, alltokens)
+            return alltokens
+        }
         const sources = fallbackSourceOrder.filter(s => s !== source)
-        for (const source of sources) {
-            const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+        for (const fallbackSource of sources) {
+            const alltokens = this.lookupIDSStatement.all({ char, source: fallbackSource }) as string[]
             if (alltokens.length > 0) {
+                this.insertFallbackStatement.run({ char, source, fallback: fallbackSource })
                 this.fallbackMemo.set(fallbackKey, alltokens)
                 return alltokens
             }
