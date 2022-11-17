@@ -21,6 +21,8 @@ const encodeMap: Partial<Record<string, string>> = {
     "⊖": "S",
 }
 
+const idsOperatorRegExp = new RegExp(`^(?:${Object.keys(tokenArgs).join("|")})\$`)
+
 const fallbackSourceOrder = ["G", "T", "H", "K", "J", "B", "U", "*"]
 
 function encodeTokensToXmlName(tokens: string[]) {
@@ -58,6 +60,7 @@ export type IDSDecomposerOptions = {
 export class IDSDecomposer {
     private db: import("better-sqlite3").Database
     private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
+    private fallbackIsNeededStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
     readonly expandZVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
@@ -113,24 +116,25 @@ export class IDSDecomposer {
                     }))
         }
         db.exec(`detach database moji`)
+        db.exec(`drop table if exists fallback_is_needed`)
+        db.exec(`create table fallback_is_needed(UCS, source)`)
         this.db = db
         this.lookupIDSStatement = db.prepare(
             `select distinct IDS_tokens from tempids
             where UCS = $char and source glob $source`).pluck()
-        this.removeRedundantEntries()
+        this.fallbackIsNeededStatement = db.prepare(
+            `insert into fallback_is_needed(UCS, source) values ($char, $source)`)
+        this.replaceSingleWildcardToCharItself()
         this.reduceAllSubtractions()
     }
     /**
-     * Remove redundant entries.
-     *
-     * The following patterns are redundant.
-     * - x=x
-     * - x=？
+     * Replace x=？ pattern to x=x
      */
-    private removeRedundantEntries() {
+    private replaceSingleWildcardToCharItself() {
         this.db.prepare(`
-            delete from tempids
-            where UCS = IDS_tokens or IDS_tokens = '？'
+            update tempids
+            set IDS_tokens = UCS
+            where IDS_tokens = '？'
         `).run()
     }
     /**
@@ -190,11 +194,20 @@ export class IDSDecomposer {
     }
     private atomicMemo = new Set()
     private lookupIDS(char: string, source: string): string[] {
+        if (char[0] === "&" ||
+            char[0] === "{" ||
+            idsOperatorRegExp.test(char)) {
+            return [char]
+        }
         const atomicKey = `${char}${source}`
         if (this.atomicMemo.has(atomicKey)) {
             return [char]
         }
         const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+        if (alltokens.length === 1 && alltokens[0] === char) {
+            this.atomicMemo.add(atomicKey)
+            return alltokens
+        }
         if (alltokens.length > 0) return alltokens
         const fallback = this.fallbackLookupIDS(char, source)
         if (fallback) return fallback
@@ -207,6 +220,7 @@ export class IDSDecomposer {
         if (this.fallbackMemo.has(fallbackKey)) {
             return this.fallbackMemo.get(fallbackKey)
         }
+        this.fallbackIsNeededStatement.run({ char, source })
         const sources = fallbackSourceOrder.filter(s => s !== source)
         for (const source of sources) {
             const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
