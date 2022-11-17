@@ -116,7 +116,7 @@ export class IDSDecomposer {
                     }))
         }
         db.exec(`detach database moji`)
-        db.exec(`drop table if exists fallback_is_needed`)
+        db.exec(`drop table if exists fallback`)
         db.exec(`create table fallback(UCS, source, fallback)`)
         this.db = db
         this.lookupIDSStatement = db.prepare(
