@@ -3,18 +3,18 @@ set -eux
 cd "$(dirname "$0")/.."
 
 function main () {
-    read name sha1sum url
+    read name digest url
     if test -z "$name"; then exit 1; fi
-    cachefile="${name%.*}-${sha1sum}.${name##*.}"
-    if test -e "cache/$name" && test -f "cache/.sha1sum/$cachefile" && echo "$sha1sum  cache/$name" | scripts/sha1sum --status -c -; then exit 0; fi
-    if ! test -f "cache/.sha1sum/$cachefile" || ! echo "$sha1sum  cache/.sha1sum/$cachefile" | scripts/sha1sum --status -c -; then
-        mkdir -p cache/.sha1sum
-        curl -LsSf "$url" -o "cache/.sha1sum/$cachefile.tmp"
-        echo "$sha1sum  cache/.sha1sum/$cachefile.tmp" | scripts/sha1sum --status -c -
-        mv "cache/.sha1sum/$cachefile.tmp" "cache/.sha1sum/$cachefile"
+    cachefile="${name%.*}-${digest}.${name##*.}"
+    if test -e "cache/$name" && test -f "cache/.sha256sum/$cachefile" && echo "$digest  cache/$name" | shasum -a 256 --status -c -; then exit 0; fi
+    if ! test -f "cache/.sha256sum/$cachefile" || ! echo "$digest  cache/.sha256sum/$cachefile" | shasum -a 256 --status -c -; then
+        mkdir -p cache/.sha256sum
+        curl -LsSf "$url" -o "cache/.sha256sum/$cachefile.tmp"
+        echo "$digest  cache/.sha256sum/$cachefile.tmp" | shasum -a 256 --status -c -
+        mv "cache/.sha256sum/$cachefile.tmp" "cache/.sha256sum/$cachefile"
     fi
     rm -f "cache/$name"
-    ln -s ".sha1sum/$cachefile" "cache/$name"
+    ln -s ".sha256sum/$cachefile" "cache/$name"
 }
 
 grep -v -E '^#|^\s*$' download.txt | sort -k 1b,1 | join -j 1 - <(echo "$1") | main

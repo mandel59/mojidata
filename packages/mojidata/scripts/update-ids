@@ -9,7 +9,7 @@ commit="$(curl -Ssf \
 
 url="https://raw.githubusercontent.com/mandel59/babelstone-ids/$commit/IDS.TXT"
 
-sum="$(curl -Ssf "$url" | scripts/sha1sum | egrep -o '[0-9a-f]+')"
+sum="$(curl -Ssf "$url" | shasum -a 256 | egrep -o '[0-9a-f]+')"
 
 sed "s!^IDS\\.TXT .*!IDS.TXT $sum $url!" download.txt > download.txt.tmp
 mv download.txt.tmp download.txt

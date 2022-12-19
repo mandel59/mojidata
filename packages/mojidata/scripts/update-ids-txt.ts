@@ -24,7 +24,7 @@ async function main() {
     const idsurl = `https://raw.githubusercontent.com/mandel59/babelstone-ids/${sha}/IDS.TXT`
     const idsres = await axios.get<Buffer>(idsurl, { responseType: "arraybuffer" })
     if (idsres.status !== 200) throw new Error(idsres.statusText)
-    const filesha = createHash("sha1").update(idsres.data).digest("hex")
+    const filesha = createHash("sha256").update(idsres.data).digest("hex")
 
     let downloadlist = await readFile(downloadfile, "utf-8")
     downloadlist = downloadlist.replace(/^IDS.TXT .*$/mu, `IDS.TXT ${filesha} ${idsurl}`)
