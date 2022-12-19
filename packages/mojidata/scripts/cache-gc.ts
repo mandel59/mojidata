@@ -4,7 +4,7 @@ import { basename, extname } from "path"
 
 async function main() {
     const args = process.argv.slice(2)
-    const [downloadfile = "download.txt", cachedir = "cache/.sha1sum"] = args
+    const [downloadfile = "download.txt", cachedir = "cache/.sha256sum"] = args
 
     const downloadlist = await readFile(downloadfile, "utf-8")
     const records = downloadlist
@@ -13,10 +13,10 @@ async function main() {
         .split('\n')
         .map(line => line.trim().split(/\s+/))
     const saveFiles = new Set()
-    for (const [name, sha1sum, _url] of records) {
+    for (const [name, digest, _url] of records) {
         const ext = extname(name)
         const base = basename(name, ext)
-        const hashname = `${base}-${sha1sum}${ext}`
+        const hashname = `${base}-${digest}${ext}`
         saveFiles.add(hashname)
     }
     for (const file of await readdir(cachedir)) {
