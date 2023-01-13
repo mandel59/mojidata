@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 - Support loading older versions of Unihan
-- Update IDS.TXT
+
+## [1.1.0] - 2023-01-13
+
+### Changed
+
+- Updated IDS.TXT
 
 ## [1.0.0] - 2022-10-12
 ### Changed
