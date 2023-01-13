@@ -79,7 +79,7 @@ __metadata:
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^7.6.2
+    better-sqlite3: ^8.0.1
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -104,7 +104,7 @@ __metadata:
     "@types/better-sqlite3": ^7.4.0
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^7.6.2
+    better-sqlite3: ^8.0.1
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -126,7 +126,7 @@ __metadata:
     "@types/yaml": ^1
     ava: ^3.15.0
     axios: ^0.23.0
-    better-sqlite3: ^7.6.2
+    better-sqlite3: ^8.0.1
     csv-parse: ^4.16.3
     sql-formatter: ^4.0.2
     ts-node: ^10.2.1
@@ -1102,14 +1102,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^7.6.2":
-  version: 7.6.2
-  resolution: "better-sqlite3@npm:7.6.2"
+"better-sqlite3@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "better-sqlite3@npm:8.0.1"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.0
-  checksum: 45159e535d2c4f81456f85adcfef82e8a49025ca3e70a79bb8c0a47c13e4d822633a51b457cc37b986c42f8912344152091c91cab485048a187900aab7e7d619
+  checksum: 533b2cc32bd54e2a943a4f63e079f8cc8945879b7a0ebd2085b948824ea067792f6f903ab75ba75d7cafc5f8f973354cdf9a042fa6216e077925d07a8df1bead
   languageName: node
   linkType: hard
 
