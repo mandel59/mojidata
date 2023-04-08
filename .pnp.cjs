@@ -141,7 +141,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:5.4.2"],\
             ["@types/node", "npm:16.9.1"],\
             ["ava", "npm:3.15.0"],\
-            ["better-sqlite3", "npm:8.0.1"],\
+            ["better-sqlite3", "npm:8.2.0"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bbeadb"],\
             ["zx", "npm:4.2.0"]\
@@ -170,7 +170,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/yaml", "npm:1.9.6"],\
             ["ava", "npm:3.15.0"],\
             ["axios", "npm:0.23.0"],\
-            ["better-sqlite3", "npm:8.0.1"],\
+            ["better-sqlite3", "npm:8.2.0"],\
             ["csv-parse", "npm:4.16.3"],\
             ["sql-formatter", "npm:4.0.2"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
@@ -190,7 +190,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/better-sqlite3", "npm:7.4.0"],\
             ["@types/node", "npm:16.9.1"],\
             ["ava", "npm:3.15.0"],\
-            ["better-sqlite3", "npm:8.0.1"],\
+            ["better-sqlite3", "npm:8.2.0"],\
             ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
             ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bbeadb"],\
             ["zx", "npm:4.2.0"]\
@@ -1349,10 +1349,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["better-sqlite3", [\
-        ["npm:8.0.1", {\
-          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-8.0.1-865bb79455/node_modules/better-sqlite3/",\
+        ["npm:8.2.0", {\
+          "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-8.2.0-b579496d3f/node_modules/better-sqlite3/",\
           "packageDependencies": [\
-            ["better-sqlite3", "npm:8.0.1"],\
+            ["better-sqlite3", "npm:8.2.0"],\
             ["bindings", "npm:1.5.0"],\
             ["node-gyp", "npm:8.2.0"],\
             ["prebuild-install", "npm:7.1.1"]\

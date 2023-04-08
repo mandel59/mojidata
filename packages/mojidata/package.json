@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Mojidata Character Database",
   "homepage": "https://github.com/mandel59/mojidata/",
   "repository": {
@@ -35,7 +35,7 @@
     "@types/yaml": "^1",
     "ava": "^3.15.0",
     "axios": "^0.23.0",
-    "better-sqlite3": "^8.0.1",
+    "better-sqlite3": "^8.2.0",
     "csv-parse": "^4.16.3",
     "sql-formatter": "^4.0.2",
     "ts-node": "^10.2.1",

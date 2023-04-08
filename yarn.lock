@@ -71,15 +71,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/idstool@^1.0.0, @mandel59/idstool@workspace:packages/idstool":
+"@mandel59/idstool@^1.2.0, @mandel59/idstool@workspace:packages/idstool":
   version: 0.0.0-use.local
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
-    "@mandel59/mojidata": ^1.0.0
+    "@mandel59/mojidata": ^1.2.0
     "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^8.0.1
+    better-sqlite3: ^8.2.0
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -100,11 +100,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata": ^1.0.0
+    "@mandel59/mojidata": ^1.2.0
     "@types/better-sqlite3": ^7.4.0
     "@types/node": ^16.9.1
     ava: ^3.15.0
-    better-sqlite3: ^8.0.1
+    better-sqlite3: ^8.2.0
     ts-node: ^10.2.1
     typescript: ^4.4.3
     zx: ^4.2.0
@@ -115,7 +115,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata@^1.0.0, @mandel59/mojidata@workspace:packages/mojidata":
+"@mandel59/mojidata@^1.2.0, @mandel59/mojidata@workspace:packages/mojidata":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
@@ -126,7 +126,7 @@ __metadata:
     "@types/yaml": ^1
     ava: ^3.15.0
     axios: ^0.23.0
-    better-sqlite3: ^8.0.1
+    better-sqlite3: ^8.2.0
     csv-parse: ^4.16.3
     sql-formatter: ^4.0.2
     ts-node: ^10.2.1
@@ -147,7 +147,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/web-idsfind@workspace:packages/web-idsfind"
   dependencies:
-    "@mandel59/idstool": ^1.0.0
+    "@mandel59/idstool": ^1.2.0
     "@types/node": ^16.9.1
     html-webpack-plugin: ^5.3.2
     sql.js-httpvfs: ^0.8.12
@@ -1102,14 +1102,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "better-sqlite3@npm:8.0.1"
+"better-sqlite3@npm:^8.2.0":
+  version: 8.2.0
+  resolution: "better-sqlite3@npm:8.2.0"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.0
-  checksum: 533b2cc32bd54e2a943a4f63e079f8cc8945879b7a0ebd2085b948824ea067792f6f903ab75ba75d7cafc5f8f973354cdf9a042fa6216e077925d07a8df1bead
+  checksum: ab8a00bcc33c4a7467f78fcbb103c784705cf170ecc9c8eb1149a89a2153c03a7f65681064667eb214fa7f555797abd8183380a0396ce04eaf36efef921ce103
   languageName: node
   linkType: hard
 
