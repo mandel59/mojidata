@@ -5,4 +5,6 @@ dist
 node_modules
 *.js
 *.js.map
+*.d.ts
+!@types/**/*.d.ts
 *.db
