@@ -1,4 +1,6 @@
-export async function transaction(db: import("better-sqlite3").Database, callback: () => Promise<void>) {
+import type Database from "better-sqlite3"
+
+export async function transaction(db: Database, callback: () => Promise<void>) {
     db.exec("begin")
     try {
         await callback()
@@ -9,7 +11,7 @@ export async function transaction(db: import("better-sqlite3").Database, callbac
     }
 }
 
-export function transactionSync(db: import("better-sqlite3").Database, callback: () => void) {
+export function transactionSync(db: Database, callback: () => void) {
     db.exec("begin")
     try {
         callback()

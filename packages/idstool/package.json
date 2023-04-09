@@ -22,7 +22,7 @@
   },
   "scripts": {
     "test": "ava",
-    "prepare": "tsc && ts-node prepare.ts"
+    "prepare": "tsc && ts-node --files prepare.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",

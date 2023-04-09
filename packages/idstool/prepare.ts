@@ -12,7 +12,7 @@ const db = new Database(dbpath)
 
 db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
 const symbols_in_ids = new Set<string>()
-for (const ids of db.prepare<[]>(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
+for (const ids of db.prepare<[], ["IDS"], { IDS: string }>(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
     ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
 }
 db.exec(`DETACH DATABASE moji`)
@@ -21,7 +21,7 @@ db.exec(`drop table if exists "idsfind"`)
 db.exec(`CREATE TABLE "idsfind" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
 db.exec(`CREATE INDEX "idsfind_UCS" ON "idsfind" (UCS)`)
 db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
-const insert_idsfind = db.prepare<{ ucs: string, tokens: string }>(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
+const insert_idsfind = db.prepare<[{ ucs: string, tokens: string }], [], {}, void>(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
 const decomposer = new IDSDecomposer({
     dbpath: path.join(__dirname, "idsdecompose.db"),
