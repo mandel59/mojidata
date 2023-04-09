@@ -22,6 +22,8 @@ export const tokenArgs: Partial<Record<string, number>> = {
     "@M": 1,
     "@I": 1,
     "@O": 1,
+    // overlaid operator ⿻ with a hidden argument
+    "&OL3;": 3,
 }
 
 export function nodeLength(tokens: string[], i: number) {
@@ -142,12 +144,14 @@ function* _expandOverlaid(tokens: string[]): Generator<string[], void> {
         return
     }
     const t0 = tokens[0]
-    for (const rest of _expandOverlaid(tokens.slice(1))) {
-        const tokens = [t0, ...rest]
-        if (t0 !== "⿻") {
-            yield tokens
-            continue
+    if (t0 !== "⿻") {
+        for (const rest of _expandOverlaid(tokens.slice(1))) {
+            yield [t0, ...rest]
         }
+        return
+    }
+    for (const rest of _expandOverlaid(tokens.slice(1))) {
+        const tokens = ["&OL3;", "？", ...rest]
         const l1 = nodeLength(rest, 0)
         if (l1 >= rest.length) {
             yield tokens
@@ -161,20 +165,9 @@ function* _expandOverlaid(tokens: string[]): Generator<string[], void> {
         const s1 = rest.slice(0, l1)
         const s2 = rest.slice(l1, l1 + l2)
         const s3 = rest.slice(l1 + l2)
-        if (rest.some(x => /^[？a-zａ-ｚ]$/.test(x))) {
-            yield tokens
-            yield [t0, ...s2, ...s1, ...s3]
-            continue
-        }
-        if (l1 < l2) {
-            yield tokens
-            continue
-        }
-        if (l1 === l2 && s1.join("") <= s2.join("")) {
-            yield tokens
-            continue
-        }
-        yield [t0, ...s2, ...s1, ...s3]
+        const tokensSwitched = ["&OL3;", "？", ...s2, ...s1, ...s3]
+        yield tokens
+        yield tokensSwitched
     }
 }
 

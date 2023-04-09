@@ -192,9 +192,6 @@ export class IDSDecomposer {
     private expand(token: string) {
         return this.zvar?.get(token) ?? [token]
     }
-    private normalize(token: string) {
-        return token
-    }
     private atomicMemo = new Set()
     private lookupIDS(char: string, source: string): string[] {
         if (char[0] === "&" ||
@@ -244,11 +241,14 @@ export class IDSDecomposer {
             const alltokens = this.lookupIDS(char, source)
             let unknownid = 0
             for (const tokens of alltokens) {
-                yield tokens.split(/ /g).map(token => {
+                yield tokens.split(/ /g).flatMap(token => {
                     if (token === "？") {
                         return `&c-${char}-${++unknownid};`
+                    } else if (token === "⿻") {
+                        // add a hidden argument to the overlaid operator
+                        return ["&OL3;", `&ol-${char}-${++unknownid};`]
                     } else {
-                        return this.normalize(token)
+                        return token
                     }
                 })
             }
