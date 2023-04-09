@@ -1,3 +1,7 @@
+// Copy from: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/88ab488c7d6c4ff0429a24b5822dd8e9c66a8240/types/better-sqlite3/index.d.ts
+// Modified by: Ryusei Yamaguchi <https://github.com/mandel59>
+// Licensed under: DefinitelyTyped/LICENSE
+
 // Type definitions for better-sqlite3 7.6
 // Project: https://github.com/JoshuaWise/better-sqlite3
 // Definitions by: Ben Davies <https://github.com/Morfent>
