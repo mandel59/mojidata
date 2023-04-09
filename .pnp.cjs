@@ -124,7 +124,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@mandel59/idstool", "workspace:packages/idstool"],\
             ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-            ["@types/better-sqlite3", "npm:5.4.2"],\
             ["@types/node", "npm:16.9.1"],\
             ["ava", "npm:3.15.0"],\
             ["better-sqlite3", "npm:8.2.0"],\

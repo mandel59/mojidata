@@ -19,15 +19,19 @@ function tokenizeIdsList(idslist: string[]) {
 }
 
 export class IDSFinder {
-    private db: import("better-sqlite3").Database;
-    private findStatement: Statement<[{ idslist: string }]>
-    private getIDSTokensStatement: Statement<[{ ucs: string }]>
+    private db: Database;
+    private findStatement: Statement<[{ idslist: string }], ["UCS"], { UCS: string }, string>
+    private getIDSTokensStatement: Statement<[{ ucs: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
     constructor(options: IDSFinderOptions = {}) {
         const dbpath = options.dbpath ?? require.resolve("../idsfind.db")
         const db = new Database(dbpath)
         this.db = db;
-        this.findStatement = db.prepare<{ idslist: string }>(query).pluck()
-        this.getIDSTokensStatement = db.prepare<{ ucs: string }>(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
+        this.findStatement = db.prepare<{ idslist: string }, ["UCS"], { UCS: string }>(query).pluck()
+        this.getIDSTokensStatement = db.prepare<
+            { ucs: string },
+            ["IDS_tokens"],
+            { IDS_tokens: string }
+        >(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
     *find(...idslist: string[]) {
         const tokenized = tokenizeIdsList(idslist)

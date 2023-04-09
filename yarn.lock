@@ -69,7 +69,6 @@ __metadata:
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
     "@mandel59/mojidata": ^1.2.0
-    "@types/better-sqlite3": ^5.4.1
     "@types/node": ^16.9.1
     ava: ^3.15.0
     better-sqlite3: ^8.2.0
