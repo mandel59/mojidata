@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2023-04-10
+
+### Changed
+
+- idstool: Added TypeScript source files. Removed type definition files.
+- idstool: Improved overlaid operator handlings.
+
+## [1.2.1] - 2023-04-10
+
+### Added
+
+- idstool: Add type definition files.
+
+## [1.2.0] - 2023-04-08
+
+### Removed
+
+- Removed web-idsfind.
+
+### Changed
+
+- Updated IDS.TXT
+- Updated better-sqlite3.
+
 ## [1.1.0] - 2023-01-13
 
 ### Added
