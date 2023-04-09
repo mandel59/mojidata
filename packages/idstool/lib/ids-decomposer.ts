@@ -1,4 +1,4 @@
-import Database from "better-sqlite3"
+import Database, { Statement } from "better-sqlite3"
 import { nodeLength, normalizeOverlaid, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
@@ -58,9 +58,9 @@ export type IDSDecomposerOptions = {
 }
 
 export class IDSDecomposer {
-    private db: import("better-sqlite3").Database
-    private lookupIDSStatement: import("better-sqlite3").Statement<{ char: string, source: string }>
-    private insertFallbackStatement: import("better-sqlite3").Statement<{ char: string, source: string, fallback: string }>
+    private db: Database
+    private lookupIDSStatement: Statement<[{ char: string, source: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
+    private insertFallbackStatement: Statement<[{ char: string, source: string, fallback: string }], [], {}, void>
     readonly expandZVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
@@ -102,13 +102,15 @@ export class IDSDecomposer {
         db.exec(`create table tempids_UCS_source as select UCS, source from tempids`)
         if (this.expandZVariants) {
             this.zvar = new Map(
-                db.prepare(`select UCS, value FROM moji.${unihanPrefix}_kZVariant`).all()
+                db.prepare<[], ["UCS", "value"], { UCS: string, value: string }>(
+                    `select UCS, value FROM moji.${unihanPrefix}_kZVariant`)
+                    .all()
                     .map(({ UCS, value }) => {
                         return [
-                            UCS as string,
+                            UCS,
                             [
                                 UCS,
-                                ...(value as string)
+                                ...value
                                     .split(/ /g)
                                     .map(x =>
                                         String.fromCodePoint(
@@ -119,10 +121,11 @@ export class IDSDecomposer {
         db.exec(`drop table if exists fallback`)
         db.exec(`create table fallback(UCS, source, fallback)`)
         this.db = db
-        this.lookupIDSStatement = db.prepare(
+        this.lookupIDSStatement = db.prepare<[], ["IDS_tokens"], { IDS_tokens: string }>(
             `select distinct IDS_tokens from tempids
-            where UCS = $char and source glob $source`).pluck()
-        this.insertFallbackStatement = db.prepare(
+            where UCS = $char and source glob $source`)
+            .pluck()
+        this.insertFallbackStatement = db.prepare<[{ char: string, source: string, fallback: string }], [], {}, void>(
             `insert into fallback(UCS, source, fallback) values ($char, $source, $fallback)`)
         this.replaceSingleWildcardToCharItself()
         this.reduceAllSubtractions()
@@ -173,13 +176,13 @@ export class IDSDecomposer {
             yield* process(char, tokens)
             yield* invert(eigenToken, subtraction)
         }
-        const pairs: {
-            UCS: string,
-            source: string,
-            IDS_tokens: string,
-        }[] = this.db.prepare(`select UCS, source, IDS_tokens from tempids where IDS_tokens glob '*⊖*'`).all()
+        const pairs = this.db.prepare<
+            [],
+            ["UCS", "source", "IDS_tokens"],
+            { UCS: string, source: string, IDS_tokens: string }
+        >(`select UCS, source, IDS_tokens from tempids where IDS_tokens glob '*⊖*'`).all()
         this.db.prepare(`delete from tempids where IDS_tokens glob '*⊖*'`).run()
-        const insert = this.db.prepare<[UCS: string, source: string, IDS_tokens: string]>(`insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`)
+        const insert = this.db.prepare<[UCS: string, source: string, IDS_tokens: string], [], {}, void>(`insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`)
         for (const { UCS, source, IDS_tokens } of pairs) {
             for (const [char, tokens] of process(UCS, IDS_tokens.split(" "))) {
                 insert.run(char, source, tokens.join(" "))
@@ -278,7 +281,11 @@ export class IDSDecomposer {
         }
     }
     allCharSources(): { char: string, source: string }[] {
-        return this.db.prepare(`select distinct UCS as char, source from tempids_UCS_source`).all()
+        return this.db.prepare<
+            [],
+            ["char", "source"],
+            { char: string, source: string }
+        >(`select distinct UCS as char, source from tempids_UCS_source`).all()
     }
     allFallbacks(): { char: string, source: string }[] {
         const a = []

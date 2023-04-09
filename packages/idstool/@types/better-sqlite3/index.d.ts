@@ -94,7 +94,7 @@ declare module "better-sqlite3" {
         transaction<F extends VariableArgFunction>(fn: F): Transaction<F>;
         exec(source: string): this;
         pragma(source: string, options?: Database.PragmaOptions): unknown;
-        function(name: string, cb: (...params: unknown[]) => unknown): this;
+        function<Params extends unknown[]>(name: string, cb: (...params: Params) => unknown): this;
         function(name: string, options: Database.RegistrationOptions, cb: (...params: unknown[]) => unknown): this;
         aggregate<T>(name: string, options: Database.RegistrationOptions & {
             start?: T | (() => T);
