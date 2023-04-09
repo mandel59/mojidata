@@ -4,4 +4,5 @@ dist
 *.tgz
 node_modules
 *.js
+*.js.map
 *.db
