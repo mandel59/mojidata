@@ -10,7 +10,7 @@
   "files": [
     "bin/*.js",
     "lib/*.js",
-    "lib/*.d.ts",
+    "lib/*.ts",
     "idsfind.db",
     "CHANGELOG.md",
     "README.md",
