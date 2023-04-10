@@ -42,7 +42,7 @@ patterns as (
     select
         combinations.key0,
         combinations.key1,
-        group_concat('("' || replace(replace(replace(tokens, ' ？ ', '" AND "'), '？ ', ''), '" AND "？', '') || '")', ' OR ') as pattern
+        group_concat('("' || replace(replace(replace(replace(tokens, ' ？ ', '" AND "'), '？ ', ''), '" AND "？', ''), ' ？', '') || '")', ' OR ') as pattern
     from combinations
     where level = (
         select max(decomposed.key)
