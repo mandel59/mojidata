@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.4] - 2023-04-11
+
+### Fixed
+
+- idstool: placeholders are now correctly handled when they appear after unary
+  operators in search queries.
+
 ## [1.2.3] - 2023-04-10
 
 ### Changed
