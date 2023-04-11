@@ -36,7 +36,7 @@ of them. Each of these resources is available under its own license.
 
 Copyright 1990-2019 Adobe. All rights reserved.
 
-CMap Resources are available under the BSD-3-Clause License.<br>
+CMap Resources are available under the BSD-3-Clause License.  
 See [licenses/cmap-resources.txt](licenses/cmap-resources.txt)
 
 ---
@@ -46,8 +46,8 @@ See [licenses/cmap-resources.txt](licenses/cmap-resources.txt)
 
 Copyright © IPA 独立行政法人情報処理推進機構 Information-technology Promotion Agency, Japan.
 
-These works are available under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP).<br>
-See https://creativecommons.org/licenses/by-sa/2.1/jp/legalcode or<br>
+These works are available under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP). 
+See https://creativecommons.org/licenses/by-sa/2.1/jp/legalcode or  
 for the human readable summary: https://creativecommons.org/licenses/by-sa/2.1/jp/
 
 ---
@@ -56,14 +56,14 @@ for the human readable summary: https://creativecommons.org/licenses/by-sa/2.1/j
 
 Copyright © 1991-2020 Unicode, Inc. All rights reserved.
 
-Unicode Data Files are available under the Unicode License Agreement (Unicode-DFS-2016).<br>
+Unicode Data Files are available under the Unicode License Agreement (Unicode-DFS-2016).  
 See [licenses/unicode.txt](licenses/unicode.txt)
 
 ---
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs
 
-This file is not copyrighted, and may be used freely for any purpose without asking permission.<br>
+This file is not copyrighted, and may be used freely for any purpose without asking permission.  
 See the notes in the text file (IDS.TXT).
 
 ---
