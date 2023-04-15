@@ -88,6 +88,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mandel59/libids@^1.2.4, @mandel59/libids@workspace:packages/libids":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/libids@workspace:packages/libids"
+  dependencies:
+    "@types/node": ^16.9.1
+    ts-node: ^10.2.1
+    typescript: ^4.4.3
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/mojidata-cli@workspace:packages/mojidata-cli":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
@@ -249,6 +259,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/emscripten@npm:*":
+  version: 1.39.6
+  resolution: "@types/emscripten@npm:1.39.6"
+  checksum: 437f2f9cdfd9057255662508fa9a415fe704ba484c6198f3549c5b05feebcdcd612b1ec7b10026d2566935d05d3c36f9366087cb42bc90bd25772a88fcfc9343
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.12":
   version: 9.0.12
   resolution: "@types/fs-extra@npm:9.0.12"
@@ -325,6 +342,16 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e99fc7cc6265407987b30deda54c1c24bb1478803faf6037557a774b2f034c5b097ffd65847daa87e82a61a250d919f35c3588654b0fdaa816906650f596d1b0
+  languageName: node
+  linkType: hard
+
+"@types/sql.js@npm:^1":
+  version: 1.4.4
+  resolution: "@types/sql.js@npm:1.4.4"
+  dependencies:
+    "@types/emscripten": "*"
+    "@types/node": "*"
+  checksum: c71928d76b59e4899da4b137a4f1bbf8cc0cf198928efa183bba90880ae69331da23a99175b88a7f5eaa34ce9ebef8f94dd1dcca8e4abdac2abb560d860e6636
   languageName: node
   linkType: hard
 
@@ -3496,6 +3523,24 @@ resolve@^1.10.0:
   languageName: node
   linkType: hard
 
+"sql.js@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "sql.js@npm:1.8.0"
+  checksum: 4c16846815664ef95c4dc2ffbbef4cba5236ead0798c9f1fac11f66c194a0ac51862fe26980be55cef8738b12ebe9d12efe71262953773cdcb41fbef034b2320
+  languageName: node
+  linkType: hard
+
+"sqlite3-driver-sqljs@workspace:packages/sqlite3-driver-sqljs":
+  version: 0.0.0-use.local
+  resolution: "sqlite3-driver-sqljs@workspace:packages/sqlite3-driver-sqljs"
+  dependencies:
+    "@mandel59/libids": ^1.2.4
+    "@types/sql.js": ^1
+    sql.js: ^1.8.0
+    typescript: 4.4.3
+  languageName: unknown
+  linkType: soft
+
 "ssf@npm:~0.11.2":
   version: 0.11.2
   resolution: "ssf@npm:0.11.2"
@@ -3839,7 +3884,7 @@ resolve@^1.10.0:
   languageName: node
   linkType: hard
 
-typescript@^4.4.3:
+"typescript@^4.4.3, typescript@npm:4.4.3":
   version: 4.4.3
   resolution: "typescript@npm:4.4.3"
   bin:
@@ -3849,7 +3894,7 @@ typescript@^4.4.3:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>":
   version: 4.4.3
   resolution: "typescript@patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bbeadb"
   bin:

@@ -20,21 +20,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/idstool"\
       },\
       {\
+        "name": "@mandel59/libids",\
+        "reference": "workspace:packages/libids"\
+      },\
+      {\
         "name": "@mandel59/mojidata",\
         "reference": "workspace:packages/mojidata"\
       },\
       {\
         "name": "@mandel59/mojidata-cli",\
         "reference": "workspace:packages/mojidata-cli"\
+      },\
+      {\
+        "name": "sqlite3-driver-sqljs",\
+        "reference": "workspace:packages/sqlite3-driver-sqljs"\
       }\
     ],\
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
       ["@mandel59/idstool", ["workspace:packages/idstool"]],\
+      ["@mandel59/libids", ["workspace:packages/libids"]],\
       ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
       ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
-      ["mojidata-workspace", ["workspace:."]]\
+      ["mojidata-workspace", ["workspace:."]],\
+      ["sqlite3-driver-sqljs", ["workspace:packages/sqlite3-driver-sqljs"]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -141,6 +151,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@mandel59/joyokanjihyo", "npm:1.2.0"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@mandel59/libids", [\
+        ["workspace:packages/libids", {\
+          "packageLocation": "./packages/libids/",\
+          "packageDependencies": [\
+            ["@mandel59/libids", "workspace:packages/libids"],\
+            ["@types/node", "npm:16.9.1"],\
+            ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bbeadb"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["@mandel59/mojidata", [\
@@ -326,6 +348,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/emscripten", [\
+        ["npm:1.39.6", {\
+          "packageLocation": "./.yarn/cache/@types-emscripten-npm-1.39.6-c9c4021365-437f2f9cdf.zip/node_modules/@types/emscripten/",\
+          "packageDependencies": [\
+            ["@types/emscripten", "npm:1.39.6"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/fs-extra", [\
         ["npm:9.0.12", {\
           "packageLocation": "./.yarn/cache/@types-fs-extra-npm-9.0.12-4d4efb3a94-c63834f0be.zip/node_modules/@types/fs-extra/",\
@@ -412,6 +443,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-responselike-npm-1.0.0-85dd08af42-e99fc7cc62.zip/node_modules/@types/responselike/",\
           "packageDependencies": [\
             ["@types/responselike", "npm:1.0.0"],\
+            ["@types/node", "npm:15.12.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/sql.js", [\
+        ["npm:1.4.4", {\
+          "packageLocation": "./.yarn/cache/@types-sql.js-npm-1.4.4-a60d840972-c71928d76b.zip/node_modules/@types/sql.js/",\
+          "packageDependencies": [\
+            ["@types/sql.js", "npm:1.4.4"],\
+            ["@types/emscripten", "npm:1.39.6"],\
             ["@types/node", "npm:15.12.5"]\
           ],\
           "linkType": "HARD"\
@@ -4015,6 +4057,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["argparse", "npm:2.0.1"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["sql.js", [\
+        ["npm:1.8.0", {\
+          "packageLocation": "./.yarn/cache/sql.js-npm-1.8.0-41a1d819c9-4c16846815.zip/node_modules/sql.js/",\
+          "packageDependencies": [\
+            ["sql.js", "npm:1.8.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["sqlite3-driver-sqljs", [\
+        ["workspace:packages/sqlite3-driver-sqljs", {\
+          "packageLocation": "./packages/sqlite3-driver-sqljs/",\
+          "packageDependencies": [\
+            ["sqlite3-driver-sqljs", "workspace:packages/sqlite3-driver-sqljs"],\
+            ["@mandel59/libids", "workspace:packages/libids"],\
+            ["@types/sql.js", "npm:1.4.4"],\
+            ["sql.js", "npm:1.8.0"],\
+            ["typescript", "patch:typescript@npm%3A4.4.3#~builtin<compat/typescript>::version=4.4.3&hash=bbeadb"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["ssf", [\

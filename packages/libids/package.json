@@ -1,0 +1,38 @@
+{
+  "name": "@mandel59/libids",
+  "version": "1.2.4",
+  "description": "Manipurate CJK ideograph structures",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/libids"
+  },
+  "lib": "lib/index.js",
+  "files": [
+    "bin/*.js",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "idsfind.db",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^16.9.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
+  }
+}
