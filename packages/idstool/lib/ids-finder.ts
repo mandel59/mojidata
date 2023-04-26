@@ -33,6 +33,9 @@ export class IDSFinder {
             { IDS_tokens: string }
         >(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
+    close() {
+        this.db.close()
+    }
     *find(...idslist: string[]) {
         const tokenized = tokenizeIdsList(idslist)
         for (const result of this.findStatement.iterate({ idslist: JSON.stringify(tokenized.forQuery) })) {
