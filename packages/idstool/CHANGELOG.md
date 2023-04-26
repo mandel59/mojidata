@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.8] - 2023-04-27
+
+### Fixed
+
+- idstool is now correctly prepared.
+
 ## [1.2.7] - 2023-04-27
 
 ### Changed
