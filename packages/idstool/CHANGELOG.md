@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.6] - 2023-04-27
+
+### Changed
+
+- idstool: Add close method to IDSFinder class
+
 ## [1.2.5] - 2023-04-26
 
 ### Changed
