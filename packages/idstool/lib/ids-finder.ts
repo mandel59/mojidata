@@ -6,6 +6,7 @@ import { expandOverlaid, nodeLength } from "./ids-operator"
 
 interface IDSFinderOptions {
     dbpath?: string
+    dbOptions?: Database.Options
 }
 
 function tokenizeIdsList(idslist: string[]) {
@@ -19,12 +20,13 @@ function tokenizeIdsList(idslist: string[]) {
 }
 
 export class IDSFinder {
-    private db: Database;
+    db: Database;
     private findStatement: Statement<[{ idslist: string }], ["UCS"], { UCS: string }, string>
     private getIDSTokensStatement: Statement<[{ ucs: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
     constructor(options: IDSFinderOptions = {}) {
         const dbpath = options.dbpath ?? require.resolve("../idsfind.db")
-        const db = new Database(dbpath)
+        const dbOptions = options.dbOptions ?? {}
+        const db = new Database(dbpath, dbOptions)
         this.db = db;
         this.findStatement = db.prepare<{ idslist: string }, ["UCS"], { UCS: string }>(query).pluck()
         this.getIDSTokensStatement = db.prepare<
@@ -32,6 +34,9 @@ export class IDSFinder {
             ["IDS_tokens"],
             { IDS_tokens: string }
         >(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
+    }
+    statements() {
+        return [this.findStatement, this.getIDSTokensStatement]
     }
     close() {
         this.db.close()
