@@ -26,6 +26,7 @@ const insert_idsfind = db.prepare<[{ ucs: string, tokens: string }], [], {}, voi
 const decomposer = new IDSDecomposer({
     dbpath: path.join(__dirname, "idsdecompose.db"),
     expandZVariants: true,
+    normalizeKdpvRadicalVariants: true,
     idstable: "ids",
     unihanPrefix: "unihan",
 })

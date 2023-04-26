@@ -15,6 +15,7 @@ function showUsage() {
 const decomposer
     = new IDSDecomposer({
         expandZVariants: Boolean(options.get("-z") || options.get("--expandZVariants")),
+        normalizeKdpvRadicalVariants: Boolean(options.get("-n") || options.get("--normalizeKdpvRadicalVariants")),
         idstable: "ids",
         unihanPrefix: "unihan",
     })

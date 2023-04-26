@@ -55,6 +55,7 @@ export type IDSDecomposerOptions = {
     unihanPrefix?: string
     dbpath?: string
     expandZVariants?: boolean
+    normalizeKdpvRadicalVariants?: boolean
 }
 
 export class IDSDecomposer {
@@ -62,6 +63,7 @@ export class IDSDecomposer {
     private lookupIDSStatement: Statement<[{ char: string, source: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
     private insertFallbackStatement: Statement<[{ char: string, source: string, fallback: string }], [], {}, void>
     readonly expandZVariants: boolean
+    readonly normalizeKdpvRadicalVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
         const mojidbpath = options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db")
@@ -69,6 +71,7 @@ export class IDSDecomposer {
         const unihanPrefix = options.unihanPrefix ?? "unihan"
         const dbpath = options.dbpath ?? ":memory:"
         this.expandZVariants = options.expandZVariants ?? false
+        this.normalizeKdpvRadicalVariants = options.normalizeKdpvRadicalVariants ?? false
         const db = new Database(dbpath)
         const tokenize = (s: string) => tokenizeIDS(s).join(' ')
         db.function("tokenize", tokenize)
@@ -116,6 +119,24 @@ export class IDSDecomposer {
                                         String.fromCodePoint(
                                             parseInt(x.substr(2), 16)))]]
                     }))
+        }
+        if (this.normalizeKdpvRadicalVariants) {
+            this.zvar ??= new Map()
+            for (const { object, subject } of db.prepare<[], ["object", "subject"], { object: string, subject: string }>(
+                `select object, subject from "kdpv_cjkvi/radical-variant" where comment is not 'partial'`).all()) {
+                // ignore some cases, which causes infinite loop.
+                if (object === "王") continue
+                if (object === "耂") continue
+                if (object === "肀") continue
+                if (object === "𦓐") continue
+                if (object === "𡿨") continue
+                if (object === "𨈑") continue
+                if (object === "𢖩") continue
+                if (object === "𣱱") continue
+                if (object === "𨈐") continue
+                if (object === "𤣥") continue
+                this.zvar.set(object, [subject])
+            }
         }
         db.exec(`detach database moji`)
         db.exec(`drop table if exists fallback`)
