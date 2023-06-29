@@ -174,6 +174,23 @@ export const queryExpressions = [
         WHERE mjsm.縮退UCS = @ucs)`,
   ],
   [
+    'mjih',
+    `(SELECT json_group_array(json_object(
+      'MJ文字図形名', MJ文字図形名,
+      '文字', 文字,
+      'CharacterName', CharacterName,
+      'UCS符号位置', UCS符号位置,
+      '字母', 字母,
+      '字母のUCS符号位置', 字母のUCS符号位置,
+      '音価', (SELECT json_group_array(音価) FROM mjih_phonetic AS p WHERE p.MJ文字図形名 = mjih.MJ文字図形名),
+      '戸籍統一文字番号', 戸籍統一文字番号,
+      '学術用変体仮名番号', 学術用変体仮名番号,
+      '国語研URL', 国語研URL,
+      '備考', 備考
+    ))
+    FROM mjih WHERE @ucs = mjih.文字 OR @ucs = mjih.字母 OR @ucs IN (SELECT 音価 FROM mjih_phonetic AS p WHERE p.MJ文字図形名 = mjih.MJ文字図形名))`,
+  ],
+  [
     'kdpv',
     `(
         SELECT json_group_object(rel, json(cs)) FROM (
