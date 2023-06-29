@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Support loading older versions of Unihan
 
+## [1.3.0] - 2023-06-29
+
+### Added
+
+- Add MJ文字情報一覧表 変体仮名編 https://moji.or.jp/mojikiban/mjlist/
+
 ## [1.2.0] - 2023-04-08
 
 ### Changed

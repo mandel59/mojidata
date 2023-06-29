@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Add MJ文字情報一覧表 変体仮名編 https://moji.or.jp/mojikiban/mjlist/
+- Add USource characters to the FTS index.
 
 ## [1.2.8] - 2023-04-27
 

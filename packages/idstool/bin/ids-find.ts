@@ -39,6 +39,7 @@ async function main() {
         showHelp()
         process.exit()
     }
+    const allResults = Boolean(options.get("--all-results") || options.get("-A"))
     const args = argv.map(x => x.replace(/[\uFE00-\uFE0F\u{E0100}-\u{E01EF}]/gu, ""))
     const whole = options.get("--whole")
     if (typeof whole === "string" && whole !== "") {
@@ -55,6 +56,9 @@ async function main() {
         return
     }
     for (const result of idsfinder.find(...args)) {
+        if (!allResults && result[0] === '&') {
+            continue
+        }
         if (!process.stdout.write(result)) {
             await drain(process.stdout)
         }

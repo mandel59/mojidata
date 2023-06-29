@@ -61,9 +61,10 @@ token_pattern as (
     )
 ),
 results as (
-    select char(docid) AS UCS
+    select char AS UCS
     from idsfind_fts
     join token_pattern
+    join idsfind_ref using (docid)
     where IDS_tokens match pattern
 )
 `
