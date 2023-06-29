@@ -1,0 +1,9 @@
+#!/bin/bash
+set -eu
+
+cd "$(dirname "$0")/.."
+
+scripts/download MJIH00201-xlsx.zip
+mkdir -p resources
+unzip -o cache/MJIH00201-xlsx.zip -d resources/mjih
+ts-node --transpile-only scripts/xlsx2csv.ts resources/mjih/MJIH00201.xlsx resources/mjih/MJIH00201.csv

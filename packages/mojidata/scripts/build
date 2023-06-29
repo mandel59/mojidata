@@ -4,6 +4,7 @@ cd "$(dirname "$0")/.."
 
 scripts/extract-mji
 scripts/extract-mjsm
+scripts/extract-mjih
 scripts/extract-unicode-svs
 scripts/extract-unicode-ivs
 scripts/extract-unihan

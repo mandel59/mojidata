@@ -14,6 +14,7 @@ mji.00601-xlsx.zip 9025d433f99b1d7158de4195fdf83202b3a929d64fb016f3cd73c2b1cf00a
 ## MJ Map <https://moji.or.jp/mojikiban/map/>
 ## License: CC-BY-SA-2.1-JP
 MJShrinkMapVer.1.2.0.zip f109f64aaf357d9d44b8eff39c1c633bc7e5b3f526efc812951732f4ca92014c https://moji.or.jp/wp-content/mojikiban/oscdl/MJShrinkMapVer.1.2.0.zip
+MJIH00201-xlsx.zip d4fbeb012d1519a5fd7256084587e7163fe4f89b1a9b789145cbbe1a548b9262 https://moji.or.jp/wp-content/mojikiban/oscdl/MJIH00201-xlsx.zip
 
 ## Unicode Character Database <https://unicode.org/ucd/>
 ## License: Unicode-DFS-2016

@@ -343,6 +343,91 @@ async function createMjsm(db: import("better-sqlite3").Database) {
         }).join(`\nUNION ALL\n`)))
 }
 
+async function createMjih(db: import("better-sqlite3").Database) {
+    db.exec(`drop table if exists "mjih"`)
+    db.exec(format(`CREATE TABLE "mjih" (
+        MJ文字図形名 TEXT PRIMARY KEY,
+        文字 TEXT,
+        CharacterName TEXT,
+        UCS符号位置 TEXT,
+        字母 TEXT,
+        字母のUCS符号位置 TEXT,
+        戸籍統一文字番号 TEXT,
+        学術用変体仮名番号 TEXT,
+        国語研URL TEXT,
+        備考 TEXT
+    )`))
+
+    db.exec(`drop table if exists "mjih_phonetic"`);
+    db.exec(format(`CREATE TABLE "mjih_phonetic" (
+        MJ文字図形名 TEXT NOT NULL,
+        文字 TEXT,
+        音価 TEXT NOT NULL
+    )`));
+
+    const mjipath = path.join(__dirname, "../resources/mjih/MJIH00201.csv")
+    const stream = fs.createReadStream(mjipath).pipe(parse({
+        columns: true,
+        bom: true,
+    }))
+    const columns = [
+        "MJ文字図形名",
+        "文字",
+        "CharacterName",
+        "UCS符号位置",
+        "字母",
+        "字母のUCS符号位置",
+        "戸籍統一文字番号",
+        "学術用変体仮名番号",
+        "国語研URL",
+        "備考",
+    ]
+    const readColumns = [
+        "MJ文字図形名",
+        "font文字",
+        "CharacterName",
+        "UCS符号位置",
+        "字母",
+        "字母のUCS符号位置",
+        "戸籍統一文字番号",
+        "学術用変体仮名番号",
+        "国語研URL",
+        "備考",
+    ]
+    function quote(x: string) {
+        return `"${x}"`
+    }
+    const insert = db.prepare(
+        `INSERT INTO "mjih" (${columns.map(quote).join(",")})
+        VALUES (${columns.map(() => "?").join(",")})`)
+    const insert_phonetic = db.prepare(
+        `INSERT INTO "mjih_phonetic" (MJ文字図形名, 文字, 音価)
+        VALUES (?, ?, ?)`
+    )
+
+    await transaction(db, async () => {
+        const phoneticKey = [..."１２３"].map(i => `音価${i}`)
+        for await (const row of stream) {
+            insert.run(readColumns.map(column => {
+                return row[column] || null
+            }));
+            for (let i = 0; i < 3; i++) {
+                if (row[phoneticKey[i]]) {
+                    const mj = row.MJ文字図形名
+                    const char = row.font文字 || null
+                    const phonetic = row[phoneticKey[i]]
+                    insert_phonetic.run([mj, char, phonetic])
+                }
+            }
+        }
+    })
+
+    db.exec(`CREATE INDEX "mjih_文字" ON "mjih" ("文字")`)
+    db.exec(`CREATE INDEX "mjih_字母" ON "mjih" ("字母")`)
+    db.exec(`CREATE INDEX "mjih_phonetic_文字" ON "mjih_phonetic" ("文字")`)
+    db.exec(`CREATE INDEX "mjih_phonetic_音価" ON "mjih_phonetic" ("音価")`)
+}
+
 async function createIvs(db: import("better-sqlite3").Database) {
     db.exec(`create temporary table "tempivs" (
         "IVS" TEXT NOT NULL,
@@ -1219,6 +1304,7 @@ async function main() {
     db.exec("PRAGMA journal_mode = WAL")
     await time(createMji)(db)
     await time(createMjsm)(db)
+    await time(createMjih)(db)
     await time(createIvs)(db)
     await time(createSvs)(db)
     await time(createCjkRadicals)(db)
