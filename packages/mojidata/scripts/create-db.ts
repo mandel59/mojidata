@@ -523,12 +523,12 @@ async function createSvs(db: import("better-sqlite3").Database) {
 async function createCjkRadicals(db: import("better-sqlite3").Database) {
     db.exec(`drop table if exists "radicals"`)
     db.exec(format(`CREATE TABLE "radicals" (
-        "radical" TEXT GENERATED ALWAYS AS ("radical_number" || CASE WHEN "radical_simplified" THEN '''' ELSE '' END) VIRTUAL,
+        "radical" TEXT GENERATED ALWAYS AS ("radical_number" || CASE "radical_simplified" WHEN 2 THEN '''''' WHEN 1 THEN '''' ELSE '' END) VIRTUAL,
         "radical_number" INTEGER NOT NULL,
-        "radical_simplified" INTEGER NOT NULL CHECK ("radical_simplified" IN (0, 1)),
-        "radical_character" TEXT NOT NULL,
-        "radical_CJKUI" TEXT NOT NULL,
-        "部首" INTEGER GENERATED ALWAYS AS (CASE WHEN NOT "radical_simplified" THEN "radical_number" END) VIRTUAL,
+        "radical_simplified" INTEGER NOT NULL CHECK ("radical_simplified" IN (0, 1, 2)),
+        "radical_character" TEXT,
+        "radical_CJKUI" TEXT,
+        "部首" INTEGER GENERATED ALWAYS AS (CASE WHEN NOT "radical_simplified" <> 0 THEN "radical_number" END) VIRTUAL,
         "部首漢字" TEXT GENERATED ALWAYS AS ("radical_CJKUI") VIRTUAL,
         PRIMARY KEY ("radical_number", "radical_simplified")
     )`))
@@ -547,9 +547,9 @@ async function createCjkRadicals(db: import("better-sqlite3").Database) {
     await transaction(db, async () => {
         for await (const record of stream) {
             const radical = record[0]
-            const radical_simplified = Number(radical.substr(-1) === "'")
+            const radical_simplified = radical.substr(-2) === "''" ? 2 : radical.substr(-1) === "'" ? 1 : 0
             const radical_number = parseInt(radical, 10)
-            const radical_character = String.fromCodePoint(parseInt(record[1], 16))
+            const radical_character = record[1] !== "" ? String.fromCodePoint(parseInt(record[1], 16)) : null
             const radical_cjkui = String.fromCodePoint(parseInt(record[2], 16))
             insert.run([
                 radical_number,

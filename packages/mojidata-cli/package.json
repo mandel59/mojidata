@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-cli",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.3.0",
+    "@mandel59/mojidata": "^1.4.0",
     "better-sqlite3": "^8.2.0"
   },
   "devDependencies": {

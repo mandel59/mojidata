@@ -23,7 +23,7 @@ function showHelp() {
     console.log("\tids-find --whole=⿰？魚")
     console.log("\t\tFind characters where their right parts are 魚")
     console.log("IDS Unary Operators:\n\t〾↔↷")
-    console.log("IDS Binary Operators:\n\t⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻")
+    console.log("IDS Binary Operators:\n\t⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻⿼⿽")
     console.log("IDS Ternary Operators:\n\t⿲⿳")
 }
 

@@ -12,6 +12,11 @@ export const tokenArgs: Partial<Record<string, number>> = {
     "⿹": 2,
     "⿺": 2,
     "⿻": 2,
+    "⿼": 2,
+    "⿽": 2,
+    "⿾": 1,
+    "⿿": 1,
+    "㇯": 2,
     "↔": 1,
     "↷": 1,
     "⊖": 2,
@@ -56,7 +61,9 @@ function isSurrounding(obj: string) {
         || obj === "⿷"
         || obj === "⿸"
         || obj === "⿹"
-        || obj === "⿺")
+        || obj === "⿺"
+        || obj === "⿼"
+        || obj === "⿽")
 }
 
 export function* applyOperators(tokens: string[]): Generator<string, any, undefined> {

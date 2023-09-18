@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Support loading older versions of Unihan
 
+## [1.4.0] - 2023-09-18
+
+### Changed
+
+- Update UCD/Unihan to version 15.1
+- Change definition of radicals table
+
 ## [1.3.0] - 2023-06-29
 
 ### Added
