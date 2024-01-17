@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Mojidata Character Database",
   "homepage": "https://github.com/mandel59/mojidata/",
   "repository": {
@@ -23,6 +23,7 @@
     "build": "bash scripts/build",
     "test": "ava",
     "prepare": "bash scripts/clean && bash scripts/build",
+    "publish": "yarn prepare && yarn npm publish --access public",
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
   "author": "Ryusei Yamaguchi",

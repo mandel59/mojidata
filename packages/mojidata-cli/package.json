@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-cli",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -19,12 +19,13 @@
   },
   "scripts": {
     "test": "ava",
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.4.0",
+    "@mandel59/mojidata": "^1.4.1",
     "better-sqlite3": "^8.2.0"
   },
   "devDependencies": {
