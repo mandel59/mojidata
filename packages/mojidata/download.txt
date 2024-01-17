@@ -1,6 +1,6 @@
 ## This file contains the list of resources downloaded during build.
 ## Column 1: File name
-## Column 2: SHA1 checksum
+## Column 2: SHA256 checksum
 ## Column 3: Source URL
 
 ## CMap Resources <https://github.com/adobe-type-tools/cmap-resources>
@@ -10,6 +10,7 @@ cid2code.txt 306515b99601832ccb50df199137f53c1358c2f7f5a675ad91036f7e28c0966c ht
 ## List of MJ Characters <https://moji.or.jp/mojikiban/mjlist/>
 ## License: CC-BY-SA-2.1-JP
 mji.00601-xlsx.zip 9025d433f99b1d7158de4195fdf83202b3a929d64fb016f3cd73c2b1cf00ac57 https://moji.or.jp/wp-content/mojikiban/oscdl/mji.00601-xlsx.zip
+mji.00602.xlsx f79075bf006b66c5e57a6df60503c5a01679cabbcea2f124eb3758593cf6fd3f https://moji.or.jp/wp-content/uploads/2024/01/mji.00602.xlsx
 
 ## MJ Map <https://moji.or.jp/mojikiban/map/>
 ## License: CC-BY-SA-2.1-JP

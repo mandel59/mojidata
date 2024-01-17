@@ -3,7 +3,6 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-scripts/download mji.00601-xlsx.zip
-mkdir -p resources
-unzip -o cache/mji.00601-xlsx.zip -d resources/mji
-ts-node --transpile-only scripts/xlsx2csv.ts resources/mji/mji.00601.xlsx resources/mji/mji.00601.csv
+scripts/download mji.00602.xlsx
+mkdir -p resources/mji
+ts-node --transpile-only scripts/xlsx2csv.ts cache/mji.00602.xlsx resources/mji/mji.00602.csv

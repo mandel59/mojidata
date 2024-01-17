@@ -76,7 +76,7 @@ async function createMji(db: import("better-sqlite3").Database) {
         "更新履歴" TEXT NOT NULL
     )`))
 
-    const mjipath = path.join(__dirname, "../resources/mji/mji.00601.csv")
+    const mjipath = path.join(__dirname, "../resources/mji/mji.00602.csv")
     const stream = fs.createReadStream(mjipath).pipe(parse({
         columns: true,
         cast: (value, { column }) => {

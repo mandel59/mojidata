@@ -5,14 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-
-- Support loading older versions of Unihan
-
-## [1.4.0] - 2023-09-18
+## [1.4.0] - 2024-01-17
 
 ### Changed
 
+- Update MJ文字情報一覧表 to version 006.02
 - Update UCD/Unihan to version 15.1
 - Change definition of radicals table
 
