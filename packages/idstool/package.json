@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idstool",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Manipurate CJK ideograph structures",
   "repository": {
     "type": "git",

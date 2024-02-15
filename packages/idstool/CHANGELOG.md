@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.2] - 2024-02-15
+
+### Added
+
+- Add multiplicity specifier syntax.
+  `ids-find 木 '耳*3'` finds characters that contain 木 and 3 耳.
+
+## [1.4.1] - 2024-01-17
+
+- Republish correctly built package
+
 ## [1.4.0] - 2023-09-18
 
 ### Change
