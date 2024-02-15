@@ -1,3 +1,5 @@
+import { getTokenMetadata, TokenList, withTokenMetadata } from "./token-list"
+
 export const tokenArgs: Partial<Record<string, number>> = {
     "〾": 1,
     "⿰": 2,
@@ -178,6 +180,7 @@ function* _expandOverlaid(tokens: string[]): Generator<string[], void> {
     }
 }
 
-export function expandOverlaid(tokens: string[]): string[][] {
-    return [..._expandOverlaid(tokens)]
+export function expandOverlaid(tokens: TokenList): TokenList[] {
+    const metadata = getTokenMetadata(tokens)
+    return [..._expandOverlaid(tokens)].map(x => withTokenMetadata(x, metadata))
 }

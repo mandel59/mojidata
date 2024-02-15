@@ -5,13 +5,22 @@ import { IDSFinder } from "../lib/ids-finder"
 
 function showUsage() {
     console.log("Usage:")
-    console.log("\tids-find IDS [IDS ...]")
-    console.log("\tids-find --whole=IDS [IDS ...]")
+    console.log("\tids-find IDS_X [IDS_X ...]")
+    console.log("\tids-find --whole=IDS [IDS_X ...]")
     console.log("\tids-find --help")
 }
 
 function showHelp() {
     showUsage()
+    console.log("IDS syntax:")
+    console.log('\tIDS_X ::= IDS Multiplicity?')
+    console.log('\tIDS ::= IDS_Variable | IDS_Component | IDS_UnaryOperator IDS | IDS_BinaryOperator IDS IDS | IDS_TernaryOperator IDS IDS IDS')
+    console.log('\tIDS_Variable ::= [a-z]')
+    console.log('\tIDS_Component ::= Ideographic | Radical | CJK_Stroke | Private_Use | "？"')
+    console.log('\tIDS_UnaryOperator ::= "〾" | "↔" | "↷"')
+    console.log('\tIDS_BinaryOperator ::= "⿰" | "⿱" | "⿴" | "⿵" | "⿶" | "⿷" | "⿸" | "⿹" | "⿺" | "⿻" | "⿼" | "⿽"')
+    console.log('\tIDS_TernaryOperator ::= "⿲" | "⿳"')
+    console.log('\tMultiplicity ::= "*" [0-9]+')
     console.log("Examples:")
     console.log("\tids-find 魚 山")
     console.log("\t\tFind characters including 魚 and 山")
@@ -22,9 +31,8 @@ function showHelp() {
     console.log("\t\tIncomplete IDSs works here")
     console.log("\tids-find --whole=⿰？魚")
     console.log("\t\tFind characters where their right parts are 魚")
-    console.log("IDS Unary Operators:\n\t〾↔↷")
-    console.log("IDS Binary Operators:\n\t⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻⿼⿽")
-    console.log("IDS Ternary Operators:\n\t⿲⿳")
+    console.log("\tids-find 木 '耳*3'")
+    console.log("\t\tFind characters including 木 and three 耳")
 }
 
 function drain(ws: Writable) {

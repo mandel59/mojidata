@@ -1,8 +1,8 @@
-import path from "path"
 import Database, { Statement } from "better-sqlite3"
 import { tokenizeIDS } from "./ids-tokenizer"
 import { query, makeQuery } from "./idsfind-query"
 import { expandOverlaid, nodeLength } from "./ids-operator"
+import { TokenList } from "./token-list"
 
 interface IDSFinderOptions {
     dbpath?: string
@@ -53,7 +53,7 @@ export class IDSFinder {
         const tokenized = tokenizeIdsList(idslist)
         return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(tokenized.forQuery) });
     }
-    private idsmatch(tokens: string[], pattern: string[]) {
+    private idsmatch(tokens: string[], pattern: TokenList) {
         const matchFrom = (i: number) => {
             const vars = new Map<string, string[]>()
             let k = i
@@ -98,18 +98,19 @@ export class IDSFinder {
             }
             return true
         }
+        let count = 0
         for (let i = 0; i < tokens.length; i++) {
             if (matchFrom(i)) {
-                return true
+                count++
             }
         }
-        return false
+        return count
     }
-    private postaudit(result: string, idslist: string[][][]) {
+    private postaudit(result: string, idslist: TokenList[][]) {
         for (const IDS_tokens of this.getIDSTokensStatement.all({ ucs: result })) {
             const tokens = IDS_tokens.split(' ')
             if (idslist.every(patterns => {
-                return patterns.some(pattern => this.idsmatch(tokens, pattern))
+                return patterns.some(pattern => this.idsmatch(tokens, pattern) >= (pattern.multiplicity ?? 1))
             })) {
                 return true
             }
