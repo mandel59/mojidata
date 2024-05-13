@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.3] - 2024-05-13
+
+### Changed
+
+- Update IDS.TXT
+
 ## [1.4.2] - 2024-02-15
 
 ### Added
