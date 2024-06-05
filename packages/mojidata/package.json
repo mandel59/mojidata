@@ -27,7 +27,7 @@
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-DFS-2016",
+  "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-3.0",
   "devDependencies": {
     "@mandel59/joyokanjihyo": "1.2.0",
     "@mandel59/nyukanseiji": "1.2.0",
