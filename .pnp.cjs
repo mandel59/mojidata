@@ -150,6 +150,7 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/joyokanjihyo", "npm:1.2.0"],\
           ["@mandel59/nyukanseiji", "npm:1.2.0"],\
           ["@types/better-sqlite3", "npm:5.4.2"],\
+          ["@types/jsdom", "npm:21.1.7"],\
           ["@types/node", "npm:16.9.1"],\
           ["@types/yaml", "npm:1.9.6"],\
           ["ava", "npm:3.15.0"],\
@@ -345,6 +346,18 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@types/jsdom", [\
+      ["npm:21.1.7", {\
+        "packageLocation": "./.yarn/cache/@types-jsdom-npm-21.1.7-b9d35cbe67-a5ee54aec8.zip/node_modules/@types/jsdom/",\
+        "packageDependencies": [\
+          ["@types/jsdom", "npm:21.1.7"],\
+          ["@types/node", "npm:15.12.5"],\
+          ["@types/tough-cookie", "npm:4.0.5"],\
+          ["parse5", "npm:7.1.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@types/keyv", [\
       ["npm:3.1.3", {\
         "packageLocation": "./.yarn/cache/@types-keyv-npm-3.1.3-8864e3cbf3-b5f8aa592c.zip/node_modules/@types/keyv/",\
@@ -413,6 +426,15 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@types/responselike", "npm:1.0.0"],\
           ["@types/node", "npm:15.12.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@types/tough-cookie", [\
+      ["npm:4.0.5", {\
+        "packageLocation": "./.yarn/cache/@types-tough-cookie-npm-4.0.5-8c5e2162e1-01fd82efc8.zip/node_modules/@types/tough-cookie/",\
+        "packageDependencies": [\
+          ["@types/tough-cookie", "npm:4.0.5"]\
         ],\
         "linkType": "HARD"\
       }]\
