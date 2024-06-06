@@ -140,6 +140,11 @@ export class IDSDecomposer {
                 if (object === "𣱱") continue
                 if (object === "𨈐") continue
                 if (object === "𤣥") continue
+                // replace 𤣩 with 王 instead of 玉
+                if (object === "𤣩") {
+                    this.zvar.set("𤣩", ["王"])
+                    continue
+                }
                 this.zvar.set(object, [subject])
             }
         }
