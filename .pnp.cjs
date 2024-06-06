@@ -43,6 +43,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["@types/node", "npm:16.9.1"],\
+          ["corepack", "npm:0.28.2"],\
           ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"]\
         ],\
         "linkType": "SOFT"\
@@ -1350,6 +1351,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/core-util-is-npm-1.0.2-9fc2b94dc3-d0f7587346.zip/node_modules/core-util-is/",\
         "packageDependencies": [\
           ["core-util-is", "npm:1.0.2"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["corepack", [\
+      ["npm:0.28.2", {\
+        "packageLocation": "./.yarn/cache/corepack-npm-0.28.2-bfd600baf6-790fb7f325.zip/node_modules/corepack/",\
+        "packageDependencies": [\
+          ["corepack", "npm:0.28.2"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3211,6 +3221,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["mojidata-workspace", "workspace:."],\
           ["@types/node", "npm:16.9.1"],\
+          ["corepack", "npm:0.28.2"],\
           ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"]\
         ],\
         "linkType": "SOFT"\
