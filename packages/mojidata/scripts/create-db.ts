@@ -7,6 +7,7 @@ import { format as formatSQL } from "sql-formatter"
 import { transaction } from "./lib/dbutils"
 import joyoKanjiHyo from "@mandel59/joyokanjihyo"
 import nyukanseiji from "@mandel59/nyukanseiji"
+import { scrapeUnihanDoc } from "./scraper/scrape-unihan-doc"
 
 const format = (sql: string) => {
     return formatSQL(sql, { language: 'mysql' });
@@ -699,6 +700,13 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     ).pluck().all() as string[]) {
         db.exec(`drop table if exists "${table.replace(/"/g, '""')}"`)
     }
+    for (const table of db.prepare(
+        `select tbl_name
+        from sqlite_master
+        where type = 'view' and tbl_name glob '${prefix}_k*'`
+    ).pluck().all() as string[]) {
+        db.exec(`drop view if exists "${table.replace(/"/g, '""')}"`)
+    }
 
     const createTable = (property: string) => {
         db.exec(format(`CREATE TABLE "${prefix}_${property}" (
@@ -833,6 +841,34 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
         CREATE VIEW "${prefix}_source" AS
         ${sources.map(s => `SELECT UCS, '${s}' as source, value FROM "${prefix}_kIRG_${s}Source"`).join("\nUNION ALL\n")}
     `));
+
+    const unihanProperties = await scrapeUnihanDoc()
+    for (const { Property, Delimiter } of unihanProperties) {
+        if (Delimiter === "space") {
+            db.exec(`drop view if exists "${prefix}_each_${Property}"`)
+            db.exec(format(`
+                CREATE TABLE "${prefix}_each_${Property}" (
+                    "UCS" TEXT NOT NULL,
+                    "i" INTEGER NOT NULL,
+                    "value" TEXT NOT NULL,
+                    PRIMARY KEY ("UCS", "i")
+                )
+            `))
+            db.exec(`
+                insert into "${prefix}_each_${Property}"("UCS", "i", "value")
+                select t.UCS as UCS, u.i as i, u.value as value
+                from "${prefix}_${Property}" as t
+                join string_split_with_index(t.value, ' ') as u
+            `)
+            db.exec(`drop table "${prefix}_${Property}"`)
+            db.exec(format(`
+                CREATE VIEW "${prefix}_${Property}" AS
+                SELECT "UCS", group_concat("value", ' ') as "value"
+                FROM "${prefix}_each_${Property}"
+                GROUP BY "UCS"
+            `))
+        }
+    }
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {
@@ -1302,6 +1338,19 @@ async function main() {
     const db = new Database(dbpath)
     console.time("ALL")
     db.exec("PRAGMA journal_mode = WAL")
+    db.table("string_split_with_index", {
+        parameters: ["_string", "_delimiter"],
+        columns: ["i", "value"],
+        rows: function* (string: any, delimiter: any) {
+            if (typeof string !== "string") throw new TypeError("string_split_with_index(string,delimiter) string must be a string");
+            if (typeof delimiter !== "string") throw new TypeError("string_split_with_index(string,delimiter) delimiter must be a string");
+            let i = 0
+            for (const value of delimiter === "" ? Array.from(string) : String(string).split(delimiter)) {
+                i += 1
+                yield [i, value];
+            }
+        } as any
+    })
     await time(createMji)(db)
     await time(createMjsm)(db)
     await time(createMjih)(db)
