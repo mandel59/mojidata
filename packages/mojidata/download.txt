@@ -18,7 +18,7 @@ MJShrinkMapVer.1.2.0.zip f109f64aaf357d9d44b8eff39c1c633bc7e5b3f526efc812951732f
 MJIH00201-xlsx.zip d4fbeb012d1519a5fd7256084587e7163fe4f89b1a9b789145cbbe1a548b9262 https://moji.or.jp/wp-content/mojikiban/oscdl/MJIH00201-xlsx.zip
 
 ## Unicode Character Database <https://unicode.org/ucd/>
-## License: Unicode-DFS-2016
+## License: Unicode-3.0
 CJKRadicals.txt ef4b117b3d2299ed27b4de5d6b32238baf173dddc73aff68005dc78a39fdb2bf https://www.unicode.org/Public/15.1.0/ucd/CJKRadicals.txt
 StandardizedVariants.txt e12a2ce1737ed346494a9c76d0fe19a109673e26db8bc0029188a0dde25163cd https://www.unicode.org/Public/15.1.0/ucd/StandardizedVariants.txt
 EquivalentUnifiedIdeograph.txt 460a08f497d0f3e45aae734708848fadf1ced44b752971bac37c23da55b33aa9 https://www.unicode.org/Public/15.1.0/ucd/EquivalentUnifiedIdeograph.txt
@@ -28,7 +28,7 @@ Unihan.zip a0226610e324bcf784ac380e11f4cbf533ee1e6b3d028b0991bf8c0dc3f85853 http
 Unihan-12.1.0.zip acd68a6a27a3aa476c3944f14069cd11b0f7b2f9 https://www.unicode.org/Public/12.1.0/ucd/Unihan.zip
 
 ## Ideographic Variation Database <https://unicode.org/ivd/>
-## License: Unicode-DFS-2016
+## License: Unicode-3.0
 IVD_Sequences.txt e6168c2ed8e0834d3eccb8a6d43aad004c97c8216e237101f1c2e8347be2b523 https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs <https://babelstone.co.uk/CJK/IDS.TXT>
