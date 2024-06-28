@@ -1,0 +1,27 @@
+#!/bin/bash
+set -eux
+cd "$(dirname "$0")/.."
+
+function main () {
+    name="$1"
+    url="$2"
+    read x_name x_digest x_url
+    if test -z "$name"; then exit 1; fi
+    if test -z "$url"; then exit 1; fi
+    tmp_cachefile="${name%.*}-$(date "+%Y%m%d%H%M%S").${name##*.}.tmp"
+    mkdir -p cache/.sha256sum
+    curl -LsSf "$url" -o "cache/.sha256sum/$tmp_cachefile"
+    digest="$(shasum -a 256 "cache/.sha256sum/$tmp_cachefile" | awk '{print $1}')"
+    cachefile="${name%.*}-${digest}.${name##*.}"
+    mv "cache/.sha256sum/$tmp_cachefile" "cache/.sha256sum/$cachefile"
+    rm -f "cache/$name"
+    ln -s ".sha256sum/$cachefile" "cache/$name"
+    if test -z "$x_name"; then
+        printf "## %s\n%s %s %s\n" "$(date "+%Y-%m-%d %H:%M:%S")" "$name" "$digest" "$url" >> download.txt
+    else
+        sed "s#^${name//./\\.} .*#$name $digest $url#" download.txt > download.txt.tmp
+        mv download.txt.tmp download.txt
+    fi
+}
+
+grep -v -E '^#|^\s*$' download.txt | sort -k 1b,1 | join -j 1 - <(echo "$1") | main "$1" "$2"
