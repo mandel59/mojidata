@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eux
+cd "$(dirname "$0")/.."
+
+version="$1"
+test -n "$version"
+
+scripts/update CJKRadicals.txt "https://www.unicode.org/Public/$version/ucd/CJKRadicals.txt"
+scripts/update StandardizedVariants.txt "https://www.unicode.org/Public/$version/ucd/StandardizedVariants.txt"
+scripts/update EquivalentUnifiedIdeograph.txt "https://www.unicode.org/Public/$version/ucd/EquivalentUnifiedIdeograph.txt"
+scripts/update USourceData.txt "https://www.unicode.org/Public/$version/ucd/USourceData.txt"
+scripts/update Unihan.zip "https://www.unicode.org/Public/$version/ucd/Unihan.zip"
