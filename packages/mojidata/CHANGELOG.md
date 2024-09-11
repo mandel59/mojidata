@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.0] - 2024-09-11
+
+- Update UCD to version 16.0.0
+- Update IDS.TXT
+
 ## [1.5.0] - 2024-06-06
 
 - Update licenses/unicode.txt. Unicode License v3 is now applied for the Unicode data.

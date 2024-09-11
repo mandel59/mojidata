@@ -68,7 +68,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
-    "@mandel59/mojidata": "npm:^1.5.0"
+    "@mandel59/mojidata": "npm:^1.6.0"
     "@types/node": "npm:^16.9.1"
     ava: "npm:^3.15.0"
     better-sqlite3: "npm:^8.2.0"
@@ -92,7 +92,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata": "npm:^1.5.0"
+    "@mandel59/mojidata": "npm:^1.6.0"
     "@types/better-sqlite3": "npm:^7.4.0"
     "@types/node": "npm:^16.9.1"
     ava: "npm:^3.15.0"
@@ -107,7 +107,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata@npm:^1.5.0, @mandel59/mojidata@workspace:packages/mojidata":
+"@mandel59/mojidata@npm:^1.6.0, @mandel59/mojidata@workspace:packages/mojidata":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
