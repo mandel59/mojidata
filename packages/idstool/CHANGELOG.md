@@ -5,19 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.1] - 2025-02-12
+
+- Update IDS.TXT
+
+[1.6.1]: https://github.com/mandel59/mojidata/compare/v1.6.0...v1.6.1
+
 ## [1.6.0] - 2024-09-11
 
 - Update Mojidata to version 1.6.0.
 
+[1.6.0]: https://github.com/mandel59/mojidata/compare/v1.5.0...v1.6.0
+
 ## [1.5.0] - 2024-06-06
 
 - Normalize 𤣩 with 王 instead of 玉.
+
+[1.5.0]: https://github.com/mandel59/mojidata/compare/v1.4.3...v1.5.0
 
 ## [1.4.3] - 2024-05-13
 
 ### Changed
 
 - Update IDS.TXT
+
+[1.4.3]: https://github.com/mandel59/mojidata/compare/v1.4.2...v1.4.3
 
 ## [1.4.2] - 2024-02-15
 
@@ -26,9 +38,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Add multiplicity specifier syntax.
   `ids-find 木 '耳*3'` finds characters that contain 木 and 3 耳.
 
+[1.4.2]: https://github.com/mandel59/mojidata/compare/v1.4.1...v1.4.2
+
 ## [1.4.1] - 2024-01-17
 
 - Republish correctly built package
+
+[1.4.1]: https://github.com/mandel59/mojidata/compare/v1.4.0...v1.4.1
 
 ## [1.4.0] - 2023-09-18
 
@@ -36,11 +52,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Support new IDS operators of Unicode 15.1
 
+[1.4.0]: https://github.com/mandel59/mojidata/compare/v1.3.0...v1.4.0
+
 ## [1.3.0] - 2023-06-29
 
 ### Added
 
 - Add USource characters to the FTS index.
+
+[1.3.0]: https://github.com/mandel59/mojidata/compare/v1.2.8...v1.3.0
 
 ## [1.2.8] - 2023-04-27
 
@@ -48,11 +68,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - idstool is now correctly prepared.
 
+[1.2.8]: https://github.com/mandel59/mojidata/compare/v1.2.7...v1.2.8
+
 ## [1.2.7] - 2023-04-27
 
 ### Changed
 
 - idstool: Expose more database options.
+
+[1.2.7]: https://github.com/mandel59/mojidata/compare/v1.2.6...v1.2.7
 
 ## [1.2.6] - 2023-04-27
 
@@ -60,11 +84,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - idstool: Add close method to IDSFinder class
 
+[1.2.6]: https://github.com/mandel59/mojidata/compare/v1.2.5...v1.2.6
+
 ## [1.2.5] - 2023-04-26
 
 ### Changed
 
 - idstool: Use kdpv relation to normalize radical variants.
+
+[1.2.5]: https://github.com/mandel59/mojidata/compare/v1.2.4...v1.2.5
 
 ## [1.2.4] - 2023-04-11
 
@@ -73,11 +101,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - idstool: placeholders are now correctly handled when they appear after unary
   operators in search queries.
 
+[1.2.4]: https://github.com/mandel59/mojidata/compare/v1.2.3...v1.2.4
+
 ## [1.2.3] - 2023-04-10
 
 ### Changed
 
 - idstool: Revert type definition files. Removed TypeScript source files.
+
+[1.2.3]: https://github.com/mandel59/mojidata/compare/v1.2.2...v1.2.3
 
 ## [1.2.2] - 2023-04-10
 
@@ -86,11 +118,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - idstool: Added TypeScript source files. Removed type definition files.
 - idstool: Improved overlaid operator handlings.
 
+[1.2.2]: https://github.com/mandel59/mojidata/compare/v1.2.1...v1.2.2
+
 ## [1.2.1] - 2023-04-10
 
 ### Added
 
 - idstool: Add type definition files.
+
+[1.2.1]: https://github.com/mandel59/mojidata/compare/v1.2.0...v1.2.1
 
 ## [1.2.0] - 2023-04-08
 
@@ -102,6 +138,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Updated IDS.TXT
 - Updated better-sqlite3.
+
+[1.2.0]: https://github.com/mandel59/mojidata/compare/v1.1.0...v1.2.0
 
 ## [1.1.0] - 2023-01-13
 
@@ -119,6 +157,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - ids-find: Fix a bug that queries with placeholders (`？`) without `--whole` option don't work.
 - ids-find: Change to search by IDS containing 〾
 
+[1.1.0]: https://github.com/mandel59/mojidata/compare/v1.0.0...v1.1.0
+
 ## [1.0.0] - 2022-10-12
 ### Changed
 - Update mojidata
+
+[1.0.0]: https://github.com/mandel59/mojidata/releases/tag/v1.0.0

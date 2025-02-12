@@ -5,14 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.1] - 2025-02-12
+
+- Update IDS.TXT
+
+[1.6.1]: https://github.com/mandel59/mojidata/compare/v1.6.0...v1.6.1
+
 ## [1.6.0] - 2024-09-11
 
 - Update UCD to version 16.0.0
 - Update IDS.TXT
 
+[1.6.0]: https://github.com/mandel59/mojidata/compare/v1.5.0...v1.6.0
+
 ## [1.5.0] - 2024-06-06
 
 - Update licenses/unicode.txt. Unicode License v3 is now applied for the Unicode data.
+
+[1.5.0]: https://github.com/mandel59/mojidata/compare/v1.4.3...v1.5.0
 
 ## [1.4.3] - 2024-05-13
 
@@ -20,9 +30,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Update IDS.TXT
 
+[1.4.3]: https://github.com/mandel59/mojidata/compare/v1.4.1...v1.4.3
+
 ## [1.4.1] - 2024-01-17
 
 - Republish correctly built package
+
+[1.4.1]: https://github.com/mandel59/mojidata/compare/v1.4.0...v1.4.1
 
 ## [1.4.0] - 2024-01-17
 
@@ -32,11 +46,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Update UCD/Unihan to version 15.1
 - Change definition of radicals table
 
+[1.4.0]: https://github.com/mandel59/mojidata/compare/v1.3.0...v1.4.0
+
 ## [1.3.0] - 2023-06-29
 
 ### Added
 
 - Add MJ文字情報一覧表 変体仮名編 https://moji.or.jp/mojikiban/mjlist/
+
+[1.3.0]: https://github.com/mandel59/mojidata/compare/v1.2.0...v1.3.0
 
 ## [1.2.0] - 2023-04-08
 
@@ -44,11 +62,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Updated IDS.TXT
 
+[1.2.0]: https://github.com/mandel59/mojidata/compare/v1.1.0...v1.2.0
+
 ## [1.1.0] - 2023-01-13
 
 ### Changed
 
 - Updated IDS.TXT
+
+[1.1.0]: https://github.com/mandel59/mojidata/compare/v1.0.0...v1.1.0
 
 ## [1.0.0] - 2022-10-12
 ### Changed
@@ -56,6 +78,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - `radeqv`: Fix EquivalentUnifiedIdeograph.txt loader.
 
-## [0.5.0] - 2022-07-13
+[1.0.0]: https://github.com/mandel59/mojidata/releases/tag/v1.0.0
+
+## 0.5.0 - 2022-07-13
 ### Changed
 - Update data from Unicode Character Database to version 15.0.
