@@ -19,11 +19,11 @@ MJIH00201-xlsx.zip d4fbeb012d1519a5fd7256084587e7163fe4f89b1a9b789145cbbe1a548b9
 
 ## Unicode Character Database <https://unicode.org/ucd/>
 ## License: Unicode-3.0
-CJKRadicals.txt 4a96507f4644bbbb11b423edb436e05cee84dadd57413e7571b5af67321474f1 https://www.unicode.org/Public/16.0.0/ucd/CJKRadicals.txt
-StandardizedVariants.txt 36e799b2c5d902af094b4dd2cb60622bffc079824bfd0bf62e3a636d698b3fb5 https://www.unicode.org/Public/16.0.0/ucd/StandardizedVariants.txt
-EquivalentUnifiedIdeograph.txt 628929adae97427348337003e39d29da7b55acdddfac21e06d3dacad92237834 https://www.unicode.org/Public/16.0.0/ucd/EquivalentUnifiedIdeograph.txt
-USourceData.txt 9200c409d4c250f626be118492eb19ad098500bd829f9ec2853ac3cee0a30a58 https://www.unicode.org/Public/16.0.0/ucd/USourceData.txt
-Unihan.zip b8f000df69de7828d21326a2ffea462b04bc7560022989f7cc704f10521ef3e0 https://www.unicode.org/Public/16.0.0/ucd/Unihan.zip
+CJKRadicals.txt 826f83be25cd18fb8a5015a514704504e1982e840ea14d058bf583e1cc620c83 https://www.unicode.org/Public/17.0.0/ucd/CJKRadicals.txt
+StandardizedVariants.txt f55100b2fb11d3d75a37b8c1ab752192dbd1c4b12328c5ec6b38e3807c0ca597 https://www.unicode.org/Public/17.0.0/ucd/StandardizedVariants.txt
+EquivalentUnifiedIdeograph.txt 38619c05a17e771554000fe604afee92e10eb49e0616ecf0c87af3c1eb0f4320 https://www.unicode.org/Public/17.0.0/ucd/EquivalentUnifiedIdeograph.txt
+USourceData.txt 0caa31c713a0ea0eaaa75d7afd0bca05d7448df4df22c384ffc30a0d9c7953e4 https://www.unicode.org/Public/17.0.0/ucd/USourceData.txt
+Unihan.zip f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e https://www.unicode.org/Public/17.0.0/ucd/Unihan.zip
 
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 ## License: Unicode-3.0
