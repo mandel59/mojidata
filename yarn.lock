@@ -68,10 +68,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
-    "@mandel59/mojidata": "npm:^1.6.0"
+    "@mandel59/mojidata": "npm:^1.6.2"
     "@types/node": "npm:^16.9.1"
     ava: "npm:^3.15.0"
-    better-sqlite3: "npm:^8.2.0"
+    better-sqlite3: "npm:^12.4.1"
     ts-node: "npm:^10.2.1"
     typescript: "npm:^4.4.3"
     zx: "npm:^4.2.0"
@@ -92,11 +92,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata": "npm:^1.6.0"
+    "@mandel59/mojidata": "npm:^1.6.2"
     "@types/better-sqlite3": "npm:^7.4.0"
     "@types/node": "npm:^16.9.1"
     ava: "npm:^3.15.0"
-    better-sqlite3: "npm:^8.2.0"
+    better-sqlite3: "npm:^12.4.1"
     ts-node: "npm:^10.2.1"
     typescript: "npm:^4.4.3"
     zx: "npm:^4.2.0"
@@ -107,7 +107,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata@npm:^1.6.0, @mandel59/mojidata@workspace:packages/mojidata":
+"@mandel59/mojidata@npm:^1.6.2, @mandel59/mojidata@workspace:packages/mojidata":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
@@ -119,7 +119,7 @@ __metadata:
     "@types/yaml": "npm:^1"
     ava: "npm:^3.15.0"
     axios: "npm:^0.23.0"
-    better-sqlite3: "npm:^8.2.0"
+    better-sqlite3: "npm:^12.4.1"
     csv-parse: "npm:^4.16.3"
     jsdom: "npm:^24.1.0"
     sql-formatter: "npm:^4.0.2"
@@ -704,14 +704,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^8.2.0":
-  version: 8.2.0
-  resolution: "better-sqlite3@npm:8.2.0"
+"better-sqlite3@npm:^12.4.1":
+  version: 12.4.1
+  resolution: "better-sqlite3@npm:12.4.1"
   dependencies:
     bindings: "npm:^1.5.0"
     node-gyp: "npm:latest"
-    prebuild-install: "npm:^7.1.0"
-  checksum: 10/ad0ecb805b16d0c89c254bf0983c6bb8d260cc2c0e1f29622ea63c75bad01c84683716b77099b82c423297d9ccb8bd41b208bdebb80b102f85b6ad2c02256825
+    prebuild-install: "npm:^7.1.1"
+  checksum: 10/e8133786677e88a2526c965658178e2e057e4b40ff554895a71ecb5e617e062fea619f31389ffbd6fc1f3396ef598812302be56c32e0f01fcb82610785d18186
   languageName: node
   linkType: hard
 
@@ -2801,10 +2801,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"napi-build-utils@npm:^1.0.1":
-  version: 1.0.2
-  resolution: "napi-build-utils@npm:1.0.2"
-  checksum: 10/276feb8e30189fe18718e85b6f82e4f952822baa2e7696f771cc42571a235b789dc5907a14d9ffb6838c3e4ff4c25717c2575e5ce1cf6e02e496e204c11e57f6
+"napi-build-utils@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "napi-build-utils@npm:2.0.0"
+  checksum: 10/69adcdb828481737f1ec64440286013f6479d5b264e24d5439ba795f65293d0bb6d962035de07c65fae525ed7d2fcd0baab6891d8e3734ea792fec43918acf83
   languageName: node
   linkType: hard
 
@@ -3167,16 +3167,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prebuild-install@npm:^7.1.0":
-  version: 7.1.1
-  resolution: "prebuild-install@npm:7.1.1"
+"prebuild-install@npm:^7.1.1":
+  version: 7.1.3
+  resolution: "prebuild-install@npm:7.1.3"
   dependencies:
     detect-libc: "npm:^2.0.0"
     expand-template: "npm:^2.0.3"
     github-from-package: "npm:0.0.0"
     minimist: "npm:^1.2.3"
     mkdirp-classic: "npm:^0.5.3"
-    napi-build-utils: "npm:^1.0.1"
+    napi-build-utils: "npm:^2.0.0"
     node-abi: "npm:^3.3.0"
     pump: "npm:^3.0.0"
     rc: "npm:^1.2.7"
@@ -3185,7 +3185,7 @@ __metadata:
     tunnel-agent: "npm:^0.6.0"
   bin:
     prebuild-install: bin.js
-  checksum: 10/6c70a2f82fbda8903497c560a761b000d861a3e772322c8bed012be0f0a084b5aaca4438a3fad1bd3a24210765f4fae06ddd89ea04dc4c034dde693cc0d9d5f4
+  checksum: 10/1b7e4c00d2750b532a4fc2a83ffb0c5fefa1b6f2ad071896ead15eeadc3255f5babd816949991af083cf7429e375ae8c7d1c51f73658559da36f948a020a3a11
   languageName: node
   linkType: hard
 

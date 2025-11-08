@@ -37,7 +37,7 @@
     "@types/yaml": "^1",
     "ava": "^3.15.0",
     "axios": "^0.23.0",
-    "better-sqlite3": "^8.2.0",
+    "better-sqlite3": "^12.4.1",
     "csv-parse": "^4.16.3",
     "jsdom": "^24.1.0",
     "sql-formatter": "^4.0.2",

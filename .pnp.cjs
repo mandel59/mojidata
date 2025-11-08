@@ -126,7 +126,7 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@types/node", "npm:16.9.1"],\
           ["ava", "npm:3.15.0"],\
-          ["better-sqlite3", "npm:8.2.0"],\
+          ["better-sqlite3", "npm:12.4.1"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
           ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"],\
           ["zx", "npm:4.2.0"]\
@@ -156,7 +156,7 @@ const RAW_RUNTIME_STATE =
           ["@types/yaml", "npm:1.9.6"],\
           ["ava", "npm:3.15.0"],\
           ["axios", "npm:0.23.0"],\
-          ["better-sqlite3", "npm:8.2.0"],\
+          ["better-sqlite3", "npm:12.4.1"],\
           ["csv-parse", "npm:4.16.3"],\
           ["jsdom", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:24.1.0"],\
           ["sql-formatter", "npm:4.0.2"],\
@@ -177,7 +177,7 @@ const RAW_RUNTIME_STATE =
           ["@types/better-sqlite3", "npm:7.4.0"],\
           ["@types/node", "npm:16.9.1"],\
           ["ava", "npm:3.15.0"],\
-          ["better-sqlite3", "npm:8.2.0"],\
+          ["better-sqlite3", "npm:12.4.1"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
           ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"],\
           ["zx", "npm:4.2.0"]\
@@ -827,13 +827,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["better-sqlite3", [\
-      ["npm:8.2.0", {\
-        "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-8.2.0-b579496d3f/node_modules/better-sqlite3/",\
+      ["npm:12.4.1", {\
+        "packageLocation": "./.yarn/unplugged/better-sqlite3-npm-12.4.1-e86050b506/node_modules/better-sqlite3/",\
         "packageDependencies": [\
-          ["better-sqlite3", "npm:8.2.0"],\
+          ["better-sqlite3", "npm:12.4.1"],\
           ["bindings", "npm:1.5.0"],\
           ["node-gyp", "npm:8.2.0"],\
-          ["prebuild-install", "npm:7.1.1"]\
+          ["prebuild-install", "npm:7.1.3"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3244,10 +3244,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["napi-build-utils", [\
-      ["npm:1.0.2", {\
-        "packageLocation": "./.yarn/cache/napi-build-utils-npm-1.0.2-892e4bba56-276feb8e30.zip/node_modules/napi-build-utils/",\
+      ["npm:2.0.0", {\
+        "packageLocation": "./.yarn/cache/napi-build-utils-npm-2.0.0-95da9c2e4e-69adcdb828.zip/node_modules/napi-build-utils/",\
         "packageDependencies": [\
-          ["napi-build-utils", "npm:1.0.2"]\
+          ["napi-build-utils", "npm:2.0.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -3660,16 +3660,16 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["prebuild-install", [\
-      ["npm:7.1.1", {\
-        "packageLocation": "./.yarn/cache/prebuild-install-npm-7.1.1-cb9fc9d341-6c70a2f82f.zip/node_modules/prebuild-install/",\
+      ["npm:7.1.3", {\
+        "packageLocation": "./.yarn/cache/prebuild-install-npm-7.1.3-8e79c3a0a2-1b7e4c00d2.zip/node_modules/prebuild-install/",\
         "packageDependencies": [\
-          ["prebuild-install", "npm:7.1.1"],\
+          ["prebuild-install", "npm:7.1.3"],\
           ["detect-libc", "npm:2.0.1"],\
           ["expand-template", "npm:2.0.3"],\
           ["github-from-package", "npm:0.0.0"],\
           ["minimist", "npm:1.2.5"],\
           ["mkdirp-classic", "npm:0.5.3"],\
-          ["napi-build-utils", "npm:1.0.2"],\
+          ["napi-build-utils", "npm:2.0.0"],\
           ["node-abi", "npm:3.28.0"],\
           ["pump", "npm:3.0.0"],\
           ["rc", "npm:1.2.8"],\
