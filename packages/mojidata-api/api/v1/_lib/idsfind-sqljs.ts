@@ -7,16 +7,6 @@ import {
   type TokenList,
 } from "@mandel59/idsdb"
 
-import { openDatabaseFromFile } from "./sqljs"
-
-const idsfindDbPath = require.resolve("@mandel59/idsdb/idsfind.db")
-
-let idsfindDbPromise: Promise<Database> | undefined
-async function getIdsfindDb(): Promise<Database> {
-  idsfindDbPromise ??= openDatabaseFromFile(idsfindDbPath)
-  return idsfindDbPromise
-}
-
 const idsfindQueryContext = `
 with tokens as (
     select
@@ -185,45 +175,44 @@ type IdsfindStatements = {
   getTokensStmt: Statement
 }
 
-let statementsPromise: Promise<IdsfindStatements> | undefined
-async function getStatements(): Promise<IdsfindStatements> {
-  if (!statementsPromise) {
-    statementsPromise = getIdsfindDb().then((db) => {
+export function createIdsfind(getDb: () => Promise<Database>) {
+  let statementsPromise: Promise<IdsfindStatements> | undefined
+  async function getStatements(): Promise<IdsfindStatements> {
+    statementsPromise ??= getDb().then((db) => {
       return {
         findStmt: db.prepare(idsfindQuery),
         getTokensStmt: db.prepare(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`),
       }
     })
+    return statementsPromise
   }
-  return statementsPromise
-}
 
-export async function idsfind(idslist: string[]): Promise<string[]> {
-  const { findStmt, getTokensStmt } = await getStatements()
-  const tokenized = tokenizeIdsList(idslist)
+  return async (idslist: string[]): Promise<string[]> => {
+    const { findStmt, getTokensStmt } = await getStatements()
+    const tokenized = tokenizeIdsList(idslist)
 
-  const getIDSTokensForUcs = (ucs: string) => {
-    const out: string[] = []
-    getTokensStmt.bind({ $ucs: ucs })
-    while (getTokensStmt.step()) {
-      const row = getTokensStmt.getAsObject() as { IDS_tokens?: string }
-      if (typeof row.IDS_tokens === "string") out.push(row.IDS_tokens)
+    const getIDSTokensForUcs = (ucs: string) => {
+      const out: string[] = []
+      getTokensStmt.bind({ $ucs: ucs })
+      while (getTokensStmt.step()) {
+        const row = getTokensStmt.getAsObject() as { IDS_tokens?: string }
+        if (typeof row.IDS_tokens === "string") out.push(row.IDS_tokens)
+      }
+      getTokensStmt.reset()
+      return out
     }
-    getTokensStmt.reset()
+
+    const out: string[] = []
+    findStmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) })
+    while (findStmt.step()) {
+      const row = findStmt.getAsObject() as { UCS?: string }
+      const ucs = row.UCS
+      if (typeof ucs !== "string") continue
+      if (postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
+        out.push(ucs)
+      }
+    }
+    findStmt.reset()
     return out
   }
-
-  const out: string[] = []
-  findStmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) })
-  while (findStmt.step()) {
-    const row = findStmt.getAsObject() as { UCS?: string }
-    const ucs = row.UCS
-    if (typeof ucs !== "string") continue
-    if (postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
-      out.push(ucs)
-    }
-  }
-  findStmt.reset()
-  return out
 }
-

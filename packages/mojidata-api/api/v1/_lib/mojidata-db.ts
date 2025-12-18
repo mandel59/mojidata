@@ -1,9 +1,5 @@
 import type { Database } from "sql.js"
-import { openDatabaseFromFile } from "./sqljs"
-
-const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
-
-let dbPromise: Promise<Database> | undefined
+export type DatabaseOpener = () => Promise<Database>
 
 function regexpAllJson(input: unknown, pattern: unknown) {
   const string = String(input ?? "")
@@ -25,11 +21,11 @@ async function initDb(db: Database) {
   db.create_function("regexp_all", regexpAllJson)
 
   db.create_function("parse_int", (s: string, base: number) => {
-  const i = parseInt(s, base)
-  if (!Number.isSafeInteger(i)) {
-    return null
-  }
-  return i
+    const i = parseInt(s, base)
+    if (!Number.isSafeInteger(i)) {
+      return null
+    }
+    return i
   })
 
   // SQLite REGEXP operator uses `regexp(pattern, value)`
@@ -38,12 +34,13 @@ async function initDb(db: Database) {
   })
 }
 
-export function getMojidataDb(): Promise<Database> {
-  if (!dbPromise) {
-    dbPromise = openDatabaseFromFile(mojidb).then(async (db) => {
+export function createMojidataDbProvider(openDatabase: DatabaseOpener) {
+  let dbPromise: Promise<Database> | undefined
+  return function getMojidataDb(): Promise<Database> {
+    dbPromise ??= openDatabase().then(async (db) => {
       await initDb(db)
       return db
     })
+    return dbPromise
   }
-  return dbPromise
 }

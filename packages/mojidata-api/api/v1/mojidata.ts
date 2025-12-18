@@ -1,34 +1,11 @@
 import type { Context } from "hono"
 import { castToStringArray } from "./_lib/cast"
 import { getApiHeaders } from "./_lib/getApiHeaders"
-import { queryExpressions } from './_lib/query-expressions'
-import { getMojidataDb } from "./_lib/mojidata-db"
+import type { MojidataApiDb } from "./_lib/mojidata-api-db"
+import { mojidataFieldNames } from "./_lib/mojidata-query"
 
-const fieldNames = new Set<string>(queryExpressions.map(([key, _value]) => key))
-
-function buildQuery(selection: Set<string>) {
-  const a = []
-  const selectAll = selection.size === 0
-  for (const [name, e] of queryExpressions) {
-    if (selectAll || selection.has(name)) {
-      a.push(`'${name}', ${e}`)
-    }
-  }
-  return `SELECT json_object(${a.join(',')}) AS vs`
-}
-
-async function getMojidata(char: string, selection: string[]) {
-  const db = await getMojidataDb()
-  const query = buildQuery(new Set(selection))
-  const stmt = db.prepare(query)
-  stmt.bind({ "@ucs": char })
-  const ok = stmt.step()
-  const row = ok ? (stmt.getAsObject() as { vs?: string }) : {}
-  stmt.free()
-  return row.vs ?? null
-}
-
-export async function mojidataHandler(c: Context) {
+export function createMojidataHandler(db: MojidataApiDb) {
+  return async function mojidataHandler(c: Context) {
   let char = c.req.query("char")
   let select = c.req.queries("select") ?? []
   const headers = getApiHeaders()
@@ -50,14 +27,14 @@ export async function mojidataHandler(c: Context) {
     )
   }
   select = castToStringArray(select)
-  if (select.some((s) => !fieldNames.has(s))) {
+  if (select.some((s) => !mojidataFieldNames.has(s))) {
     headers.forEach(({ key, value }) => c.header(key, value))
     return c.json(
-      { error: { message: "invalid select", options: [...fieldNames] } },
+      { error: { message: "invalid select", options: [...mojidataFieldNames] } },
       400,
     )
   }
-  const resultsJson = await getMojidata(char, select)
+  const resultsJson = await db.getMojidataJson(char, select)
   const results = typeof resultsJson === "string" ? JSON.parse(resultsJson) : null
 
   headers.forEach(({ key, value }) => c.header(key, value))
@@ -65,4 +42,5 @@ export async function mojidataHandler(c: Context) {
     query: { char, select: select.length > 0 ? select : undefined },
     results,
   })
+  }
 }

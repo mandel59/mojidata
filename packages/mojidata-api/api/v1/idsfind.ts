@@ -2,10 +2,10 @@ import type { Context } from "hono"
 
 import { castToStringArray } from "./_lib/cast"
 import { getApiHeaders } from "./_lib/getApiHeaders"
-import { filterChars, search } from "./_lib/libsearch"
-import { idsfind } from "./_lib/idsfind-sqljs"
+import type { MojidataApiDb } from "./_lib/mojidata-api-db"
 
-export async function idsfindHandler(c: Context) {
+export function createIdsfindHandler(db: MojidataApiDb) {
+  return async function idsfindHandler(c: Context) {
   const headers = getApiHeaders()
 
   const ps = castToStringArray(c.req.queries("p") ?? [])
@@ -29,7 +29,7 @@ export async function idsfindHandler(c: Context) {
 
   if (ids.length === 0 && whole.length === 0) {
     if (ps.length > 0) {
-      const results0 = await search(ps, qs)
+      const results0 = await db.search(ps, qs)
       const results1 = Number.isSafeInteger(offsetNum) && offsetNum! > 0
         ? results0.slice(offsetNum!)
         : results0
@@ -57,12 +57,12 @@ export async function idsfindHandler(c: Context) {
     return c.json({ message: "No parameters", error: { message: "No parameters" } }, 400)
   }
 
-  let results0 = await idsfind([...ids, ...whole.map((x) => `§${x}§`)])
+  let results0 = await db.idsfind([...ids, ...whole.map((x) => `§${x}§`)])
   if (!allResults) {
     results0 = results0.filter((x) => x[0] !== "&")
   }
   if (ps.length > 0) {
-    results0 = await filterChars(results0, ps, qs)
+    results0 = await db.filterChars(results0, ps, qs)
   }
   const results1 =
     Number.isSafeInteger(offsetNum) && offsetNum! > 0
@@ -91,4 +91,5 @@ export async function idsfindHandler(c: Context) {
       ? { total: results.length }
       : {}),
   })
+  }
 }

@@ -1,4 +1,4 @@
-import { getMojidataDb } from "./mojidata-db"
+import type { Database } from "sql.js"
 
 const queries: Partial<Record<string, string>> = {
   UCS: `WITH x(x) AS (VALUES (parse_int(?, 16))) SELECT DISTINCT char(x) AS r FROM x WHERE char(x) regexp '^[\\p{L}\\p{N}\\p{S}]$'`,
@@ -69,19 +69,19 @@ const queries: Partial<Record<string, string>> = {
 const queries2: Partial<Record<string, string>> = {
   totalStrokes: `SELECT * FROM (${queries[
     'unihan.kTotalStrokes'
-  ]!!.trim()} UNION ${queries['mji.総画数']!!.trim()})`,
+  ]!.trim()} UNION ${queries['mji.総画数']!.trim()})`,
   'totalStrokes.lt': `SELECT * FROM (${queries[
     'unihan.kTotalStrokes.lt'
-  ]!!.trim()} UNION ${queries['mji.総画数.lt']!!.trim()})`,
+  ]!.trim()} UNION ${queries['mji.総画数.lt']!.trim()})`,
   'totalStrokes.le': `SELECT * FROM (${queries[
     'unihan.kTotalStrokes.le'
-  ]!!.trim()} UNION ${queries['mji.総画数.le']!!.trim()})`,
+  ]!.trim()} UNION ${queries['mji.総画数.le']!.trim()})`,
   'totalStrokes.gt': `SELECT * FROM (${queries[
     'unihan.kTotalStrokes.gt'
-  ]!!.trim()} UNION ${queries['mji.総画数.gt']!!.trim()})`,
+  ]!.trim()} UNION ${queries['mji.総画数.gt']!.trim()})`,
   'totalStrokes.ge': `SELECT * FROM (${queries[
     'unihan.kTotalStrokes.ge'
-  ]!!.trim()} UNION ${queries['mji.総画数.ge']!!.trim()})`,
+  ]!.trim()} UNION ${queries['mji.総画数.ge']!.trim()})`,
 }
 
 export function getQueryAndArgs(p: string, q: string) {
@@ -96,8 +96,8 @@ export function getQueryAndArgs(p: string, q: string) {
   throw new Error(`Unknown query key: ${p}`)
 }
 
-async function pluckAll(query: string, args: unknown[]) {
-  const db = await getMojidataDb()
+async function pluckAll(getDb: () => Promise<Database>, query: string, args: unknown[]) {
+  const db = await getDb()
   const stmt = db.prepare(query)
   stmt.bind(args as any)
   const out: string[] = []
@@ -109,25 +109,30 @@ async function pluckAll(query: string, args: unknown[]) {
   return out
 }
 
-export async function filterChars(chars: string[], ps: string[], qs: string[]) {
-  const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]))
-  const query = `WITH c(char) AS (select value from json_each(?))
-    SELECT c.char AS r
-    FROM c
-    WHERE ${queryAndArgs
-      .map(([query, _args]) => `c.char IN (${query})`)
-      .join(' AND ')}`
-  const args = ([] as string[]).concat(
-    ...queryAndArgs.map(([_query, args]) => args),
-  )
-  return await pluckAll(query, [JSON.stringify(chars), ...args])
-}
-
-export async function search(ps: string[], qs: string[]) {
-  const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]))
-  const query = queryAndArgs.map(([query, _args]) => query).join('\nINTERSECT\n')
-  const args = ([] as string[]).concat(
-    ...queryAndArgs.map(([_query, args]) => args),
-  )
-  return await pluckAll(query, args)
+export function createLibSearch(getDb: () => Promise<Database>) {
+  return {
+    filterChars: async (chars: string[], ps: string[], qs: string[]) => {
+      const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]))
+      const query = `WITH c(char) AS (select value from json_each(?))
+        SELECT c.char AS r
+        FROM c
+        WHERE ${queryAndArgs
+          .map(([query, _args]) => `c.char IN (${query})`)
+          .join(" AND ")}`
+      const args = ([] as string[]).concat(
+        ...queryAndArgs.map(([_query, args]) => args),
+      )
+      return await pluckAll(getDb, query, [JSON.stringify(chars), ...args])
+    },
+    search: async (ps: string[], qs: string[]) => {
+      const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]))
+      const query = queryAndArgs
+        .map(([query, _args]) => query)
+        .join("\nINTERSECT\n")
+      const args = ([] as string[]).concat(
+        ...queryAndArgs.map(([_query, args]) => args),
+      )
+      return await pluckAll(getDb, query, args)
+    },
+  }
 }

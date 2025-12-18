@@ -7,7 +7,9 @@ import type { Database, SqlJsStatic } from "sql.js"
 function resolvePnpVirtualPath(filePath: string) {
   if (!path.isAbsolute(filePath)) return filePath
   try {
-    const pnp = require("pnpapi") as { resolveVirtual?: (p: string) => string | null }
+    const pnp = require("pnpapi") as {
+      resolveVirtual?: (p: string) => string | null
+    }
     return pnp.resolveVirtual?.(filePath) ?? filePath
   } catch {
     return filePath
@@ -15,7 +17,7 @@ function resolvePnpVirtualPath(filePath: string) {
 }
 
 let sqlJsPromise: Promise<SqlJsStatic> | undefined
-export function getSqlJs(): Promise<SqlJsStatic> {
+export function getSqlJsNode(): Promise<SqlJsStatic> {
   sqlJsPromise ??= (() => {
     const wasmPath = resolvePnpVirtualPath(
       require.resolve("sql.js/dist/sql-wasm.wasm"),
@@ -28,8 +30,9 @@ export function getSqlJs(): Promise<SqlJsStatic> {
 }
 
 export async function openDatabaseFromFile(filePath: string): Promise<Database> {
-  const SQL = await getSqlJs()
+  const SQL = await getSqlJsNode()
   const realPath = resolvePnpVirtualPath(filePath)
   const bytes = fs.readFileSync(realPath)
   return new SQL.Database(new Uint8Array(bytes))
 }
+
