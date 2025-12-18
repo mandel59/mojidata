@@ -124,41 +124,32 @@ declare module "better-sqlite3" {
             fileMustExist?: boolean | undefined;
             timeout?: number | undefined;
             verbose?: ((message?: unknown, ...additionalArgs: unknown[]) => void) | undefined;
-            nativeBinding?: string | undefined;
         }
 
-        interface SerializeOptions {
-            attached?: string;
+        interface RegistrationOptions {
+            deterministic?: boolean | undefined;
+            safeIntegers?: boolean | undefined;
+            varargs?: boolean | undefined;
         }
 
         interface PragmaOptions {
             simple?: boolean | undefined;
         }
 
-        interface RegistrationOptions {
-            varargs?: boolean | undefined;
-            deterministic?: boolean | undefined;
-            safeIntegers?: boolean | undefined;
-            directOnly?: boolean | undefined;
+        interface BackupOptions {
+            progress?: ((info: BackupMetadata) => number | void) | undefined;
         }
-
-        type AggregateOptions = Parameters<Database["aggregate"]>[1];
 
         interface BackupMetadata {
             totalPages: number;
             remainingPages: number;
         }
-        interface BackupOptions {
-            progress: (info: BackupMetadata) => number;
-        }
 
-        class SqliteError extends Error {
-            name: string;
-            message: string;
-            code: string;
-            constructor(message: string, code: string);
+        interface SerializeOptions {
+            attached?: string;
         }
     }
 
     export default Database;
 }
+

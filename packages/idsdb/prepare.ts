@@ -9,6 +9,7 @@ const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 
 const dbpath = path.join(__dirname, "idsfind.db")
 fs.rmSync(dbpath, { force: true })
+fs.rmSync(path.join(__dirname, "idsdecompose.db"), { force: true })
 const db = new Database(dbpath)
 
 db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)

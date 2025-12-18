@@ -1,0 +1,38 @@
+{
+  "name": "@mandel59/idsdb",
+  "version": "1.6.2",
+  "description": "SQLite databases and utilities for mojidata IDS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/idsdb"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "@types/**/*.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "idsfind.db",
+    "idsdecompose.db",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "tsc && ts-node --files prepare.ts",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/mojidata": "^1.6.2",
+    "better-sqlite3": "^12.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.9.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  }
+}

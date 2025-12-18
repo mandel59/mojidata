@@ -64,14 +64,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mandel59/idsdb@npm:^1.6.2, @mandel59/idsdb@workspace:packages/idsdb":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/idsdb@workspace:packages/idsdb"
+  dependencies:
+    "@mandel59/mojidata": "npm:^1.6.2"
+    "@types/node": "npm:^16.9.1"
+    better-sqlite3: "npm:^12.5.0"
+    ts-node: "npm:^10.2.1"
+    typescript: "npm:^4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/idstool@workspace:packages/idstool":
   version: 0.0.0-use.local
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
-    "@mandel59/mojidata": "npm:^1.6.2"
+    "@mandel59/idsdb": "npm:^1.6.2"
     "@types/node": "npm:^16.9.1"
     ava: "npm:^3.15.0"
-    better-sqlite3: "npm:^12.5.0"
     ts-node: "npm:^10.2.1"
     typescript: "npm:^4.4.3"
     zx: "npm:^8.8.5"

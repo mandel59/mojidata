@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import type { Writable } from "stream"
-import { argparse } from "../lib/argparse"
-import { IDSFinder } from "../lib/ids-finder"
+import { argparse, IDSFinder } from "@mandel59/idsdb"
 
 function showUsage() {
     console.log("Usage:")

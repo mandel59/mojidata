@@ -9,9 +9,6 @@
   },
   "files": [
     "bin/*.js",
-    "lib/*.js",
-    "lib/*.d.ts",
-    "idsfind.db",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
@@ -22,14 +19,13 @@
   },
   "scripts": {
     "test": "ava",
-    "prepare": "tsc && ts-node --files prepare.ts",
+    "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.6.2",
-    "better-sqlite3": "^12.5.0"
+    "@mandel59/idsdb": "^1.6.2"
   },
   "devDependencies": {
     "@types/node": "^16.9.1",

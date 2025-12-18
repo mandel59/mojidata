@@ -15,6 +15,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:."\
     },\
     {\
+      "name": "@mandel59/idsdb",\
+      "reference": "workspace:packages/idsdb"\
+    },\
+    {\
       "name": "@mandel59/idstool",\
       "reference": "workspace:packages/idstool"\
     },\
@@ -31,6 +35,7 @@ const RAW_RUNTIME_STATE =
   "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
+    ["@mandel59/idsdb", ["workspace:packages/idsdb"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
@@ -120,15 +125,28 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@mandel59/idsdb", [\
+      ["workspace:packages/idsdb", {\
+        "packageLocation": "./packages/idsdb/",\
+        "packageDependencies": [\
+          ["@mandel59/idsdb", "workspace:packages/idsdb"],\
+          ["@mandel59/mojidata", "workspace:packages/mojidata"],\
+          ["@types/node", "npm:16.9.1"],\
+          ["better-sqlite3", "npm:12.5.0"],\
+          ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
+          ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@mandel59/idstool", [\
       ["workspace:packages/idstool", {\
         "packageLocation": "./packages/idstool/",\
         "packageDependencies": [\
+          ["@mandel59/idsdb", "workspace:packages/idsdb"],\
           ["@mandel59/idstool", "workspace:packages/idstool"],\
-          ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@types/node", "npm:16.9.1"],\
           ["ava", "npm:3.15.0"],\
-          ["better-sqlite3", "npm:12.5.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.2.1"],\
           ["typescript", "patch:typescript@npm%3A4.4.3#optional!builtin<compat/typescript>::version=4.4.3&hash=bbeadb"],\
           ["zx", "npm:8.8.5"]\

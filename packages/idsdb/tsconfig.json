@@ -7,8 +7,6 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["ES2019"]
-  },
-  "exclude": [
-    "./*.ts"
-  ]
+  }
 }
+
