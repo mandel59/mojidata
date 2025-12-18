@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
-    "test": "node --import tsx --test ./tests/*.test.ts",
-    "test-staging": "MOJIDATA_API_BASE_URL=https://mojidata-api-env-staging.ryusei.dev/ node --env-file=.env.local --import tsx --test ./tests/*.test.ts"
+    "test": "node --import tsx --test ./tests/*.test.ts"
   },
   "keywords": [],
   "author": "",
