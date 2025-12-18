@@ -1,4 +1,5 @@
-import { describe, expect, test } from 'bun:test'
+import assert from 'node:assert/strict'
+import { describe, test } from 'node:test'
 import { fetchJson } from './test-utils'
 
 describe('GET /api/v1/idsfind', () => {
@@ -9,20 +10,20 @@ describe('GET /api/v1/idsfind', () => {
     p?: string[],
     q?: string[],
   ) => {
-    expect(response.status).toBe(200)
-    expect(response.headers.get('content-type') ?? '').toContain(
-      'application/json',
+    assert.equal(response.status, 200)
+    assert.ok(
+      (response.headers.get('content-type') ?? '').includes('application/json'),
     )
-    expect(response.headers.get('access-control-allow-origin')).toBe('*')
+    assert.equal(response.headers.get('access-control-allow-origin'), '*')
 
-    if (p) expect(json.query.p).toEqual(p)
-    if (q) expect(json.query.q).toEqual(q)
+    if (p) assert.deepEqual(json.query.p, p)
+    if (q) assert.deepEqual(json.query.q, q)
 
-    expect(Array.isArray(json.results)).toBe(true)
-    expect(json.results.length).toBeLessThanOrEqual(limit)
+    assert.ok(Array.isArray(json.results))
+    assert.ok(json.results.length <= limit)
     for (const value of json.results) {
-      expect(typeof value).toBe('string')
-      expect([...value].length).toBeGreaterThanOrEqual(1)
+      assert.equal(typeof value, 'string')
+      assert.ok([...value].length >= 1)
     }
   }
 
@@ -35,7 +36,7 @@ describe('GET /api/v1/idsfind', () => {
 
     assertBasicSuccess(response, json, limit)
 
-    expect(json.query.ids).toEqual(['⿰亻言'])
+    assert.deepEqual(json.query.ids, ['⿰亻言'])
   })
 
   test('finds characters by whole-character patterns', async () => {
@@ -46,7 +47,7 @@ describe('GET /api/v1/idsfind', () => {
     })
 
     assertBasicSuccess(response, json, limit)
-    expect(json.query.whole).toEqual(['⿰亻言'])
+    assert.deepEqual(json.query.whole, ['⿰亻言'])
   })
 
   test('supports property-search mode (p/q) without ids/whole', async () => {
@@ -69,7 +70,7 @@ describe('GET /api/v1/idsfind', () => {
     })
 
     assertBasicSuccess(response, json, limit, ['UCS'], ['4E00'])
-    expect(json.results).toContain('一')
+    assert.ok(json.results.includes('一'))
   })
 
   for (const { p, q } of [
@@ -108,8 +109,8 @@ describe('GET /api/v1/idsfind', () => {
     })
 
     const mjiEntries: any[] | undefined = mojidata?.results?.mji
-    expect(Array.isArray(mjiEntries)).toBe(true)
-    expect(mjiEntries?.length).toBeGreaterThan(0)
+    assert.ok(Array.isArray(mjiEntries))
+    assert.ok((mjiEntries?.length ?? 0) > 0)
 
     const getFirst = (obj: any, keys: string[]) => {
       for (const key of keys) {
@@ -125,7 +126,7 @@ describe('GET /api/v1/idsfind', () => {
       const s = getFirst(x, ['総画数', 'mji.総画数'])
       return typeof mj === 'string' && mj.startsWith('MJ') && typeof s === 'string' && /^[0-9]+$/.test(s)
     })
-    expect(sample).toBeTruthy()
+    assert.ok(sample)
 
     const mjName = getFirst(sample, ['MJ文字図形名', 'mji.MJ文字図形名']) as string
     const strokes = getFirst(sample, ['総画数', 'mji.総画数']) as string
@@ -153,7 +154,7 @@ describe('GET /api/v1/idsfind', () => {
         ['mji.MJ文字図形名'],
         [mjName as string],
       )
-      expect(json.results).toContain(expectedChar)
+      assert.ok(json.results.includes(expectedChar))
     }
 
     {
@@ -164,7 +165,7 @@ describe('GET /api/v1/idsfind', () => {
         limit,
       })
       assertBasicSuccess(response, json, limit, ['mji.総画数'], [strokes])
-      expect(json.results.length).toBeGreaterThan(0)
+      assert.ok(json.results.length > 0)
     }
 
     {
@@ -181,7 +182,7 @@ describe('GET /api/v1/idsfind', () => {
         ['mji.MJ文字図形名', 'mji.総画数'],
         [mjName, strokes],
       )
-      expect(json.results).toContain(expectedChar)
+      assert.ok(json.results.includes(expectedChar))
     }
   })
 })

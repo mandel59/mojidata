@@ -65,28 +65,28 @@ export const queryExpressions = [
     `(SELECT json_object(
       'kRSAdobe_Japan1_6', (
         SELECT json_group_array(json_array(
-          cast(r.groups ->> '$.r' as integer),
-          cast(r.groups ->> '$.s' as integer),
+          cast(json_extract(r.value, '$.groups.r') as integer),
+          cast(json_extract(r.value, '$.groups.s') as integer),
           部首漢字,
-          cast(r.groups ->> '$.rs' as integer),
-          format('CID+%d', r.groups ->> '$.cid'))
+          cast(json_extract(r.value, '$.groups.rs') as integer),
+          printf('CID+%d', cast(json_extract(r.value, '$.groups.cid') as integer)))
           ORDER BY
-            cast(r.groups ->> '$.cid' as integer),
-            cast(r.groups ->> '$.r' as integer),
-            cast(r.groups ->> '$.rs' as integer))
+            cast(json_extract(r.value, '$.groups.cid') as integer),
+            cast(json_extract(r.value, '$.groups.r') as integer),
+            cast(json_extract(r.value, '$.groups.rs') as integer))
         FROM unihan_kRSAdobe_Japan1_6 AS u
-        JOIN regexp_all(u.value, '(?:^| )[CV]\\+(?<cid>[0-9]{1,5})\\+(?<r>[1-9][0-9]{0,2})\\.(?<rs>[1-9][0-9]?)\\.(?<s>[0-9]{1,2})') AS r
-        JOIN radicals ON radicals.部首 = r.groups ->> '$.r'
+        JOIN json_each(regexp_all(u.value, '(?:^| )[CV]\\+(?<cid>[0-9]{1,5})\\+(?<r>[1-9][0-9]{0,2})\\.(?<rs>[1-9][0-9]?)\\.(?<s>[0-9]{1,2})')) AS r
+        JOIN radicals ON radicals.部首 = json_extract(r.value, '$.groups.r')
         WHERE UCS = @ucs),
       'kRSUnicode', (
         SELECT json_group_array(json_array(
-          cast(r.groups ->> '$.r' as integer),
-          cast(r.groups ->> '$.s' as integer),
+          cast(json_extract(r.value, '$.groups.r') as integer),
+          cast(json_extract(r.value, '$.groups.s') as integer),
           radical_CJKUI,
-          r.groups ->> '$.r'))
+          json_extract(r.value, '$.groups.r')))
         FROM unihan_kRSUnicode AS u
-        JOIN regexp_all(u.value, '(?:^| )(?<r>[1-9][0-9]{0,2}''{0,2})\\.(?<s>-?[0-9]{1,2})') AS r
-        JOIN radicals ON radicals.radical = r.groups ->> '$.r'
+        JOIN json_each(regexp_all(u.value, '(?:^| )(?<r>[1-9][0-9]{0,2}''{0,2})\\.(?<s>-?[0-9]{1,2})')) AS r
+        JOIN radicals ON radicals.radical = json_extract(r.value, '$.groups.r')
         WHERE UCS = @ucs)
     ))`,
   ],

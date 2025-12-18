@@ -3,9 +3,7 @@ info:
   title: Mojidata API
   version: 1.3.0
   description: |
-    Vercel Serverless Functions for querying Mojidata / IDS-related utilities.
-
-    Base paths are derived from the file layout under `api/` (Vercel convention).
+    Hono + sql.js API for querying Mojidata / IDS-related utilities.
 servers:
   - url: http://localhost:3001/
 tags:
@@ -86,11 +84,11 @@ paths:
       description: |
         This endpoint supports two modes:
 
-        1) IDS mode: provide `ids` and/or `whole` to search by IDS patterns (via `@mandel59/idstool`).
+        1) IDS mode: provide `ids` and/or `whole` to search by IDS patterns (via `@mandel59/idsdb` + `idsfind.db`).
            Optional `p`/`q` filters can further narrow results.
 
         2) Property search mode: if `ids` and `whole` are both omitted, and `p` is provided, it performs a DB-backed
-           search (same as `api/v1/_lib/search.ts`).
+           search (same as `api/v1/_lib/libsearch.ts`).
 
         Arrays can be passed as repeated query parameters (e.g. `p=UCS&p=totalStrokes`).
       parameters:

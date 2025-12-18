@@ -1,104 +1,94 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
+import type { Context } from "hono"
 
-import { IDSFinder } from '@mandel59/idstool/lib/ids-finder'
-import { writeObject } from './_lib/json-encoder'
-import { Ref, drop, filter, take } from './_lib/iterator-utils'
-import { filterChars } from './_lib/libsearch'
-import search from './_lib/search'
-import { getApiHeaders } from './_lib/getApiHeaders'
-import { castToStringArray } from './_lib/cast'
+import { castToStringArray } from "./_lib/cast"
+import { getApiHeaders } from "./_lib/getApiHeaders"
+import { filterChars, search } from "./_lib/libsearch"
+import { idsfind } from "./_lib/idsfind-sqljs"
 
-export default async (request: VercelRequest, response: VercelResponse) => {
+export async function idsfindHandler(c: Context) {
   const headers = getApiHeaders()
-  let { p, q, ids, whole, limit, offset, all_results } = request.query
-  const ps = castToStringArray(p)
-  const qs = castToStringArray(q)
+
+  const ps = castToStringArray(c.req.queries("p") ?? [])
+  const qs = castToStringArray(c.req.queries("q") ?? [])
   if (qs.length !== ps.length) {
-    response.status(400)
-    headers.forEach(({ key, value }) => response.setHeader(key, value))
-    response.send(
-      JSON.stringify({
-        error: { message: 'q.length must be equal to p.length' },
-      }),
+    headers.forEach(({ key, value }) => c.header(key, value))
+    return c.json(
+      { error: { message: "q.length must be equal to p.length" } },
+      400,
     )
-    return
   }
-  ids = castToStringArray(ids)
-  whole = castToStringArray(whole)
-  const limitNum = (limit && parseInt(String(limit), 10)) || undefined
-  const offsetNum = (offset && parseInt(String(offset), 10)) || undefined
-  const doneRef: Ref<boolean | undefined> = { current: undefined }
+
+  const ids = castToStringArray(c.req.queries("ids") ?? [])
+  const whole = castToStringArray(c.req.queries("whole") ?? [])
+  const limitRaw = c.req.query("limit")
+  const offsetRaw = c.req.query("offset")
+  const all_results = c.req.query("all_results")
+  const limitNum = (limitRaw && parseInt(String(limitRaw), 10)) || undefined
+  const offsetNum = (offsetRaw && parseInt(String(offsetRaw), 10)) || undefined
   const allResults = Boolean(all_results)
 
   if (ids.length === 0 && whole.length === 0) {
     if (ps.length > 0) {
-      return await search(request, response)
+      const results0 = await search(ps, qs)
+      const results1 = Number.isSafeInteger(offsetNum) && offsetNum! > 0
+        ? results0.slice(offsetNum!)
+        : results0
+      const usingLimit = Number.isSafeInteger(limitNum) && limitNum! > 0
+      const results = usingLimit ? results1.slice(0, limitNum!) : results1
+      const done = usingLimit ? results1.length <= limitNum! : undefined
+
+      headers.forEach(({ key, value }) => c.header(key, value))
+      return c.json({
+        query: {
+          p: ps,
+          q: qs,
+          limit: limitNum,
+          offset: offsetNum,
+          all_results: all_results ? true : undefined,
+        },
+        results,
+        ...(usingLimit ? { done } : {}),
+        ...(!usingLimit && !(Number.isSafeInteger(offsetNum) && offsetNum! > 0)
+          ? { total: results.length }
+          : {}),
+      })
     }
-    response.status(400)
-    headers.forEach(({ key, value }) => response.setHeader(key, value))
-    response.send({
-      message: 'No parameters',
-      error: { message: 'No parameters' },
-    })
-    return
+    headers.forEach(({ key, value }) => c.header(key, value))
+    return c.json({ message: "No parameters", error: { message: "No parameters" } }, 400)
   }
 
-  const idsFinder = new IDSFinder({
-    dbOptions: {
-      readonly: true,
-    },
-  })
-
-  let results: Generator<string> | string[] = idsFinder.find(
-    ...ids,
-    ...whole.map((x) => `§${x}§`),
-  )
+  let results0 = await idsfind([...ids, ...whole.map((x) => `§${x}§`)])
+  if (!allResults) {
+    results0 = results0.filter((x) => x[0] !== "&")
+  }
+  if (ps.length > 0) {
+    results0 = await filterChars(results0, ps, qs)
+  }
+  const results1 =
+    Number.isSafeInteger(offsetNum) && offsetNum! > 0
+      ? results0.slice(offsetNum!)
+      : results0
 
   const usingLimit = Number.isSafeInteger(limitNum) && limitNum! > 0
-  const usingOffset = Number.isSafeInteger(offsetNum) && offsetNum! > 0
+  const results = usingLimit ? results1.slice(0, limitNum!) : results1
+  const done = usingLimit ? results1.length <= limitNum! : undefined
 
-  if (!allResults) {
-    results = filter((x) => x[0] !== '&', results)
-  }
-
-  if (ps.length > 0) {
-    results = filterChars([...results], ps, qs)
-  }
-
-  if (usingOffset) {
-    results = drop(offsetNum!, results)
-  }
-
-  if (usingLimit) {
-    results = take(limitNum!, results, doneRef)
-  }
-
-  const resultValues = [...results]
-
-  const write = async (chunk: string) => {
-    if (response.write(chunk)) {
-      return
-    }
-    await new Promise((resolve) => response.once('drain', resolve))
-  }
-  response.status(200)
-  headers.forEach(({ key, value }) => response.setHeader(key, value))
-  await writeObject(write, [
-    [
-      'query',
-      {
-        ids,
-        whole,
-        p: ps.length > 0 ? ps : undefined,
-        q: qs.length > 0 ? qs : undefined,
-        limit: limitNum,
-        offset: offsetNum,
-        all_results: all_results ? true : undefined,
-      },
-    ],
-    ['results', resultValues],
-    usingLimit && ['done', doneRef.current],
-    !usingLimit && !usingOffset && ['total', resultValues.length],
-  ])
-  response.end()
+  headers.forEach(({ key, value }) => c.header(key, value))
+  return c.json({
+    query: {
+      ids,
+      whole,
+      p: ps.length > 0 ? ps : undefined,
+      q: qs.length > 0 ? qs : undefined,
+      limit: limitNum,
+      offset: offsetNum,
+      all_results: all_results ? true : undefined,
+    },
+    results,
+    ...(usingLimit ? { done } : {}),
+    ...(!usingLimit &&
+    !(Number.isSafeInteger(offsetNum) && offsetNum! > 0)
+      ? { total: results.length }
+      : {}),
+  })
 }

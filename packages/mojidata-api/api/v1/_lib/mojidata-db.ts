@@ -1,36 +1,49 @@
-import Database from 'better-sqlite3'
+import type { Database } from "sql.js"
+import { openDatabaseFromFile } from "./sqljs"
 
-const mojidb = require.resolve('@mandel59/mojidata/dist/moji.db')
+const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 
-const db = new Database(mojidb)
+let dbPromise: Promise<Database> | undefined
 
-db.table('regexp_all', {
-  parameters: ['_string', '_pattern'],
-  columns: ['substr', 'groups'],
-  rows: function* (string: any, pattern: any) {
-    const re = new RegExp(pattern, 'gu')
-    let m
-    while ((m = re.exec(string))) {
-      const substr = m[0]
-      if (m.groups) {
-        yield [substr, JSON.stringify(m.groups)]
-      } else {
-        yield [substr, JSON.stringify(m.slice(1))]
-      }
-    }
-  },
-})
+function regexpAllJson(input: unknown, pattern: unknown) {
+  const string = String(input ?? "")
+  const re = new RegExp(String(pattern), "gu")
+  const out: Array<{ substr: string; groups: Record<string, string> | unknown[] }> =
+    []
+  let match: RegExpExecArray | null
+  while ((match = re.exec(string))) {
+    out.push({
+      substr: match[0],
+      groups: match.groups ?? match.slice(1),
+    })
+  }
+  return JSON.stringify(out)
+}
 
-db.function('parse_int', (s: string, base: number) => {
+async function initDb(db: Database) {
+  // scalar function returning JSON array of matches (see query-expressions.ts)
+  db.create_function("regexp_all", regexpAllJson)
+
+  db.create_function("parse_int", (s: string, base: number) => {
   const i = parseInt(s, base)
   if (!Number.isSafeInteger(i)) {
     return null
   }
-  return BigInt(i)
-})
+  return i
+  })
 
-db.function('regexp', (pattern: string, s: string) => {
-  return new RegExp(pattern, 'v').test(s) ? 1n : 0n
-})
+  // SQLite REGEXP operator uses `regexp(pattern, value)`
+  db.create_function("regexp", (pattern: string, s: string) => {
+    return new RegExp(pattern, "u").test(s) ? 1 : 0
+  })
+}
 
-export { db }
+export function getMojidataDb(): Promise<Database> {
+  if (!dbPromise) {
+    dbPromise = openDatabaseFromFile(mojidb).then(async (db) => {
+      await initDb(db)
+      return db
+    })
+  }
+  return dbPromise
+}

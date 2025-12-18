@@ -1,10 +1,8 @@
-import { VercelRequest, VercelResponse } from '@vercel/node'
-import { castToStringArray } from './_lib/cast'
-import { writeJson, writeObject } from './_lib/json-encoder'
-import { getResponseWriter } from './_lib/get-response-writer'
-import { getApiHeaders } from './_lib/getApiHeaders'
+import type { Context } from "hono"
+import { castToStringArray } from "./_lib/cast"
+import { getApiHeaders } from "./_lib/getApiHeaders"
 import { queryExpressions } from './_lib/query-expressions'
-import { db } from './_lib/mojidata-db'
+import { getMojidataDb } from "./_lib/mojidata-db"
 
 const fieldNames = new Set<string>(queryExpressions.map(([key, _value]) => key))
 
@@ -19,22 +17,24 @@ function buildQuery(selection: Set<string>) {
   return `SELECT json_object(${a.join(',')}) AS vs`
 }
 
-function getMojidata(char: string, selection: string[]) {
+async function getMojidata(char: string, selection: string[]) {
+  const db = await getMojidataDb()
   const query = buildQuery(new Set(selection))
-  const stmt = db
-    .prepare<{ ucs: string }, ['vs'], { vs: string }>(query)
-    .pluck()
-  return stmt.get({ ucs: char })
+  const stmt = db.prepare(query)
+  stmt.bind({ "@ucs": char })
+  const ok = stmt.step()
+  const row = ok ? (stmt.getAsObject() as { vs?: string }) : {}
+  stmt.free()
+  return row.vs ?? null
 }
 
-export default async (request: VercelRequest, response: VercelResponse) => {
-  let { char, select } = request.query
+export async function mojidataHandler(c: Context) {
+  let char = c.req.query("char")
+  let select = c.req.queries("select") ?? []
   const headers = getApiHeaders()
-  if (!char || typeof char !== 'string') {
-    response.status(400)
-    headers.forEach(({ key, value }) => response.setHeader(key, value))
-    response.send(JSON.stringify({ error: { message: 'char is required' } }))
-    return
+  if (!char || typeof char !== "string") {
+    headers.forEach(({ key, value }) => c.header(key, value))
+    return c.json({ error: { message: "char is required" } }, 400)
   }
   if (typeof char === "string" && char.length > 1) {
     const m = /U\+?([0-9A-F]+)/i.exec(char)
@@ -43,31 +43,26 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     }
   }
   if ([...char].length !== 1) {
-    response.status(400)
-    headers.forEach(({ key, value }) => response.setHeader(key, value))
-    response.send(
-      JSON.stringify({ error: { message: 'char must be a single character' } }),
+    headers.forEach(({ key, value }) => c.header(key, value))
+    return c.json(
+      { error: { message: "char must be a single character" } },
+      400,
     )
-    return
   }
   select = castToStringArray(select)
   if (select.some((s) => !fieldNames.has(s))) {
-    response.status(400)
-    headers.forEach(({ key, value }) => response.setHeader(key, value))
-    response.send(
-      JSON.stringify({
-        error: { message: 'invalid select', options: [...fieldNames] },
-      }),
+    headers.forEach(({ key, value }) => c.header(key, value))
+    return c.json(
+      { error: { message: "invalid select", options: [...fieldNames] } },
+      400,
     )
-    return
   }
-  const results = getMojidata(char, select)
-  const write = getResponseWriter(response)
-  response.status(200)
-  headers.forEach(({ key, value }) => response.setHeader(key, value))
-  await writeObject(write, [
-    ['query', { char, select: select.length > 0 ? select : undefined }],
-    ['results', async () => await writeJson(write, results)],
-  ])
-  response.end()
+  const resultsJson = await getMojidata(char, select)
+  const results = typeof resultsJson === "string" ? JSON.parse(resultsJson) : null
+
+  headers.forEach(({ key, value }) => c.header(key, value))
+  return c.json({
+    query: { char, select: select.length > 0 ? select : undefined },
+    results,
+  })
 }

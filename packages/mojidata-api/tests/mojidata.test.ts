@@ -1,4 +1,5 @@
-import { describe, expect, test } from 'bun:test'
+import assert from 'node:assert/strict'
+import { describe, test } from 'node:test'
 import { fetchJson } from './test-utils'
 
 describe('GET /api/v1/mojidata', () => {
@@ -7,17 +8,18 @@ describe('GET /api/v1/mojidata', () => {
       char: '漢',
     })
 
-    expect(response.status).toBe(200)
-    expect(response.headers.get('content-type') ?? '').toContain(
-      'application/json',
+    assert.equal(response.status, 200)
+    assert.ok(
+      (response.headers.get('content-type') ?? '').includes('application/json'),
     )
-    expect(response.headers.get('access-control-allow-origin')).toBe('*')
+    assert.equal(response.headers.get('access-control-allow-origin'), '*')
 
-    expect(json).toHaveProperty('query')
-    expect(json).toHaveProperty('results')
-    expect(json.query.char).toBe('漢')
-    expect(json.results.char).toBe('漢')
-    expect(json.results.UCS).toMatch(/^U\+[0-9A-F]{4,6}$/)
+    assert.ok(json && typeof json === 'object')
+    assert.ok('query' in json)
+    assert.ok('results' in json)
+    assert.equal(json.query.char, '漢')
+    assert.equal(json.results.char, '漢')
+    assert.match(json.results.UCS, /^U\+[0-9A-F]{4,6}$/)
   })
 
   test('supports select to limit returned fields', async () => {
@@ -26,10 +28,10 @@ describe('GET /api/v1/mojidata', () => {
       select: ['char', 'UCS'],
     })
 
-    expect(response.status).toBe(200)
-    expect(json.query.select).toEqual(['char', 'UCS'])
-    expect(json.results.char).toBe('漢')
-    expect(json.results.UCS).toMatch(/^U\+[0-9A-F]{4,6}$/)
-    expect(Object.keys(json.results).sort()).toEqual(['UCS', 'char'])
+    assert.equal(response.status, 200)
+    assert.deepEqual(json.query.select, ['char', 'UCS'])
+    assert.equal(json.results.char, '漢')
+    assert.match(json.results.UCS, /^U\+[0-9A-F]{4,6}$/)
+    assert.deepEqual(Object.keys(json.results).sort(), ['UCS', 'char'])
   })
 })

@@ -18,7 +18,7 @@ const decomposer
         unihanPrefix: "unihan",
     })
 
-const queryMode = Boolean(options.get("-q" || options.get("--query")))
+const queryMode = Boolean(options.get("-q") || options.get("--query"))
 
 const allSources = "BGHJKMPSTUVXZUCS2003"
 

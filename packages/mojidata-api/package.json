@@ -4,27 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "vercel dev --listen 3001",
-    "test": "bun test",
-    "test-staging": "MOJIDATA_API_BASE_URL=https://mojidata-api-env-staging.ryusei.dev/ bun --env-file=.env.local test"
+    "start": "node --import tsx ./server.ts",
+    "dev": "tsx watch ./server.ts",
+    "test": "node --import tsx --test ./tests/*.test.ts",
+    "test-staging": "MOJIDATA_API_BASE_URL=https://mojidata-api-env-staging.ryusei.dev/ node --env-file=.env.local --import tsx --test ./tests/*.test.ts"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "overrides": {
-    "better-sqlite3": "^12.5.0"
-  },
   "dependencies": {
-    "@mandel59/idstool": "^1.6.1",
-    "@mandel59/mojidata": "^1.6.1",
-    "better-sqlite3": "^12.5.0"
+    "@mandel59/idsdb": "^1.6.2",
+    "@mandel59/mojidata": "^1.6.2",
+    "hono": "^4.9.0",
+    "sql.js": "^1.13.0"
+  },
+  "peerDependencies": {
+    "@hono/node-server": "^1.19.7"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.4",
-    "@types/node": "^16.18.126",
-    "@vercel/node": "^5.5.15",
+    "@hono/node-server": "^1.19.7",
+    "@types/node": "^24.10.4",
+    "@types/sql.js": "^1.4.9",
     "prettier": "^2.8.8",
-    "typescript": "^5.9.3",
-    "vercel": "^50.1.2"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
