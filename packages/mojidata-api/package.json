@@ -20,6 +20,11 @@
   "peerDependencies": {
     "@hono/node-server": "^1.19.7"
   },
+  "peerDependenciesMeta": {
+    "@hono/node-server": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@hono/node-server": "^1.19.7",
     "@types/node": "^24.10.4",
