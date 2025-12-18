@@ -9,6 +9,15 @@
   },
   "main": "index.js",
   "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./idsfind.db": "./idsfind.db",
+    "./idsdecompose.db": "./idsdecompose.db"
+  },
   "files": [
     "index.js",
     "index.d.ts",
@@ -27,11 +36,14 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.6.2",
+    "@mandel59/mojidata": "^1.6.2"
+  },
+  "peerDependencies": {
     "better-sqlite3": "^12.5.0"
   },
   "devDependencies": {
     "@types/node": "^16.9.1",
+    "better-sqlite3": "^12.5.0",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
   }

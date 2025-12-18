@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { tokenizeIDS, applyOperators, IDSDecomposer, argparse } from "@mandel59/idsdb"
+import { tokenizeIDS, applyOperators, IDSDecomposer } from "@mandel59/idsdb"
+import { argparse } from "../lib/argparse"
 const { argv, options } = argparse(process.argv.slice(2))
 if (argv.length === 0) {
     showUsage()

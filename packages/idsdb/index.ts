@@ -1,7 +1,12 @@
 /// <reference path="./@types/better-sqlite3/index.d.ts" />
 
-export { argparse } from "./lib/argparse"
 export { IDSDecomposer } from "./lib/ids-decomposer"
-export { IDSFinder } from "./lib/ids-finder"
-export { applyOperators } from "./lib/ids-operator"
+export type { TokenList, TokenMetadata } from "./lib/token-list"
+export {
+    applyOperators,
+    expandOverlaid,
+    nodeLength,
+    normalizeOverlaid,
+    tokenArgs,
+} from "./lib/ids-operator"
 export { tokenizeIDS } from "./lib/ids-tokenizer"

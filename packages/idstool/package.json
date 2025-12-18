@@ -9,6 +9,10 @@
   },
   "files": [
     "bin/*.js",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "browser/*.js",
+    "browser/*.d.ts",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
@@ -25,7 +29,8 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/idsdb": "^1.6.2"
+    "@mandel59/idsdb": "^1.6.2",
+    "better-sqlite3": "^12.5.0"
   },
   "devDependencies": {
     "@types/node": "^16.9.1",

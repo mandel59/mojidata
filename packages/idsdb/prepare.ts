@@ -5,7 +5,20 @@ import { transactionSync } from "./lib/dbutils"
 import { IDSDecomposer } from "./lib/ids-decomposer"
 import { tokenizeIDS } from "./lib/ids-tokenizer"
 
-const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
+function resolvePnpVirtualPath(filePath: string) {
+    if (!path.isAbsolute(filePath)) {
+        return filePath
+    }
+    try {
+        // Yarn PnP can return virtual paths that native modules (sqlite) can't open.
+        const pnp = require("pnpapi") as { resolveVirtual?: (p: string) => string | null }
+        return pnp.resolveVirtual?.(filePath) ?? filePath
+    } catch {
+        return filePath
+    }
+}
+
+const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
 
 const dbpath = path.join(__dirname, "idsfind.db")
 fs.rmSync(dbpath, { force: true })

@@ -1,4 +1,5 @@
 import Database, { Statement } from "better-sqlite3"
+import path from "path"
 import { nodeLength, normalizeOverlaid, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
 
@@ -71,7 +72,7 @@ export class IDSDecomposer {
     readonly normalizeKdpvRadicalVariants: boolean
     private zvar?: Map<string, string[]>
     constructor(options: IDSDecomposerOptions = {}) {
-        const mojidbpath = options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db")
+        const mojidbpath = (options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db"))
         const idstable = options.idstable ?? "ids"
         const unihanPrefix = options.unihanPrefix ?? "unihan"
         const dbpath = options.dbpath ?? ":memory:"
