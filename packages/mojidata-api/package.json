@@ -3,6 +3,17 @@
   "version": "1.3.0",
   "description": "",
   "main": "index.js",
+  "files": [
+    "server.ts",
+    "node.ts",
+    "app.ts",
+    "browser-client.ts",
+    "browser-worker.ts",
+    "api",
+    "openapi.yaml",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
