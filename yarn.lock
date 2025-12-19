@@ -272,7 +272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/idsdb-utils@npm:^1.6.2, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
+"@mandel59/idsdb-utils@npm:^1.6.2, @mandel59/idsdb-utils@npm:^1.6.3, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb-utils@workspace:packages/idsdb-utils"
   dependencies:
@@ -284,11 +284,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/idsdb@npm:^1.6.2, @mandel59/idsdb@workspace:packages/idsdb":
+"@mandel59/idsdb@npm:^1.6.2, @mandel59/idsdb@npm:^1.6.3, @mandel59/idsdb@workspace:packages/idsdb":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb@workspace:packages/idsdb"
   dependencies:
-    "@mandel59/idsdb-utils": "npm:^1.6.2"
+    "@mandel59/idsdb-utils": "npm:^1.6.3"
     "@mandel59/mojidata": "npm:^1.6.2"
     "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
@@ -329,8 +329,8 @@ __metadata:
   resolution: "@mandel59/mojidata-api@workspace:packages/mojidata-api"
   dependencies:
     "@hono/node-server": "npm:^1.19.7"
-    "@mandel59/idsdb": "npm:^1.6.2"
-    "@mandel59/idsdb-utils": "npm:^1.6.2"
+    "@mandel59/idsdb": "npm:^1.6.3"
+    "@mandel59/idsdb-utils": "npm:^1.6.3"
     "@mandel59/mojidata": "npm:^1.6.2"
     "@types/node": "npm:^24.10.4"
     "@types/sql.js": "npm:^1.4.9"
