@@ -5,7 +5,7 @@ import {
   nodeLength,
   tokenizeIDS,
   type TokenList,
-} from "@mandel59/idsdb"
+} from "@mandel59/idsdb-utils"
 
 const idsfindQueryContext = `
 with tokens as (

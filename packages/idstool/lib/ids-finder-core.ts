@@ -1,5 +1,5 @@
-import { expandOverlaid, nodeLength, tokenizeIDS } from "@mandel59/idsdb"
-import type { TokenList } from "@mandel59/idsdb"
+import { expandOverlaid, nodeLength, tokenizeIDS } from "@mandel59/idsdb-utils"
+import type { TokenList } from "@mandel59/idsdb-utils"
 
 export function tokenizeIdsList(idslist: string[]) {
     const idslistTokenized = idslist.map(tokenizeIDS).map(expandOverlaid)

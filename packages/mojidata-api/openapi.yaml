@@ -84,7 +84,7 @@ paths:
       description: |
         This endpoint supports two modes:
 
-        1) IDS mode: provide `ids` and/or `whole` to search by IDS patterns (via `@mandel59/idsdb` + `idsfind.db`).
+        1) IDS mode: provide `ids` and/or `whole` to search by IDS patterns (via `@mandel59/idsdb` + `idsfind.db` + `@mandel59/idsdb-utils`).
            Optional `p`/`q` filters can further narrow results.
 
         2) Property search mode: if `ids` and `whole` are both omitted, and `p` is provided, it performs a DB-backed

@@ -1,9 +1,9 @@
 import fs from "fs"
 import path from "path"
 import Database from "better-sqlite3"
-import { transactionSync } from "./lib/dbutils"
-import { IDSDecomposer } from "./lib/ids-decomposer"
-import { tokenizeIDS } from "./lib/ids-tokenizer"
+import { transactionSync } from "@mandel59/idsdb-utils/node"
+import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
+import { tokenizeIDS } from "@mandel59/idsdb-utils"
 
 function resolvePnpVirtualPath(filePath: string) {
     if (!path.isAbsolute(filePath)) {

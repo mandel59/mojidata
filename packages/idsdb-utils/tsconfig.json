@@ -9,6 +9,8 @@
     "lib": ["ES2019"]
   },
   "include": [
-    "./prepare.ts"
+    "./index.ts",
+    "./node.ts",
+    "./lib/**/*.ts"
   ]
 }
