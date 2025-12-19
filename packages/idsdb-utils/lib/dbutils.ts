@@ -1,23 +1,32 @@
-import type Database from "better-sqlite3"
+type SqlTransactionDb = {
+    exec?: (sql: string) => unknown
+    run?: (sql: string) => unknown
+}
 
-export async function transaction(db: Database, callback: () => Promise<void>) {
-    db.exec("begin")
+function execSql(db: SqlTransactionDb, sql: string) {
+    if (db.exec) return db.exec(sql)
+    if (db.run) return db.run(sql)
+    throw new TypeError("db must have exec() or run()")
+}
+
+export async function transaction(db: SqlTransactionDb, callback: () => Promise<void>) {
+    execSql(db, "begin")
     try {
         await callback()
-        db.exec("commit")
+        execSql(db, "commit")
     } catch (err) {
-        db.exec("rollback")
+        execSql(db, "rollback")
         throw err
     }
 }
 
-export function transactionSync(db: Database, callback: () => void) {
-    db.exec("begin")
+export function transactionSync(db: SqlTransactionDb, callback: () => void) {
+    execSql(db, "begin")
     try {
         callback()
-        db.exec("commit")
+        execSql(db, "commit")
     } catch (err) {
-        db.exec("rollback")
+        execSql(db, "rollback")
         throw err
     }
 }

@@ -1,7 +1,33 @@
-import Database, { Statement } from "better-sqlite3"
-import path from "path"
+import fs from "node:fs"
+import path from "node:path"
+
 import { nodeLength, normalizeOverlaid, tokenArgs } from "./ids-operator"
 import { tokenizeIDS } from "./ids-tokenizer"
+
+type SqlBindParams = unknown[] | Record<string, unknown> | null | undefined
+
+type SqlStatement = {
+    bind: (values?: SqlBindParams) => boolean
+    step: () => boolean
+    get: (params?: SqlBindParams) => unknown[]
+    getAsObject: (params?: SqlBindParams) => Record<string, unknown>
+    reset: () => void
+    run: (values?: SqlBindParams) => void
+    free: () => boolean
+}
+
+type SqlDatabase = {
+    run: (sql: string, params?: SqlBindParams) => unknown
+    prepare: (sql: string, params?: SqlBindParams) => SqlStatement
+    export: () => Uint8Array
+    close: () => void
+}
+
+type SqlJsStatic = {
+    Database: new (data?: ArrayLike<number> | Uint8Array | null) => SqlDatabase
+}
+
+const initSqlJs = require("sql.js") as (config?: { locateFile?: (file: string) => string }) => Promise<SqlJsStatic>
 
 const encodeMap: Partial<Record<string, string>> = {
     "〾": "V",
@@ -30,6 +56,38 @@ const encodeMap: Partial<Record<string, string>> = {
 const idsOperatorRegExp = new RegExp(`^(?:${Object.keys(tokenArgs).join("|")})\$`)
 
 const fallbackSourceOrder = ["G", "T", "H", "K", "J", "B", "U", "*"]
+
+function resolvePnpVirtualPath(filePath: string) {
+    if (!path.isAbsolute(filePath)) return filePath
+    try {
+        const pnp = require("pnpapi") as {
+            resolveVirtual?: (p: string) => string | null
+        }
+        return pnp.resolveVirtual?.(filePath) ?? filePath
+    } catch {
+        return filePath
+    }
+}
+
+let sqlJsPromise: Promise<SqlJsStatic> | undefined
+async function getSqlJsNode(): Promise<SqlJsStatic> {
+    sqlJsPromise ??= (() => {
+        const wasmPath = resolvePnpVirtualPath(
+            require.resolve("sql.js/dist/sql-wasm.wasm"),
+        )
+        return initSqlJs({
+            locateFile: () => wasmPath,
+        })
+    })()
+    return sqlJsPromise
+}
+
+async function openDatabaseFromFile(filePath: string): Promise<SqlDatabase> {
+    const SQL = await getSqlJsNode()
+    const realPath = resolvePnpVirtualPath(filePath)
+    const bytes = fs.readFileSync(realPath)
+    return new SQL.Database(new Uint8Array(bytes))
+}
 
 function encodeTokensToXmlName(tokens: string[]) {
     return tokens.join("").replace(/./u, char => {
@@ -65,112 +123,164 @@ export type IDSDecomposerOptions = {
 }
 
 export class IDSDecomposer {
-    private db: Database
-    private lookupIDSStatement: Statement<[{ char: string, source: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
-    private insertFallbackStatement: Statement<[{ char: string, source: string, fallback: string }], [], {}, void>
+    private db: SqlDatabase
+    private lookupIDSStatement: SqlStatement
+    private insertFallbackStatement: SqlStatement
+    private savePath?: string
     readonly expandZVariants: boolean
     readonly normalizeKdpvRadicalVariants: boolean
     private zvar?: Map<string, string[]>
-    constructor(options: IDSDecomposerOptions = {}) {
-        const mojidbpath = (options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db"))
-        const idstable = options.idstable ?? "ids"
-        const unihanPrefix = options.unihanPrefix ?? "unihan"
-        const dbpath = options.dbpath ?? ":memory:"
+    private constructor(
+        db: SqlDatabase,
+        statements: { lookupIDS: SqlStatement, insertFallback: SqlStatement },
+        options: IDSDecomposerOptions,
+    ) {
         this.expandZVariants = options.expandZVariants ?? false
         this.normalizeKdpvRadicalVariants = options.normalizeKdpvRadicalVariants ?? false
-        const db = new Database(dbpath)
-        const tokenize = (s: string) => tokenizeIDS(s).join(' ')
-        db.function("tokenize", tokenize)
-        db.table("regexp_substr_all", {
-            parameters: ["string", "pattern"],
-            columns: ["value"],
-            rows: function* (...args: unknown[]) {
-                const [string, pattern] = args
-                if (typeof pattern !== "string") {
-                    throw new TypeError("regexp_substr_all(string, pattern): pattern is not a string")
-                }
-                if (string === null) {
-                    return
-                }
-                if (typeof string !== "string") {
-                    throw new TypeError("regexp_substr_all(string, pattern): string is not a string")
-                }
-                const re = new RegExp(pattern, "gu")
-                let m
-                while (m = re.exec(string)) {
-                    yield [m[0]]
-                }
-            }
-        })
-        db.prepare(`attach database ? as moji`).run(mojidbpath)
-        db.exec(`drop table if exists tempids`)
-        db.exec(`create table tempids (UCS, source, IDS_tokens)`)
-        db.exec(`create index tempids_UCS on tempids (UCS)`)
-        db.exec(`insert into tempids select UCS, value as source, tokenize(IDS) as IDS_tokens FROM moji.${idstable} join regexp_substr_all(source, 'UCS2003|\\w')`)
-        db.exec(`drop table if exists tempids_UCS_source`)
-        db.exec(`create table tempids_UCS_source as select UCS, source from tempids`)
-        if (this.expandZVariants) {
-            this.zvar = new Map(
-                db.prepare<[], ["UCS", "value"], { UCS: string, value: string }>(
-                    `select UCS, value FROM moji.${unihanPrefix}_kZVariant`)
-                    .all()
-                    .map(({ UCS, value }) => {
-                        return [
-                            UCS,
-                            [
-                                UCS,
-                                ...value
-                                    .split(/ /g)
-                                    .map(x =>
-                                        String.fromCodePoint(
-                                            parseInt(x.substr(2), 16)))]]
-                    }))
-        }
-        if (this.normalizeKdpvRadicalVariants) {
-            this.zvar ??= new Map()
-            for (const { object, subject } of db.prepare<[], ["object", "subject"], { object: string, subject: string }>(
-                `select object, subject from "kdpv_cjkvi/radical-variant" where comment is not 'partial'`).all()) {
-                // ignore some cases, which causes infinite loop.
-                if (object === "王") continue
-                if (object === "耂") continue
-                if (object === "肀") continue
-                if (object === "𦓐") continue
-                if (object === "𡿨") continue
-                if (object === "𨈑") continue
-                if (object === "𢖩") continue
-                if (object === "𣱱") continue
-                if (object === "𨈐") continue
-                if (object === "𤣥") continue
-                // replace 𤣩 with 王 instead of 玉
-                if (object === "𤣩") {
-                    this.zvar.set("𤣩", ["王"])
-                    continue
-                }
-                this.zvar.set(object, [subject])
-            }
-        }
-        db.exec(`detach database moji`)
-        db.exec(`drop table if exists fallback`)
-        db.exec(`create table fallback(UCS, source, fallback)`)
         this.db = db
-        this.lookupIDSStatement = db.prepare<[], ["IDS_tokens"], { IDS_tokens: string }>(
-            `select distinct IDS_tokens from tempids
-            where UCS = $char and source glob $source`)
-            .pluck()
-        this.insertFallbackStatement = db.prepare<[{ char: string, source: string, fallback: string }], [], {}, void>(
-            `insert into fallback(UCS, source, fallback) values ($char, $source, $fallback)`)
+        this.lookupIDSStatement = statements.lookupIDS
+        this.insertFallbackStatement = statements.insertFallback
+        this.savePath = options.dbpath
         this.replaceSingleWildcardToCharItself()
         this.reduceAllSubtractions()
     }
+
+    static async create(options: IDSDecomposerOptions = {}): Promise<IDSDecomposer> {
+        const SQL = await getSqlJsNode()
+        const idstable = options.idstable ?? "ids"
+        const unihanPrefix = options.unihanPrefix ?? "unihan"
+        const mojidbpath = (options.mojidb ?? require.resolve("@mandel59/mojidata/dist/moji.db"))
+
+        const mojiDb = await openDatabaseFromFile(mojidbpath)
+        try {
+            const db = new SQL.Database()
+
+            db.run(`drop table if exists tempids`)
+            db.run(`create table tempids (UCS, source, IDS_tokens)`)
+            db.run(`begin`)
+            try {
+                const insertTempids = db.prepare(
+                    `insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`,
+                )
+                const selectIds = mojiDb.prepare(
+                    `select UCS, source, IDS from ${idstable}`,
+                )
+                while (selectIds.step()) {
+                    const row = selectIds.getAsObject() as { UCS?: unknown, source?: unknown, IDS?: unknown }
+                    if (typeof row.UCS !== "string") continue
+                    if (typeof row.IDS !== "string") continue
+                    if (typeof row.source !== "string") continue
+                    const sources = row.source.match(/UCS2003|\w/g) ?? []
+                    const idsTokens = tokenizeIDS(row.IDS).join(" ")
+                    for (const source of sources) {
+                        insertTempids.run([row.UCS, source, idsTokens])
+                    }
+                }
+                selectIds.free()
+                insertTempids.free()
+                db.run(`commit`)
+            } catch (err) {
+                db.run(`rollback`)
+                throw err
+            }
+
+            db.run(`create index tempids_UCS on tempids (UCS)`)
+
+            db.run(`drop table if exists tempids_UCS_source`)
+            db.run(`create table tempids_UCS_source as select UCS, source from tempids`)
+
+            let zvar: Map<string, string[]> | undefined
+            if (options.expandZVariants ?? false) {
+                zvar ??= new Map<string, string[]>()
+                const stmt = mojiDb.prepare(
+                    `select UCS, value FROM ${unihanPrefix}_kZVariant`,
+                )
+                while (stmt.step()) {
+                    const row = stmt.getAsObject() as { UCS?: unknown, value?: unknown }
+                    if (typeof row.UCS !== "string") continue
+                    if (typeof row.value !== "string") continue
+                    zvar.set(row.UCS, [
+                        row.UCS,
+                        ...row.value
+                            .split(/ /g)
+                            .map(x => String.fromCodePoint(parseInt(x.substr(2), 16))),
+                    ])
+                }
+                stmt.free()
+            }
+            if (options.normalizeKdpvRadicalVariants ?? false) {
+                zvar ??= new Map<string, string[]>()
+                const stmt = mojiDb.prepare(
+                    `select object, subject from "kdpv_cjkvi/radical-variant" where comment is not 'partial'`,
+                )
+                while (stmt.step()) {
+                    const row = stmt.getAsObject() as { object?: unknown, subject?: unknown }
+                    if (typeof row.object !== "string") continue
+                    if (typeof row.subject !== "string") continue
+                    const object = row.object
+                    const subject = row.subject
+                    if (object === "王") continue
+                    if (object === "耂") continue
+                    if (object === "肀") continue
+                    if (object === "𦓐") continue
+                    if (object === "𡿨") continue
+                    if (object === "𨈑") continue
+                    if (object === "𢖩") continue
+                    if (object === "𣱱") continue
+                    if (object === "𨈐") continue
+                    if (object === "𤣥") continue
+                    if (object === "𤣩") {
+                        zvar.set("𤣩", ["王"])
+                        continue
+                    }
+                    zvar.set(object, [subject])
+                }
+                stmt.free()
+            }
+
+            db.run(`drop table if exists fallback`)
+            db.run(`create table fallback(UCS, source, fallback)`)
+            const decomposer = new IDSDecomposer(
+                db,
+                {
+                    lookupIDS: db.prepare(
+                        `select distinct IDS_tokens from tempids where UCS = $char and source glob $source`,
+                    ),
+                    insertFallback: db.prepare(
+                        `insert into fallback(UCS, source, fallback) values ($char, $source, $fallback)`,
+                    ),
+                },
+                options,
+            )
+            if (zvar) decomposer.zvar = zvar
+            return decomposer
+        } finally {
+            mojiDb.close()
+        }
+    }
+
+    saveToFile(filePath = this.savePath) {
+        if (!filePath) {
+            throw new Error("dbpath is not set")
+        }
+        fs.writeFileSync(filePath, Buffer.from(this.db.export()))
+    }
+
+    close() {
+        this.lookupIDSStatement.free()
+        this.insertFallbackStatement.free()
+        this.db.close()
+    }
+
     /**
      * Replace x=？ pattern to x=x
      */
     private replaceSingleWildcardToCharItself() {
-        this.db.prepare(`
-            update tempids
-            set IDS_tokens = UCS
-            where IDS_tokens = '？'
-        `).run()
+        this.db.run(`
+          update tempids
+          set IDS_tokens = UCS
+          where IDS_tokens = '？'
+        `)
     }
     /**
      * Replace all subtractions into IDSs not containing subtractions.
@@ -208,18 +318,26 @@ export class IDSDecomposer {
             yield* process(char, tokens)
             yield* invert(eigenToken, subtraction)
         }
-        const pairs = this.db.prepare<
-            [],
-            ["UCS", "source", "IDS_tokens"],
-            { UCS: string, source: string, IDS_tokens: string }
-        >(`select UCS, source, IDS_tokens from tempids where IDS_tokens glob '*[⊖㇯]*'`).all()
-        this.db.prepare(`delete from tempids where IDS_tokens glob '*[⊖㇯]*'`).run()
-        const insert = this.db.prepare<[UCS: string, source: string, IDS_tokens: string], [], {}, void>(`insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`)
+        const pairs: { UCS: string, source: string, IDS_tokens: string }[] = []
+        const select = this.db.prepare(
+            `select UCS, source, IDS_tokens from tempids where IDS_tokens glob '*[⊖㇯]*'`,
+        )
+        while (select.step()) {
+            const row = select.getAsObject() as { UCS?: unknown, source?: unknown, IDS_tokens?: unknown }
+            if (typeof row.UCS !== "string") continue
+            if (typeof row.source !== "string") continue
+            if (typeof row.IDS_tokens !== "string") continue
+            pairs.push({ UCS: row.UCS, source: row.source, IDS_tokens: row.IDS_tokens })
+        }
+        select.free()
+        this.db.run(`delete from tempids where IDS_tokens glob '*[⊖㇯]*'`)
+        const insert = this.db.prepare(`insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`)
         for (const { UCS, source, IDS_tokens } of pairs) {
             for (const [char, tokens] of process(UCS, IDS_tokens.split(" "))) {
-                insert.run(char, source, tokens.join(" "))
+                insert.run([char, source, tokens.join(" ")])
             }
         }
+        insert.free()
     }
     private expand(token: string) {
         return this.zvar?.get(token) ?? [token]
@@ -235,7 +353,7 @@ export class IDSDecomposer {
         if (this.atomicMemo.has(atomicKey)) {
             return [char]
         }
-        const alltokens = this.lookupIDSStatement.all({ char, source }) as string[]
+        const alltokens = this.lookupIDSFromDb({ char, source })
         if (alltokens.length === 1 && alltokens[0] === char) {
             this.atomicMemo.add(atomicKey)
             return alltokens
@@ -252,20 +370,31 @@ export class IDSDecomposer {
         if (this.fallbackMemo.has(fallbackKey)) {
             return this.fallbackMemo.get(fallbackKey)
         }
-        const alltokens = this.lookupIDSStatement.all({ char, source: "*" }) as string[]
+        const alltokens = this.lookupIDSFromDb({ char, source: "*" })
         if (alltokens.length === 1) {
             this.fallbackMemo.set(fallbackKey, alltokens)
             return alltokens
         }
         const sources = fallbackSourceOrder.filter(s => s !== source)
         for (const fallbackSource of sources) {
-            const alltokens = this.lookupIDSStatement.all({ char, source: fallbackSource }) as string[]
+            const alltokens = this.lookupIDSFromDb({ char, source: fallbackSource })
             if (alltokens.length > 0) {
-                this.insertFallbackStatement.run({ char, source, fallback: fallbackSource })
+                this.insertFallbackStatement.run({ $char: char, $source: source, $fallback: fallbackSource })
                 this.fallbackMemo.set(fallbackKey, alltokens)
                 return alltokens
             }
         }
+    }
+
+    private lookupIDSFromDb(params: { char: string, source: string }): string[] {
+        const out: string[] = []
+        this.lookupIDSStatement.bind({ $char: params.char, $source: params.source })
+        while (this.lookupIDSStatement.step()) {
+            const row = this.lookupIDSStatement.get()
+            if (typeof row[0] === "string") out.push(row[0])
+        }
+        this.lookupIDSStatement.reset()
+        return out
     }
     private *decompose(token: string, source: string): Generator<string[]> {
         const chars = this.expand(token)
@@ -313,11 +442,18 @@ export class IDSDecomposer {
         }
     }
     allCharSources(): { char: string, source: string }[] {
-        return this.db.prepare<
-            [],
-            ["char", "source"],
-            { char: string, source: string }
-        >(`select distinct UCS as char, source from tempids_UCS_source`).all()
+        const out: { char: string, source: string }[] = []
+        const stmt = this.db.prepare(
+            `select distinct UCS as char, source from tempids_UCS_source`,
+        )
+        while (stmt.step()) {
+            const row = stmt.getAsObject() as { char?: unknown, source?: unknown }
+            if (typeof row.char !== "string") continue
+            if (typeof row.source !== "string") continue
+            out.push({ char: row.char, source: row.source })
+        }
+        stmt.free()
+        return out
     }
     allFallbacks(): { char: string, source: string }[] {
         const a = []

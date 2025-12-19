@@ -44,7 +44,7 @@ const RAW_RUNTIME_STATE =
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
     ["@mandel59/idsdb", ["workspace:packages/idsdb"]],\
-    ["@mandel59/idsdb-utils", ["virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils", "workspace:packages/idsdb-utils"]],\
+    ["@mandel59/idsdb-utils", ["workspace:packages/idsdb-utils"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["workspace:packages/mojidata-api"]],\
@@ -416,8 +416,9 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/idsdb/",\
         "packageDependencies": [\
           ["@mandel59/idsdb", "workspace:packages/idsdb"],\
-          ["@mandel59/idsdb-utils", "virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils"],\
+          ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/node", "npm:24.10.4"],\
           ["better-sqlite3", "npm:12.5.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
@@ -427,30 +428,13 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/idsdb-utils", [\
-      ["virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils", {\
-        "packageLocation": "./.yarn/__virtual__/@mandel59-idsdb-utils-virtual-f7addcab71/1/packages/idsdb-utils/",\
-        "packageDependencies": [\
-          ["@mandel59/idsdb-utils", "virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils"],\
-          ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-          ["@types/better-sqlite3", null],\
-          ["@types/node", "npm:24.10.4"],\
-          ["better-sqlite3", "npm:12.5.0"],\
-          ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
-          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
-        ],\
-        "packagePeers": [\
-          "@types/better-sqlite3",\
-          "better-sqlite3"\
-        ],\
-        "linkType": "SOFT"\
-      }],\
       ["workspace:packages/idsdb-utils", {\
         "packageLocation": "./packages/idsdb-utils/",\
         "packageDependencies": [\
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@types/node", "npm:24.10.4"],\
-          ["better-sqlite3", "npm:12.5.0"],\
+          ["sql.js", "npm:1.13.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\
@@ -462,8 +446,9 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/idstool/",\
         "packageDependencies": [\
           ["@mandel59/idsdb", "workspace:packages/idsdb"],\
-          ["@mandel59/idsdb-utils", "virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils"],\
+          ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/idstool", "workspace:packages/idstool"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/node", "npm:24.10.4"],\
           ["ava", "npm:3.15.0"],\
           ["better-sqlite3", "npm:12.5.0"],\
@@ -514,7 +499,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@hono/node-server", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7"],\
           ["@mandel59/idsdb", "workspace:packages/idsdb"],\
-          ["@mandel59/idsdb-utils", "virtual:74e629197975fdf28f798c0a6dedd560d113df866e9a4e65e82c91cdbedbe85401b0e3cf354b3caaf5f0c20aa878e8d962bb7dc92becbb692cef9d53e4b00179#workspace:packages/idsdb-utils"],\
+          ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@mandel59/mojidata-api", "workspace:packages/mojidata-api"],\
           ["@types/node", "npm:24.10.4"],\

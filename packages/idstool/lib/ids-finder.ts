@@ -1,4 +1,4 @@
-import Database, { Statement } from "better-sqlite3"
+import Database from "better-sqlite3"
 import path from "path"
 import { query, makeQuery } from "./idsfind-query"
 import { postaudit, tokenizeIdsList } from "./ids-finder-core"
@@ -22,22 +22,18 @@ function resolvePnpVirtualPath(filePath: string) {
 }
 
 export class IDSFinder {
-    db: Database;
-    private findStatement: Statement<[{ idslist: string }], ["UCS"], { UCS: string }, string>
-    private getIDSTokensStatement: Statement<[{ ucs: string }], ["IDS_tokens"], { IDS_tokens: string }, string>
+    db: Database.Database;
+    private findStatement: Database.Statement
+    private getIDSTokensStatement: Database.Statement
     constructor(options: IDSFinderOptions = {}) {
         const dbpath = resolvePnpVirtualPath(options.dbpath ?? require.resolve("@mandel59/idsdb/idsfind.db"))
         const dbOptions = options.dbOptions ?? {}
         const db = new Database(dbpath, dbOptions)
         this.db = db;
-        this.findStatement = db.prepare<{ idslist: string }, ["UCS"], { UCS: string }>(query).pluck()
-        this.getIDSTokensStatement = db.prepare<
-            { ucs: string },
-            ["IDS_tokens"],
-            { IDS_tokens: string }
-        >(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
+        this.findStatement = db.prepare(query).pluck()
+        this.getIDSTokensStatement = db.prepare(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`).pluck()
     }
-    statements() {
+    statements(): any[] {
         return [this.findStatement, this.getIDSTokensStatement]
     }
     close() {
@@ -45,7 +41,7 @@ export class IDSFinder {
     }
     *find(...idslist: string[]) {
         const tokenized = tokenizeIdsList(idslist)
-        for (const result of this.findStatement.iterate({ idslist: JSON.stringify(tokenized.forQuery) })) {
+        for (const result of this.findStatement.iterate({ idslist: JSON.stringify(tokenized.forQuery) } as any) as any) {
             if (postaudit(result as string, tokenized.forAudit, this.getIDSTokensForUcs)) {
                 yield result as string
             }
@@ -53,9 +49,9 @@ export class IDSFinder {
     }
     debugQuery(query: string, ...idslist: string[]) {
         const tokenized = tokenizeIdsList(idslist)
-        return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(tokenized.forQuery) });
+        return this.db.prepare(makeQuery(query)).all({ idslist: JSON.stringify(tokenized.forQuery) } as any);
     }
     private getIDSTokensForUcs = (ucs: string) => {
-        return this.getIDSTokensStatement.all({ ucs }) as string[]
+        return this.getIDSTokensStatement.all({ ucs } as any) as string[]
     }
 }
