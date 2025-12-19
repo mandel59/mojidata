@@ -81,10 +81,16 @@ function createWorkerDb(
   init: WorkerInit,
 ): MojidataApiDb & { ready: Promise<void>; terminate: () => void; dispose: () => void } {
   let nextId = 1
+  let terminalError: Error | undefined
   const pending = new Map<
     number,
     { resolve: (v: any) => void; reject: (e: Error) => void }
   >()
+
+  const rejectAll = (error: Error) => {
+    for (const { reject } of pending.values()) reject(error)
+    pending.clear()
+  }
 
   const onMessage = (ev: MessageEvent) => {
     const msg = ev.data as WorkerResponse
@@ -100,9 +106,27 @@ function createWorkerDb(
     handler.reject(err)
   }
 
+  const onError = (ev: Event) => {
+    const err =
+      ev && typeof ev === "object" && "message" in ev && typeof (ev as any).message === "string"
+        ? new Error((ev as any).message)
+        : new Error("Worker error")
+    terminalError = err
+    rejectAll(err)
+  }
+
+  const onMessageError = () => {
+    const err = new Error("Worker messageerror")
+    terminalError = err
+    rejectAll(err)
+  }
+
   worker.addEventListener("message", onMessage)
+  worker.addEventListener("error", onError as any)
+  worker.addEventListener("messageerror", onMessageError as any)
 
   const callRaw = <TResult>(req: WorkerRequest): Promise<TResult> => {
+    if (terminalError) return Promise.reject(terminalError)
     const id = req.id
     return new Promise<TResult>((resolve, reject) => {
       pending.set(id, { resolve, reject })
@@ -121,7 +145,11 @@ function createWorkerDb(
 
   return {
     ready,
-    dispose: () => worker.removeEventListener("message", onMessage),
+    dispose: () => {
+      worker.removeEventListener("message", onMessage)
+      worker.removeEventListener("error", onError as any)
+      worker.removeEventListener("messageerror", onMessageError as any)
+    },
     terminate: () => worker.terminate(),
     getMojidataJson: (char, select) =>
       call<string | null>({ method: "getMojidataJson", args: [char, select] }),
@@ -144,19 +172,23 @@ export function useMojidataApi(options: MojidataApiHookOptions) {
 
   const [state, setState] = useState<HookState>({ ready: false })
   const latestDispose = useRef<(() => void) | undefined>(undefined)
+  const createWorkerRef = useRef(createWorker)
+  const createDbRef = useRef(createDb)
+  createWorkerRef.current = createWorker
+  createDbRef.current = createDb
 
   const initKey = useMemo(() => {
     return JSON.stringify(init)
   }, [init])
 
   useEffect(() => {
-    const worker = providedWorker ?? createWorker?.()
+    const worker = providedWorker ?? createWorkerRef.current?.()
     if (!worker) {
       setState({ ready: false, error: new Error("worker is required") })
       return
     }
 
-    const db = createDb(worker, init)
+    const db = createDbRef.current(worker, init)
     const app = createApp(db)
 
     const fetchViaApp: MojidataApiClient["fetch"] = async (input, reqInit) => {
@@ -215,7 +247,7 @@ export function useMojidataApi(options: MojidataApiHookOptions) {
         if (terminateWorker) db.terminate()
       }
     }
-  }, [baseUrl, createDb, createWorker, initKey, providedWorker, terminateWorker])
+  }, [baseUrl, initKey, providedWorker, terminateWorker])
 
   return state
 }
