@@ -1,0 +1,10 @@
+cache
+resources
+dist
+*.tgz
+node_modules
+*.js
+*.js.map
+*.d.ts
+!@types/**/*.d.ts
+*.db
