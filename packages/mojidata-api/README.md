@@ -40,6 +40,12 @@ const db = createMojidataApiWorkerClient(worker, {
 await db.ready
 
 const app = createApp(db)
-// call in-browser:
-const res = await app.fetch(new Request("http://local/api/v1/mojidata?char=漢"))
+
+// Call in-browser (Hono `app.fetch`):
+const url = new URL("/api/v1/mojidata?char=漢&select=UCS", "http://local")
+const res = await app.fetch(new Request(url))
+const body = await res.json()
+
+// Cleanup when you're done:
+db.terminate()
 ```

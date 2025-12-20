@@ -10,18 +10,16 @@ yarn add @mandel59/react-mojidata-api
 
 ## Usage
 
-```ts
+```tsx
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url"
 import { useMojidataApi } from "@mandel59/react-mojidata-api"
 
-const worker = new Worker(
-  new URL("@mandel59/mojidata-api/browser-worker", import.meta.url),
-  { type: "module" },
-)
-
 function MyComponent() {
   const { ready, client, error } = useMojidataApi({
-    worker,
+    createWorker: () =>
+      new Worker(new URL("@mandel59/mojidata-api/browser-worker", import.meta.url), {
+        type: "module",
+      }),
     init: {
       sqlWasmUrl: wasmUrl,
       mojidataDbUrl: "/assets/moji.db",
@@ -29,7 +27,9 @@ function MyComponent() {
     },
   })
 
-  // client.getMojidata(...), client.idsfind(...)
+  // Wait for `ready` before calling:
+  // await client?.getMojidata("漢", ["UCS"])
+  // await client?.idsfind({ ids: ["⿰火土"] })
   return null
 }
 ```
