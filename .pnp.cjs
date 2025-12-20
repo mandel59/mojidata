@@ -870,6 +870,7 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/react-mojidata-api", "workspace:packages/react-mojidata-api"],\
           ["@testing-library/dom", "npm:10.4.1"],\
           ["@testing-library/react", "virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#npm:16.3.1"],\
+          ["@types/jsdom", "npm:21.1.7"],\
           ["@types/node", "npm:24.10.4"],\
           ["@types/react", "npm:18.3.27"],\
           ["@types/react-dom", "virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#npm:18.3.7"],\

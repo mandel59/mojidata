@@ -5,7 +5,7 @@ import path from "node:path"
 import { createRequire } from "node:module"
 import { fileURLToPath } from "node:url"
 
-import { chromium } from "playwright"
+import { chromium, type Browser, type BrowserContext, type Page } from "playwright"
 import { createServer } from "vite"
 import react from "@vitejs/plugin-react"
 
@@ -91,11 +91,9 @@ test(
     const workerProbes: Promise<void>[] = []
     let server: Awaited<ReturnType<typeof createServer>> | undefined
     let url: string | undefined
-    let browser: Awaited<ReturnType<(typeof chromium)["launch"]>> | undefined
-    let context:
-      | Awaited<ReturnType<Awaited<ReturnType<(typeof chromium)["launch"]>>["newContext"]>>
-      | undefined
-    let page: Awaited<ReturnType<Awaited<typeof browser>["newPage"]>> | undefined
+    let browser: Browser | undefined
+    let context: BrowserContext | undefined
+    let page: Page | undefined
     try {
       server = await createServer({
         root: fixtureRoot,
@@ -199,10 +197,12 @@ test(
         workerProbes.push(
           worker
             .evaluate(() => "ok")
-            .then((v) => pageLogs.push(`[worker:evaluate] ${String(v)}`))
-            .catch((err) =>
-              pageLogs.push(`[worker:evaluate:error] ${err?.message ?? String(err)}`),
-            ),
+            .then((v) => {
+              pageLogs.push(`[worker:evaluate] ${String(v)}`)
+            })
+            .catch((err) => {
+              pageLogs.push(`[worker:evaluate:error] ${err?.message ?? String(err)}`)
+            }),
         )
       })
       page.on("websocket", (ws) => pageLogs.push(`[websocket] ${ws.url()}`))
