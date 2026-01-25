@@ -1,0 +1,608 @@
+openapi: 3.0.3
+info:
+  title: Mojidata API
+  version: 1.7.0
+  description: |
+    Hono + sql.js API for querying Mojidata / IDS-related utilities.
+servers:
+  - url: http://localhost:3001/
+tags:
+  - name: mojidata
+  - name: ids
+paths:
+  /api/v1/mojidata:
+    get:
+      tags: [mojidata]
+      summary: Get Mojidata for a character
+      description: |
+        Returns a JSON object for the given character.
+
+        - `char` may be a single Unicode character, or a code-point string like `U+4E00` / `U4E00`.
+        - `select` can be repeated to limit returned fields. If omitted, all fields are returned.
+      parameters:
+        - name: char
+          in: query
+          required: true
+          schema:
+            type: string
+          examples:
+            literal:
+              value: 漢
+            codepoint:
+              value: U+6F22
+        - name: select
+          in: query
+          required: false
+          description: |
+            List of fields to include. If omitted (or empty), all fields are included.
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MojidataSelectField"
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              example: application/json; charset=utf-8
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MojidataResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                missingChar:
+                  value:
+                    error:
+                      message: char is required
+                invalidChar:
+                  value:
+                    error:
+                      message: char must be a single character
+                invalidSelect:
+                  value:
+                    error:
+                      message: invalid select
+                      options: [char, UCS]
+  /api/v1/ivs-list:
+    get:
+      tags: [mojidata]
+      summary: List IVS sequences for a character
+      description: |
+        Returns IVS rows for the given character (same data used by `ivs-list` CLI).
+
+        - `char` may be a single Unicode character, or a code-point string like `U+4E00` / `U4E00`.
+      parameters:
+        - name: char
+          in: query
+          required: true
+          schema:
+            type: string
+          examples:
+            literal:
+              value: 漢
+            codepoint:
+              value: U+6F22
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IvsListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/mojidata-variants:
+    get:
+      tags: [mojidata]
+      summary: Get variant relations for characters
+      description: |
+        Returns raw variant-relation edges (same data used by `mojidata-variants` CLI to render graphs).
+      parameters:
+        - name: char
+          in: query
+          required: true
+          description: Repeating parameter; each entry must be a single character (or `U+XXXX`).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["漢"]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MojidataVariantsResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/idsfind:
+    get:
+      tags: [ids]
+      summary: Find characters by IDS and/or property filters
+      description: |
+        This endpoint supports two modes:
+
+        1) IDS mode: provide `ids` and/or `whole` to search by IDS patterns (via `@mandel59/idsdb` + `idsfind.db` + `@mandel59/idsdb-utils`).
+           Optional `p`/`q` filters can further narrow results.
+
+        2) Property search mode: if `ids` and `whole` are both omitted, and `p` is provided, it performs a DB-backed
+           search (same as `api/v1/_lib/libsearch.ts`).
+
+        Arrays can be passed as repeated query parameters (e.g. `p=UCS&p=totalStrokes`).
+      parameters:
+        - name: ids
+          in: query
+          required: false
+          description: IDS fragments to search (repeating parameter).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["⿰亻言"]
+        - name: whole
+          in: query
+          required: false
+          description: Whole-character patterns to search (repeating parameter).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: p
+          in: query
+          required: false
+          description: Property keys to intersect/filter by (repeating parameter).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/SearchPropertyKey"
+          examples:
+            strokes:
+              value: [totalStrokes]
+            reading:
+              value: ["mji.読み"]
+        - name: q
+          in: query
+          required: false
+          description: Values corresponding to `p` (must have same length as `p`).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+          examples:
+            strokes:
+              value: ["13"]
+            reading:
+              value: ["かん"]
+        - name: limit
+          in: query
+          required: false
+          description: Max results to return (positive integer). When used, `done` may be returned.
+          schema:
+            type: integer
+            minimum: 1
+        - name: offset
+          in: query
+          required: false
+          description: Number of results to skip (positive integer).
+          schema:
+            type: integer
+            minimum: 1
+        - name: all_results
+          in: query
+          required: false
+          description: |
+            If present, includes results that start with `&` (otherwise they are filtered out).
+            Note: the implementation treats any provided value as truthy (e.g. `all_results=0` still enables it).
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              example: application/json; charset=utf-8
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+              example: "*"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IdsfindResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                mismatchedPQ:
+                  value:
+                    error:
+                      message: q.length must be equal to p.length
+                noParams:
+                  value:
+                    message: No parameters
+                    error:
+                      message: No parameters
+                missingP:
+                  value:
+                    error:
+                      message: p is required
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    ErrorObject:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+      additionalProperties: true
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        message:
+          type: string
+          description: Some error responses also include a top-level message.
+        error:
+          $ref: "#/components/schemas/ErrorObject"
+      additionalProperties: true
+    MojidataSelectField:
+      type: string
+      enum:
+        - char
+        - UCS
+        - aj1
+        - ids
+        - ids_similar
+        - ids_comment
+        - ivs
+        - ivs_duplicate
+        - svs_cjkci
+        - unihan
+        - unihan_rs
+        - unihan_fts
+        - unihan_variant
+        - unihan_variant_inverse
+        - joyo
+        - joyo_kangxi
+        - joyo_kangxi_inverse
+        - doon
+        - nyukan
+        - tghb
+        - mji
+        - mjsm_inverse
+        - mjih
+        - kdpv
+    IvsListItem:
+      type: object
+      required: [IVS, unicode, collection, code]
+      properties:
+        IVS:
+          type: string
+        unicode:
+          type: string
+        collection:
+          type: string
+        code:
+          type: string
+    IvsListResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [char]
+          properties:
+            char:
+              type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/IvsListItem"
+      additionalProperties: true
+    MojidataVariantRel:
+      type: object
+      required: [c1, c2, f, r]
+      properties:
+        c1:
+          type: string
+        c2:
+          type: string
+        f:
+          type: integer
+          description: Truthy if this relation is "followed" by the graph expansion.
+        r:
+          type: string
+    MojidataVariantsResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [char]
+          properties:
+            char:
+              type: array
+              items:
+                type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/MojidataVariantRel"
+      additionalProperties: true
+    MojidataResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [char]
+          properties:
+            char:
+              type: string
+            select:
+              type: array
+              items:
+                $ref: "#/components/schemas/MojidataSelectField"
+          additionalProperties: false
+        results:
+          $ref: "#/components/schemas/MojidataResults"
+      additionalProperties: false
+    MojidataResults:
+      type: object
+      description: |
+        Selected fields for the requested character.
+
+        The exact shape depends on `select`. Fields not selected are omitted.
+      properties:
+        char:
+          type: string
+          description: The character itself.
+        UCS:
+          type: string
+          description: Code point string like `U+4E00`.
+        aj1:
+          type: object
+          nullable: true
+          description: Adobe-Japan1 CIDs (when available).
+          additionalProperties: true
+        ids:
+          type: array
+          items:
+            type: object
+            properties:
+              IDS: { type: string }
+              source: { type: string }
+            required: [IDS, source]
+            additionalProperties: true
+        ids_similar:
+          type: array
+          items:
+            type: object
+            properties:
+              UCS: { type: string }
+              IDS: { type: string }
+              source: { type: string }
+            required: [UCS, IDS, source]
+            additionalProperties: true
+        ids_comment:
+          type: array
+          items:
+            type: string
+        ivs:
+          type: array
+          items:
+            type: object
+            properties:
+              char: { type: string }
+              IVS: { type: string }
+              collection: { type: string }
+              code: { type: string }
+            required: [char, IVS, collection, code]
+            additionalProperties: true
+        ivs_duplicate:
+          type: array
+          description: Tuple-like arrays describing IVS duplicates.
+          items:
+            type: array
+            items:
+              oneOf:
+                - type: string
+                - type: integer
+        svs_cjkci:
+          type: array
+          items:
+            type: object
+            properties:
+              SVS_char: { type: string }
+              SVS: { type: string }
+              CJKCI_char: { type: string }
+              CJKCI: { type: string }
+            required: [SVS_char, SVS, CJKCI_char, CJKCI]
+            additionalProperties: true
+        unihan:
+          type: object
+          description: Map of Unihan property to value.
+          additionalProperties:
+            type: string
+        unihan_rs:
+          type: object
+          description: Radical/stroke-related derived data.
+          additionalProperties: true
+        unihan_fts:
+          type: array
+          description: Full-text-search hits from Unihan fields.
+          items:
+            type: array
+            items:
+              type: string
+        unihan_variant:
+          type: array
+          items:
+            type: array
+            items: {}
+        unihan_variant_inverse:
+          type: array
+          items:
+            type: array
+            items: {}
+        joyo:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        joyo_kangxi:
+          type: array
+          items:
+            type: string
+        joyo_kangxi_inverse:
+          type: array
+          items:
+            type: string
+        doon:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        nyukan:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        tghb:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        mji:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        mjsm_inverse:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        mjih:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        kdpv:
+          type: object
+          description: Map of relation to arrays of related characters/strings.
+          additionalProperties: true
+      additionalProperties: false
+    SearchPropertyKey:
+      type: string
+      enum:
+        - UCS
+        - mji.読み
+        - mji.読み.prefix
+        - mji.MJ文字図形名
+        - mji.総画数
+        - mji.総画数.lt
+        - mji.総画数.le
+        - mji.総画数.gt
+        - mji.総画数.ge
+        - unihan.kTotalStrokes
+        - unihan.kTotalStrokes.lt
+        - unihan.kTotalStrokes.le
+        - unihan.kTotalStrokes.gt
+        - unihan.kTotalStrokes.ge
+        - totalStrokes
+        - totalStrokes.lt
+        - totalStrokes.le
+        - totalStrokes.gt
+        - totalStrokes.ge
+    IdsfindResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [ids, whole]
+          properties:
+            ids:
+              type: array
+              items: { type: string }
+            whole:
+              type: array
+              items: { type: string }
+            p:
+              type: array
+              items:
+                $ref: "#/components/schemas/SearchPropertyKey"
+            q:
+              type: array
+              items: { type: string }
+            limit:
+              type: integer
+              nullable: true
+            offset:
+              type: integer
+              nullable: true
+            all_results:
+              type: boolean
+              nullable: true
+          additionalProperties: false
+        results:
+          type: array
+          items:
+            type: string
+        done:
+          type: boolean
+          nullable: true
+          description: Present only when a positive `limit` is used.
+        total:
+          type: integer
+          description: Present only when neither `limit` nor `offset` is used.
+      additionalProperties: false

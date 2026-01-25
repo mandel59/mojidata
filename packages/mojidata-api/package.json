@@ -1,0 +1,49 @@
+{
+  "name": "@mandel59/mojidata-api",
+  "version": "1.7.0",
+  "description": "",
+  "main": "index.js",
+  "files": [
+    "*.ts",
+    "*.js",
+    "*.d.ts",
+    "api",
+    "openapi.yaml",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node --import tsx ./server.ts",
+    "dev": "tsx watch ./server.ts",
+    "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public",
+    "test": "node --import tsx --test ./tests/*.test.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/idsdb": "^1.7.0",
+    "@mandel59/idsdb-utils": "^1.7.0",
+    "@mandel59/mojidata": "^1.7.0",
+    "hono": "^4.9.0",
+    "sql.js": "^1.13.0"
+  },
+  "peerDependencies": {
+    "@hono/node-server": "^1.19.7"
+  },
+  "peerDependenciesMeta": {
+    "@hono/node-server": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@hono/node-server": "^1.19.7",
+    "@types/node": "^24.10.4",
+    "@types/sql.js": "^1.4.9",
+    "prettier": "^2.8.8",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

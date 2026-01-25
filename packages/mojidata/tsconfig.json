@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "strict": true,
+        "skipLibCheck": true,
         "esModuleInterop": true,
         "target": "ES2019",
         "module": "CommonJS",

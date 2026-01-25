@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "target": "ES2019",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ES2019"]
+  },
+  "include": [
+    "./index.ts",
+    "./node.ts",
+    "./lib/**/*.ts"
+  ]
+}

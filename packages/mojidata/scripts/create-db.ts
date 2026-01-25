@@ -960,7 +960,14 @@ async function createAj1(db: import("better-sqlite3").Database) {
     }
 }
 
-async function createIDS(db: import("better-sqlite3").Database, prefix = "ids", filename = "IDS.TXT") {
+async function createIDS(
+    db: import("better-sqlite3").Database,
+    prefix = "ids",
+    filename = "IDS.TXT",
+    patchFiles = [
+        "ids-unicode-17.0.txt",
+    ],
+) {
     db.exec(`drop table if exists "${prefix}_fts"`)
     db.exec(`drop table if exists "${prefix}"`)
     db.exec(`drop table if exists "${prefix}_comment"`)
@@ -981,45 +988,72 @@ async function createIDS(db: import("better-sqlite3").Database, prefix = "ids", 
     const insert_comment = db.prepare(`INSERT INTO "${prefix}_comment"
         ("UCS", "comment") VALUES (?, ?)`)
 
-    const datapath = path.join(__dirname, "../cache", filename)
-    const stream = fs.createReadStream(datapath).pipe(parse({
-        columns: false,
-        comment: "#",
-        delimiter: "\t",
-        skip_empty_lines: true,
-        relax_column_count: true,
-    }))
+    const delete_ids = db.prepare(`DELETE FROM "${prefix}" WHERE "UCS" = ?`)
+    const delete_comment = db.prepare(`DELETE FROM "${prefix}_comment" WHERE "UCS" = ?`)
+
+    const cachePath = (name: string) => path.isAbsolute(name) ? name : path.join(__dirname, "../cache", name)
+    const filenames = [filename, ...(patchFiles ?? [])].filter((f): f is string => typeof f === "string" && f.length > 0)
+    const seenUCS = new Set<string>()
 
     await transaction(db, async () => {
-        for await (const record of stream) {
-            const [codepoint, ucs, ...idslist] = record as string[]
-            for (const field of idslist) {
-                try {
-                    if (field.startsWith("^")) {
-                        const m = /\^([^\$]+)\$\(([^\)]+)\)/.exec(field)
-                        if (!m) throw new Error("syntax error")
-                        const ids = m[1]
-                        const source = m[2] ?? ""
-                        insert.run([ucs, source, ids])
-                    } else if (field.startsWith("*")) {
-                        const comments = field.slice(1).split(/;/g)
-                        for (const comment of comments) {
-                            insert_comment.run([ucs, comment.trim()])
-                        }
-                    } else {
-                        if (ucs === "\u{276ad}") {
-                            const comments = field.split(/;/g)
+        for (const name of filenames) {
+            const datapath = cachePath(name)
+            const stream = fs.createReadStream(datapath).pipe(parse({
+                columns: false,
+                comment: "#",
+                delimiter: "\t",
+                skip_empty_lines: true,
+                relax_column_count: true,
+            }))
+
+            for await (const raw of stream) {
+                const record = raw as string[]
+                if (record.length < 2) continue
+                const [codepointRaw, ucsRaw, ...fieldsRaw] = record
+                const codepoint = (codepointRaw ?? "").trim()
+                const ucs = (ucsRaw ?? "").trim()
+                if (!ucs) continue
+                if (fieldsRaw.length === 0) {
+                    throw new Error(`syntax error: missing fields in ${name} (${codepoint})`)
+                }
+
+                if (seenUCS.has(ucs)) {
+                    delete_ids.run([ucs])
+                    delete_comment.run([ucs])
+                }
+
+                for (const fieldRaw of fieldsRaw) {
+                    const field = (fieldRaw ?? "").trim()
+                    if (!field) continue
+                    try {
+                        if (field.startsWith("^")) {
+                            const m = /\^([^\$]+)\$\(([^\)]+)\)/.exec(field)
+                            if (!m) throw new Error("syntax error")
+                            const ids = m[1]
+                            const source = m[2] ?? ""
+                            insert.run([ucs, source, ids])
+                        } else if (field.startsWith("*")) {
+                            const comments = field.slice(1).split(/;/g)
                             for (const comment of comments) {
                                 insert_comment.run([ucs, comment.trim()])
                             }
-                            continue
+                        } else {
+                            if (ucs === "\u{276ad}") {
+                                const comments = field.split(/;/g)
+                                for (const comment of comments) {
+                                    insert_comment.run([ucs, comment.trim()])
+                                }
+                                continue
+                            }
+                            throw new Error("syntax error")
                         }
-                        throw new Error("syntax error")
+                    } catch (err) {
+                        console.error(`${name}: ${codepoint}`)
+                        throw err
                     }
-                } catch (err) {
-                    console.error(codepoint)
-                    throw err
                 }
+
+                seenUCS.add(ucs)
             }
         }
     })

@@ -1,9 +1,8 @@
 #!/usr/bin/env node
-import Database = require("better-sqlite3")
+import { createNodeDb } from "@mandel59/mojidata-api/node"
 import { queryExpressions } from "./query-expressions"
-const mojidb = require.resolve("@mandel59/mojidata/dist/moji.db")
 
-const db = new Database(mojidb)
+const db = createNodeDb()
 
 function argparse(argv: string[]) {
     return {
@@ -36,20 +35,7 @@ function help() {
     }
 }
 
-function buildQuery(selection: Set<string>) {
-    const a = [];
-    const selectAll = selection.size === 0;
-    for (const [name, e] of queryExpressions) {
-        if (selectAll || selection.has(name)) {
-            a.push(`'${name}', ${e}`)
-        }
-    }
-    return `SELECT json_object(${a.join(',')}) AS vs`;
-}
-
-function printMojidata(args: string[], selection: string[]) {
-    const query = buildQuery(new Set(selection))
-    const stmt = db.prepare<{ ucs: string }>(query).pluck()
+async function printMojidata(args: string[], selection: string[]) {
     for (let s of args) {
         if (s.startsWith('U+')) {
             s = String.fromCodePoint(Number.parseInt(s.substr(2), 16))
@@ -60,13 +46,13 @@ function printMojidata(args: string[], selection: string[]) {
             return
         }
         for (const c of s) {
-            const value = stmt.get({ ucs: c })
+            const value = await db.getMojidataJson(c, selection)
             console.log(value)
         }
     }
 }
 
-function main() {
+async function main() {
     const { argv, options } = argparse(process.argv.slice(2))
     if (argv.length === 0) {
         help()
@@ -76,8 +62,11 @@ function main() {
         ?.split(',')
         .map(x => x.trim())
         .filter(x => x)
-    printMojidata(argv, selection ?? [])
+    await printMojidata(argv, selection ?? [])
 
 }
 
-main()
+main().catch(err => {
+    console.error(err)
+    process.exit(1)
+})

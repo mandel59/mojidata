@@ -1,10 +1,10 @@
 {
     "name": "mojidata-workspace",
-    "version": "1.6.1",
+    "version": "1.7.0",
     "private": true,
     "scripts": {
         "test": "(cd packages/mojidata && yarn test) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
-        "build": "(cd packages/mojidata && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare)"
+        "build": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb-utils && yarn prepare) && (cd packages/idsdb && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare)"
     },
     "workspaces": {
         "packages": [
@@ -12,9 +12,9 @@
         ]
     },
     "devDependencies": {
-        "@types/node": "^16.9.1",
+        "@types/node": "^24.10.4",
         "corepack": "^0.28.2",
-        "typescript": "^4.4.3"
+        "typescript": "^5.9.3"
     },
-    "packageManager": "yarn@4.2.2"
+    "packageManager": "yarn@4.12.0"
 }

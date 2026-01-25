@@ -1,0 +1,51 @@
+{
+  "name": "@mandel59/idsdb-utils",
+  "version": "1.7.0",
+  "description": "Utilities for mojidata IDS",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/idsdb-utils"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./node": {
+      "types": "./node.d.ts",
+      "require": "./node.js",
+      "default": "./node.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "node.js",
+    "node.d.ts",
+    "@types/**/*.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/mojidata": "^1.7.0",
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,6 +1,9 @@
 node_modules
 *.tgz
+*.tar.gz
 *.db
+
+.vscode/settings.json
 
 .yarn/*
 !.yarn/cache

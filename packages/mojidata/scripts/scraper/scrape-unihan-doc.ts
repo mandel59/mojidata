@@ -1,7 +1,13 @@
 import { JSDOM } from "jsdom"
 
+const TR38_URL = process.env["TR38_URL"] ?? "https://www.unicode.org/reports/tr38/"
+
 export async function scrapeUnihanDoc() {
-    const jsdom = await JSDOM.fromURL("https://www.unicode.org/reports/tr38/")
+    const jsdom = await JSDOM.fromURL(TR38_URL)
+    const removed = jsdom.window.document.querySelectorAll(".removed")
+    for (const r of removed) {
+        r.remove()
+    }
     const tables = jsdom.window.document.querySelectorAll("table[summary]")
     const array = []
     for (const t of tables) {
