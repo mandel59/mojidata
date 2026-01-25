@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "files": [
-    "server.ts",
-    "node.ts",
-    "app.ts",
-    "browser-client.ts",
-    "browser-worker.ts",
+    "*.ts",
+    "*.js",
+    "*.d.ts",
     "api",
     "openapi.yaml",
     "README.md",
@@ -17,6 +15,7 @@
   "scripts": {
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
+    "prepare": "tsc",
     "test": "node --import tsx --test ./tests/*.test.ts"
   },
   "keywords": [],

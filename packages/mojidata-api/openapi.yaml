@@ -77,6 +77,69 @@ paths:
                     error:
                       message: invalid select
                       options: [char, UCS]
+  /api/v1/ivs-list:
+    get:
+      tags: [mojidata]
+      summary: List IVS sequences for a character
+      description: |
+        Returns IVS rows for the given character (same data used by `ivs-list` CLI).
+
+        - `char` may be a single Unicode character, or a code-point string like `U+4E00` / `U4E00`.
+      parameters:
+        - name: char
+          in: query
+          required: true
+          schema:
+            type: string
+          examples:
+            literal:
+              value: 漢
+            codepoint:
+              value: U+6F22
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IvsListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/mojidata-variants:
+    get:
+      tags: [mojidata]
+      summary: Get variant relations for characters
+      description: |
+        Returns raw variant-relation edges (same data used by `mojidata-variants` CLI to render graphs).
+      parameters:
+        - name: char
+          in: query
+          required: true
+          description: Repeating parameter; each entry must be a single character (or `U+XXXX`).
+          style: form
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+          example: ["漢"]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MojidataVariantsResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/idsfind:
     get:
       tags: [ids]
@@ -257,6 +320,63 @@ components:
         - mjsm_inverse
         - mjih
         - kdpv
+    IvsListItem:
+      type: object
+      required: [IVS, unicode, collection, code]
+      properties:
+        IVS:
+          type: string
+        unicode:
+          type: string
+        collection:
+          type: string
+        code:
+          type: string
+    IvsListResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [char]
+          properties:
+            char:
+              type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/IvsListItem"
+      additionalProperties: true
+    MojidataVariantRel:
+      type: object
+      required: [c1, c2, f, r]
+      properties:
+        c1:
+          type: string
+        c2:
+          type: string
+        f:
+          type: integer
+          description: Truthy if this relation is "followed" by the graph expansion.
+        r:
+          type: string
+    MojidataVariantsResponse:
+      type: object
+      required: [query, results]
+      properties:
+        query:
+          type: object
+          required: [char]
+          properties:
+            char:
+              type: array
+              items:
+                type: string
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/MojidataVariantRel"
+      additionalProperties: true
     MojidataResponse:
       type: object
       required: [query, results]

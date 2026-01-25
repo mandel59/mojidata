@@ -60,10 +60,10 @@ async function main() {
     const idsfinder = new IDSFinder()
     const debugQuery = options.get("--debug-query")
     if (typeof debugQuery === "string") {
-        console.log(idsfinder.debugQuery(debugQuery, ...args))
+        console.log(await idsfinder.debugQuery(debugQuery, ...args))
         return
     }
-    for (const result of idsfinder.find(...args)) {
+    for (const result of await idsfinder.find(...args)) {
         if (!allResults && result[0] === '&') {
             continue
         }

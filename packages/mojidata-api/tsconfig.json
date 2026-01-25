@@ -2,9 +2,12 @@
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "skipLibCheck": true,
     "target": "ES2020",
     "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["ES2020", "DOM"]
-  }
+  },
+  "exclude": ["tests"]
 }

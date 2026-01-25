@@ -1,5 +1,5 @@
-import fs from "node:fs"
-import path from "node:path"
+import * as fs from "node:fs"
+import * as path from "node:path"
 
 import initSqlJs from "sql.js"
 import type { Database, SqlJsStatic } from "sql.js"
@@ -35,4 +35,3 @@ export async function openDatabaseFromFile(filePath: string): Promise<Database> 
   const bytes = fs.readFileSync(realPath)
   return new SQL.Database(new Uint8Array(bytes))
 }
-

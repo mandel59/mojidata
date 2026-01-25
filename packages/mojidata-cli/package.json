@@ -25,11 +25,9 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.6.2",
-    "better-sqlite3": "^12.5.0"
+    "@mandel59/mojidata-api": "^1.6.3"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.4.0",
     "@types/node": "^24.10.4",
     "ava": "^3.15.0",
     "ts-node": "^10.9.2",
