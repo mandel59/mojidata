@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "description": "",
   "main": "index.js",
   "files": [
@@ -9,6 +9,7 @@
     "*.d.ts",
     "api",
     "openapi.yaml",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
@@ -22,9 +23,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/idsdb": "^1.6.3",
-    "@mandel59/idsdb-utils": "^1.6.3",
-    "@mandel59/mojidata": "^1.6.2",
+    "@mandel59/idsdb": "^1.7.0",
+    "@mandel59/idsdb-utils": "^1.7.0",
+    "@mandel59/mojidata": "^1.7.0",
     "hono": "^4.9.0",
     "sql.js": "^1.13.0"
   },

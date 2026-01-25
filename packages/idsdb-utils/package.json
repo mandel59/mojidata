@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idsdb-utils",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "description": "Utilities for mojidata IDS",
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "@types/**/*.d.ts",
     "lib/*.js",
     "lib/*.d.ts",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
   ],
@@ -39,7 +40,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata": "^1.6.2",
+    "@mandel59/mojidata": "^1.7.0",
     "sql.js": "^1.13.0"
   },
   "devDependencies": {

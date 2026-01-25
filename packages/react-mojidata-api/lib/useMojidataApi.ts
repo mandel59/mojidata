@@ -153,7 +153,26 @@ function createWorkerDb(
     terminate: () => worker.terminate(),
     getMojidataJson: (char, select) =>
       call<string | null>({ method: "getMojidataJson", args: [char, select] }),
+    getIvsList: (char) =>
+      call<
+        Array<{
+          IVS: string
+          unicode: string
+          collection: string
+          code: string
+        }>
+      >({ method: "getIvsList", args: [char] }),
+    getMojidataVariantRels: (chars) =>
+      call<Array<{ c1: string; c2: string; f: number; r: string }>>({
+        method: "getMojidataVariantRels",
+        args: [chars],
+      }),
     idsfind: (idslist) => call<string[]>({ method: "idsfind", args: [idslist] }),
+    idsfindDebugQuery: (queryBody, idslist) =>
+      call<Record<string, unknown>[]>({
+        method: "idsfindDebugQuery",
+        args: [queryBody, idslist],
+      }),
     search: (ps, qs) => call<string[]>({ method: "search", args: [ps, qs] }),
     filterChars: (chars, ps, qs) =>
       call<string[]>({ method: "filterChars", args: [chars, ps, qs] }),

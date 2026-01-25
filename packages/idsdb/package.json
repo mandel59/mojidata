@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idsdb",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "description": "SQLite databases for mojidata IDS",
   "repository": {
     "type": "git",
@@ -14,6 +14,7 @@
   "files": [
     "idsfind.db",
     "idsdecompose.db",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
   ],
@@ -24,8 +25,8 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "devDependencies": {
-    "@mandel59/idsdb-utils": "^1.6.3",
-    "@mandel59/mojidata": "^1.6.2",
+    "@mandel59/idsdb-utils": "^1.7.0",
+    "@mandel59/mojidata": "^1.7.0",
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^24.10.4",
     "better-sqlite3": "^12.5.0",
