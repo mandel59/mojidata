@@ -17,6 +17,7 @@
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
     "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public",
     "test": "node --import tsx --test ./tests/*.test.ts"
   },
   "keywords": [],

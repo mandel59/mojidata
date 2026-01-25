@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public",
     "test": "node --import tsx --test ./tests/*.test.ts ./tests/*.test.tsx"
   },
   "author": "Ryusei Yamaguchi",
