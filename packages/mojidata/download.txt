@@ -33,6 +33,10 @@ IVD_Sequences.txt e6168c2ed8e0834d3eccb8a6d43aad004c97c8216e237101f1c2e8347be2b5
 ## Not copyrighted
 IDS.TXT cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1 https://raw.githubusercontent.com/mandel59/babelstone-ids/6d0989b007bdfa566a864419448b125799ef5f9f/IDS.TXT
 
+## Mojidata IDS <https://github.com/mandel59/mojidata-ids>
+## License: MIT-0
+ids-unicode-17.0.txt 73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3bd9d8 https://raw.githubusercontent.com/mandel59/mojidata-ids/refs/heads/main/ids/unicode-17.0.txt
+
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
 ## Public domain
 doonnokanjiniyorukakikae1956.txt 9f7db887730480c0371ecbe71c06d34c5621daf6b7a3468c125d3232adc1289b https://raw.githubusercontent.com/mandel59/doonnokanjiniyorukakikae/83802798f46947e2a26967a9a27df4746ccd0050/doonnokanjiniyorukakikae1956.txt
