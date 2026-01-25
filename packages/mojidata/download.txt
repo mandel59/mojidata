@@ -35,7 +35,7 @@ IDS.TXT cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1 https:/
 
 ## Mojidata IDS <https://github.com/mandel59/mojidata-ids>
 ## License: MIT-0
-ids-unicode-17.0.txt 73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3bd9d8 https://raw.githubusercontent.com/mandel59/mojidata-ids/refs/heads/main/ids/unicode-17.0.txt
+ids-unicode-17.0.txt 73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3bd9d8 https://raw.githubusercontent.com/mandel59/mojidata-ids/d282fc42965b363d37cef23c71d442fcaa29243d/ids/unicode-17.0.txt
 
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
 ## Public domain
