@@ -1,6 +1,7 @@
 # AGENTS.md
 
 - Use **Jujutsu VCS** for version control and commits.  
+- When checking diffs, prefer `jj diff --git`: the default diff relies heavily on color to convey changes, but the agent can’t reliably interpret colorized output, while git-style diffs are explicit.  
 - Include agent and model details in the commit-message trailers.  
   Example:  
 

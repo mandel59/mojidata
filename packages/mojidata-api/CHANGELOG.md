@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.1] - 2026-01-26
+
+### Changed
+
+- Include `tsconfig.json` in the published package files.
+
 ## [1.7.0] - 2026-01-25
 
 ### Added
@@ -16,5 +22,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add `prepare` build step and publish built JS/typings for consumers.
 
+[1.7.1]: https://github.com/mandel59/mojidata/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/mandel59/mojidata/compare/v1.6.3...v1.7.0
-

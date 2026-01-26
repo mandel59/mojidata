@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "",
   "main": "index.js",
   "files": [
@@ -11,7 +11,8 @@
     "openapi.yaml",
     "CHANGELOG.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "tsconfig.json"
   ],
   "scripts": {
     "start": "node --import tsx ./server.ts",
