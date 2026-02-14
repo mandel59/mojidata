@@ -95,6 +95,9 @@ describe('GET /api/v1/idsfind', () => {
     { p: 'unihan.kTraditionalVariant', q: '銀' },
     { p: 'unihan.kTraditionalVariant', q: 'U+9280' },
     { p: 'unihan.kSemanticVariant', q: '炮' },
+    { p: 'unihan.kStrange.I', q: '龍' },
+    { p: 'unihan.kStrange.I', q: 'U+9F8D' },
+    { p: 'unihan.kStrange.I.glob', q: '龍' },
   ]) {
     test(`supports SearchPropertyKey=${p}`, async () => {
       const limit = 3
@@ -139,6 +142,30 @@ describe('GET /api/v1/idsfind', () => {
         ['U+9280'],
       )
       assert.ok(json.results.includes('银'))
+    }
+  })
+
+  test('finds kStrange category matches by character/U+ input', async () => {
+    const expected = String.fromCodePoint(0x33473)
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kStrange.I'],
+        q: ['龍'],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, ['unihan.kStrange.I'], ['龍'])
+      assert.ok(json.results.includes(expected))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kStrange.I'],
+        q: ['U+9F8D'],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, ['unihan.kStrange.I'], ['U+9F8D'])
+      assert.ok(json.results.includes(expected))
     }
   })
 

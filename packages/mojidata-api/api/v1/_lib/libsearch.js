@@ -148,6 +148,37 @@ const queries = {
       AND value glob ?`,
     },
 };
+const strangeCategories = ['A', 'B', 'C', 'H', 'I', 'K', 'M', 'O', 'R', 'S', 'U', 'Y'];
+for (const c of strangeCategories) {
+    queries[`unihan.kStrange.${c}`] = {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_strange
+    WHERE category = '${c}'
+      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
+        args: (q) => [q, q],
+    };
+    queries[`unihan.kStrange.${c}.glob`] = {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_strange
+    WHERE category = '${c}'
+      AND value glob ?`,
+    };
+}
+queries['unihan.kStrange'] = {
+    query: `
+  SELECT DISTINCT UCS AS r
+  FROM unihan_strange
+  WHERE value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16))`,
+    args: (q) => [q, q],
+};
+queries['unihan.kStrange.glob'] = {
+    query: `
+  SELECT DISTINCT UCS AS r
+  FROM unihan_strange
+  WHERE value glob ?`,
+};
 const queries2 = {
     totalStrokes: `SELECT * FROM (${queries['unihan.kTotalStrokes'].query.trim()} UNION ${queries['mji.総画数'].query.trim()})`,
     'totalStrokes.lt': `SELECT * FROM (${queries['unihan.kTotalStrokes.lt'].query.trim()} UNION ${queries['mji.総画数.lt'].query.trim()})`,

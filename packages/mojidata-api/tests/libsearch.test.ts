@@ -31,4 +31,15 @@ describe('libsearch query key resolution', () => {
     assert.equal(args.length, 2)
     assert.deepEqual(args, ['U+9280', 'U+9280'])
   })
+
+  test('supports unihan.kStrange category key resolution', () => {
+    const [query, args] = getQueryAndArgs('unihan.kStrange.I', 'U+9F8D')
+    assert.ok(query.includes('FROM unihan_strange'))
+    assert.ok(query.includes("category = 'I'"))
+    assert.deepEqual(args, ['U+9F8D', 'U+9F8D'])
+
+    const [query2, args2] = getQueryAndArgs('unihan.kStrange.I.glob', '龍*')
+    assert.ok(query2.includes('value glob ?'))
+    assert.deepEqual(args2, ['龍*'])
+  })
 })
