@@ -154,6 +154,126 @@ const queries: Partial<Record<string, QuerySpec>> = {
   },
 }
 
+function addUnihanVariantProperty(property: string) {
+  queries[`unihan.${property}`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = '${property}'
+      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
+    args: (q) => [q, q],
+  }
+  queries[`unihan.${property}.glob`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = '${property}'
+      AND value glob ?`,
+  }
+}
+
+for (const property of [
+  'kCompatibilityVariant',
+  'kSemanticVariant',
+  'kSimplifiedVariant',
+  'kSpecializedSemanticVariant',
+  'kSpoofingVariant',
+  'kTraditionalVariant',
+  'kZVariant',
+]) {
+  addUnihanVariantProperty(property)
+}
+
+const unihanGeneralProperties = [
+  'kIICore',
+  'kIRG_GSource',
+  'kIRG_HSource',
+  'kIRG_JSource',
+  'kIRG_KPSource',
+  'kIRG_KSource',
+  'kIRG_MSource',
+  'kIRG_SSource',
+  'kIRG_TSource',
+  'kIRG_UKSource',
+  'kIRG_USource',
+  'kIRG_VSource',
+  'kRSUnicode',
+  'kTotalStrokes',
+  'kAccountingNumeric',
+  'kOtherNumeric',
+  'kPrimaryNumeric',
+  'kTayNumeric',
+  'kVietnameseNumeric',
+  'kZhuangNumeric',
+  'kCantonese',
+  'kDefinition',
+  'kFanqie',
+  'kHangul',
+  'kHanyuPinlu',
+  'kHanyuPinyin',
+  'kJapanese',
+  'kJapaneseKun',
+  'kJapaneseOn',
+  'kKorean',
+  'kMandarin',
+  'kSMSZD2003Readings',
+  'kTang',
+  'kTGHZ2013',
+  'kVietnamese',
+  'kXHC1983',
+  'kZhuang',
+] as const
+
+for (const property of unihanGeneralProperties) {
+  if (queries[`unihan.${property}`]) continue
+  queries[`unihan.${property}`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan
+    WHERE property = '${property}'
+      AND (
+        value = ?
+        OR value = char(parse_int(replace(upper(?), 'U+', ''), 16))
+        OR value glob (? || ' *')
+        OR value glob ('* ' || ? || ' *')
+        OR value glob ('* ' || ?)
+      )`,
+    args: (q) => [q, q, q, q, q],
+  }
+  queries[`unihan.${property}.glob`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan
+    WHERE property = '${property}'
+      AND value glob ?`,
+  }
+}
+
+for (const property of [
+  'kTotalStrokes',
+  'kAccountingNumeric',
+  'kOtherNumeric',
+  'kPrimaryNumeric',
+  'kTayNumeric',
+  'kVietnameseNumeric',
+  'kZhuangNumeric',
+]) {
+  for (const [suffix, op] of [
+    ['lt', '<'],
+    ['le', '<='],
+    ['gt', '>'],
+    ['ge', '>='],
+  ] as const) {
+    if (queries[`unihan.${property}.${suffix}`]) continue
+    queries[`unihan.${property}.${suffix}`] = {
+      query: `
+      SELECT DISTINCT UCS AS r
+      FROM unihan_${property}
+      WHERE cast(value as integer) ${op} cast(? as integer)`,
+    }
+  }
+}
+
 const strangeCategories = ['A', 'B', 'C', 'H', 'I', 'K', 'M', 'O', 'R', 'S', 'U', 'Y'] as const
 
 for (const c of strangeCategories) {

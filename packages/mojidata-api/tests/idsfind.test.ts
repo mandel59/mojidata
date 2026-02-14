@@ -169,6 +169,27 @@ describe('GET /api/v1/idsfind', () => {
     }
   })
 
+  test('supports selected newly added Unihan property keys', async () => {
+    const cases: Array<{ p: string; q: string }> = [
+      { p: 'unihan.kIRG_JSource', q: 'J0-3441' },
+      { p: 'unihan.kIRG_GSource', q: 'G1-3A3A' },
+      { p: 'unihan.kDefinition', q: 'Chinese' },
+      { p: 'unihan.kJapaneseOn', q: 'KAN' },
+      { p: 'unihan.kAccountingNumeric.ge', q: '2' },
+      { p: 'unihan.kSimplifiedVariant', q: 'U+6C49' },
+    ]
+
+    for (const { p, q } of cases) {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: [p],
+        q: [q],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, [p], [q])
+      assert.ok(json.results.length > 0)
+    }
+  })
+
   test('supports SearchPropertyKey=mji.MJ文字図形名 and mji.総画数', async () => {
     const { json: mojidata } = await fetchJson('/api/v1/mojidata', {
       char: '漢',

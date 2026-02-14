@@ -42,4 +42,23 @@ describe('libsearch query key resolution', () => {
     assert.ok(query2.includes('value glob ?'))
     assert.deepEqual(args2, ['龍*'])
   })
+
+  test('supports newly added unihan property keys', () => {
+    const keys = [
+      'unihan.kIRG_JSource',
+      'unihan.kIRG_USource',
+      'unihan.kDefinition',
+      'unihan.kJapaneseOn',
+      'unihan.kAccountingNumeric',
+      'unihan.kAccountingNumeric.ge',
+      'unihan.kZhuangNumeric.le',
+      'unihan.kCompatibilityVariant',
+      'unihan.kSpecializedSemanticVariant',
+      'unihan.kZVariant',
+    ]
+    for (const key of keys) {
+      const [query] = getQueryAndArgs(key, 'dummy')
+      assert.ok(query.includes('SELECT DISTINCT UCS AS r'))
+    }
+  })
 })
