@@ -22,7 +22,7 @@
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
     "test": "ava",
-    "prepare": "bash scripts/clean && bash scripts/build",
+    "prepare": "bash scripts/prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
