@@ -76,19 +76,25 @@ describe('GET /api/v1/idsfind', () => {
   for (const { p, q } of [
     { p: 'mji.読み', q: 'かん' },
     { p: 'mji.読み.prefix', q: 'か' },
+    { p: 'mji.読み.glob', q: 'か*' },
     { p: 'mji.総画数.lt', q: '50' },
     { p: 'mji.総画数.le', q: '50' },
     { p: 'mji.総画数.gt', q: '1' },
     { p: 'mji.総画数.ge', q: '1' },
     { p: 'unihan.kTotalStrokes', q: '6' },
+    { p: 'unihan.kTotalStrokes.eq', q: '6' },
     { p: 'unihan.kTotalStrokes.lt', q: '50' },
     { p: 'unihan.kTotalStrokes.le', q: '50' },
     { p: 'unihan.kTotalStrokes.gt', q: '1' },
     { p: 'unihan.kTotalStrokes.ge', q: '1' },
+    { p: 'totalStrokes.eq', q: '13' },
     { p: 'totalStrokes.lt', q: '50' },
     { p: 'totalStrokes.le', q: '50' },
     { p: 'totalStrokes.gt', q: '1' },
     { p: 'totalStrokes.ge', q: '1' },
+    { p: 'unihan.kTraditionalVariant', q: '銀' },
+    { p: 'unihan.kTraditionalVariant', q: 'U+9280' },
+    { p: 'unihan.kSemanticVariant', q: '炮' },
   ]) {
     test(`supports SearchPropertyKey=${p}`, async () => {
       const limit = 3
@@ -101,6 +107,40 @@ describe('GET /api/v1/idsfind', () => {
       assertBasicSuccess(response, json, limit, [p], [q])
     })
   }
+
+  test('finds simplified character by unihan.kTraditionalVariant (char/U+ input)', async () => {
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kTraditionalVariant'],
+        q: ['銀'],
+        limit: 20,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        20,
+        ['unihan.kTraditionalVariant'],
+        ['銀'],
+      )
+      assert.ok(json.results.includes('银'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kTraditionalVariant'],
+        q: ['U+9280'],
+        limit: 20,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        20,
+        ['unihan.kTraditionalVariant'],
+        ['U+9280'],
+      )
+      assert.ok(json.results.includes('银'))
+    }
+  })
 
   test('supports SearchPropertyKey=mji.MJ文字図形名 and mji.総画数', async () => {
     const { json: mojidata } = await fetchJson('/api/v1/mojidata', {

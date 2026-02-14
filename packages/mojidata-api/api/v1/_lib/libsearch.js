@@ -3,83 +3,173 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getQueryAndArgs = getQueryAndArgs;
 exports.createLibSearch = createLibSearch;
 const queries = {
-    UCS: `WITH x(x) AS (VALUES (parse_int(?, 16))) SELECT DISTINCT char(x) AS r FROM x WHERE char(x) regexp '^[\\p{L}\\p{N}\\p{S}]$'`,
-    'mji.読み': `
+    UCS: {
+        query: `WITH x(x) AS (VALUES (parse_int(?, 16))) SELECT DISTINCT char(x) AS r FROM x WHERE char(x) regexp '^[\\p{L}\\p{N}\\p{S}]$'`,
+    },
+    'mji.読み': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
       JOIN mji_reading USING (MJ文字図形名)
     WHERE mji.対応するUCS IS NOT NULL
       AND mji_reading.読み = ?`,
-    'mji.読み.prefix': `
+    },
+    'mji.読み.prefix': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
       JOIN mji_reading USING (MJ文字図形名)
     WHERE mji.対応するUCS IS NOT NULL
       AND mji_reading.読み glob (replace(?, '*', '') || '*')`,
-    'mji.総画数': `
+    },
+    'mji.読み.glob': {
+        query: `
+    SELECT DISTINCT mji.対応するUCS AS r
+    FROM mji
+      JOIN mji_reading USING (MJ文字図形名)
+    WHERE mji.対応するUCS IS NOT NULL
+      AND mji_reading.読み glob ?`,
+    },
+    'mji.総画数': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 = cast(? as integer)`,
-    'mji.総画数.lt': `
+    },
+    'mji.総画数.lt': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 < cast(? as integer)`,
-    'mji.総画数.le': `
+    },
+    'mji.総画数.le': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 <= cast(? as integer)`,
-    'mji.総画数.gt': `
+    },
+    'mji.総画数.gt': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 > cast(? as integer)`,
-    'mji.総画数.ge': `
+    },
+    'mji.総画数.ge': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 >= cast(? as integer)`,
-    'mji.MJ文字図形名': `
+    },
+    'mji.MJ文字図形名': {
+        query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.MJ文字図形名 = ?`,
-    'unihan.kTotalStrokes': `
+    },
+    'unihan.kTotalStrokes': {
+        query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) = cast(? as integer)`,
-    'unihan.kTotalStrokes.lt': `
+    },
+    'unihan.kTotalStrokes.lt': {
+        query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) < cast(? as integer)`,
-    'unihan.kTotalStrokes.le': `
+    },
+    'unihan.kTotalStrokes.le': {
+        query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) <= cast(? as integer)`,
-    'unihan.kTotalStrokes.gt': `
+    },
+    'unihan.kTotalStrokes.gt': {
+        query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) > cast(? as integer)`,
-    'unihan.kTotalStrokes.ge': `
+    },
+    'unihan.kTotalStrokes.ge': {
+        query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) >= cast(? as integer)`,
+    },
+    'unihan.kTraditionalVariant': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kTraditionalVariant'
+      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
+        args: (q) => [q, q],
+    },
+    'unihan.kSimplifiedVariant': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kSimplifiedVariant'
+      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
+        args: (q) => [q, q],
+    },
+    'unihan.kSemanticVariant': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kSemanticVariant'
+      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
+        args: (q) => [q, q],
+    },
+    'unihan.kTraditionalVariant.glob': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kTraditionalVariant'
+      AND value glob ?`,
+    },
+    'unihan.kSimplifiedVariant.glob': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kSimplifiedVariant'
+      AND value glob ?`,
+    },
+    'unihan.kSemanticVariant.glob': {
+        query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = 'kSemanticVariant'
+      AND value glob ?`,
+    },
 };
 const queries2 = {
-    totalStrokes: `SELECT * FROM (${queries['unihan.kTotalStrokes'].trim()} UNION ${queries['mji.総画数'].trim()})`,
-    'totalStrokes.lt': `SELECT * FROM (${queries['unihan.kTotalStrokes.lt'].trim()} UNION ${queries['mji.総画数.lt'].trim()})`,
-    'totalStrokes.le': `SELECT * FROM (${queries['unihan.kTotalStrokes.le'].trim()} UNION ${queries['mji.総画数.le'].trim()})`,
-    'totalStrokes.gt': `SELECT * FROM (${queries['unihan.kTotalStrokes.gt'].trim()} UNION ${queries['mji.総画数.gt'].trim()})`,
-    'totalStrokes.ge': `SELECT * FROM (${queries['unihan.kTotalStrokes.ge'].trim()} UNION ${queries['mji.総画数.ge'].trim()})`,
+    totalStrokes: `SELECT * FROM (${queries['unihan.kTotalStrokes'].query.trim()} UNION ${queries['mji.総画数'].query.trim()})`,
+    'totalStrokes.lt': `SELECT * FROM (${queries['unihan.kTotalStrokes.lt'].query.trim()} UNION ${queries['mji.総画数.lt'].query.trim()})`,
+    'totalStrokes.le': `SELECT * FROM (${queries['unihan.kTotalStrokes.le'].query.trim()} UNION ${queries['mji.総画数.le'].query.trim()})`,
+    'totalStrokes.gt': `SELECT * FROM (${queries['unihan.kTotalStrokes.gt'].query.trim()} UNION ${queries['mji.総画数.gt'].query.trim()})`,
+    'totalStrokes.ge': `SELECT * FROM (${queries['unihan.kTotalStrokes.ge'].query.trim()} UNION ${queries['mji.総画数.ge'].query.trim()})`,
 };
+function normalizeQueryKey(p) {
+    if (!p.endsWith('.eq'))
+        return p;
+    const withoutEq = p.slice(0, -3);
+    if (queries[withoutEq] || queries2[withoutEq])
+        return withoutEq;
+    return p;
+}
 function getQueryAndArgs(p, q) {
-    const query = queries[p];
+    const key = normalizeQueryKey(p);
+    const query = queries[key];
     if (query) {
-        return [query.trim(), [q]];
+        return [query.query.trim(), query.args ? query.args(q) : [q]];
     }
-    const query2 = queries2[p];
+    const query2 = queries2[key];
     if (query2) {
         return [query2.trim(), [q, q]];
     }
@@ -92,7 +182,7 @@ async function pluckAll(getDb, query, args) {
     const out = [];
     while (stmt.step()) {
         const row = stmt.getAsObject();
-        if (typeof row.r === "string")
+        if (typeof row.r === 'string')
             out.push(row.r);
     }
     stmt.free();
@@ -107,7 +197,7 @@ function createLibSearch(getDb) {
         FROM c
         WHERE ${queryAndArgs
                 .map(([query, _args]) => `c.char IN (${query})`)
-                .join(" AND ")}`;
+                .join(' AND ')}`;
             const args = [].concat(...queryAndArgs.map(([_query, args]) => args));
             return await pluckAll(getDb, query, [JSON.stringify(chars), ...args]);
         },
@@ -115,7 +205,7 @@ function createLibSearch(getDb) {
             const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]));
             const query = queryAndArgs
                 .map(([query, _args]) => query)
-                .join("\nINTERSECT\n");
+                .join('\nINTERSECT\n');
             const args = [].concat(...queryAndArgs.map(([_query, args]) => args));
             return await pluckAll(getDb, query, args);
         },
