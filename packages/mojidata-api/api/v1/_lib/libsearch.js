@@ -311,7 +311,7 @@ function normalizeQueryKey(p) {
         return withoutEq;
     return p;
 }
-function getQueryAndArgs(p, q) {
+function getPositiveQueryAndArgs(p, q) {
     const key = normalizeQueryKey(p);
     const query = queries[key];
     if (query) {
@@ -322,6 +322,29 @@ function getQueryAndArgs(p, q) {
         return [query2.trim(), [q, q]];
     }
     throw new Error(`Unknown query key: ${p}`);
+}
+function negateQuery(query) {
+    return `
+    WITH all_chars AS (
+      SELECT DISTINCT UCS AS r FROM ids
+    )
+    SELECT r
+    FROM all_chars
+    WHERE r NOT IN (${query})
+  `.trim();
+}
+function getQueryAndArgs(p, q) {
+    if (p.endsWith('.ne')) {
+        const base = p.slice(0, -3);
+        const [query, args] = getPositiveQueryAndArgs(base, q);
+        return [negateQuery(query), args];
+    }
+    if (p.endsWith('.notGlob')) {
+        const base = p.slice(0, -8);
+        const [query, args] = getPositiveQueryAndArgs(`${base}.glob`, q);
+        return [negateQuery(query), args];
+    }
+    return getPositiveQueryAndArgs(p, q);
 }
 async function pluckAll(getDb, query, args) {
     const db = await getDb();

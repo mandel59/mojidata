@@ -39,8 +39,20 @@ describe('libsearch query key resolution', () => {
     assert.deepEqual(args, ['U+9F8D', 'U+9F8D'])
 
     const [query2, args2] = getQueryAndArgs('unihan.kStrange.I.glob', '龍*')
-    assert.ok(query2.includes('value glob ?'))
+    assert.ok(query2.includes("ifnull(value, '') glob ?"))
     assert.deepEqual(args2, ['龍*'])
+  })
+
+  test('supports .ne and .notGlob key resolution', () => {
+    const [neQuery, neArgs] = getQueryAndArgs('unihan.kTraditionalVariant.ne', '線')
+    assert.ok(neQuery.includes('SELECT DISTINCT UCS AS r FROM ids'))
+    assert.ok(neQuery.includes('NOT IN'))
+    assert.equal(neArgs.length, 2)
+
+    const [notGlobQuery, notGlobArgs] = getQueryAndArgs('mji.読み.notGlob', 'か*')
+    assert.ok(notGlobQuery.includes('SELECT DISTINCT UCS AS r FROM ids'))
+    assert.ok(notGlobQuery.includes('NOT IN'))
+    assert.deepEqual(notGlobArgs, ['か*'])
   })
 
   test('supports newly added unihan property keys', () => {

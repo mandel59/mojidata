@@ -334,7 +334,7 @@ function normalizeQueryKey(p: string): string {
   return p
 }
 
-export function getQueryAndArgs(p: string, q: string): QueryAndArgs {
+function getPositiveQueryAndArgs(p: string, q: string): QueryAndArgs {
   const key = normalizeQueryKey(p)
   const query = queries[key]
   if (query) {
@@ -345,6 +345,31 @@ export function getQueryAndArgs(p: string, q: string): QueryAndArgs {
     return [query2.trim(), [q, q]]
   }
   throw new Error(`Unknown query key: ${p}`)
+}
+
+function negateQuery(query: string): string {
+  return `
+    WITH all_chars AS (
+      SELECT DISTINCT UCS AS r FROM ids
+    )
+    SELECT r
+    FROM all_chars
+    WHERE r NOT IN (${query})
+  `.trim()
+}
+
+export function getQueryAndArgs(p: string, q: string): QueryAndArgs {
+  if (p.endsWith('.ne')) {
+    const base = p.slice(0, -3)
+    const [query, args] = getPositiveQueryAndArgs(base, q)
+    return [negateQuery(query), args]
+  }
+  if (p.endsWith('.notGlob')) {
+    const base = p.slice(0, -8)
+    const [query, args] = getPositiveQueryAndArgs(`${base}.glob`, q)
+    return [negateQuery(query), args]
+  }
+  return getPositiveQueryAndArgs(p, q)
 }
 
 async function pluckAll(getDb: () => Promise<Database>, query: string, args: unknown[]) {

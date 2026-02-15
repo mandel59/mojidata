@@ -191,6 +191,64 @@ describe('GET /api/v1/idsfind', () => {
     assert.ok(json.results.length > 0)
   })
 
+  test('supports .ne and .notGlob operators', async () => {
+    const { json: eqJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kTraditionalVariant'],
+      q: ['線'],
+      limit: 200,
+      all_results: 1,
+    })
+    const eqSet = new Set<string>(eqJson.results)
+
+    const { response: neResponse, json: neJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kTraditionalVariant.ne'],
+      q: ['線'],
+      limit: 200,
+      all_results: 1,
+    })
+    assertBasicSuccess(
+      neResponse,
+      neJson,
+      200,
+      ['unihan.kTraditionalVariant.ne'],
+      ['線'],
+    )
+    assert.ok(neJson.results.length > 0)
+    assert.ok(eqJson.results.length > 0)
+    assert.ok(!new Set(neJson.results as string[]).has(eqJson.results[0]))
+    for (const ch of neJson.results as string[]) {
+      assert.ok(!eqSet.has(ch))
+    }
+
+    const { json: globJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['mji.読み.glob'],
+      q: ['か*'],
+      limit: 200,
+      all_results: 1,
+    })
+    const globSet = new Set<string>(globJson.results)
+
+    const { response: notGlobResponse, json: notGlobJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['mji.読み.notGlob'],
+      q: ['か*'],
+      limit: 200,
+      all_results: 1,
+    })
+    assertBasicSuccess(
+      notGlobResponse,
+      notGlobJson,
+      200,
+      ['mji.読み.notGlob'],
+      ['か*'],
+    )
+    assert.ok(notGlobJson.results.length > 0)
+    assert.ok(globJson.results.length > 0)
+    assert.ok(!new Set(notGlobJson.results as string[]).has(globJson.results[0]))
+    for (const ch of notGlobJson.results as string[]) {
+      assert.ok(!globSet.has(ch))
+    }
+  })
+
   test('supports selected newly added Unihan property keys', async () => {
     const cases: Array<{ p: string; q: string }> = [
       { p: 'unihan.kIRG_JSource', q: 'J0-3441' },

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.4] - 2026-02-15
+
+### Added
+
+- Add negation query suffixes for `/api/v1/idsfind` property search keys:
+  - `.ne` (negation of `=`)
+  - `.notGlob` (negation of `~` / `.glob`)
+
+### Fixed
+
+- Make `unihan.kStrange*.glob` treat `NULL` values as empty strings so categories with null-valued entries can match patterns such as `*`.
+
 ## [1.7.3] - 2026-02-15
 
 ### Fixed
@@ -42,6 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add `prepare` build step and publish built JS/typings for consumers.
 
+[1.7.4]: https://github.com/mandel59/mojidata/compare/v1.7.3...v1.7.4
 [1.7.3]: https://github.com/mandel59/mojidata/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/mandel59/mojidata/compare/v1.7.1...v1.7.2
 [1.7.1]: https://github.com/mandel59/mojidata/compare/v1.7.0...v1.7.1
