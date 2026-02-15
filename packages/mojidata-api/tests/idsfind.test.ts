@@ -61,6 +61,17 @@ describe('GET /api/v1/idsfind', () => {
     assertBasicSuccess(response, json, limit, ['totalStrokes'], ['13'])
   })
 
+  test('returns 400 for unknown SearchPropertyKey', async () => {
+    const { response, json } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kNoSuchProperty'],
+      q: ['x'],
+      limit: 5,
+    })
+
+    assert.equal(response.status, 400)
+    assert.ok(json?.error?.message?.includes('Unknown query key'))
+  })
+
   test('supports SearchPropertyKey=UCS', async () => {
     const limit = 5
     const { response, json } = await fetchJson('/api/v1/idsfind', {
