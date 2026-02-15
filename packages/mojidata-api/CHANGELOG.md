@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.5] - 2026-02-15
+
+### Fixed
+
+- Fix `ne` / `notGlob` query composition so they can be combined with other filters (e.g. via `INTERSECT`) without SQL errors.
+- Expand multi-condition `/api/v1/idsfind` tests to cover mixed operator combinations and prevent regressions.
+
 ## [1.7.4] - 2026-02-15
 
 ### Added
@@ -54,6 +61,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add `prepare` build step and publish built JS/typings for consumers.
 
+[1.7.5]: https://github.com/mandel59/mojidata/compare/v1.7.4...v1.7.5
 [1.7.4]: https://github.com/mandel59/mojidata/compare/v1.7.3...v1.7.4
 [1.7.3]: https://github.com/mandel59/mojidata/compare/v1.7.2...v1.7.3
 [1.7.2]: https://github.com/mandel59/mojidata/compare/v1.7.1...v1.7.2
