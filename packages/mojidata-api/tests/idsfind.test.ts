@@ -180,6 +180,17 @@ describe('GET /api/v1/idsfind', () => {
     }
   })
 
+  test('kStrange glob matches null values as empty string', async () => {
+    const { response, json } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kStrange.U.glob'],
+      q: ['*'],
+      limit: 50,
+    })
+
+    assertBasicSuccess(response, json, 50, ['unihan.kStrange.U.glob'], ['*'])
+    assert.ok(json.results.length > 0)
+  })
+
   test('supports selected newly added Unihan property keys', async () => {
     const cases: Array<{ p: string; q: string }> = [
       { p: 'unihan.kIRG_JSource', q: 'J0-3441' },

@@ -290,7 +290,7 @@ for (const c of strangeCategories) {
     SELECT DISTINCT UCS AS r
     FROM unihan_strange
     WHERE category = '${c}'
-      AND value glob ?`,
+      AND ifnull(value, '') glob ?`,
   }
 }
 
@@ -306,7 +306,7 @@ queries['unihan.kStrange.glob'] = {
   query: `
   SELECT DISTINCT UCS AS r
   FROM unihan_strange
-  WHERE value glob ?`,
+  WHERE ifnull(value, '') glob ?`,
 }
 
 const queries2: Partial<Record<string, string>> = {
