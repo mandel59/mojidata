@@ -247,6 +247,64 @@ describe('GET /api/v1/idsfind', () => {
     for (const ch of notGlobJson.results as string[]) {
       assert.ok(!globSet.has(ch))
     }
+
+    const { response: combinedResponse, json: combinedJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+      q: ['*', 'カ'],
+      limit: 50,
+    })
+    assertBasicSuccess(
+      combinedResponse,
+      combinedJson,
+      50,
+      ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+      ['*', 'カ'],
+    )
+  })
+
+  test('supports multiple mixed condition combinations without server errors', async () => {
+    const cases: Array<{
+      p: string[]
+      q: string[]
+      expectNonEmpty?: boolean
+    }> = [
+      {
+        p: ['totalStrokes.ge', 'totalStrokes.le'],
+        q: ['5', '12'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['mji.読み.glob', 'totalStrokes.le'],
+        q: ['か*', '30'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+        q: ['*', 'カ'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['unihan.kTraditionalVariant', 'unihan.kTraditionalVariant.ne'],
+        q: ['線', '線'],
+      },
+      {
+        p: ['unihan.kTraditionalVariant.ne', 'totalStrokes.ge'],
+        q: ['線', '1'],
+        expectNonEmpty: true,
+      },
+    ]
+
+    for (const { p, q, expectNonEmpty } of cases) {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p,
+        q,
+        limit: 200,
+      })
+      assertBasicSuccess(response, json, 200, p, q)
+      if (expectNonEmpty) {
+        assert.ok(json.results.length > 0)
+      }
+    }
   })
 
   test('supports selected newly added Unihan property keys', async () => {

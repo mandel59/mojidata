@@ -349,12 +349,9 @@ function getPositiveQueryAndArgs(p: string, q: string): QueryAndArgs {
 
 function negateQuery(query: string): string {
   return `
-    WITH all_chars AS (
-      SELECT DISTINCT UCS AS r FROM ids
-    )
-    SELECT r
-    FROM all_chars
-    WHERE r NOT IN (${query})
+    SELECT DISTINCT UCS AS r
+    FROM ids
+    WHERE UCS NOT IN (${query})
   `.trim()
 }
 

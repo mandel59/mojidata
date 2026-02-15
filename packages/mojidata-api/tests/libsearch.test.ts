@@ -45,12 +45,14 @@ describe('libsearch query key resolution', () => {
 
   test('supports .ne and .notGlob key resolution', () => {
     const [neQuery, neArgs] = getQueryAndArgs('unihan.kTraditionalVariant.ne', '線')
-    assert.ok(neQuery.includes('SELECT DISTINCT UCS AS r FROM ids'))
+    assert.ok(neQuery.includes('SELECT DISTINCT UCS AS r'))
+    assert.ok(neQuery.includes('FROM ids'))
     assert.ok(neQuery.includes('NOT IN'))
     assert.equal(neArgs.length, 2)
 
     const [notGlobQuery, notGlobArgs] = getQueryAndArgs('mji.読み.notGlob', 'か*')
-    assert.ok(notGlobQuery.includes('SELECT DISTINCT UCS AS r FROM ids'))
+    assert.ok(notGlobQuery.includes('SELECT DISTINCT UCS AS r'))
+    assert.ok(notGlobQuery.includes('FROM ids'))
     assert.ok(notGlobQuery.includes('NOT IN'))
     assert.deepEqual(notGlobArgs, ['か*'])
   })
