@@ -13,6 +13,40 @@ Integration tests live under `tests/` and call the running API server.
 
 If you need to start the dev server: `yarn dev`
 
+## Benchmarks
+
+Use `yarn bench` to measure representative API scenarios without starting an HTTP server.
+By default it benchmarks `createNodeApp()` in-process, which reduces transport noise and makes
+before/after comparisons easier.
+
+```sh
+yarn bench
+```
+
+You can also target an already-running server for end-to-end HTTP measurements:
+
+```sh
+yarn dev
+MOJIDATA_API_BASE_URL=http://localhost:3001 yarn bench --base-url http://localhost:3001
+```
+
+Supported options:
+
+- `--iterations <n>`: measured iterations per scenario (`30` by default)
+- `--warmup <n>`: warmup iterations per scenario (`5` by default)
+- `--cold <n>`: cold-start iterations per scenario (`3` by default, in-process only)
+- `--scenario <name>`: run only the named scenario, repeatable
+- `--format <table|json>`: switch between human-readable and machine-readable output
+
+Current built-in scenarios:
+
+- `mojidata-basic`
+- `mojidata-select`
+- `ivs-list`
+- `mojidata-variants`
+- `idsfind-ids`
+- `idsfind-property`
+
 ## Browser usage (WebWorker)
 
 `mojidata-api` needs these URLs at runtime:

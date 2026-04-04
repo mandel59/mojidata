@@ -17,6 +17,7 @@
   "scripts": {
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
+    "bench": "node --import tsx ./benchmarks/run.ts",
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "node --import tsx --test ./tests/*.test.ts"
