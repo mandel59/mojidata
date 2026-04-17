@@ -14,6 +14,11 @@
       "types": "./index.d.ts",
       "require": "./index.js",
       "default": "./index.js"
+    },
+    "./api/v1/_lib/*": {
+      "types": "./api/v1/_lib/*.d.ts",
+      "require": "./api/v1/_lib/*.js",
+      "default": "./api/v1/_lib/*.js"
     }
   },
   "files": [

@@ -19,6 +19,11 @@
       "types": "./browser-worker.d.ts",
       "require": "./browser-worker.js",
       "default": "./browser-worker.js"
+    },
+    "./lib/*": {
+      "types": "./lib/*.d.ts",
+      "require": "./lib/*.js",
+      "default": "./lib/*.js"
     }
   },
   "files": [

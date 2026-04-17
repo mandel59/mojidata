@@ -1,40 +1,17 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createSqlJsExecutor = createSqlJsExecutor;
-function bindParams(stmt, params) {
-    if (params === undefined) {
-        return;
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
     }
-    stmt.bind(params);
-}
-function createSqlJsExecutor(db) {
-    return {
-        async query(sql, params) {
-            const stmt = db.prepare(sql);
-            try {
-                bindParams(stmt, params);
-                const out = [];
-                while (stmt.step()) {
-                    out.push(stmt.getAsObject());
-                }
-                return out;
-            }
-            finally {
-                stmt.free();
-            }
-        },
-        async queryOne(sql, params) {
-            const stmt = db.prepare(sql);
-            try {
-                bindParams(stmt, params);
-                if (!stmt.step()) {
-                    return null;
-                }
-                return stmt.getAsObject();
-            }
-            finally {
-                stmt.free();
-            }
-        },
-    };
-}
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("@mandel59/mojidata-api-sqljs/lib/sqljs-executor"), exports);

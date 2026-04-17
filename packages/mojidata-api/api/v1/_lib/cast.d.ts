@@ -1,1 +1,1 @@
-export declare function castToStringArray(x: string | string[] | null): string[];
+export * from "@mandel59/mojidata-api-hono/api/v1/_lib/cast";

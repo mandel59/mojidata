@@ -1,1 +1,1 @@
-export declare function createCachedPromise<T>(factory: () => Promise<T>): () => Promise<T>;
+export * from "@mandel59/mojidata-api-runtime/lib/promise-cache";

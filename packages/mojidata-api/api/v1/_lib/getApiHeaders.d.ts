@@ -1,4 +1,1 @@
-export declare function getApiHeaders(): {
-    key: string;
-    value: string;
-}[];
+export * from "@mandel59/mojidata-api-hono/api/v1/_lib/getApiHeaders";

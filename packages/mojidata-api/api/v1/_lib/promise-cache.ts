@@ -1,8 +1,1 @@
-export function createCachedPromise<T>(factory: () => Promise<T>) {
-  let promise: Promise<T> | undefined
-  return () => {
-    promise ??= factory()
-    return promise
-  }
-}
-
+export * from "@mandel59/mojidata-api-runtime/lib/promise-cache"

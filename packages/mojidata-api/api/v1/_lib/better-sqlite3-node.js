@@ -1,34 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createBetterSqlite3MojidataDbProvider = createBetterSqlite3MojidataDbProvider;
-exports.createBetterSqlite3ExecutorProvider = createBetterSqlite3ExecutorProvider;
-const promise_cache_1 = require("./promise-cache");
-const mojidata_db_1 = require("./mojidata-db");
-const better_sqlite3_executor_1 = require("./better-sqlite3-executor");
-function getBetterSqlite3Ctor() {
-    return require("better-sqlite3");
-}
-function openDatabaseFromFile(path) {
-    const Database = getBetterSqlite3Ctor();
-    return new Database(path, { readonly: true, fileMustExist: true });
-}
-function createBetterSqlite3MojidataDbProvider(path) {
-    let db;
-    let executorPromise;
-    return function getMojidataDb() {
-        executorPromise ?? (executorPromise = Promise.resolve().then(() => {
-            db ?? (db = openDatabaseFromFile(path));
-            (0, mojidata_db_1.installMojidataSqlFunctions)((name, fn) => {
-                db.function(name, fn);
-            });
-            return (0, better_sqlite3_executor_1.createBetterSqlite3Executor)(db);
-        }));
-        return executorPromise;
-    };
-}
-function createBetterSqlite3ExecutorProvider(path) {
-    const getDb = (0, promise_cache_1.createCachedPromise)(() => Promise.resolve((0, better_sqlite3_executor_1.createBetterSqlite3Executor)(openDatabaseFromFile(path))));
-    return function getExecutor() {
-        return getDb();
-    };
-}
+__exportStar(require("@mandel59/mojidata-api-runtime/lib/better-sqlite3-node"), exports);

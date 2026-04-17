@@ -28,6 +28,7 @@ describe('package entrypoints', () => {
 
     assert.deepEqual(Object.keys(packageJson.exports).sort(), [
       '.',
+      './api/v1/_lib/*',
       './app',
       './browser-client',
       './browser-worker',
@@ -37,5 +38,17 @@ describe('package entrypoints', () => {
       './runtime',
       './sqljs',
     ])
+  })
+
+  test('keeps api/v1/_lib compatibility wrappers', async () => {
+    const [coreCompat, sqljsCompat, honoCompat] = await Promise.all([
+      import('@mandel59/mojidata-api/api/v1/_lib/libsearch'),
+      import('@mandel59/mojidata-api/api/v1/_lib/sqljs-node'),
+      import('@mandel59/mojidata-api/api/v1/_lib/cast'),
+    ])
+
+    assert.equal(typeof coreCompat.createLibSearch, 'function')
+    assert.equal(typeof sqljsCompat.openDatabaseFromFile, 'function')
+    assert.equal(typeof honoCompat.castToStringArray, 'function')
   })
 })

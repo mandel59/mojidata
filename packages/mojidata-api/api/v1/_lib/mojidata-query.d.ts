@@ -1,2 +1,1 @@
-export declare const mojidataFieldNames: Set<string>;
-export declare function buildMojidataSelectQuery(selection: Iterable<string>): string;
+export * from "@mandel59/mojidata-api-core/lib/mojidata-query";

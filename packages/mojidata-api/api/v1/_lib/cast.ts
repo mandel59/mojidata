@@ -1,9 +1,1 @@
-export function castToStringArray(x: string | string[] | null): string[] {
-  if (x == null) {
-    return []
-  }
-  if (typeof x === 'string') {
-    return [x]
-  }
-  return x
-}
+export * from "@mandel59/mojidata-api-hono/api/v1/_lib/cast"

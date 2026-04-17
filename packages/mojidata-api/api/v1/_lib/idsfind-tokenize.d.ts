@@ -1,5 +1,1 @@
-import { type TokenList } from "@mandel59/idsdb-utils";
-export declare function tokenizeIdsList(idslist: string[]): {
-    forQuery: string[][][];
-    forAudit: TokenList[][];
-};
+export * from "@mandel59/mojidata-api-core/lib/idsfind-tokenize";

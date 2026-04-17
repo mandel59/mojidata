@@ -1,1 +1,1 @@
-export declare const queryExpressions: string[][];
+export * from "@mandel59/mojidata-api-core/lib/query-expressions";

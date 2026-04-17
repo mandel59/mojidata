@@ -1,2 +1,1 @@
-import type { SqlExecutor } from "./sql-executor";
-export declare function createIdsfind(getDb: () => Promise<SqlExecutor>): (idslist: string[]) => Promise<string[]>;
+export * from "@mandel59/mojidata-api-core/lib/idsfind-sql";

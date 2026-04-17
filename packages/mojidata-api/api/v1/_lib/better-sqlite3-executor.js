@@ -1,27 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createBetterSqlite3Executor = createBetterSqlite3Executor;
-function normalizeNamedParams(params) {
-    return Object.fromEntries(Object.entries(params).map(([key, value]) => [key.replace(/^[:@$]/u, ""), value]));
-}
-function applyParams(stmt, method, params) {
-    if (params === undefined) {
-        return stmt[method]();
-    }
-    if (Array.isArray(params)) {
-        return stmt[method](...params);
-    }
-    return stmt[method](normalizeNamedParams(params));
-}
-function createBetterSqlite3Executor(db) {
-    return {
-        async query(sql, params) {
-            const stmt = db.prepare(sql);
-            return applyParams(stmt, "all", params) ?? [];
-        },
-        async queryOne(sql, params) {
-            const stmt = db.prepare(sql);
-            return applyParams(stmt, "get", params) ?? null;
-        },
-    };
-}
+__exportStar(require("@mandel59/mojidata-api-runtime/lib/better-sqlite3-executor"), exports);

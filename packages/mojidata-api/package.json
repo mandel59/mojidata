@@ -48,11 +48,18 @@
       "types": "./sqljs.d.ts",
       "require": "./sqljs.js",
       "default": "./sqljs.js"
+    },
+    "./api/v1/_lib/*": {
+      "types": "./api/v1/_lib/*.d.ts",
+      "require": "./api/v1/_lib/*.js",
+      "default": "./api/v1/_lib/*.js"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
+    "api/v1/_lib/*.js",
+    "api/v1/_lib/*.d.ts",
     "openapi.yaml",
     "CHANGELOG.md",
     "README.md",
