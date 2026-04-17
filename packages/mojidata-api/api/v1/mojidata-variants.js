@@ -1,30 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMojidataVariantsHandler = createMojidataVariantsHandler;
-const cast_1 = require("./_lib/cast");
-const getApiHeaders_1 = require("./_lib/getApiHeaders");
-const parse_char_1 = require("./_lib/parse-char");
-function createMojidataVariantsHandler(db) {
-    return async function mojidataVariantsHandler(c) {
-        const headers = (0, getApiHeaders_1.getApiHeaders)();
-        const charsRaw = (0, cast_1.castToStringArray)(c.req.queries("char") ?? []);
-        if (charsRaw.length === 0) {
-            headers.forEach(({ key, value }) => c.header(key, value));
-            return c.json({ error: { message: "char is required" } }, 400);
-        }
-        const chars = [];
-        for (const input of charsRaw) {
-            if (typeof input !== "string")
-                continue;
-            const char = (0, parse_char_1.parseSingleChar)(input);
-            if (!char) {
-                headers.forEach(({ key, value }) => c.header(key, value));
-                return c.json({ error: { message: "char must be a single character" } }, 400);
-            }
-            chars.push(char);
-        }
-        const results = await db.getMojidataVariantRels(chars);
-        headers.forEach(({ key, value }) => c.header(key, value));
-        return c.json({ query: { char: chars }, results });
-    };
-}
+__exportStar(require("@mandel59/mojidata-api-hono/api/v1/mojidata-variants"), exports);

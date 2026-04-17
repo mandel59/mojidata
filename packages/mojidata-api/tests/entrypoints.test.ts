@@ -55,4 +55,19 @@ describe('package entrypoints', () => {
     assert.equal(typeof runtimeCompat.take, 'function')
     assert.equal(typeof jsonCompat.writeObject, 'function')
   })
+
+  test('keeps api/v1 handler compatibility wrappers', async () => {
+    const [mojidataCompat, ivsCompat, variantsCompat, idsfindCompat] =
+      await Promise.all([
+        import('../api/v1/mojidata'),
+        import('../api/v1/ivs-list'),
+        import('../api/v1/mojidata-variants'),
+        import('../api/v1/idsfind'),
+      ])
+
+    assert.equal(typeof mojidataCompat.createMojidataHandler, 'function')
+    assert.equal(typeof ivsCompat.createIvsListHandler, 'function')
+    assert.equal(typeof variantsCompat.createMojidataVariantsHandler, 'function')
+    assert.equal(typeof idsfindCompat.createIdsfindHandler, 'function')
+  })
 })
