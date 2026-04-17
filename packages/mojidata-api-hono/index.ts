@@ -1,1 +1,1 @@
-export * from "@mandel59/mojidata-api/hono"
+export { createApp } from "./lib/app"
