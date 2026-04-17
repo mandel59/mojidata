@@ -35,6 +35,14 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/mojidata-api"\
     },\
     {\
+      "name": "@mandel59/mojidata-api-core",\
+      "reference": "workspace:packages/mojidata-api-core"\
+    },\
+    {\
+      "name": "@mandel59/mojidata-api-sqljs",\
+      "reference": "workspace:packages/mojidata-api-sqljs"\
+    },\
+    {\
       "name": "@mandel59/mojidata-cli",\
       "reference": "workspace:packages/mojidata-cli"\
     },\
@@ -52,6 +60,8 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api", "workspace:packages/mojidata-api"]],\
+    ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
+    ["@mandel59/mojidata-api-sqljs", ["workspace:packages/mojidata-api-sqljs"]],\
     ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
     ["@mandel59/react-mojidata-api", ["workspace:packages/react-mojidata-api"]],\
     ["mojidata-workspace", ["workspace:."]]\
@@ -829,6 +839,30 @@ const RAW_RUNTIME_STATE =
           ["prettier", "npm:2.8.8"],\
           ["sql.js", "npm:1.13.0"],\
           ["tsx", "npm:4.21.0"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-core", [\
+      ["workspace:packages/mojidata-api-core", {\
+        "packageLocation": "./packages/mojidata-api-core/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-sqljs", [\
+      ["workspace:packages/mojidata-api-sqljs", {\
+        "packageLocation": "./packages/mojidata-api-sqljs/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api-sqljs", "workspace:packages/mojidata-api-sqljs"],\
+          ["@types/node", "npm:24.10.4"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\

@@ -1,0 +1,39 @@
+{
+  "name": "@mandel59/mojidata-api-core",
+  "version": "1.7.0",
+  "description": "Core backend-neutral composition utilities for mojidata-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/mojidata-api-core"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "tsc",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/mojidata-api": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "typescript": "^5.9.3"
+  }
+}

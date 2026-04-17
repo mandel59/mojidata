@@ -563,7 +563,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/mojidata-api@npm:^1.7.0, @mandel59/mojidata-api@workspace:packages/mojidata-api":
+"@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core"
+  dependencies:
+    "@mandel59/mojidata-api": "npm:^1.7.1"
+    "@types/node": "npm:^24.10.4"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"
+  dependencies:
+    "@mandel59/mojidata-api": "npm:^1.7.1"
+    "@types/node": "npm:^24.10.4"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/mojidata-api@npm:^1.7.0, @mandel59/mojidata-api@npm:^1.7.1, @mandel59/mojidata-api@workspace:packages/mojidata-api":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api@workspace:packages/mojidata-api"
   dependencies:
