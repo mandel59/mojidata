@@ -1,13 +1,12 @@
-import type { Database } from "sql.js"
-
 import type { MojidataApiDb } from "./mojidata-api-db"
 import { createIdsfind } from "./idsfind-sqljs"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import { createLibSearch } from "./libsearch"
 import { buildMojidataSelectQuery } from "./mojidata-query"
+import type { SqlExecutor } from "./sql-executor"
 
-type DbProvider = () => Promise<Database>
+type DbProvider = () => Promise<SqlExecutor>
 
 const ivsListQuery = `
   SELECT
@@ -107,84 +106,62 @@ export function createSqlJsApiDb({
     async getMojidataJson(char: string, select: string[]) {
       const db = await getMojidataDb()
       const query = buildMojidataSelectQuery(select)
-      const stmt = db.prepare(query)
-      stmt.bind({ "@ucs": char })
-      const ok = stmt.step()
-      const row = ok ? (stmt.getAsObject() as { vs?: string }) : {}
-      stmt.free()
+      const row = (await db.queryOne<{ vs?: string }>(query, { "@ucs": char })) ?? {}
       return row.vs ?? null
     },
     async getIvsList(char: string) {
       const db = await getMojidataDb()
-      const stmt = db.prepare(ivsListQuery)
-      stmt.bind({ "@ucs": char })
-      const out: Array<{
-        IVS: string
-        unicode: string
-        collection: string
-        code: string
-      }> = []
-      while (stmt.step()) {
-        const row = stmt.getAsObject() as Partial<{
-          IVS: string
-          unicode: string
-          collection: string
-          code: string
-        }>
+      const rows = await db.query<{
+        IVS?: string
+        unicode?: string
+        collection?: string
+        code?: string
+      }>(ivsListQuery, { "@ucs": char })
+      return rows.flatMap((row) => {
         if (
           typeof row.IVS === "string" &&
           typeof row.unicode === "string" &&
           typeof row.collection === "string" &&
           typeof row.code === "string"
         ) {
-          out.push({
+          return [{
             IVS: row.IVS,
             unicode: row.unicode,
             collection: row.collection,
             code: row.code,
-          })
+          }]
         }
-      }
-      stmt.free()
-      return out
+        return []
+      })
     },
     async getMojidataVariantRels(chars: string[]) {
       const db = await getMojidataDb()
-      const stmt = db.prepare(mojidataVariantsQuery)
-      stmt.bind({ "@args": JSON.stringify(chars) })
-      const out: Array<{ c1: string; c2: string; f: number; r: string }> = []
-      while (stmt.step()) {
-        const row = stmt.getAsObject() as Partial<{
-          c1: string
-          c2: string
-          f: number
-          r: string
-        }>
+      const rows = await db.query<{
+        c1?: string
+        c2?: string
+        f?: number
+        r?: string
+      }>(mojidataVariantsQuery, { "@args": JSON.stringify(chars) })
+      return rows.flatMap((row) => {
         if (
           typeof row.c1 === "string" &&
           typeof row.c2 === "string" &&
           typeof row.f === "number" &&
           typeof row.r === "string"
         ) {
-          out.push({ c1: row.c1, c2: row.c2, f: row.f, r: row.r })
+          return [{ c1: row.c1, c2: row.c2, f: row.f, r: row.r }]
         }
-      }
-      stmt.free()
-      return out
+        return []
+      })
     },
     idsfind,
     async idsfindDebugQuery(queryBody: string, idslist: string[]) {
       const db = await getIdsfindDb()
       const tokenized = tokenizeIdsList(idslist)
       const query = makeIdsfindQuery(queryBody)
-      const stmt = db.prepare(query)
-      stmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) })
-      const out: Record<string, unknown>[] = []
-      while (stmt.step()) {
-        out.push(stmt.getAsObject() as Record<string, unknown>)
-      }
-      stmt.free()
-      return out
+      return await db.query<Record<string, unknown>>(query, {
+        $idslist: JSON.stringify(tokenized.forQuery),
+      })
     },
     search,
     filterChars,

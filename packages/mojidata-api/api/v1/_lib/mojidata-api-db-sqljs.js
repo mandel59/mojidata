@@ -95,65 +95,48 @@ function createSqlJsApiDb({ getMojidataDb, getIdsfindDb, }) {
         async getMojidataJson(char, select) {
             const db = await getMojidataDb();
             const query = (0, mojidata_query_1.buildMojidataSelectQuery)(select);
-            const stmt = db.prepare(query);
-            stmt.bind({ "@ucs": char });
-            const ok = stmt.step();
-            const row = ok ? stmt.getAsObject() : {};
-            stmt.free();
+            const row = (await db.queryOne(query, { "@ucs": char })) ?? {};
             return row.vs ?? null;
         },
         async getIvsList(char) {
             const db = await getMojidataDb();
-            const stmt = db.prepare(ivsListQuery);
-            stmt.bind({ "@ucs": char });
-            const out = [];
-            while (stmt.step()) {
-                const row = stmt.getAsObject();
+            const rows = await db.query(ivsListQuery, { "@ucs": char });
+            return rows.flatMap((row) => {
                 if (typeof row.IVS === "string" &&
                     typeof row.unicode === "string" &&
                     typeof row.collection === "string" &&
                     typeof row.code === "string") {
-                    out.push({
-                        IVS: row.IVS,
-                        unicode: row.unicode,
-                        collection: row.collection,
-                        code: row.code,
-                    });
+                    return [{
+                            IVS: row.IVS,
+                            unicode: row.unicode,
+                            collection: row.collection,
+                            code: row.code,
+                        }];
                 }
-            }
-            stmt.free();
-            return out;
+                return [];
+            });
         },
         async getMojidataVariantRels(chars) {
             const db = await getMojidataDb();
-            const stmt = db.prepare(mojidataVariantsQuery);
-            stmt.bind({ "@args": JSON.stringify(chars) });
-            const out = [];
-            while (stmt.step()) {
-                const row = stmt.getAsObject();
+            const rows = await db.query(mojidataVariantsQuery, { "@args": JSON.stringify(chars) });
+            return rows.flatMap((row) => {
                 if (typeof row.c1 === "string" &&
                     typeof row.c2 === "string" &&
                     typeof row.f === "number" &&
                     typeof row.r === "string") {
-                    out.push({ c1: row.c1, c2: row.c2, f: row.f, r: row.r });
+                    return [{ c1: row.c1, c2: row.c2, f: row.f, r: row.r }];
                 }
-            }
-            stmt.free();
-            return out;
+                return [];
+            });
         },
         idsfind,
         async idsfindDebugQuery(queryBody, idslist) {
             const db = await getIdsfindDb();
             const tokenized = (0, idsfind_tokenize_1.tokenizeIdsList)(idslist);
             const query = (0, idsfind_query_1.makeIdsfindQuery)(queryBody);
-            const stmt = db.prepare(query);
-            stmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) });
-            const out = [];
-            while (stmt.step()) {
-                out.push(stmt.getAsObject());
-            }
-            stmt.free();
-            return out;
+            return await db.query(query, {
+                $idslist: JSON.stringify(tokenized.forQuery),
+            });
         },
         search,
         filterChars,

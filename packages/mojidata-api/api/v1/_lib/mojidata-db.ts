@@ -1,4 +1,8 @@
 import type { Database } from "sql.js"
+
+import type { SqlExecutor } from "./sql-executor"
+import { createSqlJsExecutor } from "./sqljs-executor"
+
 export type DatabaseOpener = () => Promise<Database>
 
 function regexpAllJson(input: unknown, pattern: unknown) {
@@ -35,11 +39,11 @@ async function initDb(db: Database) {
 }
 
 export function createMojidataDbProvider(openDatabase: DatabaseOpener) {
-  let dbPromise: Promise<Database> | undefined
-  return function getMojidataDb(): Promise<Database> {
+  let dbPromise: Promise<SqlExecutor> | undefined
+  return function getMojidataDb(): Promise<SqlExecutor> {
     dbPromise ??= openDatabase().then(async (db) => {
       await initDb(db)
-      return db
+      return createSqlJsExecutor(db)
     })
     return dbPromise
   }

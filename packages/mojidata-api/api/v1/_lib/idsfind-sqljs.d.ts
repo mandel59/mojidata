@@ -1,2 +1,2 @@
-import type { Database } from "sql.js";
-export declare function createIdsfind(getDb: () => Promise<Database>): (idslist: string[]) => Promise<string[]>;
+import type { SqlExecutor } from "./sql-executor";
+export declare function createIdsfind(getDb: () => Promise<SqlExecutor>): (idslist: string[]) => Promise<string[]>;

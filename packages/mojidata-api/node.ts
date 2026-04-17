@@ -5,6 +5,7 @@ import { createSqlJsApiDb } from "./api/v1/_lib/mojidata-api-db-sqljs"
 import { createMojidataDbProvider } from "./api/v1/_lib/mojidata-db"
 import { createCachedPromise } from "./api/v1/_lib/promise-cache"
 import { openDatabaseFromFile } from "./api/v1/_lib/sqljs-node"
+import { createSqlJsExecutor } from "./api/v1/_lib/sqljs-executor"
 
 const mojidataDbPath = require.resolve("@mandel59/mojidata/dist/moji.db")
 const idsfindDbPath = require.resolve("@mandel59/idsdb/idsfind.db")
@@ -13,8 +14,8 @@ export function createNodeDb(): MojidataApiDb {
   const getMojidataDb = createMojidataDbProvider(() =>
     openDatabaseFromFile(mojidataDbPath),
   )
-  const getIdsfindDb = createCachedPromise(() =>
-    openDatabaseFromFile(idsfindDbPath),
+  const getIdsfindDb = createCachedPromise(async () =>
+    createSqlJsExecutor(await openDatabaseFromFile(idsfindDbPath)),
   )
   return createSqlJsApiDb({ getMojidataDb, getIdsfindDb })
 }
@@ -22,4 +23,3 @@ export function createNodeDb(): MojidataApiDb {
 export function createNodeApp() {
   return createApp(createNodeDb())
 }
-

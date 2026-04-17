@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMojidataDbProvider = createMojidataDbProvider;
+const sqljs_executor_1 = require("./sqljs-executor");
 function regexpAllJson(input, pattern) {
     const string = String(input ?? "");
     const re = new RegExp(String(pattern), "gu");
@@ -34,7 +35,7 @@ function createMojidataDbProvider(openDatabase) {
     return function getMojidataDb() {
         dbPromise ?? (dbPromise = openDatabase().then(async (db) => {
             await initDb(db);
-            return db;
+            return (0, sqljs_executor_1.createSqlJsExecutor)(db);
         }));
         return dbPromise;
     };

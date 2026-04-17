@@ -1,6 +1,6 @@
-import type { Database } from "sql.js";
 import type { MojidataApiDb } from "./mojidata-api-db";
-type DbProvider = () => Promise<Database>;
+import type { SqlExecutor } from "./sql-executor";
+type DbProvider = () => Promise<SqlExecutor>;
 export declare function createSqlJsApiDb({ getMojidataDb, getIdsfindDb, }: {
     getMojidataDb: DbProvider;
     getIdsfindDb: DbProvider;

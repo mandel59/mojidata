@@ -4,8 +4,8 @@ exports.createIdsfind = createIdsfind;
 const idsdb_utils_1 = require("@mandel59/idsdb-utils");
 const idsfind_query_1 = require("./idsfind-query");
 const idsfind_tokenize_1 = require("./idsfind-tokenize");
-function idsmatch(tokens, pattern, getIDSTokens) {
-    const matchFrom = (i) => {
+async function idsmatch(tokens, pattern, getIDSTokens) {
+    const matchFrom = async (i) => {
         const vars = new Map();
         let k = i;
         loop: for (let j = 0; j < pattern.length; j++) {
@@ -33,7 +33,7 @@ function idsmatch(tokens, pattern, getIDSTokens) {
                 k += l;
                 continue loop;
             }
-            const ts = getIDSTokens(pattern[j]);
+            const ts = await getIDSTokens(pattern[j]);
             if (ts.length === 0 && pattern[j] === tokens[k]) {
                 k++;
                 continue loop;
@@ -54,60 +54,62 @@ function idsmatch(tokens, pattern, getIDSTokens) {
     };
     let count = 0;
     for (let i = 0; i < tokens.length; i++) {
-        if (matchFrom(i)) {
+        if (await matchFrom(i)) {
             count++;
         }
     }
     return count;
 }
-function postaudit(result, idslist, getIDSTokensForUcs) {
-    for (const IDS_tokens of getIDSTokensForUcs(result)) {
+async function postaudit(result, idslist, getIDSTokensForUcs) {
+    for (const IDS_tokens of await getIDSTokensForUcs(result)) {
         const tokens = IDS_tokens.split(" ");
-        if (idslist.every((patterns) => {
-            return patterns.some((pattern) => idsmatch(tokens, pattern, getIDSTokensForUcs) >= pattern.multiplicity);
-        })) {
+        if (await (async () => {
+            for (const patterns of idslist) {
+                let matched = false;
+                for (const pattern of patterns) {
+                    if ((await idsmatch(tokens, pattern, getIDSTokensForUcs)) >= pattern.multiplicity) {
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    return false;
+                }
+            }
+            return true;
+        })()) {
             return true;
         }
     }
     return false;
 }
 function createIdsfind(getDb) {
-    let statementsPromise;
-    async function getStatements() {
-        statementsPromise ?? (statementsPromise = getDb().then((db) => {
-            return {
-                findStmt: db.prepare(idsfind_query_1.idsfindQuery),
-                getTokensStmt: db.prepare(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`),
-            };
-        }));
-        return statementsPromise;
-    }
     return async (idslist) => {
-        const { findStmt, getTokensStmt } = await getStatements();
+        const db = await getDb();
         const tokenized = (0, idsfind_tokenize_1.tokenizeIdsList)(idslist);
-        const getIDSTokensForUcs = (ucs) => {
-            const out = [];
-            getTokensStmt.bind({ $ucs: ucs });
-            while (getTokensStmt.step()) {
-                const row = getTokensStmt.getAsObject();
-                if (typeof row.IDS_tokens === "string")
-                    out.push(row.IDS_tokens);
+        const idsTokensCache = new Map();
+        const getIDSTokensForUcs = async (ucs) => {
+            let rowsPromise = idsTokensCache.get(ucs);
+            if (!rowsPromise) {
+                rowsPromise = db
+                    .query(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`, { $ucs: ucs })
+                    .then((rows) => rows.flatMap((row) => typeof row.IDS_tokens === "string" ? [row.IDS_tokens] : []));
+                idsTokensCache.set(ucs, rowsPromise);
             }
-            getTokensStmt.reset();
-            return out;
+            return await rowsPromise;
         };
         const out = [];
-        findStmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) });
-        while (findStmt.step()) {
-            const row = findStmt.getAsObject();
+        const rows = await db.query(idsfind_query_1.idsfindQuery, {
+            $idslist: JSON.stringify(tokenized.forQuery),
+        });
+        for (const row of rows) {
             const ucs = row.UCS;
             if (typeof ucs !== "string")
                 continue;
-            if (postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
+            if (await postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
                 out.push(ucs);
             }
         }
-        findStmt.reset();
         return out;
     };
 }

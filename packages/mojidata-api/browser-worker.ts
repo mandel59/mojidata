@@ -2,6 +2,7 @@ import { createSqlJsApiDb } from "./api/v1/_lib/mojidata-api-db-sqljs"
 import { createMojidataDbProvider } from "./api/v1/_lib/mojidata-db"
 import { createCachedPromise } from "./api/v1/_lib/promise-cache"
 import { openDatabaseFromUrl } from "./api/v1/_lib/sqljs-web"
+import { createSqlJsExecutor } from "./api/v1/_lib/sqljs-executor"
 import type {
   WorkerInit,
   WorkerRequest,
@@ -21,8 +22,10 @@ async function initWorker(init: WorkerInit) {
   const getMojidataDb = createMojidataDbProvider(() =>
     openDatabaseFromUrl(init.mojidataDbUrl, init.sqlWasmUrl),
   )
-  const getIdsfindDb = createCachedPromise(() =>
-    openDatabaseFromUrl(init.idsfindDbUrl, init.sqlWasmUrl),
+  const getIdsfindDb = createCachedPromise(async () =>
+    createSqlJsExecutor(
+      await openDatabaseFromUrl(init.idsfindDbUrl, init.sqlWasmUrl),
+    ),
   )
   api = createSqlJsApiDb({ getMojidataDb, getIdsfindDb })
 }
@@ -49,4 +52,3 @@ self.addEventListener("message", async (ev: MessageEvent) => {
     post({ id: req.id, ok: false, error: serializeError(error) })
   }
 })
-

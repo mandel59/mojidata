@@ -4,6 +4,7 @@ const mojidata_api_db_sqljs_1 = require("./api/v1/_lib/mojidata-api-db-sqljs");
 const mojidata_db_1 = require("./api/v1/_lib/mojidata-db");
 const promise_cache_1 = require("./api/v1/_lib/promise-cache");
 const sqljs_web_1 = require("./api/v1/_lib/sqljs-web");
+const sqljs_executor_1 = require("./api/v1/_lib/sqljs-executor");
 let api;
 function serializeError(error) {
     if (error instanceof Error) {
@@ -13,7 +14,7 @@ function serializeError(error) {
 }
 async function initWorker(init) {
     const getMojidataDb = (0, mojidata_db_1.createMojidataDbProvider)(() => (0, sqljs_web_1.openDatabaseFromUrl)(init.mojidataDbUrl, init.sqlWasmUrl));
-    const getIdsfindDb = (0, promise_cache_1.createCachedPromise)(() => (0, sqljs_web_1.openDatabaseFromUrl)(init.idsfindDbUrl, init.sqlWasmUrl));
+    const getIdsfindDb = (0, promise_cache_1.createCachedPromise)(async () => (0, sqljs_executor_1.createSqlJsExecutor)(await (0, sqljs_web_1.openDatabaseFromUrl)(init.idsfindDbUrl, init.sqlWasmUrl)));
     api = (0, mojidata_api_db_sqljs_1.createSqlJsApiDb)({ getMojidataDb, getIdsfindDb });
 }
 self.addEventListener("message", async (ev) => {

@@ -1,5 +1,3 @@
-import type { Database, Statement } from "sql.js"
-
 import {
   nodeLength,
   type TokenList,
@@ -7,13 +5,14 @@ import {
 
 import { idsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
+import type { SqlExecutor } from "./sql-executor"
 
-function idsmatch(
+async function idsmatch(
   tokens: string[],
   pattern: TokenList,
-  getIDSTokens: (ucs: string) => string[],
+  getIDSTokens: (ucs: string) => Promise<string[]>,
 ) {
-  const matchFrom = (i: number) => {
+  const matchFrom = async (i: number) => {
     const vars = new Map<string, string[]>()
     let k = i
     loop: for (let j = 0; j < pattern.length; j++) {
@@ -38,7 +37,7 @@ function idsmatch(
         k += l
         continue loop
       }
-      const ts = getIDSTokens(pattern[j])
+      const ts = await getIDSTokens(pattern[j])
       if (ts.length === 0 && pattern[j] === tokens[k]) {
         k++
         continue loop
@@ -59,26 +58,36 @@ function idsmatch(
   }
   let count = 0
   for (let i = 0; i < tokens.length; i++) {
-    if (matchFrom(i)) {
+    if (await matchFrom(i)) {
       count++
     }
   }
   return count
 }
 
-function postaudit(
+async function postaudit(
   result: string,
   idslist: TokenList[][],
-  getIDSTokensForUcs: (ucs: string) => string[],
+  getIDSTokensForUcs: (ucs: string) => Promise<string[]>,
 ) {
-  for (const IDS_tokens of getIDSTokensForUcs(result)) {
+  for (const IDS_tokens of await getIDSTokensForUcs(result)) {
     const tokens = IDS_tokens.split(" ")
     if (
-      idslist.every((patterns) => {
-        return patterns.some(
-          (pattern) => idsmatch(tokens, pattern, getIDSTokensForUcs) >= pattern.multiplicity,
-        )
-      })
+      await (async () => {
+        for (const patterns of idslist) {
+          let matched = false
+          for (const pattern of patterns) {
+            if ((await idsmatch(tokens, pattern, getIDSTokensForUcs)) >= pattern.multiplicity) {
+              matched = true
+              break
+            }
+          }
+          if (!matched) {
+            return false
+          }
+        }
+        return true
+      })()
     ) {
       return true
     }
@@ -86,49 +95,41 @@ function postaudit(
   return false
 }
 
-type IdsfindStatements = {
-  findStmt: Statement
-  getTokensStmt: Statement
-}
-
-export function createIdsfind(getDb: () => Promise<Database>) {
-  let statementsPromise: Promise<IdsfindStatements> | undefined
-  async function getStatements(): Promise<IdsfindStatements> {
-    statementsPromise ??= getDb().then((db) => {
-      return {
-        findStmt: db.prepare(idsfindQuery),
-        getTokensStmt: db.prepare(`SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`),
-      }
-    })
-    return statementsPromise
-  }
-
+export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
   return async (idslist: string[]): Promise<string[]> => {
-    const { findStmt, getTokensStmt } = await getStatements()
+    const db = await getDb()
     const tokenized = tokenizeIdsList(idslist)
+    const idsTokensCache = new Map<string, Promise<string[]>>()
 
-    const getIDSTokensForUcs = (ucs: string) => {
-      const out: string[] = []
-      getTokensStmt.bind({ $ucs: ucs })
-      while (getTokensStmt.step()) {
-        const row = getTokensStmt.getAsObject() as { IDS_tokens?: string }
-        if (typeof row.IDS_tokens === "string") out.push(row.IDS_tokens)
+    const getIDSTokensForUcs = async (ucs: string) => {
+      let rowsPromise = idsTokensCache.get(ucs)
+      if (!rowsPromise) {
+        rowsPromise = db
+          .query<{ IDS_tokens?: string }>(
+            `SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`,
+            { $ucs: ucs },
+          )
+          .then((rows) =>
+            rows.flatMap((row) =>
+              typeof row.IDS_tokens === "string" ? [row.IDS_tokens] : [],
+            ),
+          )
+        idsTokensCache.set(ucs, rowsPromise)
       }
-      getTokensStmt.reset()
-      return out
+      return await rowsPromise
     }
 
     const out: string[] = []
-    findStmt.bind({ $idslist: JSON.stringify(tokenized.forQuery) })
-    while (findStmt.step()) {
-      const row = findStmt.getAsObject() as { UCS?: string }
+    const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
+      $idslist: JSON.stringify(tokenized.forQuery),
+    })
+    for (const row of rows) {
       const ucs = row.UCS
       if (typeof ucs !== "string") continue
-      if (postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
+      if (await postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
         out.push(ucs)
       }
     }
-    findStmt.reset()
     return out
   }
 }

@@ -1,4 +1,4 @@
-import type { Database } from "sql.js"
+import type { SqlExecutor } from "./sql-executor"
 
 const queries: Partial<Record<string, string>> = {
   UCS: `WITH x(x) AS (VALUES (parse_int(?, 16))) SELECT DISTINCT char(x) AS r FROM x WHERE char(x) regexp '^[\\p{L}\\p{N}\\p{S}]$'`,
@@ -96,20 +96,13 @@ export function getQueryAndArgs(p: string, q: string) {
   throw new Error(`Unknown query key: ${p}`)
 }
 
-async function pluckAll(getDb: () => Promise<Database>, query: string, args: unknown[]) {
+async function pluckAll(getDb: () => Promise<SqlExecutor>, query: string, args: unknown[]) {
   const db = await getDb()
-  const stmt = db.prepare(query)
-  stmt.bind(args as any)
-  const out: string[] = []
-  while (stmt.step()) {
-    const row = stmt.getAsObject() as { r?: string }
-    if (typeof row.r === "string") out.push(row.r)
-  }
-  stmt.free()
-  return out
+  const rows = await db.query<{ r?: string }>(query, args)
+  return rows.flatMap((row) => (typeof row.r === "string" ? [row.r] : []))
 }
 
-export function createLibSearch(getDb: () => Promise<Database>) {
+export function createLibSearch(getDb: () => Promise<SqlExecutor>) {
   return {
     filterChars: async (chars: string[], ps: string[], qs: string[]) => {
       const queryAndArgs = ps.map((p, i) => getQueryAndArgs(p, qs[i]))

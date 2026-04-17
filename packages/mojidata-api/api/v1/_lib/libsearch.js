@@ -87,16 +87,8 @@ function getQueryAndArgs(p, q) {
 }
 async function pluckAll(getDb, query, args) {
     const db = await getDb();
-    const stmt = db.prepare(query);
-    stmt.bind(args);
-    const out = [];
-    while (stmt.step()) {
-        const row = stmt.getAsObject();
-        if (typeof row.r === "string")
-            out.push(row.r);
-    }
-    stmt.free();
-    return out;
+    const rows = await db.query(query, args);
+    return rows.flatMap((row) => (typeof row.r === "string" ? [row.r] : []));
 }
 function createLibSearch(getDb) {
     return {
