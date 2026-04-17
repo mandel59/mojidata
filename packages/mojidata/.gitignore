@@ -3,6 +3,7 @@ cache/*
 !cache/.sha1sum/*
 !cache/.sha256sum
 !cache/.sha256sum/*
+.cache
 resources
 dist
 *.tgz
