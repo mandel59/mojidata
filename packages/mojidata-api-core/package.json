@@ -19,6 +19,8 @@
   "files": [
     "index.js",
     "index.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
@@ -30,7 +32,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api": "^1.7.1"
+    "@mandel59/idsdb-utils": "^1.7.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

@@ -862,7 +862,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/mojidata-api-core", {\
         "packageLocation": "./packages/mojidata-api-core/",\
         "packageDependencies": [\
-          ["@mandel59/mojidata-api", "virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api"],\
+          ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
           ["@types/node", "npm:24.10.4"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
