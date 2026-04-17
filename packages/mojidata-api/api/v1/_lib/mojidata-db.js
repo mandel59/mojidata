@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.installMojidataSqlFunctions = installMojidataSqlFunctions;
 exports.createMojidataDbProvider = createMojidataDbProvider;
 const sqljs_executor_1 = require("./sqljs-executor");
 function regexpAllJson(input, pattern) {
@@ -15,19 +16,24 @@ function regexpAllJson(input, pattern) {
     }
     return JSON.stringify(out);
 }
-async function initDb(db) {
+function installMojidataSqlFunctions(registerFunction) {
     // scalar function returning JSON array of matches (see query-expressions.ts)
-    db.create_function("regexp_all", regexpAllJson);
-    db.create_function("parse_int", (s, base) => {
+    registerFunction("regexp_all", regexpAllJson);
+    registerFunction("parse_int", ((s, base) => {
         const i = parseInt(s, base);
         if (!Number.isSafeInteger(i)) {
             return null;
         }
         return i;
-    });
+    }));
     // SQLite REGEXP operator uses `regexp(pattern, value)`
-    db.create_function("regexp", (pattern, s) => {
+    registerFunction("regexp", ((pattern, s) => {
         return new RegExp(pattern, "u").test(s) ? 1 : 0;
+    }));
+}
+async function initDb(db) {
+    installMojidataSqlFunctions((name, fn) => {
+        db.create_function(name, fn);
     });
 }
 function createMojidataDbProvider(openDatabase) {

@@ -821,9 +821,11 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/hono__node-server", null],\
           ["@types/node", "npm:24.10.4"],\
           ["@types/sql.js", "npm:1.4.9"],\
+          ["better-sqlite3", "npm:12.5.0"],\
           ["hono", "npm:4.11.1"],\
           ["prettier", "npm:2.8.8"],\
           ["sql.js", "npm:1.13.0"],\
@@ -843,8 +845,10 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@mandel59/mojidata-api", "workspace:packages/mojidata-api"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/node", "npm:24.10.4"],\
           ["@types/sql.js", "npm:1.4.9"],\
+          ["better-sqlite3", "npm:12.5.0"],\
           ["hono", "npm:4.11.1"],\
           ["prettier", "npm:2.8.8"],\
           ["sql.js", "npm:1.13.0"],\

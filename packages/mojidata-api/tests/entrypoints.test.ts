@@ -16,5 +16,6 @@ describe('package entrypoints', () => {
     assert.equal(typeof createMojidataDbProvider, 'function')
     assert.equal(typeof createSqlJsExecutor, 'function')
     assert.equal(typeof openDatabaseFromFile, 'function')
+    assert.equal(typeof createNodeDb({ backend: 'better-sqlite3' }), 'object')
   })
 })

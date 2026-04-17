@@ -11,6 +11,15 @@ It also exposes lower-level entry points for composing the API yourself:
 - `@mandel59/mojidata-api/runtime`: Node defaults and worker client helpers
 - `@mandel59/mojidata-api/sqljs`: `sql.js` executor and openers
 
+For Node.js, `createNodeDb()` defaults to `sql.js`, but it can also use
+`better-sqlite3`:
+
+```ts
+import { createNodeDb } from "@mandel59/mojidata-api/runtime"
+
+const db = createNodeDb({ backend: "better-sqlite3" })
+```
+
 ## Tests
 
 Tests live under `tests/`.

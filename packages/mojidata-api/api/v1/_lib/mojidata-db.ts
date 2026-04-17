@@ -1,7 +1,6 @@
-import type { Database } from "sql.js"
-
 import type { SqlExecutor } from "./sql-executor"
 import { createSqlJsExecutor } from "./sqljs-executor"
+import type { Database } from "sql.js"
 
 export type DatabaseOpener = () => Promise<Database>
 
@@ -20,21 +19,29 @@ function regexpAllJson(input: unknown, pattern: unknown) {
   return JSON.stringify(out)
 }
 
-async function initDb(db: Database) {
+export function installMojidataSqlFunctions(
+  registerFunction: (name: string, fn: (...args: never[]) => unknown) => void,
+) {
   // scalar function returning JSON array of matches (see query-expressions.ts)
-  db.create_function("regexp_all", regexpAllJson)
+  registerFunction("regexp_all", regexpAllJson as (...args: never[]) => unknown)
 
-  db.create_function("parse_int", (s: string, base: number) => {
+  registerFunction("parse_int", ((s: string, base: number) => {
     const i = parseInt(s, base)
     if (!Number.isSafeInteger(i)) {
       return null
     }
     return i
-  })
+  }) as (...args: never[]) => unknown)
 
   // SQLite REGEXP operator uses `regexp(pattern, value)`
-  db.create_function("regexp", (pattern: string, s: string) => {
+  registerFunction("regexp", ((pattern: string, s: string) => {
     return new RegExp(pattern, "u").test(s) ? 1 : 0
+  }) as (...args: never[]) => unknown)
+}
+
+async function initDb(db: Database) {
+  installMojidataSqlFunctions((name, fn) => {
+    db.create_function(name, fn)
   })
 }
 
