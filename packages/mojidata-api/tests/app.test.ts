@@ -114,4 +114,22 @@ describe('createApp', () => {
     assert.deepEqual(json.results, ['一'])
     assert.equal(json.done, false)
   })
+
+  test('returns 400 for unknown idsfind property keys', async () => {
+    const app = createApp(
+      createFakeDb({
+        async search() {
+          throw new Error('Unknown query key: nope')
+        },
+      }),
+    )
+
+    const { response, json } = await fetchJson(
+      app,
+      '/api/v1/idsfind?p=nope&q=x&limit=1',
+    )
+
+    assert.equal(response.status, 400)
+    assert.equal(json.error.message, 'Unknown query key: nope')
+  })
 })

@@ -61,6 +61,17 @@ describe('GET /api/v1/idsfind', () => {
     assertBasicSuccess(response, json, limit, ['totalStrokes'], ['13'])
   })
 
+  test('returns 400 for unknown SearchPropertyKey', async () => {
+    const { response, json } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kNoSuchProperty'],
+      q: ['x'],
+      limit: 5,
+    })
+
+    assert.equal(response.status, 400)
+    assert.ok(json?.error?.message?.includes('Unknown query key'))
+  })
+
   test('supports SearchPropertyKey=UCS', async () => {
     const limit = 5
     const { response, json } = await fetchJson('/api/v1/idsfind', {
@@ -76,19 +87,28 @@ describe('GET /api/v1/idsfind', () => {
   for (const { p, q } of [
     { p: 'mji.読み', q: 'かん' },
     { p: 'mji.読み.prefix', q: 'か' },
+    { p: 'mji.読み.glob', q: 'か*' },
     { p: 'mji.総画数.lt', q: '50' },
     { p: 'mji.総画数.le', q: '50' },
     { p: 'mji.総画数.gt', q: '1' },
     { p: 'mji.総画数.ge', q: '1' },
     { p: 'unihan.kTotalStrokes', q: '6' },
+    { p: 'unihan.kTotalStrokes.eq', q: '6' },
     { p: 'unihan.kTotalStrokes.lt', q: '50' },
     { p: 'unihan.kTotalStrokes.le', q: '50' },
     { p: 'unihan.kTotalStrokes.gt', q: '1' },
     { p: 'unihan.kTotalStrokes.ge', q: '1' },
+    { p: 'totalStrokes.eq', q: '13' },
     { p: 'totalStrokes.lt', q: '50' },
     { p: 'totalStrokes.le', q: '50' },
     { p: 'totalStrokes.gt', q: '1' },
     { p: 'totalStrokes.ge', q: '1' },
+    { p: 'unihan.kTraditionalVariant', q: '銀' },
+    { p: 'unihan.kTraditionalVariant', q: 'U+9280' },
+    { p: 'unihan.kSemanticVariant', q: '炮' },
+    { p: 'unihan.kStrange.I', q: '龍' },
+    { p: 'unihan.kStrange.I', q: 'U+9F8D' },
+    { p: 'unihan.kStrange.I.glob', q: '龍' },
   ]) {
     test(`supports SearchPropertyKey=${p}`, async () => {
       const limit = 3
@@ -101,6 +121,212 @@ describe('GET /api/v1/idsfind', () => {
       assertBasicSuccess(response, json, limit, [p], [q])
     })
   }
+
+  test('finds simplified character by unihan.kTraditionalVariant (char/U+ input)', async () => {
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kTraditionalVariant'],
+        q: ['銀'],
+        limit: 20,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        20,
+        ['unihan.kTraditionalVariant'],
+        ['銀'],
+      )
+      assert.ok(json.results.includes('银'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kTraditionalVariant'],
+        q: ['U+9280'],
+        limit: 20,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        20,
+        ['unihan.kTraditionalVariant'],
+        ['U+9280'],
+      )
+      assert.ok(json.results.includes('银'))
+    }
+  })
+
+  test('finds kStrange category matches by character/U+ input', async () => {
+    const expected = String.fromCodePoint(0x33473)
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kStrange.I'],
+        q: ['龍'],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, ['unihan.kStrange.I'], ['龍'])
+      assert.ok(json.results.includes(expected))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kStrange.I'],
+        q: ['U+9F8D'],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, ['unihan.kStrange.I'], ['U+9F8D'])
+      assert.ok(json.results.includes(expected))
+    }
+  })
+
+  test('kStrange glob matches null values as empty string', async () => {
+    const { response, json } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kStrange.U.glob'],
+      q: ['*'],
+      limit: 50,
+    })
+
+    assertBasicSuccess(response, json, 50, ['unihan.kStrange.U.glob'], ['*'])
+    assert.ok(json.results.length > 0)
+  })
+
+  test('supports .ne and .notGlob operators', async () => {
+    const { json: eqJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kTraditionalVariant'],
+      q: ['線'],
+      limit: 200,
+      all_results: 1,
+    })
+    const eqSet = new Set<string>(eqJson.results)
+
+    const { response: neResponse, json: neJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kTraditionalVariant.ne'],
+      q: ['線'],
+      limit: 200,
+      all_results: 1,
+    })
+    assertBasicSuccess(
+      neResponse,
+      neJson,
+      200,
+      ['unihan.kTraditionalVariant.ne'],
+      ['線'],
+    )
+    assert.ok(neJson.results.length > 0)
+    assert.ok(eqJson.results.length > 0)
+    assert.ok(!new Set(neJson.results as string[]).has(eqJson.results[0]))
+    for (const ch of neJson.results as string[]) {
+      assert.ok(!eqSet.has(ch))
+    }
+
+    const { json: globJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['mji.読み.glob'],
+      q: ['か*'],
+      limit: 200,
+      all_results: 1,
+    })
+    const globSet = new Set<string>(globJson.results)
+
+    const { response: notGlobResponse, json: notGlobJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['mji.読み.notGlob'],
+      q: ['か*'],
+      limit: 200,
+      all_results: 1,
+    })
+    assertBasicSuccess(
+      notGlobResponse,
+      notGlobJson,
+      200,
+      ['mji.読み.notGlob'],
+      ['か*'],
+    )
+    assert.ok(notGlobJson.results.length > 0)
+    assert.ok(globJson.results.length > 0)
+    assert.ok(!new Set(notGlobJson.results as string[]).has(globJson.results[0]))
+    for (const ch of notGlobJson.results as string[]) {
+      assert.ok(!globSet.has(ch))
+    }
+
+    const { response: combinedResponse, json: combinedJson } = await fetchJson('/api/v1/idsfind', {
+      p: ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+      q: ['*', 'カ'],
+      limit: 50,
+    })
+    assertBasicSuccess(
+      combinedResponse,
+      combinedJson,
+      50,
+      ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+      ['*', 'カ'],
+    )
+  })
+
+  test('supports multiple mixed condition combinations without server errors', async () => {
+    const cases: Array<{
+      p: string[]
+      q: string[]
+      expectNonEmpty?: boolean
+    }> = [
+      {
+        p: ['totalStrokes.ge', 'totalStrokes.le'],
+        q: ['5', '12'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['mji.読み.glob', 'totalStrokes.le'],
+        q: ['か*', '30'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['unihan.kStrange.K.glob', 'unihan.kStrange.K.notGlob'],
+        q: ['*', 'カ'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['unihan.kTraditionalVariant', 'unihan.kTraditionalVariant.ne'],
+        q: ['線', '線'],
+      },
+      {
+        p: ['unihan.kTraditionalVariant.ne', 'totalStrokes.ge'],
+        q: ['線', '1'],
+        expectNonEmpty: true,
+      },
+    ]
+
+    for (const { p, q, expectNonEmpty } of cases) {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p,
+        q,
+        limit: 200,
+      })
+      assertBasicSuccess(response, json, 200, p, q)
+      if (expectNonEmpty) {
+        assert.ok(json.results.length > 0)
+      }
+    }
+  })
+
+  test('supports selected newly added Unihan property keys', async () => {
+    const cases: Array<{ p: string; q: string }> = [
+      { p: 'unihan.kIRG_JSource', q: 'J0-3441' },
+      { p: 'unihan.kIRG_GSource', q: 'G1-3A3A' },
+      { p: 'unihan.kDefinition', q: 'Chinese' },
+      { p: 'unihan.kJapaneseOn', q: 'KAN' },
+      { p: 'unihan.kAccountingNumeric.ge', q: '2' },
+      { p: 'unihan.kSimplifiedVariant', q: 'U+6C49' },
+    ]
+
+    for (const { p, q } of cases) {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: [p],
+        q: [q],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, [p], [q])
+      assert.ok(json.results.length > 0)
+    }
+  })
 
   test('supports SearchPropertyKey=mji.MJ文字図形名 and mji.総画数', async () => {
     const { json: mojidata } = await fetchJson('/api/v1/mojidata', {

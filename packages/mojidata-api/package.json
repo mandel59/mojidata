@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api",
-  "version": "1.7.1",
+  "version": "1.7.5",
   "description": "Compatibility facade package for mojidata-api split packages",
   "main": "index.js",
   "exports": {
