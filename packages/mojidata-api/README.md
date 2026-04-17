@@ -93,7 +93,7 @@ import { createApp } from "@mandel59/mojidata-api-hono"
 import { createMojidataApiWorkerClient } from "@mandel59/mojidata-api/browser-client"
 
 const worker = new Worker(
-  new URL("@mandel59/mojidata-api/browser-worker", import.meta.url),
+  new URL("@mandel59/mojidata-api-runtime/browser-worker", import.meta.url),
   { type: "module" },
 )
 

@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-require("@mandel59/mojidata-api-runtime/browser-worker");
+require("./lib/browser-worker");

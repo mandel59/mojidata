@@ -1,1 +1,1 @@
-import "./internal/runtime/browser-worker"
+import "@mandel59/mojidata-api-runtime/browser-worker"

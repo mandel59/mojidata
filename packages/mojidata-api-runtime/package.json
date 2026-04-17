@@ -14,9 +14,16 @@
       "types": "./index.d.ts",
       "require": "./index.js",
       "default": "./index.js"
+    },
+    "./browser-worker": {
+      "types": "./browser-worker.d.ts",
+      "require": "./browser-worker.js",
+      "default": "./browser-worker.js"
     }
   },
   "files": [
+    "browser-worker.js",
+    "browser-worker.d.ts",
     "index.js",
     "index.d.ts",
     "lib/*.js",
