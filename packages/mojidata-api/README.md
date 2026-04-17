@@ -8,6 +8,7 @@ It also exposes lower-level entry points for composing the API yourself:
 
 - `@mandel59/mojidata-api/core`: backend-neutral SQL API composition
 - `@mandel59/mojidata-api/hono`: Hono app wiring
+- `@mandel59/mojidata-api/runtime`: Node defaults and worker client helpers
 - `@mandel59/mojidata-api/sqljs`: `sql.js` executor and openers
 
 ## Tests
