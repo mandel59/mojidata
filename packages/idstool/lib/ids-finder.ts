@@ -1,4 +1,4 @@
-import { createNodeDb } from "@mandel59/mojidata-api/runtime"
+import { createNodeDb } from "@mandel59/mojidata-api-runtime"
 
 export class IDSFinder {
     private db = createNodeDb()

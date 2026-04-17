@@ -4,18 +4,20 @@ This package can run in both:
 - Node.js (HTTP server via Hono)
 - Browser (Hono `app.fetch` + SQL.js running in a WebWorker)
 
-It also exposes lower-level entry points for composing the API yourself:
+It also has split packages for composing the API yourself:
 
-- `@mandel59/mojidata-api/core`: backend-neutral SQL API composition
-- `@mandel59/mojidata-api/hono`: Hono app wiring
-- `@mandel59/mojidata-api/runtime`: Node defaults and worker client helpers
-- `@mandel59/mojidata-api/sqljs`: `sql.js` executor and openers
+- `@mandel59/mojidata-api-core`: backend-neutral SQL API composition
+- `@mandel59/mojidata-api-hono`: Hono app wiring
+- `@mandel59/mojidata-api-runtime`: Node defaults and worker client helpers
+- `@mandel59/mojidata-api-sqljs`: `sql.js` executor and openers
+
+The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades.
 
 For Node.js, `createNodeDb()` defaults to `sql.js`, but it can also use
 `better-sqlite3`:
 
 ```ts
-import { createNodeDb } from "@mandel59/mojidata-api/runtime"
+import { createNodeDb } from "@mandel59/mojidata-api-runtime"
 
 const db = createNodeDb({ backend: "better-sqlite3" })
 ```
@@ -87,7 +89,7 @@ The exact way to obtain asset URLs depends on your bundler. For example, with Vi
 
 ```ts
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url"
-import { createApp } from "@mandel59/mojidata-api/hono"
+import { createApp } from "@mandel59/mojidata-api-hono"
 import { createMojidataApiWorkerClient } from "@mandel59/mojidata-api/browser-client"
 
 const worker = new Worker(
@@ -118,9 +120,9 @@ db.terminate()
 If you want to wire the API together yourself instead of using `createNodeDb()`, use the lower-level entry points:
 
 ```ts
-import { createSqlApiDb } from "@mandel59/mojidata-api/core"
-import { createApp } from "@mandel59/mojidata-api/hono"
-import { createMojidataDbProvider, createSqlJsExecutor, openDatabaseFromFile } from "@mandel59/mojidata-api/sqljs"
+import { createSqlApiDb } from "@mandel59/mojidata-api-core"
+import { createApp } from "@mandel59/mojidata-api-hono"
+import { createMojidataDbProvider, createSqlJsExecutor, openDatabaseFromFile } from "@mandel59/mojidata-api-sqljs"
 
 const getMojidataDb = createMojidataDbProvider(() =>
   openDatabaseFromFile(require.resolve("@mandel59/mojidata/dist/moji.db")),

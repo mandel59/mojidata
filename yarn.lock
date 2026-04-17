@@ -544,7 +544,7 @@ __metadata:
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
     "@mandel59/idsdb-utils": "npm:^1.7.0"
-    "@mandel59/mojidata-api": "npm:^1.7.0"
+    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
     "@types/node": "npm:^24.10.4"
     ava: "npm:^3.15.0"
     ts-node: "npm:^10.9.2"
@@ -563,7 +563,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
+"@mandel59/mojidata-api-core@npm:^1.7.0, @mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core"
   dependencies:
@@ -573,7 +573,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono":
+"@mandel59/mojidata-api-hono@npm:^1.7.0, @mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono"
   dependencies:
@@ -583,7 +583,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
+"@mandel59/mojidata-api-runtime@npm:^1.7.0, @mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime"
   dependencies:
@@ -635,7 +635,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata-api": "npm:^1.7.0"
+    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
     "@types/node": "npm:^24.10.4"
     ava: "npm:^3.15.0"
     ts-node: "npm:^10.9.2"
@@ -683,6 +683,9 @@ __metadata:
   resolution: "@mandel59/react-mojidata-api@workspace:packages/react-mojidata-api"
   dependencies:
     "@mandel59/mojidata-api": "npm:^1.7.0"
+    "@mandel59/mojidata-api-core": "npm:^1.7.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.7.0"
+    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.0"
     "@types/jsdom": "npm:^21.1.7"

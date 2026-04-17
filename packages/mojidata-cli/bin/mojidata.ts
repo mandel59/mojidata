@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createNodeDb } from "@mandel59/mojidata-api/runtime"
+import { createNodeDb } from "@mandel59/mojidata-api-runtime"
 import { queryExpressions } from "./query-expressions"
 
 const db = createNodeDb()

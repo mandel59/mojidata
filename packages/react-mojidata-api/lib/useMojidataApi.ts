@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { createApp } from "@mandel59/mojidata-api/hono"
-import type { MojidataApiDb } from "@mandel59/mojidata-api/api/v1/_lib/mojidata-api-db"
+import { createApp } from "@mandel59/mojidata-api-hono"
+import type { MojidataApiDb } from "@mandel59/mojidata-api-core"
 import type {
   WorkerCall,
   WorkerInit,
   WorkerRequest,
   WorkerResponse,
-} from "@mandel59/mojidata-api/api/v1/_lib/worker-protocol"
+} from "@mandel59/mojidata-api-runtime"
 
 export type MojidataApiMojidataResponse = {
   query: { char: string; select?: string[] }
