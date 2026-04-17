@@ -573,6 +573,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono"
+  dependencies:
+    "@mandel59/mojidata-api": "npm:^1.7.1"
+    "@types/node": "npm:^24.10.4"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime"
+  dependencies:
+    "@mandel59/mojidata-api": "npm:^1.7.1"
+    "@types/node": "npm:^24.10.4"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"

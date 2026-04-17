@@ -39,6 +39,14 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/mojidata-api-core"\
     },\
     {\
+      "name": "@mandel59/mojidata-api-hono",\
+      "reference": "workspace:packages/mojidata-api-hono"\
+    },\
+    {\
+      "name": "@mandel59/mojidata-api-runtime",\
+      "reference": "workspace:packages/mojidata-api-runtime"\
+    },\
+    {\
       "name": "@mandel59/mojidata-api-sqljs",\
       "reference": "workspace:packages/mojidata-api-sqljs"\
     },\
@@ -61,6 +69,8 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api", "workspace:packages/mojidata-api"]],\
     ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
+    ["@mandel59/mojidata-api-hono", ["workspace:packages/mojidata-api-hono"]],\
+    ["@mandel59/mojidata-api-runtime", ["workspace:packages/mojidata-api-runtime"]],\
     ["@mandel59/mojidata-api-sqljs", ["workspace:packages/mojidata-api-sqljs"]],\
     ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
     ["@mandel59/react-mojidata-api", ["workspace:packages/react-mojidata-api"]],\
@@ -850,6 +860,30 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-hono", [\
+      ["workspace:packages/mojidata-api-hono", {\
+        "packageLocation": "./packages/mojidata-api-hono/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-runtime", [\
+      ["workspace:packages/mojidata-api-runtime", {\
+        "packageLocation": "./packages/mojidata-api-runtime/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
           ["@types/node", "npm:24.10.4"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\
