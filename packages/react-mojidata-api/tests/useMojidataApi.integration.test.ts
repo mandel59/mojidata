@@ -43,8 +43,10 @@ function shouldLogUrl(url: string) {
     url.includes("sql.js") ||
     url.includes("/@id/") ||
     url.includes("browser-worker") ||
-    url.includes("@mandel59/mojidata-api") ||
-    url.includes("/packages/mojidata-api/") ||
+    url.includes("@mandel59/mojidata-api-runtime") ||
+    url.includes("@mandel59/mojidata-api-sqljs") ||
+    url.includes("/packages/mojidata-api-runtime/") ||
+    url.includes("/packages/mojidata-api-sqljs/") ||
     url.includes("idsdb-utils") ||
     url.includes("/packages/idsdb-utils/") ||
     url.includes("/packages/idsdb/")
@@ -63,13 +65,13 @@ test(
     const repoRoot = path.resolve(pkgDir, "..", "..")
 
     const requireFromHere = createRequire(import.meta.url)
-    const mojidataApiPkgJson = requireFromHere.resolve(
-      "@mandel59/mojidata-api/package.json",
+    const mojidataApiSqljsPkgJson = requireFromHere.resolve(
+      "@mandel59/mojidata-api-sqljs/package.json",
     )
-    const requireFromMojidataApi = createRequire(mojidataApiPkgJson)
-    const sqlWasmPath = requireFromMojidataApi.resolve("sql.js/dist/sql-wasm.wasm")
+    const requireFromMojidataApiSqljs = createRequire(mojidataApiSqljsPkgJson)
+    const sqlWasmPath = requireFromMojidataApiSqljs.resolve("sql.js/dist/sql-wasm.wasm")
 
-    const initSqlJsMod = requireFromMojidataApi("sql.js") as any
+    const initSqlJsMod = requireFromMojidataApiSqljs("sql.js") as any
     const initSqlJs = initSqlJsMod?.default ?? initSqlJsMod
     const SQL = await initSqlJs({ locateFile: () => sqlWasmPath })
 
@@ -148,11 +150,23 @@ test(
               "mojidata-api-hono",
               "index.ts",
             ),
-            "@mandel59/mojidata-api/browser-worker": path.join(
+            "@mandel59/mojidata-api-runtime/browser-worker": path.join(
               repoRoot,
               "packages",
-              "mojidata-api",
+              "mojidata-api-runtime",
               "browser-worker.ts",
+            ),
+            "@mandel59/mojidata-api-runtime": path.join(
+              repoRoot,
+              "packages",
+              "mojidata-api-runtime",
+              "index.ts",
+            ),
+            "@mandel59/mojidata-api-sqljs": path.join(
+              repoRoot,
+              "packages",
+              "mojidata-api-sqljs",
+              "index.ts",
             ),
             "@mandel59/idsdb-utils": path.join(repoRoot, "packages", "idsdb-utils", "index.ts"),
           },

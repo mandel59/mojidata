@@ -1,6 +1,6 @@
 # react-mojidata-api
 
-React hook for running `@mandel59/mojidata-api` in the browser (Hono `app.fetch` + SQL.js in a WebWorker).
+React hook for running `mojidata-api` in the browser (Hono `app.fetch` + SQL.js in a WebWorker).
 
 ## Install
 
@@ -17,7 +17,7 @@ import { useMojidataApi } from "@mandel59/react-mojidata-api"
 function MyComponent() {
   const { ready, client, error } = useMojidataApi({
     createWorker: () =>
-      new Worker(new URL("@mandel59/mojidata-api/browser-worker", import.meta.url), {
+      new Worker(new URL("@mandel59/mojidata-api-runtime/browser-worker", import.meta.url), {
         type: "module",
       }),
     init: {
