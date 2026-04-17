@@ -21,7 +21,9 @@
   "scripts": {
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
-    "test": "node --import tsx --test ./tests/*.test.ts ./tests/*.test.tsx"
+    "test": "yarn test:unit && yarn test:integration",
+    "test:unit": "node --import tsx --test ./tests/*.test.tsx",
+    "test:integration": "node --import tsx --test ./tests/*.integration.test.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
