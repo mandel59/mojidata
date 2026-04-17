@@ -4,7 +4,7 @@ import { JSDOM } from "jsdom"
 
 const TR38_URL = process.env["TR38_URL"] ?? "https://www.unicode.org/reports/tr38/"
 export const TR38_CACHE_PATH = process.env["TR38_CACHE_PATH"]
-    ?? path.join(__dirname, "../../data/unihan-tr38-properties.json")
+    ?? path.join(__dirname, "../../build-data/unihan-tr38-properties.json")
 const LEGACY_TR38_CACHE_PATH = path.join(__dirname, "../../.cache/unihan-tr38-properties.json")
 
 export type UnihanPropertyDoc = Record<string, string>
