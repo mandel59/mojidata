@@ -1,57 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeJson = writeJson;
-exports.writeValue = writeValue;
-exports.writeArray = writeArray;
-exports.writeObject = writeObject;
-async function writeJson(write, json) {
-    await write(json);
-    return true;
-}
-async function writeValue(write, value) {
-    if (value === undefined) {
-        return false;
-    }
-    if (typeof value === 'function') {
-        return await value();
-    }
-    else {
-        await write(JSON.stringify(value));
-        return true;
-    }
-}
-async function writeArray(write, values) {
-    await write('[');
-    let previous = false;
-    for await (const value of values) {
-        if (previous) {
-            await write(',');
-        }
-        previous = (await writeValue(write, value)) || false;
-    }
-    await write(']');
-    return true;
-}
-async function writeObject(write, entries) {
-    await write('{');
-    let previous = false;
-    for await (const entry of entries) {
-        if (!entry) {
-            continue;
-        }
-        const [key, value] = entry;
-        if (previous) {
-            await write(',');
-        }
-        await write(JSON.stringify(key));
-        await write(':');
-        previous = true;
-        const filled = await writeValue(write, value);
-        if (!filled) {
-            // fallback to null
-            write('null');
-        }
-    }
-    await write('}');
-    return true;
-}
+__exportStar(require("@mandel59/mojidata-api-runtime/lib/json-encoder"), exports);

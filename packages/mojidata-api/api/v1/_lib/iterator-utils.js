@@ -1,35 +1,17 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.drop = drop;
-exports.take = take;
-exports.filter = filter;
-function* drop(n, gen) {
-    for (let i = 0; i < n; i++) {
-        const { done } = gen.next();
-        if (done) {
-            return;
-        }
-    }
-    yield* gen;
-}
-function* take(n, gen, doneRef) {
-    let next = gen.next();
-    for (let i = 0; i < n; i++) {
-        if (next.done) {
-            if (doneRef)
-                doneRef.current = true;
-            return;
-        }
-        yield next.value;
-        next = gen.next();
-    }
-    if (doneRef)
-        doneRef.current = next.done ?? false;
-}
-function* filter(fn, gen) {
-    for (const x of gen) {
-        if (fn(x)) {
-            yield x;
-        }
-    }
-}
+__exportStar(require("@mandel59/mojidata-api-runtime/lib/iterator-utils"), exports);
