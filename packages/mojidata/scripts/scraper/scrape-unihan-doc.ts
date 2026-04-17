@@ -4,9 +4,15 @@ import { JSDOM } from "jsdom"
 
 const TR38_URL = process.env["TR38_URL"] ?? "https://www.unicode.org/reports/tr38/"
 export const TR38_CACHE_PATH = process.env["TR38_CACHE_PATH"]
-    ?? path.join(__dirname, "../../.cache/unihan-tr38-properties.json")
+    ?? path.join(__dirname, "../../data/unihan-tr38-properties.json")
+const LEGACY_TR38_CACHE_PATH = path.join(__dirname, "../../.cache/unihan-tr38-properties.json")
 
 export type UnihanPropertyDoc = Record<string, string>
+
+function normalizeUnihanPropertyDoc(obj: UnihanPropertyDoc): UnihanPropertyDoc {
+    const { Description: _description, ...rest } = obj
+    return rest
+}
 
 export function parseUnihanDoc(html: string): UnihanPropertyDoc[] {
     const jsdom = new JSDOM(html)
@@ -30,7 +36,7 @@ export function parseUnihanDoc(html: string): UnihanPropertyDoc[] {
         }).filter((entry): entry is [string, string] => {
             return Boolean(entry[0] && entry[1] != null)
         }))
-        array.push(obj)
+        array.push(normalizeUnihanPropertyDoc(obj))
     }
     return array
 }
@@ -38,7 +44,7 @@ export function parseUnihanDoc(html: string): UnihanPropertyDoc[] {
 export async function loadUnihanDocCache(cachePath = TR38_CACHE_PATH): Promise<UnihanPropertyDoc[] | null> {
     try {
         const text = await fs.readFile(cachePath, "utf8")
-        return JSON.parse(text) as UnihanPropertyDoc[]
+        return (JSON.parse(text) as UnihanPropertyDoc[]).map(normalizeUnihanPropertyDoc)
     } catch (err) {
         if ((err as NodeJS.ErrnoException).code === "ENOENT") {
             return null
@@ -52,7 +58,11 @@ export async function saveUnihanDocCache(
     cachePath = TR38_CACHE_PATH,
 ) {
     await fs.mkdir(path.dirname(cachePath), { recursive: true })
-    await fs.writeFile(cachePath, JSON.stringify(array, null, 2) + "\n", "utf8")
+    await fs.writeFile(
+        cachePath,
+        JSON.stringify(array.map(normalizeUnihanPropertyDoc), null, 2) + "\n",
+        "utf8",
+    )
 }
 
 async function downloadUnihanDoc(cachePath = TR38_CACHE_PATH) {
@@ -75,7 +85,15 @@ async function downloadUnihanDoc(cachePath = TR38_CACHE_PATH) {
 export async function ensureUnihanDocCache(cachePath = TR38_CACHE_PATH) {
     const cached = await loadUnihanDocCache(cachePath)
     if (cached) {
+        await saveUnihanDocCache(cached, cachePath)
         return { source: "cache" as const, properties: cached, cachePath }
+    }
+    const legacyCached = cachePath === TR38_CACHE_PATH
+        ? await loadUnihanDocCache(LEGACY_TR38_CACHE_PATH)
+        : null
+    if (legacyCached) {
+        await saveUnihanDocCache(legacyCached, cachePath)
+        return { source: "cache" as const, properties: legacyCached, cachePath }
     }
     const downloaded = await downloadUnihanDoc(cachePath)
     return { source: "download" as const, properties: downloaded, cachePath }

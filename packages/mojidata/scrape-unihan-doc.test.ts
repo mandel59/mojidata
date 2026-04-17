@@ -13,6 +13,7 @@ test("parseUnihanDoc extracts Unihan property metadata and ignores removed rows"
       <tr><td>Property</td><td>kDefinition</td></tr>
       <tr class="removed"><td>Delimiter</td><td>semicolon</td></tr>
       <tr><td>Delimiter</td><td>space</td></tr>
+      <tr><td>Description</td><td>drop me</td></tr>
     </table>
     <table summary="not-a-property">
       <tr><td>Property</td><td>ignored</td></tr>

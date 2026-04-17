@@ -1,0 +1,794 @@
+[
+  {
+    "Property": "kAccountingNumeric",
+    "Status": "Informative",
+    "Category": "Numeric Values",
+    "Introduced": "3.2",
+    "Delimiter": "N/A",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kAlternateTotalStrokes",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "15.0",
+    "Delimiter": "space",
+    "Syntax": "(\\d+:[BGHJKMPSTUV]+)|-"
+  },
+  {
+    "Property": "kBigFive",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "[0-9A-F]{4}\\'?"
+  },
+  {
+    "Property": "kCangjie",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "3.1.1",
+    "Delimiter": "N/A",
+    "Syntax": "[A-Z]+"
+  },
+  {
+    "Property": "kCantonese",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[a-z]{1,6}[1-6]"
+  },
+  {
+    "Property": "kCCCII",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[0-9A-F]{6}"
+  },
+  {
+    "Property": "kCheungBauer",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "5.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{3}\\/\\d{2};[A-Z]*;[a-z1-6\\[\\]\\/,]+"
+  },
+  {
+    "Property": "kCheungBauerIndex",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "5.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{3}\\.[01]\\d"
+  },
+  {
+    "Property": "kCihaiT",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.2",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}\\.\\d{3}"
+  },
+  {
+    "Property": "kCNS1986",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "[12E]-[0-9A-F]{4}"
+  },
+  {
+    "Property": "kCNS1992",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "[1-9]-[0-9A-F]{4}"
+  },
+  {
+    "Property": "kCompatibilityVariant",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.2",
+    "Delimiter": "N/A",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}"
+  },
+  {
+    "Property": "kCowles",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{1,4}(\\.\\d{1,2})?"
+  },
+  {
+    "Property": "kDaeJaweon",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}\\.\\d{2}[01]"
+  },
+  {
+    "Property": "kDefinition",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "[^\\t\"]+"
+  },
+  {
+    "Property": "kEACC",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "[0-9A-F]{6}"
+  },
+  {
+    "Property": "kFanqie",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "16.0",
+    "Delimiter": "space",
+    "Syntax": "[\\x{3400}-\\x{4DBF}\\x{4E00}-\\x{9FFF}\\x{20000}-\\x{2A6DF}]{2}"
+  },
+  {
+    "Property": "kFenn",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "\\d+a?[A-KP*]"
+  },
+  {
+    "Property": "kFennIndex",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "4.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{1,3}\\.[01]\\d"
+  },
+  {
+    "Property": "kFourCornerCode",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "5.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}(\\.\\d)?"
+  },
+  {
+    "Property": "kGB0",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kGB1",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kGB3",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kGB5",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kGB8",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kGradeLevel",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "3.2",
+    "Delimiter": "N/A",
+    "Syntax": "[1-6]"
+  },
+  {
+    "Property": "kGSR",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "4.0.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}[a-vx-z]\\'?"
+  },
+  {
+    "Property": "kHangul",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "5.0",
+    "Delimiter": "space",
+    "Syntax": "[\\x{1100}-\\x{1112}][\\x{1161}-\\x{1175}][\\x{11A8}-\\x{11C2}]?:[01ENX]{1,3}"
+  },
+  {
+    "Property": "kHanYu",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[1-8]\\d{4}\\.[0-3]\\d[0-3]"
+  },
+  {
+    "Property": "kHanyuPinlu",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "4.0.1",
+    "Delimiter": "space",
+    "Syntax": "[a-z\\x{300}-\\x{302}\\x{304}\\x{308}\\x{30C}]+\\(\\d+\\)"
+  },
+  {
+    "Property": "kHanyuPinyin",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "5.2",
+    "Delimiter": "space",
+    "Syntax": "(\\d{5}\\.\\d{2}0,)*\\d{5}\\.\\d{2}0:([a-z\\x{300}-\\x{302}\\x{304}\\x{308}\\x{30C}]+,)*[a-z\\x{300}-\\x{302}\\x{304}\\x{308}\\x{30C}]+"
+  },
+  {
+    "Property": "kHDZRadBreak",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "4.1",
+    "Delimiter": "N/A",
+    "Syntax": "[\\x{2F00}-\\x{2FD5}]\\[U\\+2F[0-9A-D][0-9A-F]\\]:[1-8]\\d{4}\\.[0-3]\\d0"
+  },
+  {
+    "Property": "kHKGlyph",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kIBMJapan",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "F[ABC][0-9A-F]{2}"
+  },
+  {
+    "Property": "kIICore",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "4.1",
+    "Delimiter": "space",
+    "Syntax": "[ABC][GHJKMPT]{1,7}"
+  },
+  {
+    "Property": "kIRGDaeJaweon",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}\\.\\d{2}[01]"
+  },
+  {
+    "Property": "kIRGHanyuDaZidian",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.0",
+    "Delimiter": "space",
+    "Syntax": "[1-8]\\d{4}\\.[0-3]\\d[01]"
+  },
+  {
+    "Property": "kIRGKangXi",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.0",
+    "Delimiter": "space",
+    "Syntax": "[01]\\d{3}\\.[0-7]\\d[01]"
+  },
+  {
+    "Property": "kIRG_GSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.0",
+    "Delimiter": "N/A",
+    "Syntax": "G[013578EKS]-[0-9A-F]{4}\n| G(DZ|GH|RM|WZ|XC|XH|ZH)-\\d{4}\\.\\d{2}\n| GKX-\\d{4}\\.\\d{2,3}\n| G(HZ|HZR)-\\d{5}\\.\\d{2}\n| G(CE|FC|IDC23|OCD|XHZ)-\\d{3}\n| G(H|HF|LGYJ|PGLG|T|ZHSJ)-\\d{4}\n| G(4K|CESI|CYY|DM|GT|JZ|KJ|XM|WY|ZFY|ZJW|ZYS)-\\d{5}\n| G(FZ|IDC)-[0-9A-F]{4}\n| GCA-[A-Z]\\d{4}\n| GGFZ-\\d{6}\n| G(BK|LK|Z)-\\d{7}\n| G(CH|CY|HC|U)-[023][0-9A-F]{4}\n| GZA-[123467]\\d{5}"
+  },
+  {
+    "Property": "kIRG_HSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.1",
+    "Delimiter": "N/A",
+    "Syntax": "H-[0-9A-F]{4}\n| H(B[012])-[0-9A-F]{4}\n| HD-[23]?[0-9A-F]{4}\n| HU-[023][0-9A-F]{4}"
+  },
+  {
+    "Property": "kIRG_JSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.0",
+    "Delimiter": "N/A",
+    "Syntax": "J[014]-[0-9A-F]{4}\n| J3A?-[0-9A-F]{4}\n| J13A?-[0-9A-F]{4}\n| J14-[0-9A-F]{4}\n| JA[34]?-[0-9A-F]{4}\n| JARIB-[0-9A-F]{4}\n| JH-(JT[ABC][0-9A-F]{3}S?|IB\\d{4}|\\d{6})\n| JK-\\d{5}\n| JMJ-\\d{6}"
+  },
+  {
+    "Property": "kIRG_KPSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.1.1",
+    "Delimiter": "N/A",
+    "Syntax": "KP([01]-[0-9A-F]{4}|U-[023][0-9A-F]{4})"
+  },
+  {
+    "Property": "kIRG_KSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.0",
+    "Delimiter": "N/A",
+    "Syntax": "K[0-6]-[0-9A-F]{4}\n| KC-\\d{5}\n| KU-[023][0-9A-F]{4}"
+  },
+  {
+    "Property": "kIRG_MSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "5.2",
+    "Delimiter": "N/A",
+    "Syntax": "MA-[0-9A-F]{4}\n| MB[12]-[0-9A-F]{4}\n| MC-\\d{5}\n| MDH?-[23]?[0-9A-F]{4}"
+  },
+  {
+    "Property": "kIRG_SSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "13.0",
+    "Delimiter": "N/A",
+    "Syntax": "SATM?-\\d{5}"
+  },
+  {
+    "Property": "kIRG_TSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.0",
+    "Delimiter": "N/A",
+    "Syntax": "T([1-79A-F]|1[1-3])-[0-9A-F]{4}\n| TU-[023][0-9A-F]{4}"
+  },
+  {
+    "Property": "kIRG_UKSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "13.0",
+    "Delimiter": "N/A",
+    "Syntax": "UK-\\d{5}"
+  },
+  {
+    "Property": "kIRG_USource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "4.0.1",
+    "Delimiter": "N/A",
+    "Syntax": "UTC-\\d{5}"
+  },
+  {
+    "Property": "kIRG_VSource",
+    "Status": "Normative",
+    "Category": "IRG Sources",
+    "Introduced": "3.0",
+    "Delimiter": "N/A",
+    "Syntax": "V[0-4]-[0-9A-F]{4}\n| VN-[023F][0-9A-F]{4}"
+  },
+  {
+    "Property": "kJapanese",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "[\\x{3041}-\\x{3096}\\x{3099}\\x{309A}\\x{30A1}-\\x{30FA}\\x{30FC}]+"
+  },
+  {
+    "Property": "kJapaneseKun",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[A-Z]+"
+  },
+  {
+    "Property": "kJapaneseOn",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[A-Z]+"
+  },
+  {
+    "Property": "kJinmeiyoKanji",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "11.0",
+    "Delimiter": "space",
+    "Syntax": "(20\\d{2})(:U\\+[23]?[0-9A-F]{4})?"
+  },
+  {
+    "Property": "kJis0",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kJIS0213",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "[12],\\d{2},\\d{1,2}"
+  },
+  {
+    "Property": "kJis1",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kJoyoKanji",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "11.0",
+    "Delimiter": "space",
+    "Syntax": "(20\\d{2})|(U\\+[23]?[0-9A-F]{4})"
+  },
+  {
+    "Property": "kKangXi",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}\\.\\d{2}[01]"
+  },
+  {
+    "Property": "kKarlgren",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}[A*]?"
+  },
+  {
+    "Property": "kKorean",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[A-Z]+"
+  },
+  {
+    "Property": "kKoreanEducationHanja",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "11.0",
+    "Delimiter": "space",
+    "Syntax": "20\\d{2}"
+  },
+  {
+    "Property": "kKoreanName",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "11.0",
+    "Delimiter": "space",
+    "Syntax": "20\\d{2}"
+  },
+  {
+    "Property": "kLau",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}"
+  },
+  {
+    "Property": "kMainlandTelegraph",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kMandarin",
+    "Status": "Informative",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[a-z\\x{300}-\\x{302}\\x{304}\\x{308}\\x{30C}]+"
+  },
+  {
+    "Property": "kMatthews",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}(a|\\.5)?"
+  },
+  {
+    "Property": "kMeyerWempe",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.1",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}[a-t*]?"
+  },
+  {
+    "Property": "kMojiJoho",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "MJ\\d{6}(:(FE0[01]|E01[01][0-9A-F]))?"
+  },
+  {
+    "Property": "kMorohashi",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "(\\d{5}\\'{0,2}|H\\d{3})(:(FE0[01]|E010[0-9A-F]))?"
+  },
+  {
+    "Property": "kNelson",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kOtherNumeric",
+    "Status": "Informative",
+    "Category": "Numeric Values",
+    "Introduced": "3.2",
+    "Delimiter": "space",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kPhonetic",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "3.1",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,3}[A-D]?\\*?"
+  },
+  {
+    "Property": "kPrimaryNumeric",
+    "Status": "Informative",
+    "Category": "Numeric Values",
+    "Introduced": "3.2",
+    "Delimiter": "space",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kPseudoGB1",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "N/A",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kRSAdobe_Japan1_6",
+    "Status": "Provisional",
+    "Category": "Radical-Stroke Counts",
+    "Introduced": "4.1",
+    "Delimiter": "space",
+    "Syntax": "[CV]\\+\\d{1,5}\\+[1-9]\\d{0,2}\\.[1-9]\\d?\\.\\d{1,2}"
+  },
+  {
+    "Property": "kRSUnicode",
+    "Status": "Informative",
+    "Category": "IRG Sources",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "[1-9]\\d{0,2}\\'{0,3}\\.-?\\d{1,2}"
+  },
+  {
+    "Property": "kSBGY",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "3.2",
+    "Delimiter": "space",
+    "Syntax": "\\d{3}\\.[0-7]\\d"
+  },
+  {
+    "Property": "kSemanticVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}(<[ks][A-Za-z0-9_]+(:[TBZFJ]+)?(,[ks][A-Za-z0-9_]+(:[TBZFJ]+)?)*)?"
+  },
+  {
+    "Property": "kSimplifiedVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}"
+  },
+  {
+    "Property": "kSMSZD2003Index",
+    "Status": "Provisional",
+    "Category": "Dictionary Indices",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{1,3}\\.\\d{2}"
+  },
+  {
+    "Property": "kSMSZD2003Readings",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "[a-z\\x{300}\\x{301}\\x{302}\\x{304}\\x{308}\\x{30C}]+(,[a-z\\x{300}\\x{301}\\x{302}\\x{304}\\x{308}\\x{30C}]+)*\\x{7CB5}[a-z]+[1-6]([a-z]+[1-6])?(,[a-z]+[1-6]([a-z]+[1-6])?)*"
+  },
+  {
+    "Property": "kSpecializedSemanticVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}(<[ks][A-Za-z0-9_]+(:[TBZFJ]+)?(,[ks][A-Za-z0-9_]+(:[TBZFJ]+)?)*)?"
+  },
+  {
+    "Property": "kSpoofingVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "13.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}"
+  },
+  {
+    "Property": "kStrange",
+    "Status": "Provisional",
+    "Category": "Dictionary-like Data",
+    "Introduced": "14.0",
+    "Delimiter": "space",
+    "Syntax": "[ACU]\n| B:U\\+31[0-2AB][0-9A-F]\n| [MORY](:U\\+[23]?[0-9A-F]{4})?\n| H(:U\\+31[3-8][0-9A-F])+\n| I(:U\\+[23]?[0-9A-F]{4})*\n| K(:U\\+30[A-F][0-9A-F])+\n| S:[4-9]\\d"
+  },
+  {
+    "Property": "kTaiwanTelegraph",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}"
+  },
+  {
+    "Property": "kTang",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\*?[A-Za-z()\\x{E6}\\x{251}\\x{259}\\x{25B}\\x{300}\\x{30C}]+"
+  },
+  {
+    "Property": "kTayNumeric",
+    "Status": "Provisional",
+    "Category": "Numeric Values",
+    "Introduced": "17.0",
+    "Delimiter": "space",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kTGH",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "11.0",
+    "Delimiter": "space",
+    "Syntax": "20\\d{2}:[1-9]\\d{0,3}"
+  },
+  {
+    "Property": "kTGHZ2013",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "13.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{3}\\.\\d{3}(,\\d{3}\\.\\d{3})*:[a-z\\x{300}-\\x{302}\\x{304}\\x{308}\\x{30C}]+"
+  },
+  {
+    "Property": "kTotalStrokes",
+    "Status": "Informative",
+    "Category": "IRG Sources",
+    "Introduced": "3.1",
+    "Delimiter": "N/A",
+    "Syntax": "[1-9]\\d{0,2}"
+  },
+  {
+    "Property": "kTraditionalVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}"
+  },
+  {
+    "Property": "kUnihanCore2020",
+    "Status": "Informative",
+    "Category": "Dictionary-like Data",
+    "Introduced": "13.0",
+    "Delimiter": "N/A",
+    "Syntax": "[GHJKMPT]{1,7}"
+  },
+  {
+    "Property": "kVietnamese",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "3.1.1",
+    "Delimiter": "space",
+    "Syntax": "[A-Za-z\\x{110}\\x{111}\\x{300}-\\x{303}\\x{306}\\x{309}\\x{31B}\\x{323}]+"
+  },
+  {
+    "Property": "kVietnameseNumeric",
+    "Status": "Provisional",
+    "Category": "Numeric Values",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kXerox",
+    "Status": "Provisional",
+    "Category": "Other Mappings",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "\\d{3}:\\d{3}"
+  },
+  {
+    "Property": "kXHC1983",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "5.1",
+    "Delimiter": "space",
+    "Syntax": "\\d{4}\\.\\d{3}\\*?(,\\d{4}\\.\\d{3}\\*?)*:[a-z\\x{300}\\x{301}\\x{304}\\x{308}\\x{30C}]+"
+  },
+  {
+    "Property": "kZhuang",
+    "Status": "Provisional",
+    "Category": "Readings",
+    "Introduced": "16.0",
+    "Delimiter": "space",
+    "Syntax": "[a-z]+\\*?"
+  },
+  {
+    "Property": "kZhuangNumeric",
+    "Status": "Provisional",
+    "Category": "Numeric Values",
+    "Introduced": "15.1",
+    "Delimiter": "space",
+    "Syntax": "\\d+"
+  },
+  {
+    "Property": "kZVariant",
+    "Status": "Provisional",
+    "Category": "Variants",
+    "Introduced": "2.0",
+    "Delimiter": "space",
+    "Syntax": "U\\+[23]?[0-9A-F]{4}(<[ks][A-Za-z0-9_]+(:[TBZ]+)?(,[ks][A-Za-z0-9_]+(:[TBZ]+)?)*)?"
+  }
+]

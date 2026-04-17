@@ -13,6 +13,7 @@
     "CHANGELOG.md",
     "LICENSE.md",
     "download.txt",
+    "data/*",
     "dist/*",
     "licenses/*"
   ],
