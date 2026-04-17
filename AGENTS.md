@@ -9,6 +9,8 @@
   jj commit path/to/file.ts -m "Refactor DB executor boundary" -m "Introduce SqlExecutor and move sql.js-specific statement handling into an adapter." -m "Generated-by: Codex/GPT-5.4"
   ```
 
+- When using Jujutsu, create a commit each time a coherent unit of work is completed.  
+
 - Sandbox/approval note: in restricted environments, these typically require permission escalation:
   - `jj commit` (needs to write to `.git/objects` to create commit objects)
   - Integration tests that start local servers / bind ports (e.g. Vite) or launch browsers (e.g. Playwright)
