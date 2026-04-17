@@ -1,1 +1,1 @@
-export { createApp } from "./internal/app"
+export { createApp } from "@mandel59/mojidata-api-hono"

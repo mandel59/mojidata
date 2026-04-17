@@ -1,1 +1,1 @@
-export { createMojidataApiWorkerClient } from "./internal/runtime/browser-client";
+export { createMojidataApiWorkerClient } from "@mandel59/mojidata-api-runtime";

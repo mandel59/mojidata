@@ -1,8 +1,9 @@
 export {
   createMojidataDbProvider,
+  installMojidataSqlFunctions,
   createSqlJsExecutor,
   getSqlJsNode,
   getSqlJsWeb,
   openDatabaseFromFile,
   openDatabaseFromUrl,
-} from "./internal/adapter/sqljs"
+} from "@mandel59/mojidata-api-sqljs"

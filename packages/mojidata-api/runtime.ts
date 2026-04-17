@@ -1,9 +1,8 @@
-export { createNodeApp, createNodeDb } from "./internal/runtime/node"
-export type { NodeDbBackend } from "./internal/runtime/node"
-export { createMojidataApiWorkerClient } from "./internal/runtime/browser-client"
+export { createNodeApp, createNodeDb, createMojidataApiWorkerClient } from "@mandel59/mojidata-api-runtime"
 export type {
+  NodeDbBackend,
   WorkerCall,
   WorkerInit,
   WorkerRequest,
   WorkerResponse,
-} from "./api/v1/_lib/worker-protocol"
+} from "@mandel59/mojidata-api-runtime"

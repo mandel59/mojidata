@@ -29,6 +29,10 @@
     "@mandel59/idsdb": "^1.7.0",
     "@mandel59/idsdb-utils": "^1.7.0",
     "@mandel59/mojidata": "^1.7.0",
+    "@mandel59/mojidata-api-core": "^1.7.0",
+    "@mandel59/mojidata-api-hono": "^1.7.0",
+    "@mandel59/mojidata-api-runtime": "^1.7.0",
+    "@mandel59/mojidata-api-sqljs": "^1.7.0",
     "hono": "^4.9.0",
     "sql.js": "^1.13.0"
   },

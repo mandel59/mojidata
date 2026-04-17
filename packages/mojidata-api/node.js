@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNodeDb = exports.createNodeApp = void 0;
-var node_1 = require("./internal/runtime/node");
-Object.defineProperty(exports, "createNodeApp", { enumerable: true, get: function () { return node_1.createNodeApp; } });
-Object.defineProperty(exports, "createNodeDb", { enumerable: true, get: function () { return node_1.createNodeDb; } });
+var mojidata_api_runtime_1 = require("@mandel59/mojidata-api-runtime");
+Object.defineProperty(exports, "createNodeApp", { enumerable: true, get: function () { return mojidata_api_runtime_1.createNodeApp; } });
+Object.defineProperty(exports, "createNodeDb", { enumerable: true, get: function () { return mojidata_api_runtime_1.createNodeDb; } });
