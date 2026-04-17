@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNodeDb = createNodeDb;
 exports.createNodeApp = createNodeApp;
-const app_1 = require("./app");
+const hono_1 = require("./hono");
 const mojidata_api_db_sql_1 = require("./api/v1/_lib/mojidata-api-db-sql");
 const mojidata_db_1 = require("./api/v1/_lib/mojidata-db");
 const promise_cache_1 = require("./api/v1/_lib/promise-cache");
@@ -16,5 +16,5 @@ function createNodeDb() {
     return (0, mojidata_api_db_sql_1.createSqlApiDb)({ getMojidataDb, getIdsfindDb });
 }
 function createNodeApp() {
-    return (0, app_1.createApp)(createNodeDb());
+    return (0, hono_1.createApp)(createNodeDb());
 }

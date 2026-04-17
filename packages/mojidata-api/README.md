@@ -7,6 +7,7 @@ This package can run in both:
 It also exposes lower-level entry points for composing the API yourself:
 
 - `@mandel59/mojidata-api/core`: backend-neutral SQL API composition
+- `@mandel59/mojidata-api/hono`: Hono app wiring
 - `@mandel59/mojidata-api/sqljs`: `sql.js` executor and openers
 
 ## Tests
@@ -76,7 +77,7 @@ The exact way to obtain asset URLs depends on your bundler. For example, with Vi
 
 ```ts
 import wasmUrl from "sql.js/dist/sql-wasm.wasm?url"
-import { createApp } from "@mandel59/mojidata-api/app"
+import { createApp } from "@mandel59/mojidata-api/hono"
 import { createMojidataApiWorkerClient } from "@mandel59/mojidata-api/browser-client"
 
 const worker = new Worker(
@@ -108,6 +109,7 @@ If you want to wire the API together yourself instead of using `createNodeDb()`,
 
 ```ts
 import { createSqlApiDb } from "@mandel59/mojidata-api/core"
+import { createApp } from "@mandel59/mojidata-api/hono"
 import { createMojidataDbProvider, createSqlJsExecutor, openDatabaseFromFile } from "@mandel59/mojidata-api/sqljs"
 
 const getMojidataDb = createMojidataDbProvider(() =>
@@ -120,4 +122,5 @@ const getIdsfindDb = async () =>
   )
 
 const db = createSqlApiDb({ getMojidataDb, getIdsfindDb })
+const app = createApp(db)
 ```

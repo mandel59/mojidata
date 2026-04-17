@@ -1,4 +1,4 @@
-import { createApp } from "./app"
+import { createApp } from "./hono"
 
 import type { MojidataApiDb } from "./api/v1/_lib/mojidata-api-db"
 import { createSqlApiDb } from "./api/v1/_lib/mojidata-api-db-sql"
