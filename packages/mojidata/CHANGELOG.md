@@ -5,11 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.2] - 2026-02-15
+
+### Changed
+
+- Build script now explicitly downloads `ids-unicode-17.0.txt` during `scripts/build`.
+- `prepare` now skips full DB regeneration when build inputs are unchanged (incremental hash check).
+
 ## [1.7.0] - 2026-01-25
 
 - IDS build: Support patch files (e.g. `ids-unicode-17.0.txt`) with last-file-wins overwrite by UCS.
 - download.txt: Pin `ids-unicode-17.0.txt` URL to a specific commit for reproducible downloads.
 
+[1.7.2]: https://github.com/mandel59/mojidata/compare/v1.7.0...v1.7.2
 [1.7.0]: https://github.com/mandel59/mojidata/compare/v1.6.2...v1.7.0
 
 ## [1.6.2] - 2025-09-11

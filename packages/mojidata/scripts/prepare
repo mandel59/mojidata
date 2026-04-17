@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+STAMP="dist/.moji.db.input.sha256"
+CURRENT_HASH="$(python3 scripts/db-input-hash.py)"
+
+if [ -f dist/moji.db ] && [ -f "$STAMP" ]; then
+  PREV_HASH="$(cat "$STAMP")"
+  if [ "$CURRENT_HASH" = "$PREV_HASH" ]; then
+    echo "mojidata prepare: inputs unchanged, skipping rebuild"
+    exit 0
+  fi
+fi
+
+echo "mojidata prepare: inputs changed (or first build), rebuilding"
+bash scripts/clean
+bash scripts/build
+mkdir -p dist
+echo "$CURRENT_HASH" > "$STAMP"

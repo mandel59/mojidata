@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "description": "Mojidata Character Database",
   "homepage": "https://github.com/mandel59/mojidata/",
   "repository": {
@@ -23,7 +23,7 @@
     "build": "bash scripts/build",
     "cache-unihan-doc": "bash scripts/cache-unihan-doc",
     "test": "ava",
-    "prepare": "bash scripts/clean && bash scripts/build",
+    "prepare": "bash scripts/prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
