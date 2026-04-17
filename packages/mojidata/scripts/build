@@ -41,4 +41,5 @@ scripts/download cjkvi-variants_ucs-scs.txt
 scripts/download cjkvi-variants_x0212-x0213-variants.txt
 scripts/download tghb.txt
 scripts/download tghb_variants.txt
+scripts/cache-unihan-doc
 ts-node --transpile-only scripts/create-db.ts

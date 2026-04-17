@@ -21,6 +21,7 @@
     "run-gc": "ts-node --transpile-only scripts/cache-gc.ts | sh",
     "clean": "bash scripts/clean",
     "build": "bash scripts/build",
+    "cache-unihan-doc": "bash scripts/cache-unihan-doc",
     "test": "ava",
     "prepare": "bash scripts/clean && bash scripts/build",
     "publish": "yarn prepare && yarn npm publish --access public",

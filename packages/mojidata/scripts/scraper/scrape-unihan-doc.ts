@@ -3,7 +3,7 @@ import path from "path"
 import { JSDOM } from "jsdom"
 
 const TR38_URL = process.env["TR38_URL"] ?? "https://www.unicode.org/reports/tr38/"
-const TR38_CACHE_PATH = process.env["TR38_CACHE_PATH"]
+export const TR38_CACHE_PATH = process.env["TR38_CACHE_PATH"]
     ?? path.join(__dirname, "../../.cache/unihan-tr38-properties.json")
 
 export type UnihanPropertyDoc = Record<string, string>
@@ -35,7 +35,7 @@ export function parseUnihanDoc(html: string): UnihanPropertyDoc[] {
     return array
 }
 
-async function loadUnihanDocCache(cachePath = TR38_CACHE_PATH): Promise<UnihanPropertyDoc[] | null> {
+export async function loadUnihanDocCache(cachePath = TR38_CACHE_PATH): Promise<UnihanPropertyDoc[] | null> {
     try {
         const text = await fs.readFile(cachePath, "utf8")
         return JSON.parse(text) as UnihanPropertyDoc[]
@@ -47,7 +47,7 @@ async function loadUnihanDocCache(cachePath = TR38_CACHE_PATH): Promise<UnihanPr
     }
 }
 
-async function saveUnihanDocCache(
+export async function saveUnihanDocCache(
     array: UnihanPropertyDoc[],
     cachePath = TR38_CACHE_PATH,
 ) {
@@ -55,26 +55,35 @@ async function saveUnihanDocCache(
     await fs.writeFile(cachePath, JSON.stringify(array, null, 2) + "\n", "utf8")
 }
 
-export async function scrapeUnihanDoc() {
-    const cached = await loadUnihanDocCache()
-    if (cached) {
-        return cached
-    }
-
+async function downloadUnihanDoc(cachePath = TR38_CACHE_PATH) {
     try {
         const jsdom = await JSDOM.fromURL(TR38_URL)
         const array = parseUnihanDoc(jsdom.serialize())
-        await saveUnihanDocCache(array)
+        await saveUnihanDocCache(array, cachePath)
         return array
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
         throw new Error(
             `Failed to load TR38 property metadata from ${TR38_URL}. ` +
-            `No cache was found at ${TR38_CACHE_PATH}. ` +
+            `No cache was found at ${cachePath}. ` +
             `Run the build once with network access to populate the cache, or provide TR38_CACHE_PATH. ` +
             `Original error: ${message}`,
         )
     }
+}
+
+export async function ensureUnihanDocCache(cachePath = TR38_CACHE_PATH) {
+    const cached = await loadUnihanDocCache(cachePath)
+    if (cached) {
+        return { source: "cache" as const, properties: cached, cachePath }
+    }
+    const downloaded = await downloadUnihanDoc(cachePath)
+    return { source: "download" as const, properties: downloaded, cachePath }
+}
+
+export async function scrapeUnihanDoc() {
+    const { properties } = await ensureUnihanDocCache()
+    return properties
 }
 
 async function main() {

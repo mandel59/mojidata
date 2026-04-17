@@ -3,7 +3,7 @@ import fs from "fs/promises"
 import os from "os"
 import path from "path"
 
-import { parseUnihanDoc } from "./scripts/scraper/scrape-unihan-doc"
+import { ensureUnihanDocCache, parseUnihanDoc } from "./scripts/scraper/scrape-unihan-doc"
 
 test("parseUnihanDoc extracts Unihan property metadata and ignores removed rows", t => {
     const html = `<!doctype html>
@@ -51,4 +51,21 @@ test("scrapeUnihanDoc reads cached JSON when TR38_CACHE_PATH is set", async t =>
         }
         await fs.rm(tempDir, { recursive: true, force: true })
     }
+})
+
+test("ensureUnihanDocCache reports cache hits", async t => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "mojidata-tr38-cache-hit-"))
+    const cachePath = path.join(tempDir, "unihan-tr38-properties.json")
+    const cached = [
+        { Property: "kTotalStrokes", Delimiter: "space" },
+    ]
+    await fs.writeFile(cachePath, JSON.stringify(cached), "utf8")
+
+    t.deepEqual(await ensureUnihanDocCache(cachePath), {
+        source: "cache",
+        properties: cached,
+        cachePath,
+    })
+
+    await fs.rm(tempDir, { recursive: true, force: true })
 })
