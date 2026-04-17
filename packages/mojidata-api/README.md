@@ -6,12 +6,25 @@ This package can run in both:
 
 ## Tests
 
-Integration tests live under `tests/` and call the running API server.
+Tests live under `tests/`.
 
-- Default base URL: `http://localhost:3001`
-- Override with: `MOJIDATA_API_BASE_URL=http://localhost:3001 yarn test`
+By default, they run against an in-process `createNodeApp()` instance, so no server startup is required:
 
-If you need to start the dev server: `yarn dev`
+```sh
+yarn test
+```
+
+If you want to target an already-running server instead, set `MOJIDATA_API_BASE_URL`:
+
+```sh
+MOJIDATA_API_BASE_URL=http://localhost:3001 yarn test
+```
+
+If needed, start the dev server with:
+
+```sh
+yarn dev
+```
 
 ## Benchmarks
 
