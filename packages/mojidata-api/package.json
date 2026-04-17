@@ -1,18 +1,62 @@
 {
   "name": "@mandel59/mojidata-api",
   "version": "1.7.1",
-  "description": "",
+  "description": "Compatibility facade package for mojidata-api split packages",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./app": {
+      "types": "./app.d.ts",
+      "require": "./app.js",
+      "default": "./app.js"
+    },
+    "./browser-client": {
+      "types": "./browser-client.d.ts",
+      "require": "./browser-client.js",
+      "default": "./browser-client.js"
+    },
+    "./browser-worker": {
+      "types": "./browser-worker.d.ts",
+      "require": "./browser-worker.js",
+      "default": "./browser-worker.js"
+    },
+    "./core": {
+      "types": "./core.d.ts",
+      "require": "./core.js",
+      "default": "./core.js"
+    },
+    "./hono": {
+      "types": "./hono.d.ts",
+      "require": "./hono.js",
+      "default": "./hono.js"
+    },
+    "./node": {
+      "types": "./node.d.ts",
+      "require": "./node.js",
+      "default": "./node.js"
+    },
+    "./runtime": {
+      "types": "./runtime.d.ts",
+      "require": "./runtime.js",
+      "default": "./runtime.js"
+    },
+    "./sqljs": {
+      "types": "./sqljs.d.ts",
+      "require": "./sqljs.js",
+      "default": "./sqljs.js"
+    }
+  },
   "files": [
-    "*.ts",
     "*.js",
     "*.d.ts",
-    "api",
     "openapi.yaml",
     "CHANGELOG.md",
     "README.md",
-    "LICENSE",
-    "tsconfig.json"
+    "LICENSE"
   ],
   "scripts": {
     "start": "node --import tsx ./server.ts",
@@ -26,15 +70,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/idsdb": "^1.7.0",
-    "@mandel59/idsdb-utils": "^1.7.0",
-    "@mandel59/mojidata": "^1.7.0",
     "@mandel59/mojidata-api-core": "^1.7.0",
     "@mandel59/mojidata-api-hono": "^1.7.0",
     "@mandel59/mojidata-api-runtime": "^1.7.0",
-    "@mandel59/mojidata-api-sqljs": "^1.7.0",
-    "hono": "^4.9.0",
-    "sql.js": "^1.13.0"
+    "@mandel59/mojidata-api-sqljs": "^1.7.0"
   },
   "peerDependencies": {
     "@hono/node-server": "^1.19.7",

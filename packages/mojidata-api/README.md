@@ -1,6 +1,9 @@
 # Mojidata API
 
-This package can run in both:
+`@mandel59/mojidata-api` is the compatibility facade for the split `mojidata-api` packages.
+New compositions should prefer the split packages directly, but the legacy subpath entrypoints remain available.
+
+This facade package can run in both:
 - Node.js (HTTP server via Hono)
 - Browser (Hono `app.fetch` + SQL.js running in a WebWorker)
 
@@ -11,7 +14,7 @@ It also has split packages for composing the API yourself:
 - `@mandel59/mojidata-api-runtime`: Node defaults and worker client helpers
 - `@mandel59/mojidata-api-sqljs`: `sql.js` executor and openers
 
-The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades.
+The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades and forward to the split packages.
 
 For Node.js, `createNodeDb()` defaults to `sql.js`, but it can also use
 `better-sqlite3`:

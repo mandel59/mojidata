@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict'
+import fs from 'node:fs'
+import path from 'node:path'
 import { describe, test } from 'node:test'
 
 import { createSqlApiDb } from '../core'
@@ -17,5 +19,23 @@ describe('package entrypoints', () => {
     assert.equal(typeof createSqlJsExecutor, 'function')
     assert.equal(typeof openDatabaseFromFile, 'function')
     assert.equal(typeof createNodeDb({ backend: 'better-sqlite3' }), 'object')
+  })
+
+  test('declares only facade subpath exports', () => {
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
+    ) as { exports: Record<string, unknown> }
+
+    assert.deepEqual(Object.keys(packageJson.exports).sort(), [
+      '.',
+      './app',
+      './browser-client',
+      './browser-worker',
+      './core',
+      './hono',
+      './node',
+      './runtime',
+      './sqljs',
+    ])
   })
 })
