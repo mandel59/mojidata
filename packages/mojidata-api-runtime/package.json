@@ -19,6 +19,8 @@
   "files": [
     "index.js",
     "index.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"
@@ -30,9 +32,22 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api": "^1.7.1"
+    "@mandel59/idsdb": "^1.7.0",
+    "@mandel59/mojidata": "^1.7.0",
+    "@mandel59/mojidata-api-core": "^1.7.0",
+    "@mandel59/mojidata-api-hono": "^1.7.0",
+    "@mandel59/mojidata-api-sqljs": "^1.7.0"
+  },
+  "peerDependencies": {
+    "better-sqlite3": "^12.5.0"
+  },
+  "peerDependenciesMeta": {
+    "better-sqlite3": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^24.10.4",
     "typescript": "^5.9.3"
   }

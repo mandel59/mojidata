@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.openDatabaseFromUrl = exports.getSqlJsWeb = exports.openDatabaseFromFile = exports.getSqlJsNode = exports.createSqlJsExecutor = exports.createMojidataDbProvider = void 0;
+exports.openDatabaseFromUrl = exports.getSqlJsWeb = exports.openDatabaseFromFile = exports.getSqlJsNode = exports.createSqlJsExecutor = exports.installMojidataSqlFunctions = exports.createMojidataDbProvider = void 0;
 var mojidata_db_1 = require("./lib/mojidata-db");
 Object.defineProperty(exports, "createMojidataDbProvider", { enumerable: true, get: function () { return mojidata_db_1.createMojidataDbProvider; } });
+Object.defineProperty(exports, "installMojidataSqlFunctions", { enumerable: true, get: function () { return mojidata_db_1.installMojidataSqlFunctions; } });
 var sqljs_executor_1 = require("./lib/sqljs-executor");
 Object.defineProperty(exports, "createSqlJsExecutor", { enumerable: true, get: function () { return sqljs_executor_1.createSqlJsExecutor; } });
 var sqljs_node_1 = require("./lib/sqljs-node");

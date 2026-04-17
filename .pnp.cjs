@@ -67,10 +67,10 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/idsdb-utils", ["workspace:packages/idsdb-utils"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
-    ["@mandel59/mojidata-api", ["virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api", "workspace:packages/mojidata-api"]],\
+    ["@mandel59/mojidata-api", ["virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#workspace:packages/mojidata-api", "workspace:packages/mojidata-api"]],\
     ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
     ["@mandel59/mojidata-api-hono", ["workspace:packages/mojidata-api-hono"]],\
-    ["@mandel59/mojidata-api-runtime", ["workspace:packages/mojidata-api-runtime"]],\
+    ["@mandel59/mojidata-api-runtime", ["virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"]],\
     ["@mandel59/mojidata-api-sqljs", ["workspace:packages/mojidata-api-sqljs"]],\
     ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
     ["@mandel59/react-mojidata-api", ["workspace:packages/react-mojidata-api"]],\
@@ -658,10 +658,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:d0a31ccdfd65be19e281e20a521c9137553a8a6a789d0a6531b5730ff8bfdda5c580db264cad058199015c91d5a42f3cd74805c00f963b932de333cc7248f704#npm:1.19.7", {\
-        "packageLocation": "./.yarn/__virtual__/@hono-node-server-virtual-61f057462e/0/cache/@hono-node-server-npm-1.19.7-36ea20883c-dea40ddd8b.zip/node_modules/@hono/node-server/",\
+      ["virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7", {\
+        "packageLocation": "./.yarn/__virtual__/@hono-node-server-virtual-3243baa889/0/cache/@hono-node-server-npm-1.19.7-36ea20883c-dea40ddd8b.zip/node_modules/@hono/node-server/",\
         "packageDependencies": [\
-          ["@hono/node-server", "virtual:d0a31ccdfd65be19e281e20a521c9137553a8a6a789d0a6531b5730ff8bfdda5c580db264cad058199015c91d5a42f3cd74805c00f963b932de333cc7248f704#npm:1.19.7"],\
+          ["@hono/node-server", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7"],\
           ["@types/hono", null],\
           ["hono", "npm:4.11.1"]\
         ],\
@@ -768,7 +768,7 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/idstool", "workspace:packages/idstool"],\
-          ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-runtime", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime"],\
           ["@types/node", "npm:24.10.4"],\
           ["ava", "npm:3.15.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
@@ -813,14 +813,14 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/mojidata-api", [\
-      ["virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api", {\
-        "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-virtual-d0a31ccdfd/1/packages/mojidata-api/",\
+      ["virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#workspace:packages/mojidata-api", {\
+        "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-virtual-030b794b08/1/packages/mojidata-api/",\
         "packageDependencies": [\
-          ["@hono/node-server", "virtual:d0a31ccdfd65be19e281e20a521c9137553a8a6a789d0a6531b5730ff8bfdda5c580db264cad058199015c91d5a42f3cd74805c00f963b932de333cc7248f704#npm:1.19.7"],\
+          ["@hono/node-server", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7"],\
           ["@mandel59/idsdb", "workspace:packages/idsdb"],\
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-          ["@mandel59/mojidata-api", "virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api", "virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#workspace:packages/mojidata-api"],\
           ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/hono__node-server", null],\
           ["@types/node", "npm:24.10.4"],\
@@ -840,7 +840,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/mojidata-api", {\
         "packageLocation": "./packages/mojidata-api/",\
         "packageDependencies": [\
-          ["@hono/node-server", "virtual:d0a31ccdfd65be19e281e20a521c9137553a8a6a789d0a6531b5730ff8bfdda5c580db264cad058199015c91d5a42f3cd74805c00f963b932de333cc7248f704#npm:1.19.7"],\
+          ["@hono/node-server", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7"],\
           ["@mandel59/idsdb", "workspace:packages/idsdb"],\
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
@@ -884,11 +884,35 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/mojidata-api-runtime", [\
+      ["virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime", {\
+        "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-runtime-virtual-b4b1685bdc/1/packages/mojidata-api-runtime/",\
+        "packageDependencies": [\
+          ["@mandel59/idsdb", "workspace:packages/idsdb"],\
+          ["@mandel59/mojidata", "workspace:packages/mojidata"],\
+          ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
+          ["@mandel59/mojidata-api-runtime", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-sqljs", "workspace:packages/mojidata-api-sqljs"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["better-sqlite3", null],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "packagePeers": [\
+          "better-sqlite3"\
+        ],\
+        "linkType": "SOFT"\
+      }],\
       ["workspace:packages/mojidata-api-runtime", {\
         "packageLocation": "./packages/mojidata-api-runtime/",\
         "packageDependencies": [\
-          ["@mandel59/mojidata-api", "virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api"],\
+          ["@mandel59/idsdb", "workspace:packages/idsdb"],\
+          ["@mandel59/mojidata", "workspace:packages/mojidata"],\
+          ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
           ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-sqljs", "workspace:packages/mojidata-api-sqljs"],\
+          ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/node", "npm:24.10.4"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\
@@ -913,7 +937,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/mojidata-cli", {\
         "packageLocation": "./packages/mojidata-cli/",\
         "packageDependencies": [\
-          ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-runtime", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime"],\
           ["@mandel59/mojidata-cli", "workspace:packages/mojidata-cli"],\
           ["@types/node", "npm:24.10.4"],\
           ["ava", "npm:3.15.0"],\
@@ -937,10 +961,10 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/react-mojidata-api", {\
         "packageLocation": "./packages/react-mojidata-api/",\
         "packageDependencies": [\
-          ["@mandel59/mojidata-api", "virtual:99c39c8da5e12b89f8e8fa1b411fa70c721e3fadb1076f9fdcc35093fe2fa6588c642cff193d90605adee777e5b1ade246e748da46d332d61178e289ca2fa455#workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api", "virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#workspace:packages/mojidata-api"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
           ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
-          ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-runtime", "virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime"],\
           ["@mandel59/react-mojidata-api", "workspace:packages/react-mojidata-api"],\
           ["@testing-library/dom", "npm:10.4.1"],\
           ["@testing-library/react", "virtual:df04372c747fd957549750ad02c1e237a91ebd9d8eff2ffdf82ee6fe0c5e8755499a0384db3b4c20eea415b245bb8705dab8fba70d6b28ccc69eeb861d9442a7#npm:16.3.1"],\
