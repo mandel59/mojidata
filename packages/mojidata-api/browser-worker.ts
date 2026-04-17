@@ -1,4 +1,4 @@
-import { createSqlJsApiDb } from "./api/v1/_lib/mojidata-api-db-sqljs"
+import { createSqlApiDb } from "./api/v1/_lib/mojidata-api-db-sql"
 import { createMojidataDbProvider } from "./api/v1/_lib/mojidata-db"
 import { createCachedPromise } from "./api/v1/_lib/promise-cache"
 import { openDatabaseFromUrl } from "./api/v1/_lib/sqljs-web"
@@ -9,7 +9,7 @@ import type {
   WorkerResponse,
 } from "./api/v1/_lib/worker-protocol"
 
-let api: ReturnType<typeof createSqlJsApiDb> | undefined
+let api: ReturnType<typeof createSqlApiDb> | undefined
 
 function serializeError(error: unknown) {
   if (error instanceof Error) {
@@ -27,7 +27,7 @@ async function initWorker(init: WorkerInit) {
       await openDatabaseFromUrl(init.idsfindDbUrl, init.sqlWasmUrl),
     ),
   )
-  api = createSqlJsApiDb({ getMojidataDb, getIdsfindDb })
+  api = createSqlApiDb({ getMojidataDb, getIdsfindDb })
 }
 
 self.addEventListener("message", async (ev: MessageEvent) => {

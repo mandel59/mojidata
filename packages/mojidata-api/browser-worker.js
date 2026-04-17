@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mojidata_api_db_sqljs_1 = require("./api/v1/_lib/mojidata-api-db-sqljs");
+const mojidata_api_db_sql_1 = require("./api/v1/_lib/mojidata-api-db-sql");
 const mojidata_db_1 = require("./api/v1/_lib/mojidata-db");
 const promise_cache_1 = require("./api/v1/_lib/promise-cache");
 const sqljs_web_1 = require("./api/v1/_lib/sqljs-web");
@@ -15,7 +15,7 @@ function serializeError(error) {
 async function initWorker(init) {
     const getMojidataDb = (0, mojidata_db_1.createMojidataDbProvider)(() => (0, sqljs_web_1.openDatabaseFromUrl)(init.mojidataDbUrl, init.sqlWasmUrl));
     const getIdsfindDb = (0, promise_cache_1.createCachedPromise)(async () => (0, sqljs_executor_1.createSqlJsExecutor)(await (0, sqljs_web_1.openDatabaseFromUrl)(init.idsfindDbUrl, init.sqlWasmUrl)));
-    api = (0, mojidata_api_db_sqljs_1.createSqlJsApiDb)({ getMojidataDb, getIdsfindDb });
+    api = (0, mojidata_api_db_sql_1.createSqlApiDb)({ getMojidataDb, getIdsfindDb });
 }
 self.addEventListener("message", async (ev) => {
     const req = ev.data;
