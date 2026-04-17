@@ -2,18 +2,11 @@
 
 - Use **Jujutsu VCS** for version control and commits.  
 - When checking diffs, prefer `jj diff --git`: the default diff relies heavily on color to convey changes, but the agent can’t reliably interpret colorized output, while git-style diffs are explicit.  
-- Include agent and model details in the commit-message trailers.  
-  Example:  
-
-  ```text
-  Generated-by: Codex (GPT-5.2, reasoning: high)
-  ```
-
-- When creating multi-line commit messages, do **not** pass `\n` escapes to `jj commit -m` (they will be recorded literally).  
-  Use `$'...'` or a heredoc to include real newlines, e.g.:
+- When committing, use the `jj commit fileset... -m "title" -m "description" -m "Generated-by: Codex/GPT-5.4"` form.  
+  Example:
 
   ```sh
-  jj commit -m $'Subject line\n\nGenerated-by: Codex (GPT-5.2, reasoning: high)'
+  jj commit path/to/file.ts -m "Refactor DB executor boundary" -m "Introduce SqlExecutor and move sql.js-specific statement handling into an adapter." -m "Generated-by: Codex/GPT-5.4"
   ```
 
 - Sandbox/approval note: in restricted environments, these typically require permission escalation:
