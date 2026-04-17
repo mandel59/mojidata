@@ -4,6 +4,11 @@ This package can run in both:
 - Node.js (HTTP server via Hono)
 - Browser (Hono `app.fetch` + SQL.js running in a WebWorker)
 
+It also exposes lower-level entry points for composing the API yourself:
+
+- `@mandel59/mojidata-api/core`: backend-neutral SQL API composition
+- `@mandel59/mojidata-api/sqljs`: `sql.js` executor and openers
+
 ## Tests
 
 Tests live under `tests/`.
@@ -95,4 +100,24 @@ const body = await res.json()
 
 // Cleanup when you're done:
 db.terminate()
+```
+
+## Advanced composition
+
+If you want to wire the API together yourself instead of using `createNodeDb()`, use the lower-level entry points:
+
+```ts
+import { createSqlApiDb } from "@mandel59/mojidata-api/core"
+import { createMojidataDbProvider, createSqlJsExecutor, openDatabaseFromFile } from "@mandel59/mojidata-api/sqljs"
+
+const getMojidataDb = createMojidataDbProvider(() =>
+  openDatabaseFromFile(require.resolve("@mandel59/mojidata/dist/moji.db")),
+)
+
+const getIdsfindDb = async () =>
+  createSqlJsExecutor(
+    await openDatabaseFromFile(require.resolve("@mandel59/idsdb/idsfind.db")),
+  )
+
+const db = createSqlApiDb({ getMojidataDb, getIdsfindDb })
 ```
