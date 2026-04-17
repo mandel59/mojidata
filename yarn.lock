@@ -597,8 +597,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"
   dependencies:
-    "@mandel59/mojidata-api": "npm:^1.7.1"
+    "@mandel59/mojidata-api-core": "npm:^1.7.0"
     "@types/node": "npm:^24.10.4"
+    "@types/sql.js": "npm:^1.4.9"
+    sql.js: "npm:^1.13.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft

@@ -1,17 +1,13 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("@mandel59/mojidata-api/sqljs"), exports);
+exports.openDatabaseFromUrl = exports.getSqlJsWeb = exports.openDatabaseFromFile = exports.getSqlJsNode = exports.createSqlJsExecutor = exports.createMojidataDbProvider = void 0;
+var mojidata_db_1 = require("./lib/mojidata-db");
+Object.defineProperty(exports, "createMojidataDbProvider", { enumerable: true, get: function () { return mojidata_db_1.createMojidataDbProvider; } });
+var sqljs_executor_1 = require("./lib/sqljs-executor");
+Object.defineProperty(exports, "createSqlJsExecutor", { enumerable: true, get: function () { return sqljs_executor_1.createSqlJsExecutor; } });
+var sqljs_node_1 = require("./lib/sqljs-node");
+Object.defineProperty(exports, "getSqlJsNode", { enumerable: true, get: function () { return sqljs_node_1.getSqlJsNode; } });
+Object.defineProperty(exports, "openDatabaseFromFile", { enumerable: true, get: function () { return sqljs_node_1.openDatabaseFromFile; } });
+var sqljs_web_1 = require("./lib/sqljs-web");
+Object.defineProperty(exports, "getSqlJsWeb", { enumerable: true, get: function () { return sqljs_web_1.getSqlJsWeb; } });
+Object.defineProperty(exports, "openDatabaseFromUrl", { enumerable: true, get: function () { return sqljs_web_1.openDatabaseFromUrl; } });
