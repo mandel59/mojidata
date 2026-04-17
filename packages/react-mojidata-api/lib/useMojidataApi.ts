@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { createApp } from "@mandel59/mojidata-api/app"
+import { createApp } from "@mandel59/mojidata-api/hono"
 import type { MojidataApiDb } from "@mandel59/mojidata-api/api/v1/_lib/mojidata-api-db"
 import type {
   WorkerCall,

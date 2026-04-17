@@ -142,7 +142,7 @@ test(
         resolve: {
           alias: {
             "@mandel59/react-mojidata-api": path.join(pkgDir, "index.ts"),
-            "@mandel59/mojidata-api/app": path.join(repoRoot, "packages", "mojidata-api", "app.ts"),
+            "@mandel59/mojidata-api/hono": path.join(repoRoot, "packages", "mojidata-api", "hono.ts"),
             "@mandel59/mojidata-api/browser-worker": path.join(
               repoRoot,
               "packages",

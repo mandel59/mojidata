@@ -1,4 +1,4 @@
-import { createNodeDb } from "@mandel59/mojidata-api/node"
+import { createNodeDb } from "@mandel59/mojidata-api/runtime"
 
 export class IDSFinder {
     private db = createNodeDb()
@@ -12,4 +12,3 @@ export class IDSFinder {
         return await this.db.idsfindDebugQuery(query, idslist)
     }
 }
-

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createNodeDb } from "@mandel59/mojidata-api/node"
+import { createNodeDb } from "@mandel59/mojidata-api/runtime"
 
 const db = createNodeDb()
 
