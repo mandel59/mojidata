@@ -9,6 +9,11 @@
       "require": "./index.js",
       "default": "./index.js"
     },
+    "./api/v1/*": {
+      "types": "./api/v1/*.d.ts",
+      "require": "./api/v1/*.js",
+      "default": "./api/v1/*.js"
+    },
     "./app": {
       "types": "./app.d.ts",
       "require": "./app.js",
@@ -58,6 +63,8 @@
   "files": [
     "*.js",
     "*.d.ts",
+    "api/v1/*.js",
+    "api/v1/*.d.ts",
     "api/v1/_lib/*.js",
     "api/v1/_lib/*.d.ts",
     "openapi.yaml",

@@ -28,6 +28,7 @@ describe('package entrypoints', () => {
 
     assert.deepEqual(Object.keys(packageJson.exports).sort(), [
       '.',
+      './api/v1/*',
       './api/v1/_lib/*',
       './app',
       './browser-client',
@@ -59,10 +60,10 @@ describe('package entrypoints', () => {
   test('keeps api/v1 handler compatibility wrappers', async () => {
     const [mojidataCompat, ivsCompat, variantsCompat, idsfindCompat] =
       await Promise.all([
-        import('../api/v1/mojidata'),
-        import('../api/v1/ivs-list'),
-        import('../api/v1/mojidata-variants'),
-        import('../api/v1/idsfind'),
+        import('@mandel59/mojidata-api/api/v1/mojidata'),
+        import('@mandel59/mojidata-api/api/v1/ivs-list'),
+        import('@mandel59/mojidata-api/api/v1/mojidata-variants'),
+        import('@mandel59/mojidata-api/api/v1/idsfind'),
       ])
 
     assert.equal(typeof mojidataCompat.createMojidataHandler, 'function')
