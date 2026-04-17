@@ -1,3 +1,3 @@
-export { createNodeApp, createNodeDb, } from "./node";
-export type { NodeDbBackend } from "./node";
-export { createMojidataApiWorkerClient, } from "./browser-client";
+export { createNodeApp, createNodeDb } from "./internal/runtime/node";
+export type { NodeDbBackend } from "./internal/runtime/node";
+export { createMojidataApiWorkerClient } from "./internal/runtime/browser-client";

@@ -1,14 +1,8 @@
 export {
   createMojidataDbProvider,
-} from "./api/v1/_lib/mojidata-db"
-export {
   createSqlJsExecutor,
-} from "./api/v1/_lib/sqljs-executor"
-export {
   getSqlJsNode,
-  openDatabaseFromFile,
-} from "./api/v1/_lib/sqljs-node"
-export {
   getSqlJsWeb,
+  openDatabaseFromFile,
   openDatabaseFromUrl,
-} from "./api/v1/_lib/sqljs-web"
+} from "./internal/adapter/sqljs"

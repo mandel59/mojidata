@@ -1,1 +1,1 @@
-export {};
+import "./internal/runtime/browser-worker";

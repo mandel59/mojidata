@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.openDatabaseFromUrl = exports.getSqlJsWeb = exports.openDatabaseFromFile = exports.getSqlJsNode = exports.createSqlJsExecutor = exports.createMojidataDbProvider = void 0;
+var mojidata_db_1 = require("../../api/v1/_lib/mojidata-db");
+Object.defineProperty(exports, "createMojidataDbProvider", { enumerable: true, get: function () { return mojidata_db_1.createMojidataDbProvider; } });
+var sqljs_executor_1 = require("../../api/v1/_lib/sqljs-executor");
+Object.defineProperty(exports, "createSqlJsExecutor", { enumerable: true, get: function () { return sqljs_executor_1.createSqlJsExecutor; } });
+var sqljs_node_1 = require("../../api/v1/_lib/sqljs-node");
+Object.defineProperty(exports, "getSqlJsNode", { enumerable: true, get: function () { return sqljs_node_1.getSqlJsNode; } });
+Object.defineProperty(exports, "openDatabaseFromFile", { enumerable: true, get: function () { return sqljs_node_1.openDatabaseFromFile; } });
+var sqljs_web_1 = require("../../api/v1/_lib/sqljs-web");
+Object.defineProperty(exports, "getSqlJsWeb", { enumerable: true, get: function () { return sqljs_web_1.getSqlJsWeb; } });
+Object.defineProperty(exports, "openDatabaseFromUrl", { enumerable: true, get: function () { return sqljs_web_1.openDatabaseFromUrl; } });
