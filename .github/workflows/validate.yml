@@ -41,6 +41,10 @@ jobs:
       - name: Install dependencies
         run: corepack yarn install --immutable
 
+      - name: Check changesets on pull requests
+        if: github.event_name == 'pull_request'
+        run: corepack yarn changeset status
+
       - name: Build workspace
         run: corepack yarn ci:build
 
