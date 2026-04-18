@@ -43,3 +43,5 @@ On pull requests, CI also runs `yarn changeset status`, so changes to publishabl
 3. Review generated version and changelog updates in that release PR.
 4. Merge the release PR after CI passes.
 5. Confirm npm publish succeeded from the Actions run.
+
+See [docs/releasing.md](/Users/mandel59/ws/mojidata/docs/releasing.md) for GitHub secret requirements and the manual retry flow.
