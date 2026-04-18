@@ -49,6 +49,9 @@ jobs:
       - name: Run test suite before release actions
         run: corepack yarn ci:test
 
+      - name: Check publish artifacts before release actions
+        run: corepack yarn ci:pack
+
       - name: Create release pull request or publish
         id: changesets
         uses: changesets/action@v1

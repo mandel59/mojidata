@@ -5,6 +5,7 @@
     "scripts": {
         "changeset": "changeset",
         "ci:build": "yarn build",
+        "ci:pack": "corepack yarn workspaces foreach -A --no-private exec yarn npm publish -n",
         "ci:test": "(cd packages/mojidata && yarn prepare) && yarn test",
         "release": "yarn ci:build && changeset publish",
         "test": "(cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",

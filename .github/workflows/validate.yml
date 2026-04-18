@@ -48,5 +48,8 @@ jobs:
       - name: Build workspace
         run: corepack yarn ci:build
 
+      - name: Check publish artifacts
+        run: corepack yarn ci:pack
+
       - name: Run tests
         run: corepack yarn ci:test

@@ -15,6 +15,7 @@ yarn && yarn build
 ## CI
 
 - `yarn ci:build`: build all workspace packages
+- `yarn ci:pack`: run publish dry-runs for all publishable workspace packages
 - `yarn ci:test`: run the repository test suite used in CI
 
 `react-mojidata-api` browser integration tests are not part of the default CI path. The standard CI flow uses the in-process/unit test paths.
