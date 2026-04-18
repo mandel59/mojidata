@@ -46,6 +46,9 @@ jobs:
       - name: Install dependencies
         run: corepack yarn install --immutable
 
+      - name: Run test suite before release actions
+        run: corepack yarn ci:test
+
       - name: Create release pull request or publish
         id: changesets
         uses: changesets/action@v1
