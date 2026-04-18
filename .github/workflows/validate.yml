@@ -1,0 +1,48 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Restore mojidata build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/mojidata/dist
+            packages/mojidata/cache
+            packages/mojidata/resources
+          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          restore-keys: |
+            mojidata-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Build workspace
+        run: corepack yarn ci:build
+
+      - name: Run tests
+        run: corepack yarn ci:test
