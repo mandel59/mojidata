@@ -28,3 +28,18 @@ yarn && yarn build
 GitHub Actions is the intended release path. The release workflow creates or updates a release PR on `main`, and publishes after that PR is merged with `NPM_TOKEN` configured in repository secrets.
 
 On pull requests, CI also runs `yarn changeset status`, so changes to publishable packages are expected to include either a real changeset or an explicit empty changeset.
+
+### Release Policy
+
+- All workspace packages under `packages/*` are treated as publishable by Changesets.
+- Use a normal changeset when a change affects a published package's runtime behavior, API surface, CLI behavior, package metadata, or release notes.
+- Use an empty changeset for CI/CD, workflow, repository policy, or documentation changes that should pass the release gate without bumping package versions.
+- The compatibility facade package `@mandel59/mojidata-api` remains publishable and should continue to receive changesets when its published surface or package metadata changes.
+
+### Release Checklist
+
+1. Merge feature PRs with appropriate changesets.
+2. Let the release workflow update or create the release PR on `main`.
+3. Review generated version and changelog updates in that release PR.
+4. Merge the release PR after CI passes.
+5. Confirm npm publish succeeded from the Actions run.
