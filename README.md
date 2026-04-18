@@ -32,8 +32,8 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 - `yarn version-packages`: apply pending changesets to package versions and changelogs
 - `yarn release`: build the workspace and publish packages through Changesets
 
-GitHub Actions is the intended release path. The release workflow creates or updates a release PR on `main`, and publishes after that PR is merged with `NPM_TOKEN` configured in repository secrets.
-When a publish happens, the workflow writes the published package list into the GitHub Actions job summary.
+GitHub Actions is the intended release path. The release workflow creates or updates a release PR on `main`, and after that PR is merged it publishes through npm Trusted Publishing on GitHub-hosted runners.
+When the publish path runs, the workflow writes that outcome into the GitHub Actions job summary.
 
 On pull requests, CI also runs `yarn changeset status`, so changes to publishable packages are expected to include either a real changeset or an explicit empty changeset. This check is skipped for the Changesets-generated `changeset-release/*` release PR branch.
 

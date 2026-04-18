@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: yarn
           registry-url: https://registry.npmjs.org
 
@@ -54,43 +54,35 @@ jobs:
       - name: Check publish artifacts before release actions
         run: corepack yarn ci:pack
 
-      - name: Create release pull request or publish
+      - name: Create or update release pull request
         id: changesets
         uses: changesets/action@v1
         with:
           version: corepack yarn version-packages
-          publish: corepack yarn release
           commit: Version Packages
           title: Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish packages with trusted publishing
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: corepack yarn release
 
       - name: Summarize release result
         env:
-          CHANGESETS_PUBLISHED: ${{ steps.changesets.outputs.published }}
-          CHANGESETS_PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+          CHANGESETS_HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
         run: |
           {
             echo "## Release Result"
-            if [ "$CHANGESETS_PUBLISHED" = "true" ]; then
+            if [ "$CHANGESETS_HAS_CHANGESETS" = "false" ]; then
               echo
-              echo "Published packages:"
+              echo "Trusted publishing path executed."
               echo
-              node -e '
-                const packages = JSON.parse(process.env.CHANGESETS_PUBLISHED_PACKAGES || "[]");
-                if (packages.length === 0) {
-                  console.log("- Publish completed, but Changesets did not report package metadata.");
-                } else {
-                  for (const pkg of packages) {
-                    console.log(`- \`${pkg.name}@${pkg.version}\``);
-                  }
-                }
-              '
+              echo "Check the publish step logs and npm registry results for the exact package versions."
             else
               echo
-              echo "No npm publish happened in this run."
+              echo "Release pull request created or updated."
               echo
-              echo "This usually means the workflow created or updated the release pull request instead."
+              echo "No npm publish happened in this run."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
