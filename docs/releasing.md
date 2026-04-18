@@ -13,6 +13,7 @@
 3. Review the generated version and changelog updates in that release pull request.
 4. Merge the release pull request after CI passes.
 5. Confirm the follow-up `Release` workflow run published packages successfully.
+6. Check the workflow job summary for the published package and version list.
 
 ## Manual flow
 
@@ -23,3 +24,4 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
 - `NPM_TOKEN` remains the active publish mechanism for this repository.
 - `id-token: write` is enabled on the workflow so the repository can move to trusted publishing later without redesigning workflow permissions.
 - `packages/mojidata` build artifacts are restored from cache before release work to reduce repeated DB rebuild cost.
+- The release workflow writes either the published package list or the "release PR updated" outcome into the GitHub Actions job summary.

@@ -65,3 +65,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Summarize release result
+        env:
+          CHANGESETS_PUBLISHED: ${{ steps.changesets.outputs.published }}
+          CHANGESETS_PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+        run: |
+          {
+            echo "## Release Result"
+            if [ "$CHANGESETS_PUBLISHED" = "true" ]; then
+              echo
+              echo "Published packages:"
+              echo
+              node -e '
+                const packages = JSON.parse(process.env.CHANGESETS_PUBLISHED_PACKAGES || "[]");
+                if (packages.length === 0) {
+                  console.log("- Publish completed, but Changesets did not report package metadata.");
+                } else {
+                  for (const pkg of packages) {
+                    console.log(`- \`${pkg.name}@${pkg.version}\``);
+                  }
+                }
+              '
+            else
+              echo
+              echo "No npm publish happened in this run."
+              echo
+              echo "This usually means the workflow created or updated the release pull request instead."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
