@@ -23,6 +23,7 @@
   },
   "scripts": {
     "test": "ava",
+    "test:ci": "ava",
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public"
   },

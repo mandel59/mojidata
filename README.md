@@ -15,10 +15,15 @@ yarn && yarn build
 ## CI
 
 - `yarn ci:build`: build all workspace packages
+- `yarn ci:build:affected`: build only affected workspaces and their dependencies for a pull request base SHA
 - `yarn ci:pack`: run publish dry-runs for all publishable workspace packages
+- `yarn ci:pack:affected`: run publish dry-runs only for affected publishable packages
 - `yarn ci:test`: run the repository test suite used in CI
+- `yarn ci:test:affected`: run only affected package tests for a pull request base SHA
 
 `react-mojidata-api` browser integration tests are not part of the default CI path. The standard CI flow uses the in-process/unit test paths.
+
+The `Validate` workflow uses the affected-package path for pull requests and the full path for direct pushes to `main` or `develop`.
 
 ## Release
 

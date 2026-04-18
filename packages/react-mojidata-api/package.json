@@ -22,6 +22,7 @@
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn test:unit && yarn test:integration",
+    "test:ci": "yarn test:unit",
     "test:unit": "node --import tsx --test ./tests/*.test.tsx",
     "test:integration": "node --import tsx --test ./tests/*.integration.test.ts"
   },

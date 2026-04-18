@@ -23,6 +23,7 @@
     "build": "bash scripts/build",
     "cache-unihan-doc": "bash scripts/cache-unihan-doc",
     "test": "ava",
+    "test:ci": "ava",
     "prepare": "bash scripts/prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"

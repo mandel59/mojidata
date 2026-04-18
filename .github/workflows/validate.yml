@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -45,11 +47,32 @@ jobs:
         if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
         run: corepack yarn changeset status
 
-      - name: Build workspace
+      - name: Build workspace for pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: corepack yarn ci:build:affected
+
+      - name: Build workspace for branch pushes
+        if: github.event_name != 'pull_request'
         run: corepack yarn ci:build
 
-      - name: Check publish artifacts
+      - name: Check publish artifacts for pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: corepack yarn ci:pack:affected
+
+      - name: Check publish artifacts for branch pushes
+        if: github.event_name != 'pull_request'
         run: corepack yarn ci:pack
 
-      - name: Run tests
+      - name: Run affected tests for pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: corepack yarn ci:test:affected
+
+      - name: Run full test suite for branch pushes
+        if: github.event_name != 'pull_request'
         run: corepack yarn ci:test
