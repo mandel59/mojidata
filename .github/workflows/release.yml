@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          registry-url: https://registry.npmjs.org
+
+      - name: Restore mojidata build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/mojidata/dist
+            packages/mojidata/cache
+            packages/mojidata/resources
+          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          restore-keys: |
+            mojidata-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Create release pull request or publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: corepack yarn version-packages
+          publish: corepack yarn release
+          commit: Version Packages
+          title: Version Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
