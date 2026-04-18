@@ -7,25 +7,22 @@
     "url": "https://github.com/mandel59/mojidata.git",
     "directory": "packages/mojidata-api-sqljs"
   },
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "require": "./index.js",
-      "default": "./index.js"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./lib/*": {
-      "types": "./lib/*.d.ts",
-      "require": "./lib/*.js",
-      "default": "./lib/*.js"
+      "types": "./dist/lib/*.d.ts",
+      "require": "./dist/lib/*.js",
+      "default": "./dist/lib/*.js"
     }
   },
   "files": [
-    "index.js",
-    "index.d.ts",
-    "lib/*.js",
-    "lib/*.d.ts",
+    "dist",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"

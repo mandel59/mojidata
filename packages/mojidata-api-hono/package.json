@@ -7,31 +7,27 @@
     "url": "https://github.com/mandel59/mojidata.git",
     "directory": "packages/mojidata-api-hono"
   },
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "require": "./index.js",
-      "default": "./index.js"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./api/v1/*": {
-      "types": "./api/v1/*.d.ts",
-      "require": "./api/v1/*.js",
-      "default": "./api/v1/*.js"
+      "types": "./dist/api/v1/*.d.ts",
+      "require": "./dist/api/v1/*.js",
+      "default": "./dist/api/v1/*.js"
     },
     "./api/v1/_lib/*": {
-      "types": "./api/v1/_lib/*.d.ts",
-      "require": "./api/v1/_lib/*.js",
-      "default": "./api/v1/_lib/*.js"
+      "types": "./dist/api/v1/_lib/*.d.ts",
+      "require": "./dist/api/v1/_lib/*.js",
+      "default": "./dist/api/v1/_lib/*.js"
     }
   },
   "files": [
-    "index.js",
-    "index.d.ts",
-    "lib/*.js",
-    "lib/*.d.ts",
-    "api",
+    "dist",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"

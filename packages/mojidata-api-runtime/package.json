@@ -7,32 +7,27 @@
     "url": "https://github.com/mandel59/mojidata.git",
     "directory": "packages/mojidata-api-runtime"
   },
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "require": "./index.js",
-      "default": "./index.js"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./browser-worker": {
-      "types": "./browser-worker.d.ts",
-      "require": "./browser-worker.js",
-      "default": "./browser-worker.js"
+      "types": "./dist/browser-worker.d.ts",
+      "require": "./dist/browser-worker.js",
+      "default": "./dist/browser-worker.js"
     },
     "./lib/*": {
-      "types": "./lib/*.d.ts",
-      "require": "./lib/*.js",
-      "default": "./lib/*.js"
+      "types": "./dist/lib/*.d.ts",
+      "require": "./dist/lib/*.js",
+      "default": "./dist/lib/*.js"
     }
   },
   "files": [
-    "browser-worker.js",
-    "browser-worker.d.ts",
-    "index.js",
-    "index.d.ts",
-    "lib/*.js",
-    "lib/*.d.ts",
+    "dist",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"

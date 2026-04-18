@@ -35,6 +35,8 @@ export function createNodeDb({
   return createSqlApiDb({ getMojidataDb, getIdsfindDb })
 }
 
-export function createNodeApp(options?: { backend?: NodeDbBackend }) {
+export function createNodeApp(
+  options?: { backend?: NodeDbBackend },
+): ReturnType<typeof createApp> {
   return createApp(createNodeDb(options))
 }

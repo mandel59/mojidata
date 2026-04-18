@@ -2,71 +2,67 @@
   "name": "@mandel59/mojidata-api",
   "version": "1.7.5",
   "description": "Compatibility facade package for mojidata-api split packages",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "require": "./index.js",
-      "default": "./index.js"
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./api/v1/*": {
-      "types": "./api/v1/*.d.ts",
-      "require": "./api/v1/*.js",
-      "default": "./api/v1/*.js"
+      "types": "./dist/api/v1/*.d.ts",
+      "require": "./dist/api/v1/*.js",
+      "default": "./dist/api/v1/*.js"
     },
     "./app": {
-      "types": "./app.d.ts",
-      "require": "./app.js",
-      "default": "./app.js"
+      "types": "./dist/app.d.ts",
+      "require": "./dist/app.js",
+      "default": "./dist/app.js"
     },
     "./browser-client": {
-      "types": "./browser-client.d.ts",
-      "require": "./browser-client.js",
-      "default": "./browser-client.js"
+      "types": "./dist/browser-client.d.ts",
+      "require": "./dist/browser-client.js",
+      "default": "./dist/browser-client.js"
     },
     "./browser-worker": {
-      "types": "./browser-worker.d.ts",
-      "require": "./browser-worker.js",
-      "default": "./browser-worker.js"
+      "types": "./dist/browser-worker.d.ts",
+      "require": "./dist/browser-worker.js",
+      "default": "./dist/browser-worker.js"
     },
     "./core": {
-      "types": "./core.d.ts",
-      "require": "./core.js",
-      "default": "./core.js"
+      "types": "./dist/core.d.ts",
+      "require": "./dist/core.js",
+      "default": "./dist/core.js"
     },
     "./hono": {
-      "types": "./hono.d.ts",
-      "require": "./hono.js",
-      "default": "./hono.js"
+      "types": "./dist/hono.d.ts",
+      "require": "./dist/hono.js",
+      "default": "./dist/hono.js"
     },
     "./node": {
-      "types": "./node.d.ts",
-      "require": "./node.js",
-      "default": "./node.js"
+      "types": "./dist/node.d.ts",
+      "require": "./dist/node.js",
+      "default": "./dist/node.js"
     },
     "./runtime": {
-      "types": "./runtime.d.ts",
-      "require": "./runtime.js",
-      "default": "./runtime.js"
+      "types": "./dist/runtime.d.ts",
+      "require": "./dist/runtime.js",
+      "default": "./dist/runtime.js"
     },
     "./sqljs": {
-      "types": "./sqljs.d.ts",
-      "require": "./sqljs.js",
-      "default": "./sqljs.js"
+      "types": "./dist/sqljs.d.ts",
+      "require": "./dist/sqljs.js",
+      "default": "./dist/sqljs.js"
     },
     "./api/v1/_lib/*": {
-      "types": "./api/v1/_lib/*.d.ts",
-      "require": "./api/v1/_lib/*.js",
-      "default": "./api/v1/_lib/*.js"
+      "types": "./dist/api/v1/_lib/*.d.ts",
+      "require": "./dist/api/v1/_lib/*.js",
+      "default": "./dist/api/v1/_lib/*.js"
     }
   },
   "files": [
-    "*.js",
-    "*.d.ts",
-    "api/v1/*.js",
-    "api/v1/*.d.ts",
-    "api/v1/_lib/*.js",
-    "api/v1/_lib/*.d.ts",
+    "dist",
     "openapi.yaml",
     "CHANGELOG.md",
     "README.md",
@@ -78,6 +74,8 @@
     "bench": "node --import tsx ./benchmarks/run.ts",
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
+    "pretest": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/mojidata-api run prepare",
+    "pretest:ci": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/mojidata-api run prepare",
     "test": "node --import tsx --test ./tests/*.test.ts",
     "test:ci": "node --import tsx --test ./tests/*.test.ts"
   },

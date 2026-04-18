@@ -21,6 +21,8 @@
   "scripts": {
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
+    "pretest": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/react-mojidata-api run prepare",
+    "pretest:ci": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/react-mojidata-api run prepare",
     "test": "yarn test:unit && yarn test:integration",
     "test:ci": "yarn test:unit",
     "test:unit": "node --import tsx --test ./tests/*.test.tsx",
