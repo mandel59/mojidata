@@ -18,6 +18,8 @@ jobs:
       id-token: write
       pull-requests: write
       packages: write
+    env:
+      NO_UPDATE_NOTIFIER: "1"
 
     steps:
       - name: Check out repository

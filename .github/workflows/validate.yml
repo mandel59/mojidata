@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      NO_UPDATE_NOTIFIER: "1"
 
     steps:
       - name: Check out repository
