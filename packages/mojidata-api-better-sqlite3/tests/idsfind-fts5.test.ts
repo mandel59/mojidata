@@ -12,7 +12,6 @@ describe("idsfind query compatibility", () => {
     const db = new Database(":memory:")
     db.exec(`
       CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
-      CREATE TABLE idsfind_ref (docid INTEGER PRIMARY KEY, char TEXT NOT NULL);
       CREATE VIRTUAL TABLE idsfind_fts USING fts5 (
         IDS_tokens,
         content='',
@@ -20,7 +19,6 @@ describe("idsfind query compatibility", () => {
       );
 
       INSERT INTO idsfind (UCS, IDS_tokens) VALUES ('灶', '⿰ 火 土');
-      INSERT INTO idsfind_ref (docid, char) VALUES (1, '灶');
       INSERT INTO idsfind_fts (rowid, IDS_tokens) VALUES (1, '§ ⿰ 火 土 §');
     `)
 

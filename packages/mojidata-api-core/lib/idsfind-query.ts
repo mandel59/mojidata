@@ -61,11 +61,11 @@ token_pattern as (
     )
 ),
 results as (
-    select idsfind_ref.char AS UCS
+    select distinct idsfind.UCS AS UCS
     from idsfind_fts
     join token_pattern
-    join idsfind_ref on idsfind_ref.docid = idsfind_fts.rowid
-    where IDS_tokens match pattern
+    join idsfind on idsfind.rowid = idsfind_fts.rowid
+    where idsfind_fts match pattern
 )
 `
 

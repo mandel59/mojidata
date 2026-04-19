@@ -10,6 +10,7 @@ const defaultConfigPath = path.join(
   "mojidata-api-d1-worker",
   "wrangler.jsonc",
 )
+const controlPlaneCwd = rootDir
 
 function printUsage() {
   console.log(`Usage: node ./scripts/provision-mojidata-api-d1.mjs [--config path] [--location wnam]
@@ -24,6 +25,9 @@ function parseArgs(argv) {
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
+    if (arg === "--") {
+      continue
+    }
     if (arg === "--config") {
       configPath = path.resolve(argv[++i])
       continue
@@ -57,7 +61,7 @@ function writeConfig(configPath, config) {
   fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`)
 }
 
-function runWrangler(args, cwd) {
+function runWrangler(args, cwd = controlPlaneCwd) {
   const result = spawnSync("npx", ["wrangler", ...args], {
     cwd,
     encoding: "utf8",
@@ -92,9 +96,15 @@ function findFirstUuid(value) {
   return undefined
 }
 
-function getDatabaseIdFromInfo(databaseName, cwd) {
+function listDatabases() {
+  const stdout = runWrangler(["d1", "list", "--json"])
+  const json = JSON.parse(stdout)
+  return Array.isArray(json) ? json : []
+}
+
+function getDatabaseIdFromInfo(databaseName) {
   try {
-    const stdout = runWrangler(["d1", "info", databaseName, "--json"], cwd)
+    const stdout = runWrangler(["d1", "info", databaseName, "--json"])
     return findFirstUuid(JSON.parse(stdout))
   } catch (error) {
     const message = String(error)
@@ -109,10 +119,10 @@ function getDatabaseIdFromInfo(databaseName, cwd) {
   }
 }
 
-function createDatabase({ binding, databaseName, cwd, location }) {
+function createDatabase({ binding, databaseName, location }) {
   const args = ["d1", "create", databaseName, "--binding", binding]
   if (location) args.push("--location", location)
-  const stdout = runWrangler(args, cwd)
+  const stdout = runWrangler(args)
   const databaseId = findFirstUuid(stdout)
   if (!databaseId) {
     throw new Error(`Could not parse database ID from wrangler output for ${databaseName}`)
@@ -122,21 +132,22 @@ function createDatabase({ binding, databaseName, cwd, location }) {
 
 async function main() {
   const { configPath, location } = parseArgs(process.argv.slice(2))
-  const cwd = path.dirname(configPath)
   const config = readConfig(configPath)
+  const existingDatabases = listDatabases()
 
   const nextDatabases = []
   for (const entry of config.d1_databases) {
     assert.equal(typeof entry.binding, "string")
     assert.equal(typeof entry.database_name, "string")
 
-    let databaseId = getDatabaseIdFromInfo(entry.database_name, cwd)
+    let databaseId =
+      existingDatabases.find((item) => item?.name === entry.database_name)?.uuid ??
+      getDatabaseIdFromInfo(entry.database_name)
     let action = "reused"
     if (!databaseId) {
       databaseId = createDatabase({
         binding: entry.binding,
         databaseName: entry.database_name,
-        cwd,
         location,
       })
       action = "created"

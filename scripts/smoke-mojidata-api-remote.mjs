@@ -7,6 +7,9 @@ function parseArgs(argv) {
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
+    if (arg === "--") {
+      continue
+    }
     if (arg === "--base-url") {
       baseUrl = argv[++i]
       continue
@@ -98,7 +101,9 @@ const cases = [
     pathname: "/api/v1/idsfind",
     query: { ids: "⿰亻言", limit: 20 },
     assert(json) {
-      assert.deepEqual(json.query, { ids: ["⿰亻言"], limit: 20 })
+      assert.deepEqual(json.query.ids, ["⿰亻言"])
+      assert.equal(json.query.limit, 20)
+      assert.ok(Array.isArray(json.query.whole))
       assert.ok(Array.isArray(json.results))
       assert.ok(json.results.includes("信"))
     },
