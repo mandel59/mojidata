@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "prepare": "tsc",
-    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn run prepare:test-deps && yarn test:unit && yarn test:integration",
     "test:ci": "yarn run prepare:test-deps && yarn test:unit",

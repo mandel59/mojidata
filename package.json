@@ -4,16 +4,18 @@
     "private": true,
     "scripts": {
         "changeset": "changeset",
+        "build:idsdb-stack": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb-utils && yarn prepare) && (cd packages/idsdb && yarn prepare)",
+        "build:mojidata-api-split": "(cd packages/mojidata-api-core && yarn prepare) && (cd packages/mojidata-api-sqljs && yarn prepare) && (cd packages/mojidata-api-hono && yarn prepare) && (cd packages/mojidata-api-runtime && yarn prepare)",
         "ci:build:affected": "node ./scripts/run-affected-workspaces.mjs build",
         "ci:build": "yarn build",
         "ci:pack:affected": "node ./scripts/run-affected-workspaces.mjs pack",
         "ci:pack": "corepack yarn workspaces foreach -A --no-private exec yarn npm publish -n",
         "ci:test:affected": "node ./scripts/run-affected-workspaces.mjs test",
-        "ci:test": "(cd packages/mojidata && yarn prepare) && yarn test",
+        "ci:test": "yarn test",
         "release": "yarn ci:build && changeset publish",
-        "test": "(cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
+        "test": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
         "version-packages": "changeset version",
-        "build": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb-utils && yarn prepare) && (cd packages/idsdb && yarn prepare) && (cd packages/mojidata-api && yarn prepare) && (cd packages/react-mojidata-api && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare) && (cd packages/mojidata-api-core && yarn prepare) && (cd packages/mojidata-api-sqljs && yarn prepare) && (cd packages/mojidata-api-hono && yarn prepare) && (cd packages/mojidata-api-runtime && yarn prepare)"
+        "build": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata-api && yarn prepare) && (cd packages/react-mojidata-api && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare)"
     },
     "workspaces": {
         "packages": [
