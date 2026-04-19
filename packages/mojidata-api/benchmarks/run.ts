@@ -1,6 +1,18 @@
-import { performance } from 'node:perf_hooks'
+import { mkdirSync, writeFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { performance } from "node:perf_hooks"
 
-import { createNodeApp } from '../node'
+import { createNodeApp, type NodeDbBackend } from "../node"
+
+import {
+  benchmarkFormatVersion,
+  benchmarkScenarioSetVersion,
+  collectBenchmarkEnvironment,
+  formatMs,
+  summarize,
+  type BenchmarkRun,
+  type ScenarioResult,
+} from "./lib"
 
 type Scenario = {
   name: string
@@ -10,59 +22,63 @@ type Scenario = {
 }
 
 type Options = {
+  backend?: NodeDbBackend
   baseUrl?: string
+  label?: string
+  outputPath?: string
   iterations: number
   warmupIterations: number
   coldIterations: number
-  format: 'table' | 'json'
+  format: "table" | "json"
   scenarioNames: string[]
 }
 
-type ScenarioResult = {
+type ScenarioSamples = {
   name: string
   description: string
   samplesMs: number[]
   coldStartMs?: number[]
 }
 
-const defaultOrigin = 'http://benchmark.local'
+const defaultOrigin = "http://benchmark.local"
+const defaultLocalBackend: NodeDbBackend = "sqljs"
 
 const scenarios: Scenario[] = [
   {
-    name: 'mojidata-basic',
-    description: 'Single-character mojidata lookup',
-    pathname: '/api/v1/mojidata',
-    query: { char: '漢' },
+    name: "mojidata-basic",
+    description: "Single-character mojidata lookup",
+    pathname: "/api/v1/mojidata",
+    query: { char: "漢" },
   },
   {
-    name: 'mojidata-select',
-    description: 'mojidata lookup with select filter',
-    pathname: '/api/v1/mojidata',
-    query: { char: '漢', select: ['char', 'UCS', 'mji'] },
+    name: "mojidata-select",
+    description: "mojidata lookup with select filter",
+    pathname: "/api/v1/mojidata",
+    query: { char: "漢", select: ["char", "UCS", "mji"] },
   },
   {
-    name: 'ivs-list',
-    description: 'IVS list lookup',
-    pathname: '/api/v1/ivs-list',
-    query: { char: '漢' },
+    name: "ivs-list",
+    description: "IVS list lookup",
+    pathname: "/api/v1/ivs-list",
+    query: { char: "漢" },
   },
   {
-    name: 'mojidata-variants',
-    description: 'Variant relation lookup for multiple chars',
-    pathname: '/api/v1/mojidata-variants',
-    query: { char: ['漢', '漢'] },
+    name: "mojidata-variants",
+    description: "Variant relation lookup for multiple chars",
+    pathname: "/api/v1/mojidata-variants",
+    query: { char: ["漢", "漢"] },
   },
   {
-    name: 'idsfind-ids',
-    description: 'IDS fragment search',
-    pathname: '/api/v1/idsfind',
-    query: { ids: ['⿰亻言'], limit: 20 },
+    name: "idsfind-ids",
+    description: "IDS fragment search",
+    pathname: "/api/v1/idsfind",
+    query: { ids: ["⿰亻言"], limit: 20 },
   },
   {
-    name: 'idsfind-property',
-    description: 'Property search by total strokes',
-    pathname: '/api/v1/idsfind',
-    query: { p: ['totalStrokes'], q: ['13'], limit: 20 },
+    name: "idsfind-property",
+    description: "Property search by total strokes",
+    pathname: "/api/v1/idsfind",
+    query: { p: ["totalStrokes"], q: ["13"], limit: 20 },
   },
 ]
 
@@ -75,47 +91,67 @@ function parseIntegerOption(value: string | undefined, fallback: number, name: s
   return parsed
 }
 
+function parseBackendOption(value: string | undefined): NodeDbBackend | undefined {
+  if (value === undefined) return undefined
+  if (value === "sqljs" || value === "better-sqlite3") {
+    return value
+  }
+  throw new Error(`backend must be "sqljs" or "better-sqlite3", got: ${value}`)
+}
+
 function parseArgs(argv: string[]): Options {
   const options: Options = {
+    backend: parseBackendOption(process.env.MOJIDATA_API_BENCH_BACKEND),
     baseUrl: process.env.MOJIDATA_API_BASE_URL,
-    iterations: parseIntegerOption(process.env.MOJIDATA_BENCH_ITERATIONS, 30, 'iterations'),
-    warmupIterations: parseIntegerOption(process.env.MOJIDATA_BENCH_WARMUP, 5, 'warmup'),
-    coldIterations: parseIntegerOption(process.env.MOJIDATA_BENCH_COLD, 3, 'cold'),
-    format: process.env.MOJIDATA_BENCH_FORMAT === 'json' ? 'json' : 'table',
+    label: process.env.MOJIDATA_API_BENCH_LABEL,
+    outputPath: process.env.MOJIDATA_API_BENCH_OUTPUT,
+    iterations: parseIntegerOption(process.env.MOJIDATA_BENCH_ITERATIONS, 30, "iterations"),
+    warmupIterations: parseIntegerOption(process.env.MOJIDATA_BENCH_WARMUP, 5, "warmup"),
+    coldIterations: parseIntegerOption(process.env.MOJIDATA_BENCH_COLD, 3, "cold"),
+    format: process.env.MOJIDATA_BENCH_FORMAT === "json" ? "json" : "table",
     scenarioNames: [],
   }
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
     switch (arg) {
-      case '--base-url':
+      case "--backend":
+        options.backend = parseBackendOption(argv[++index])
+        break
+      case "--base-url":
         options.baseUrl = argv[++index]
         break
-      case '--iterations':
-        options.iterations = parseIntegerOption(argv[++index], options.iterations, 'iterations')
+      case "--label":
+        options.label = argv[++index]
         break
-      case '--warmup':
-        options.warmupIterations = parseIntegerOption(argv[++index], options.warmupIterations, 'warmup')
+      case "--output":
+        options.outputPath = argv[++index]
         break
-      case '--cold':
-        options.coldIterations = parseIntegerOption(argv[++index], options.coldIterations, 'cold')
+      case "--iterations":
+        options.iterations = parseIntegerOption(argv[++index], options.iterations, "iterations")
         break
-      case '--format': {
+      case "--warmup":
+        options.warmupIterations = parseIntegerOption(argv[++index], options.warmupIterations, "warmup")
+        break
+      case "--cold":
+        options.coldIterations = parseIntegerOption(argv[++index], options.coldIterations, "cold")
+        break
+      case "--format": {
         const format = argv[++index]
-        if (format !== 'table' && format !== 'json') {
+        if (format !== "table" && format !== "json") {
           throw new Error(`format must be "table" or "json", got: ${format}`)
         }
         options.format = format
         break
       }
-      case '--scenario': {
+      case "--scenario": {
         const name = argv[++index]
-        if (!name) throw new Error('--scenario requires a value')
+        if (!name) throw new Error("--scenario requires a value")
         options.scenarioNames.push(name)
         break
       }
-      case '--help':
-      case '-h':
+      case "--help":
+      case "-h":
         printHelp()
         process.exit(0)
       default:
@@ -124,7 +160,11 @@ function parseArgs(argv: string[]): Options {
   }
 
   if (options.iterations === 0) {
-    throw new Error('iterations must be greater than 0')
+    throw new Error("iterations must be greater than 0")
+  }
+
+  if (options.baseUrl && options.backend) {
+    throw new Error('Use "--label" instead of "--backend" when benchmarking a remote target')
   }
 
   return options
@@ -134,38 +174,42 @@ function printHelp() {
   console.log(`Usage: yarn bench [options]
 
 Options:
-  --base-url <url>      Benchmark an already-running HTTP server
-  --iterations <n>      Measured iterations per scenario (default: 30)
-  --warmup <n>          Warmup iterations per scenario (default: 5)
-  --cold <n>            Cold-start iterations per scenario (default: 3, in-process only)
-  --format <table|json> Output format (default: table)
-  --scenario <name>     Run only the named scenario (repeatable)
-  --help                Show this help
+  --backend <sqljs|better-sqlite3>
+                         Select the local in-process backend (default: sqljs)
+  --base-url <url>       Benchmark an already-running HTTP server
+  --label <label>        Override the benchmark target label
+  --output <path>        Write machine-readable JSON results to a file
+  --iterations <n>       Measured iterations per scenario (default: 30)
+  --warmup <n>           Warmup iterations per scenario (default: 5)
+  --cold <n>             Cold-start iterations per scenario (default: 3, in-process only)
+  --format <table|json>  Console output format (default: table)
+  --scenario <name>      Run only the named scenario (repeatable)
+  --help                 Show this help
+
+Examples:
+  yarn bench --backend sqljs
+  yarn bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
+  yarn bench --base-url http://localhost:3001 --label worker-http --output ./tmp/worker.json
 
 Scenarios:
-${scenarios.map((scenario) => `  - ${scenario.name}: ${scenario.description}`).join('\n')}`)
+${scenarios.map((scenario) => `  - ${scenario.name}: ${scenario.description}`).join("\n")}`)
 }
 
 function getSelectedScenarios(names: string[]): Scenario[] {
   if (names.length === 0) return scenarios
-  const selected = names.map((name) => {
+  return names.map((name) => {
     const scenario = scenarios.find((entry) => entry.name === name)
     if (!scenario) {
       throw new Error(
-        `Unknown scenario: ${name}\nAvailable scenarios: ${scenarios.map((entry) => entry.name).join(', ')}`,
+        `Unknown scenario: ${name}\nAvailable scenarios: ${scenarios.map((entry) => entry.name).join(", ")}`,
       )
     }
     return scenario
   })
-  return selected
 }
 
-function createUrl(
-  pathname: string,
-  query: Scenario['query'],
-  baseUrl: string,
-): string {
-  const url = new URL(pathname, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`)
+function createUrl(pathname: string, query: Scenario["query"], baseUrl: string): string {
+  const url = new URL(pathname, baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`)
   if (!query) return url.toString()
 
   for (const [key, rawValue] of Object.entries(query)) {
@@ -206,107 +250,96 @@ async function timedRequest(
   return finishedAt - startedAt
 }
 
-function percentile(sortedValues: number[], ratio: number): number {
-  if (sortedValues.length === 0) return Number.NaN
-  const index = Math.min(
-    sortedValues.length - 1,
-    Math.max(0, Math.ceil(sortedValues.length * ratio) - 1),
-  )
-  return sortedValues[index]
-}
-
-function summarize(samplesMs: number[]) {
-  const sortedValues = [...samplesMs].sort((left, right) => left - right)
-  const total = sortedValues.reduce((sum, value) => sum + value, 0)
+function createResult(samples: ScenarioSamples): ScenarioResult {
   return {
-    minMs: sortedValues[0],
-    avgMs: total / sortedValues.length,
-    p50Ms: percentile(sortedValues, 0.5),
-    p95Ms: percentile(sortedValues, 0.95),
-    maxMs: sortedValues[sortedValues.length - 1],
+    ...samples,
+    summary: summarize(samples.samplesMs),
+    coldSummary:
+      samples.coldStartMs && samples.coldStartMs.length > 0
+        ? summarize(samples.coldStartMs)
+        : undefined,
   }
 }
 
-function formatMs(value: number | undefined): string {
-  if (value === undefined || Number.isNaN(value)) return '-'
-  return `${value.toFixed(2)} ms`
+function benchmarkLabel(options: Options): string {
+  if (options.label) return options.label
+  if (options.baseUrl) return `remote:${options.baseUrl}`
+  return `in-process:${options.backend ?? defaultLocalBackend}`
 }
 
-function printTable(results: ScenarioResult[], options: Options) {
-  const mode = options.baseUrl ? `remote (${options.baseUrl})` : 'in-process'
-  console.log(
-    `mojidata-api benchmark: ${mode}\n` +
-      `iterations=${options.iterations}, warmup=${options.warmupIterations}, cold=${options.baseUrl ? 0 : options.coldIterations}`,
-  )
-  console.log('')
-
-  const headers = ['scenario', 'cold avg', 'avg', 'p50', 'p95', 'max']
-  const rows = results.map((result) => {
-    const summary = summarize(result.samplesMs)
-    const coldSummary =
-      result.coldStartMs && result.coldStartMs.length > 0
-        ? summarize(result.coldStartMs)
-        : undefined
-    return [
-      result.name,
-      formatMs(coldSummary?.avgMs),
-      formatMs(summary.avgMs),
-      formatMs(summary.p50Ms),
-      formatMs(summary.p95Ms),
-      formatMs(summary.maxMs),
-    ]
-  })
-
-  const widths = headers.map((header, columnIndex) =>
-    Math.max(
-      header.length,
-      ...rows.map((row) => row[columnIndex]?.length ?? 0),
-    ),
-  )
-
-  const formatRow = (row: string[]) =>
-    row.map((value, columnIndex) => value.padEnd(widths[columnIndex])).join('  ')
-
-  console.log(formatRow(headers))
-  console.log(formatRow(widths.map((width) => '-'.repeat(width))))
-  for (const row of rows) {
-    console.log(formatRow(row))
-  }
-
-  console.log('')
-  for (const result of results) {
-    console.log(`${result.name}: ${result.description}`)
-  }
-}
-
-function printJson(results: ScenarioResult[], options: Options) {
-  const payload = {
-    mode: options.baseUrl ? 'remote' : 'in-process',
+function createPayload(results: ScenarioSamples[], options: Options): BenchmarkRun {
+  const label = benchmarkLabel(options)
+  return {
+    formatVersion: benchmarkFormatVersion,
+    scenarioSetVersion: benchmarkScenarioSetVersion,
+    mode: options.baseUrl ? "remote" : "in-process",
+    label,
+    backend: options.baseUrl ? undefined : options.backend ?? defaultLocalBackend,
     baseUrl: options.baseUrl,
     iterations: options.iterations,
     warmupIterations: options.warmupIterations,
     coldIterations: options.baseUrl ? 0 : options.coldIterations,
-    results: results.map((result) => ({
-      name: result.name,
-      description: result.description,
-      samplesMs: result.samplesMs,
-      coldStartMs: result.coldStartMs,
-      summary: summarize(result.samplesMs),
-      coldSummary:
-        result.coldStartMs && result.coldStartMs.length > 0
-          ? summarize(result.coldStartMs)
-          : undefined,
-    })),
+    environment: collectBenchmarkEnvironment(),
+    results: results.map(createResult),
   }
-  console.log(JSON.stringify(payload, null, 2))
+}
+
+function printTable(payload: BenchmarkRun) {
+  const mode = payload.baseUrl ? `remote (${payload.baseUrl})` : `in-process (${payload.backend})`
+  console.log(
+    `mojidata-api benchmark: ${payload.label}\n` +
+      `mode=${mode}\n` +
+      `iterations=${payload.iterations}, warmup=${payload.warmupIterations}, cold=${payload.coldIterations}`,
+  )
+
+  if (payload.environment.gitRevision) {
+    console.log(`git=${payload.environment.gitRevision}`)
+  }
+  console.log(`timestamp=${payload.environment.timestamp}`)
+  console.log("")
+
+  const headers = ["scenario", "cold avg", "avg", "p50", "p95", "max"]
+  const rows = payload.results.map((result) => [
+    result.name,
+    formatMs(result.coldSummary?.avgMs),
+    formatMs(result.summary.avgMs),
+    formatMs(result.summary.p50Ms),
+    formatMs(result.summary.p95Ms),
+    formatMs(result.summary.maxMs),
+  ])
+
+  const widths = headers.map((header, columnIndex) =>
+    Math.max(header.length, ...rows.map((row) => row[columnIndex]?.length ?? 0)),
+  )
+
+  const formatRow = (row: string[]) =>
+    row.map((value, columnIndex) => value.padEnd(widths[columnIndex])).join("  ")
+
+  console.log(formatRow(headers))
+  console.log(formatRow(widths.map((width) => "-".repeat(width))))
+  for (const row of rows) {
+    console.log(formatRow(row))
+  }
+
+  console.log("")
+  for (const result of payload.results) {
+    console.log(`${result.name}: ${result.description}`)
+  }
+}
+
+function writeJsonOutput(payload: BenchmarkRun, outputPath: string) {
+  const resolvedPath = resolve(outputPath)
+  mkdirSync(dirname(resolvedPath), { recursive: true })
+  writeFileSync(resolvedPath, JSON.stringify(payload, null, 2))
+  console.error(`Saved benchmark JSON to ${resolvedPath}`)
 }
 
 async function runScenario(
   scenario: Scenario,
   options: Options,
-): Promise<ScenarioResult> {
+): Promise<ScenarioSamples> {
   const baseUrl = options.baseUrl ?? defaultOrigin
-  const result: ScenarioResult = {
+  const result: ScenarioSamples = {
     name: scenario.name,
     description: scenario.description,
     samplesMs: [],
@@ -322,21 +355,19 @@ async function runScenario(
     return result
   }
 
+  const backend = options.backend ?? defaultLocalBackend
+
   if (options.coldIterations > 0) {
     result.coldStartMs = []
     for (let index = 0; index < options.coldIterations; index += 1) {
-      const app = createNodeApp()
+      const app = createNodeApp({ backend })
       result.coldStartMs.push(
-        await timedRequest(
-          (url) => app.fetch(new Request(url)),
-          scenario,
-          baseUrl,
-        ),
+        await timedRequest((url) => app.fetch(new Request(url)), scenario, baseUrl),
       )
     }
   }
 
-  const app = createNodeApp()
+  const app = createNodeApp({ backend })
   for (let index = 0; index < options.warmupIterations; index += 1) {
     await timedRequest((url) => app.fetch(new Request(url)), scenario, baseUrl)
   }
@@ -352,18 +383,24 @@ async function runScenario(
 async function main() {
   const options = parseArgs(process.argv.slice(2))
   const selectedScenarios = getSelectedScenarios(options.scenarioNames)
-  const results: ScenarioResult[] = []
+  const results: ScenarioSamples[] = []
 
   for (const scenario of selectedScenarios) {
     results.push(await runScenario(scenario, options))
   }
 
-  if (options.format === 'json') {
-    printJson(results, options)
+  const payload = createPayload(results, options)
+
+  if (options.outputPath) {
+    writeJsonOutput(payload, options.outputPath)
+  }
+
+  if (options.format === "json") {
+    console.log(JSON.stringify(payload, null, 2))
     return
   }
 
-  printTable(results, options)
+  printTable(payload)
 }
 
 void main().catch((error) => {

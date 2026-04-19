@@ -50,11 +50,18 @@ yarn dev
 ## Benchmarks
 
 Use `yarn bench` to measure representative API scenarios without starting an HTTP server.
-By default it benchmarks `createNodeApp()` in-process, which reduces transport noise and makes
-before/after comparisons easier.
+By default it benchmarks `createNodeApp()` in-process with the `sql.js` backend, which reduces
+transport noise and makes before/after comparisons easier.
 
 ```sh
 yarn bench
+```
+
+Select a local backend explicitly when comparing executor implementations:
+
+```sh
+yarn bench --backend sqljs
+yarn bench --backend better-sqlite3
 ```
 
 You can also target an already-running server for end-to-end HTTP measurements:
@@ -64,13 +71,30 @@ yarn dev
 MOJIDATA_API_BASE_URL=http://localhost:3001 yarn bench --base-url http://localhost:3001
 ```
 
+To save machine-readable results while keeping the table output on stdout:
+
+```sh
+yarn bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
+```
+
+To compare two saved benchmark runs:
+
+```sh
+yarn bench --backend sqljs --output ./tmp/sqljs.json
+yarn bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
+yarn bench:compare ./tmp/sqljs.json ./tmp/better-sqlite3.json
+```
+
 Supported options:
 
+- `--backend <sqljs|better-sqlite3>`: choose the local in-process backend
 - `--iterations <n>`: measured iterations per scenario (`30` by default)
 - `--warmup <n>`: warmup iterations per scenario (`5` by default)
 - `--cold <n>`: cold-start iterations per scenario (`3` by default, in-process only)
 - `--scenario <name>`: run only the named scenario, repeatable
 - `--format <table|json>`: switch between human-readable and machine-readable output
+- `--label <name>`: override the benchmark target label, useful for remote deployments
+- `--output <path>`: write JSON results to a file for later comparison
 
 Current built-in scenarios:
 

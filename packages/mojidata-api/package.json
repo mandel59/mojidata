@@ -72,6 +72,7 @@
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
     "bench": "node --import tsx ./benchmarks/run.ts",
+    "bench:compare": "node --import tsx ./benchmarks/compare.ts",
     "prepare": "tsc",
     "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
