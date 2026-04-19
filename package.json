@@ -16,6 +16,7 @@
         "mojidata-api:d1:check": "./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1/tsconfig.json && ./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1-worker/tsconfig.json --noEmit",
         "mojidata-api:d1:dev": "cd packages/mojidata-api-d1-worker && npx wrangler dev",
         "mojidata-api:d1:deploy": "cd packages/mojidata-api-d1-worker && npx wrangler deploy",
+        "mojidata-api:d1:smoke": "node ./scripts/smoke-mojidata-api-remote.mjs",
         "mojidata-api:d1:typegen": "cd packages/mojidata-api-d1-worker && npx wrangler types ./cloudflare-env.d.ts",
         "mojidata-api:bench": "yarn workspace @mandel59/mojidata-api-bench bench",
         "mojidata-api:bench:compare": "yarn workspace @mandel59/mojidata-api-bench bench:compare",

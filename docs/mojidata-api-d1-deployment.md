@@ -92,6 +92,7 @@ Useful root commands:
 - `yarn mojidata-api:d1:typegen`
 - `yarn mojidata-api:d1:dev`
 - `yarn mojidata-api:d1:deploy`
+- `yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev`
 - `yarn mojidata-api:d1:prepare-import`
 
 The `dev`, `deploy`, and `typegen` commands intentionally shell out to
@@ -136,7 +137,13 @@ may therefore download the CLI.
    corepack yarn mojidata-api:d1:deploy
    ```
 
-7. Benchmark the deployed target:
+7. Run the remote smoke test:
+
+   ```sh
+   corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
+   ```
+
+8. Benchmark the deployed target:
 
    ```sh
    corepack yarn mojidata-api:bench:remote \
