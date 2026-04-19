@@ -19,8 +19,8 @@
     "mojidata-variants": "bin/mojidata-variants.js"
   },
   "scripts": {
-    "test": "ava",
-    "test:ci": "ava",
+    "test": "yarn prepare && ava",
+    "test:ci": "yarn prepare && ava",
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public"
   },
