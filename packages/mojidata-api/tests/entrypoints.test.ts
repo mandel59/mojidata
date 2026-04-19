@@ -19,6 +19,7 @@ describe('package entrypoints', () => {
     assert.equal(typeof createSqlJsExecutor, 'function')
     assert.equal(typeof openDatabaseFromFile, 'function')
     assert.equal(typeof createNodeDb({ backend: 'better-sqlite3' }), 'object')
+    assert.equal(typeof createNodeDb({ backend: 'node:sqlite' }), 'object')
   })
 
   test('declares only facade subpath exports', () => {
@@ -42,12 +43,13 @@ describe('package entrypoints', () => {
   })
 
   test('keeps api/v1/_lib compatibility wrappers', async () => {
-    const [coreCompat, sqljsCompat, honoCompat, runtimeCompat, jsonCompat] = await Promise.all([
+    const [coreCompat, sqljsCompat, honoCompat, runtimeCompat, jsonCompat, nodeSqliteCompat] = await Promise.all([
       import('@mandel59/mojidata-api/api/v1/_lib/libsearch'),
       import('@mandel59/mojidata-api/api/v1/_lib/sqljs-node'),
       import('@mandel59/mojidata-api/api/v1/_lib/cast'),
       import('@mandel59/mojidata-api/api/v1/_lib/iterator-utils'),
       import('@mandel59/mojidata-api/api/v1/_lib/json-encoder'),
+      import('@mandel59/mojidata-api/api/v1/_lib/node-sqlite-executor'),
     ])
 
     assert.equal(typeof coreCompat.createLibSearch, 'function')
@@ -55,6 +57,7 @@ describe('package entrypoints', () => {
     assert.equal(typeof honoCompat.castToStringArray, 'function')
     assert.equal(typeof runtimeCompat.take, 'function')
     assert.equal(typeof jsonCompat.writeObject, 'function')
+    assert.equal(typeof nodeSqliteCompat.createNodeSqliteExecutor, 'function')
   })
 
   test('keeps api/v1 handler compatibility wrappers', async () => {

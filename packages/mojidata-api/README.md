@@ -17,12 +17,13 @@ It also has split packages for composing the API yourself:
 The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades and forward to the split packages.
 
 For Node.js, `createNodeDb()` defaults to `sql.js`, but it can also use
-`better-sqlite3`:
+`better-sqlite3` or `node:sqlite`:
 
 ```ts
 import { createNodeDb } from "@mandel59/mojidata-api-runtime"
 
 const db = createNodeDb({ backend: "better-sqlite3" })
+const nodeSqliteDb = createNodeDb({ backend: "node:sqlite" })
 ```
 
 ## Tests
@@ -59,6 +60,7 @@ yarn mojidata-api:bench:prepare
 yarn mojidata-api:bench:local -- --scenario ivs-list --iterations 10
 yarn mojidata-api:bench --backend sqljs
 yarn mojidata-api:bench --backend better-sqlite3
+yarn mojidata-api:bench --backend node:sqlite
 ```
 
 There is also a manual GitHub Actions workflow, `Mojidata API Benchmark`, for collecting
