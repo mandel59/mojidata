@@ -33,6 +33,12 @@ This package is still an initial D1 PoC. Full parity for all mojidata-api
 queries still depends on follow-up work around custom SQL function usage, FTS
 compatibility, and D1 data import flow.
 
+For a deployable Cloudflare Worker target in this repository, see the private
+workspace
+[packages/mojidata-api-d1-worker](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker)
+and
+[docs/mojidata-api-d1-deployment.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-d1-deployment.md).
+
 For local D1-oriented `idsfind` assets, use the separate `@mandel59/idsdb-fts5`
 package:
 

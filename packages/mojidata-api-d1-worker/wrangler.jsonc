@@ -1,0 +1,24 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "mojidata-api-d1",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-19",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "d1_databases": [
+    {
+      "binding": "MOJIDATA_DB",
+      "database_name": "mojidata-api-d1-mojidata",
+      // Replace with the real database ID returned by `wrangler d1 create`.
+      "database_id": "00000000-0000-0000-0000-000000000001"
+    },
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind",
+      // Replace with the real database ID returned by `wrangler d1 create`.
+      "database_id": "00000000-0000-0000-0000-000000000002"
+    }
+  ]
+}

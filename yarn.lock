@@ -888,7 +888,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-d1@workspace:packages/mojidata-api-d1":
+"@mandel59/mojidata-api-d1-worker@workspace:packages/mojidata-api-d1-worker":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-d1-worker@workspace:packages/mojidata-api-d1-worker"
+  dependencies:
+    "@mandel59/mojidata-api-d1": "workspace:^"
+    "@types/node": "npm:^24.10.4"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/mojidata-api-d1@workspace:^, @mandel59/mojidata-api-d1@workspace:packages/mojidata-api-d1":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-d1@workspace:packages/mojidata-api-d1"
   dependencies:

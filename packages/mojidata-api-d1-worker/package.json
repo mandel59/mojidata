@@ -1,0 +1,19 @@
+{
+  "name": "@mandel59/mojidata-api-d1-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Private Cloudflare Worker deployment target for mojidata-api D1 validation",
+  "scripts": {
+    "check": "../../.yarn/sdks/typescript/bin/tsc -p ../mojidata-api-d1/tsconfig.json && ../../.yarn/sdks/typescript/bin/tsc -p ./tsconfig.json --noEmit",
+    "cf-typegen": "npx wrangler types ./cloudflare-env.d.ts",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  },
+  "dependencies": {
+    "@mandel59/mojidata-api-d1": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "typescript": "^5.9.3"
+  }
+}

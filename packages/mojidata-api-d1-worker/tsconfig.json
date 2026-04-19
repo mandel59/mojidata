@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "WebWorker"],
+    "baseUrl": ".",
+    "paths": {
+      "@mandel59/mojidata-api-d1": ["../mojidata-api-d1/index.ts"]
+    }
+  }
+}

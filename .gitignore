@@ -5,6 +5,7 @@ node_modules
 
 .vscode/settings.json
 .workspaces/
+.wrangler/
 
 .yarn/*
 !.yarn/cache

@@ -13,6 +13,7 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@mandel59/mojidata-api-bench"
+    "@mandel59/mojidata-api-bench",
+    "@mandel59/mojidata-api-d1-worker"
   ]
 }
