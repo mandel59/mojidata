@@ -5,6 +5,10 @@
 - [Mojidata Character Database](packages/mojidata)
 - [Mojidata CLI](packages/mojidata-cli)
 - [Mojidata IDS Tools](packages/idstool)
+- [Mojidata API compatibility facade](packages/mojidata-api)
+- [Mojidata API runtime](packages/mojidata-api-runtime)
+- [Mojidata API better-sqlite3 backend](packages/mojidata-api-better-sqlite3)
+- [Mojidata API node:sqlite backend](packages/mojidata-api-node-sqlite)
 
 ## Build
 
@@ -37,6 +41,7 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 - `yarn mojidata-api:bench:compare <baseline.json> <candidate.json>`: compare two saved benchmark runs
 
 The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
+The native Node.js backends are now published as explicit packages instead of being part of the default portable runtime/facade install path.
 See [docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md) for the baseline, branch comparison, and remote target workflows.
 
 ## Release

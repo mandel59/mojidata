@@ -1,11 +1,14 @@
 ---
-"@mandel59/mojidata-api": minor
-"@mandel59/mojidata-api-runtime": minor
+"@mandel59/mojidata-api": major
+"@mandel59/mojidata-api-runtime": major
+"@mandel59/mojidata-api-better-sqlite3": minor
+"@mandel59/mojidata-api-node-sqlite": minor
 ---
 
-Add a Node.js `node:sqlite` backend for `mojidata-api` and expose it through
-`createNodeDb({ backend: "node:sqlite" })`.
+Move the native Node.js backends out of the portable `mojidata-api` runtime and
+compatibility facade.
 
-The runtime package now exports the built-in SQLite adapter, the compatibility
-facade forwards the new backend option and wrapper entry points, and the
-benchmark tooling compares `node:sqlite` with `sql.js` and `better-sqlite3`.
+`@mandel59/mojidata-api` and `@mandel59/mojidata-api-runtime` now keep the
+default `sql.js` path only, while the native backends are published as the new
+explicit packages `@mandel59/mojidata-api-better-sqlite3` and
+`@mandel59/mojidata-api-node-sqlite`.
