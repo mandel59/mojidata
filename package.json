@@ -12,6 +12,7 @@
         "ci:pack": "corepack yarn workspaces foreach -A --no-private exec yarn npm publish -n",
         "ci:test:affected": "node ./scripts/run-affected-workspaces.mjs test",
         "ci:test": "yarn test",
+        "mojidata-api:d1:prepare-import": "node ./scripts/prepare-mojidata-d1-import.mjs",
         "mojidata-api:bench": "yarn workspace @mandel59/mojidata-api-bench bench",
         "mojidata-api:bench:compare": "yarn workspace @mandel59/mojidata-api-bench bench:compare",
         "mojidata-api:bench:local": "yarn workspace @mandel59/mojidata-api-bench bench:local",

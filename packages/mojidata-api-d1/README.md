@@ -39,3 +39,33 @@ package:
 ```sh
 corepack yarn workspace @mandel59/idsdb-fts5 prepare
 ```
+
+## Preparing SQL dumps for D1 import
+
+Cloudflare D1 imports SQL files, not raw `.db` artifacts. In this monorepo, you
+can prepare importable SQL dumps for both mojidata and the FTS5 `idsfind`
+database with:
+
+```sh
+corepack yarn mojidata-api:d1:prepare-import
+```
+
+By default this writes the converted dumps into
+`/tmp/mojidata-d1-import/`:
+
+- `mojidata.sql`
+- `idsdb-fts5.sql`
+- `manifest.json`
+
+To write them somewhere else:
+
+```sh
+corepack yarn mojidata-api:d1:prepare-import --output-dir ./tmp/d1-import
+```
+
+Those `.sql` files can then be imported with Wrangler, for example:
+
+```sh
+npx wrangler d1 execute MOJIDATA_DB --remote --file ./tmp/d1-import/mojidata.sql
+npx wrangler d1 execute IDSFIND_DB --remote --file ./tmp/d1-import/idsdb-fts5.sql
+```
