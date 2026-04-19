@@ -5,6 +5,28 @@ import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import { tokenizeIDS } from "@mandel59/idsdb-utils"
 
+function getIdsfindFtsModule() {
+    const requested = process.env.MOJIDATA_IDSDB_FTS_VERSION ?? "4"
+    if (requested !== "4" && requested !== "5") {
+        throw new Error(
+            `Unsupported MOJIDATA_IDSDB_FTS_VERSION: ${requested} (expected "4" or "5")`,
+        )
+    }
+    return `fts${requested}` as const
+}
+
+function getIdsfindTokenizerClause(
+    ftsModule: "fts4" | "fts5",
+    symbolsInIds: Iterable<string>,
+) {
+    const tokenchars = `{}&-;§${Array.from(symbolsInIds).join("")}`
+    if (ftsModule === "fts4") {
+        return `tokenize=unicode61 "tokenchars=${tokenchars}"`
+    }
+    const escaped = tokenchars.replace(/'/g, "''")
+    return `tokenize = "unicode61 tokenchars '${escaped}'"`
+}
+
 function resolvePnpVirtualPath(filePath: string) {
     if (!path.isAbsolute(filePath)) {
         return filePath
@@ -19,6 +41,7 @@ function resolvePnpVirtualPath(filePath: string) {
 }
 
 async function main() {
+    const idsfindFtsModule = getIdsfindFtsModule()
     const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
 
     const dbpath = path.join(__dirname, "idsfind.db")
@@ -31,6 +54,10 @@ async function main() {
     for (const ids of db.prepare(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
         ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
+    const idsfindTokenizerClause = getIdsfindTokenizerClause(
+        idsfindFtsModule,
+        symbols_in_ids,
+    )
     const usource = db.prepare(`SELECT U_source_ID, IDS FROM moji.usource WHERE IDS is not null`).all() as { U_source_ID: string, IDS: string }[]
     db.exec(`DETACH DATABASE moji`)
 
@@ -106,13 +133,13 @@ async function main() {
     db.exec(`CREATE TABLE "idsfind_ref" (docid INTEGER PRIMARY KEY, char TEXT NOT NULL)`)
     db.exec(`CREATE INDEX "idsfind_ref_char" ON "idsfind_ref" (char)`)
     db.exec(`INSERT INTO idsfind_ref (docid, char) SELECT rowid, UCS FROM idsfind`)
-    db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 (
+    db.exec(`CREATE VIRTUAL TABLE "idsfind_fts" USING ${idsfindFtsModule} (
     content="",
-    tokenize=unicode61 "tokenchars={}&-;§${Array.from(symbols_in_ids).join("")}",
+    ${idsfindTokenizerClause},
     "IDS_tokens"
 )`)
-    db.exec(`INSERT INTO idsfind_fts (docid, IDS_tokens) SELECT
-    (SELECT docid FROM idsfind_ref WHERE char = UCS) AS docid,
+    db.exec(`INSERT INTO idsfind_fts (rowid, IDS_tokens) SELECT
+    (SELECT docid FROM idsfind_ref WHERE char = UCS) AS rowid,
     '§ ' || group_concat(IDS_tokens, ' § ') || ' §'
 FROM idsfind
 GROUP BY UCS`)

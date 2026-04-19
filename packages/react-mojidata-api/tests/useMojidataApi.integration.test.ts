@@ -90,7 +90,7 @@ test(
 
       INSERT INTO idsfind (UCS, IDS_tokens) VALUES ('灶', '⿰ 火 土');
       INSERT INTO idsfind_ref (docid, char) VALUES (1, '灶');
-      INSERT INTO idsfind_fts (docid, IDS_tokens) VALUES (1, '§ ⿰ 火 土 §');
+      INSERT INTO idsfind_fts (rowid, IDS_tokens) VALUES (1, '§ ⿰ 火 土 §');
     `)
     const idsfindDbBytes = idsfindDb.export()
     idsfindDb.close()

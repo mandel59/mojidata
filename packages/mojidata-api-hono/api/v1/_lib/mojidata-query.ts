@@ -1,1 +1,6 @@
-export * from "@mandel59/mojidata-api-core/lib/mojidata-query"
+export {
+  buildMojidataSelectQuery,
+  getSqlMojidataFields,
+  mojidataComputedFieldNames,
+  mojidataFieldNames,
+} from "@mandel59/mojidata-api-core"

@@ -61,10 +61,10 @@ token_pattern as (
     )
 ),
 results as (
-    select char AS UCS
+    select idsfind_ref.char AS UCS
     from idsfind_fts
     join token_pattern
-    join idsfind_ref using (docid)
+    join idsfind_ref on idsfind_ref.docid = idsfind_fts.rowid
     where IDS_tokens match pattern
 )
 `
@@ -74,4 +74,3 @@ export function makeIdsfindQuery(queryBody: string) {
 }
 
 export const idsfindQuery = makeIdsfindQuery(`select UCS from results`)
-

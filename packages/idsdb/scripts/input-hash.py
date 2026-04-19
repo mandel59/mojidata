@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import hashlib
+import os
 import pathlib
 
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -44,5 +45,6 @@ for p in sorted((idsdb_utils_root / "lib").glob("*")):
         add_file(p)
 
 add_file(workspace_root / "mojidata" / "dist" / "moji.db")
+add_line(f"ENV\tMOJIDATA_IDSDB_FTS_VERSION={os.getenv('MOJIDATA_IDSDB_FTS_VERSION', '4')}")
 
 print(h.hexdigest())
