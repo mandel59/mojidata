@@ -10,6 +10,23 @@
 - Point each package at this repository and the `release.yml` workflow filename.
 - Use GitHub-hosted runners. npm Trusted Publishing does not support self-hosted runners.
 
+## First publish for new packages
+
+If a package has never been published to npm before, create its registry entry before relying on the automated release workflow.
+
+1. Run a dry-run from the workspace:
+   `corepack yarn workspace @scope/package npm publish -n --access public`
+2. Publish the package manually once with `--access public`.
+3. Open the package on npmjs.com and configure its Trusted Publisher entry for this repository and `release.yml`.
+4. After that bootstrap publish, let subsequent releases go through the GitHub Actions `Release` workflow.
+
+For the split `mojidata-api` packages, use this bootstrap flow for:
+
+- `@mandel59/mojidata-api-core`
+- `@mandel59/mojidata-api-sqljs`
+- `@mandel59/mojidata-api-hono`
+- `@mandel59/mojidata-api-runtime`
+
 ## Normal flow
 
 1. Merge feature pull requests with a normal or empty changeset.
