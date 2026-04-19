@@ -74,8 +74,8 @@
     "bench": "node --import tsx ./benchmarks/run.ts",
     "prepare": "tsc",
     "publish": "yarn prepare && yarn npm publish --access public",
-    "pretest": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/mojidata-api run prepare",
-    "pretest:ci": "yarn --cwd ../.. workspaces foreach -Rpt --from @mandel59/mojidata-api run prepare",
+    "pretest": "yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
+    "pretest:ci": "yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
     "test": "node --import tsx --test ./tests/*.test.ts",
     "test:ci": "node --import tsx --test ./tests/*.test.ts"
   },
