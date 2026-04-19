@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.8.0] - 2026-04-19
+
+### Added
+
+- Add the standalone `@mandel59/mojidata-api-core`, `@mandel59/mojidata-api-sqljs`, `@mandel59/mojidata-api-hono`, and `@mandel59/mojidata-api-runtime` packages.
+- Add a `better-sqlite3` backend option alongside the existing `sql.js` path.
+- Add backend-neutral SQL API tests, sql.js adapter contract tests, and HTTP smoke tests.
+
+### Changed
+
+- Turn `@mandel59/mojidata-api` into a compatibility facade over the split packages while preserving existing `api/v1` and `_lib` import paths.
+- Move published build outputs under `dist/` instead of committing generated JS files alongside source files.
+- Add CI/CD release automation and Trusted Publishing support for the split package release flow.
+
 ## [1.7.5] - 2026-02-15
 
 ### Fixed
@@ -61,6 +75,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add `prepare` build step and publish built JS/typings for consumers.
 
+[1.8.0]: https://github.com/mandel59/mojidata/compare/v1.7.5...v1.8.0
 [1.7.5]: https://github.com/mandel59/mojidata/compare/v1.7.4...v1.7.5
 [1.7.4]: https://github.com/mandel59/mojidata/compare/v1.7.3...v1.7.4
 [1.7.3]: https://github.com/mandel59/mojidata/compare/v1.7.2...v1.7.3

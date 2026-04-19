@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-sqljs",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "sql.js integration package for mojidata-api",
   "repository": {
     "type": "git",
@@ -34,7 +34,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-core": "^1.7.0",
+    "@mandel59/mojidata-api-core": "^1.8.0",
     "sql.js": "^1.13.0"
   },
   "devDependencies": {
