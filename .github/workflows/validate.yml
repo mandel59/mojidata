@@ -54,8 +54,15 @@ jobs:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: corepack yarn ci:build:affected
 
-      - name: Build workspace for branch pushes
-        if: github.event_name != 'pull_request'
+      - name: Build affected workspace for branch pushes
+        if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          CI_BASE_SHA: ${{ github.event.before }}
+          CI_HEAD_SHA: ${{ github.sha }}
+        run: corepack yarn ci:build:affected
+
+      - name: Build full workspace for branch creation pushes
+        if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
         run: corepack yarn ci:build
 
       - name: Check publish artifacts for pull requests
@@ -64,8 +71,15 @@ jobs:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: corepack yarn ci:pack:affected
 
-      - name: Check publish artifacts for branch pushes
-        if: github.event_name != 'pull_request'
+      - name: Check affected publish artifacts for branch pushes
+        if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          CI_BASE_SHA: ${{ github.event.before }}
+          CI_HEAD_SHA: ${{ github.sha }}
+        run: corepack yarn ci:pack:affected
+
+      - name: Check full publish artifacts for branch creation pushes
+        if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
         run: corepack yarn ci:pack
 
       - name: Run affected tests for pull requests
@@ -74,6 +88,13 @@ jobs:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: corepack yarn ci:test:affected
 
-      - name: Run full test suite for branch pushes
-        if: github.event_name != 'pull_request'
+      - name: Run affected tests for branch pushes
+        if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
+        env:
+          CI_BASE_SHA: ${{ github.event.before }}
+          CI_HEAD_SHA: ${{ github.sha }}
+        run: corepack yarn ci:test:affected
+
+      - name: Run full test suite for branch creation pushes
+        if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
         run: corepack yarn ci:test
