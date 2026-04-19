@@ -267,11 +267,16 @@ function benchmarkLabel(options: Options): string {
   return `in-process:${options.backend ?? defaultLocalBackend}`
 }
 
-function createPayload(results: ScenarioSamples[], options: Options): BenchmarkRun {
+function createPayload(
+  results: ScenarioSamples[],
+  selectedScenarios: Scenario[],
+  options: Options,
+): BenchmarkRun {
   const label = benchmarkLabel(options)
   return {
     formatVersion: benchmarkFormatVersion,
     scenarioSetVersion: benchmarkScenarioSetVersion,
+    selectedScenarios: selectedScenarios.map((scenario) => scenario.name),
     mode: options.baseUrl ? "remote" : "in-process",
     label,
     backend: options.baseUrl ? undefined : options.backend ?? defaultLocalBackend,
@@ -389,7 +394,7 @@ async function main() {
     results.push(await runScenario(scenario, options))
   }
 
-  const payload = createPayload(results, options)
+  const payload = createPayload(results, selectedScenarios, options)
 
   if (options.outputPath) {
     writeJsonOutput(payload, options.outputPath)

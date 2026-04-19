@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
 import {
+  benchmarkFormatVersion,
+  benchmarkScenarioSetVersion,
   deltaPct,
   formatDeltaMs,
   formatDeltaPct,
@@ -15,6 +17,7 @@ type CompareOptions = {
   baselinePath: string
   candidatePath: string
   format: "table" | "json"
+  allowVersionMismatch: boolean
 }
 
 type ScenarioComparison = {
@@ -33,6 +36,7 @@ type ScenarioComparison = {
 function parseArgs(argv: string[]): CompareOptions {
   const positional: string[] = []
   let format: "table" | "json" = "table"
+  let allowVersionMismatch = false
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
@@ -45,6 +49,9 @@ function parseArgs(argv: string[]): CompareOptions {
         format = value
         break
       }
+      case "--allow-version-mismatch":
+        allowVersionMismatch = true
+        break
       case "--help":
       case "-h":
         printHelp()
@@ -63,6 +70,7 @@ function parseArgs(argv: string[]): CompareOptions {
     baselinePath: positional[0],
     candidatePath: positional[1],
     format,
+    allowVersionMismatch,
   }
 }
 
@@ -71,6 +79,8 @@ function printHelp() {
 
 Options:
   --format <table|json>  Output format (default: table)
+  --allow-version-mismatch
+                         Compare even if benchmark format or scenario versions differ
   --help                 Show this help`)
 }
 
@@ -78,6 +88,12 @@ function parseRun(filePath: string): BenchmarkRun {
   const raw = JSON.parse(readFileSync(resolve(filePath), "utf8")) as BenchmarkRun
   return {
     ...raw,
+    formatVersion: raw.formatVersion ?? benchmarkFormatVersion,
+    scenarioSetVersion: raw.scenarioSetVersion ?? benchmarkScenarioSetVersion,
+    selectedScenarios:
+      raw.selectedScenarios && raw.selectedScenarios.length > 0
+        ? raw.selectedScenarios
+        : raw.results.map((result) => result.name),
     results: raw.results.map((result) => ({
       ...result,
       summary: result.summary ?? summarize(result.samplesMs),
@@ -129,20 +145,32 @@ function compareRuns(baseline: BenchmarkRun, candidate: BenchmarkRun) {
 
   return {
     baseline: {
+      formatVersion: baseline.formatVersion,
+      scenarioSetVersion: baseline.scenarioSetVersion,
+      selectedScenarios: baseline.selectedScenarios,
       label: baseline.label,
       mode: baseline.mode,
       backend: baseline.backend,
       baseUrl: baseline.baseUrl,
       gitRevision: baseline.environment.gitRevision,
       timestamp: baseline.environment.timestamp,
+      nodeVersion: baseline.environment.nodeVersion,
+      platform: baseline.environment.platform,
+      arch: baseline.environment.arch,
     },
     candidate: {
+      formatVersion: candidate.formatVersion,
+      scenarioSetVersion: candidate.scenarioSetVersion,
+      selectedScenarios: candidate.selectedScenarios,
       label: candidate.label,
       mode: candidate.mode,
       backend: candidate.backend,
       baseUrl: candidate.baseUrl,
       gitRevision: candidate.environment.gitRevision,
       timestamp: candidate.environment.timestamp,
+      nodeVersion: candidate.environment.nodeVersion,
+      platform: candidate.environment.platform,
+      arch: candidate.environment.arch,
     },
     scenarios,
     baselineOnly,
@@ -153,11 +181,17 @@ function compareRuns(baseline: BenchmarkRun, candidate: BenchmarkRun) {
 function printTable(result: ReturnType<typeof compareRuns>) {
   console.log(`baseline=${result.baseline.label}`)
   console.log(`candidate=${result.candidate.label}`)
+  console.log(
+    `format=${result.baseline.formatVersion} -> ${result.candidate.formatVersion}, scenarioset=${result.baseline.scenarioSetVersion} -> ${result.candidate.scenarioSetVersion}`,
+  )
   if (result.baseline.gitRevision || result.candidate.gitRevision) {
     console.log(
       `git=${result.baseline.gitRevision ?? "-"} -> ${result.candidate.gitRevision ?? "-"}`,
     )
   }
+  console.log(
+    `runtime=${result.baseline.nodeVersion}/${result.baseline.platform}-${result.baseline.arch} -> ${result.candidate.nodeVersion}/${result.candidate.platform}-${result.candidate.arch}`,
+  )
   console.log("")
 
   const includeCold = result.scenarios.some((scenario) => scenario.deltaColdAvgMs !== undefined)
@@ -237,10 +271,28 @@ function printTable(result: ReturnType<typeof compareRuns>) {
   }
 }
 
+function validateComparableRuns(
+  baseline: BenchmarkRun,
+  candidate: BenchmarkRun,
+  allowVersionMismatch: boolean,
+) {
+  if (!allowVersionMismatch && baseline.formatVersion !== candidate.formatVersion) {
+    throw new Error(
+      `Benchmark format version mismatch: ${baseline.formatVersion} != ${candidate.formatVersion}. Re-run with --allow-version-mismatch to force comparison.`,
+    )
+  }
+  if (!allowVersionMismatch && baseline.scenarioSetVersion !== candidate.scenarioSetVersion) {
+    throw new Error(
+      `Benchmark scenario set version mismatch: ${baseline.scenarioSetVersion} != ${candidate.scenarioSetVersion}. Re-run with --allow-version-mismatch to force comparison.`,
+    )
+  }
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2))
   const baseline = parseRun(options.baselinePath)
   const candidate = parseRun(options.candidatePath)
+  validateComparableRuns(baseline, candidate, options.allowVersionMismatch)
   const result = compareRuns(baseline, candidate)
 
   if (options.format === "json") {

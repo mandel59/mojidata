@@ -36,6 +36,7 @@ export type BenchmarkEnvironment = {
 export type BenchmarkRun = {
   formatVersion: number
   scenarioSetVersion: number
+  selectedScenarios: string[]
   mode: BenchmarkMode
   label: string
   backend?: string

@@ -91,6 +91,13 @@ yarn bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
 yarn bench:compare ./tmp/sqljs.json ./tmp/better-sqlite3.json
 ```
 
+Remote deployments can be compared the same way:
+
+```sh
+yarn bench --base-url https://example.invalid --label worker-d1 --output ./tmp/worker-d1.json
+yarn bench:compare ./tmp/better-sqlite3.json ./tmp/worker-d1.json
+```
+
 Supported options:
 
 - `--backend <sqljs|better-sqlite3>`: choose the local in-process backend
@@ -104,7 +111,8 @@ Supported options:
 
 There is also a manual GitHub Actions workflow, `Mojidata API Benchmark`, which runs
 the `sql.js` and `better-sqlite3` benchmarks on GitHub-hosted runners and uploads
-the JSON outputs plus comparison artifacts.
+the JSON outputs plus comparison artifacts. The workflow also accepts an optional
+remote base URL so a deployed Worker target can be benchmarked with the same scenario set.
 
 Current built-in scenarios:
 

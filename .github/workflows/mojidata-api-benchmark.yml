@@ -23,6 +23,16 @@ on:
         required: false
         default: ""
         type: string
+      remote_base_url:
+        description: Optional remote base URL to benchmark with the same scenario set
+        required: false
+        default: ""
+        type: string
+      remote_label:
+        description: Label for the optional remote benchmark target
+        required: false
+        default: "github-actions:remote"
+        type: string
 
 concurrency:
   group: benchmark-${{ github.workflow }}-${{ github.ref }}
@@ -100,6 +110,22 @@ jobs:
           fi
           corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
 
+      - name: Benchmark remote target
+        if: inputs.remote_base_url != ''
+        shell: bash
+        run: |
+          args=(
+            --base-url "${{ inputs.remote_base_url }}"
+            --label "${{ inputs.remote_label }}"
+            --iterations "${{ inputs.iterations }}"
+            --warmup "${{ inputs.warmup }}"
+            --output artifacts/mojidata-api-bench-remote.json
+          )
+          if [[ -n "${{ inputs.scenario }}" ]]; then
+            args+=(--scenario "${{ inputs.scenario }}")
+          fi
+          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+
       - name: Compare benchmark outputs
         run: |
           corepack yarn workspace @mandel59/mojidata-api bench:compare \
@@ -111,6 +137,17 @@ jobs:
             artifacts/mojidata-api-bench-sqljs.json \
             artifacts/mojidata-api-bench-better-sqlite3.json \
             > artifacts/mojidata-api-bench-compare.json
+          if [[ -f artifacts/mojidata-api-bench-remote.json ]]; then
+            corepack yarn workspace @mandel59/mojidata-api bench:compare \
+              artifacts/mojidata-api-bench-better-sqlite3.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare.txt
+            corepack yarn workspace @mandel59/mojidata-api bench:compare \
+              --format json \
+              artifacts/mojidata-api-bench-better-sqlite3.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare.json
+          fi
 
       - name: Summarize benchmark comparison
         run: |
@@ -122,6 +159,14 @@ jobs:
             echo '```text'
             cat artifacts/mojidata-api-bench-compare.txt
             echo '```'
+            if [[ -f artifacts/mojidata-api-bench-remote-compare.txt ]]; then
+              echo
+              echo "### Remote Comparison"
+              echo
+              echo '```text'
+              cat artifacts/mojidata-api-bench-remote-compare.txt
+              echo '```'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload benchmark artifacts
