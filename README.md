@@ -43,6 +43,7 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
 The native Node.js backends are now published as explicit packages instead of being part of the default portable runtime/facade install path.
 See [docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md) for the baseline, branch comparison, and remote target workflows.
+See [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md) for the current FTS4/FTS5 decision on `idsfind.db`.
 
 ## Release
 

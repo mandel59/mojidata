@@ -15,6 +15,25 @@ yarn mojidata-api:bench:prepare
 This prepares the `mojidata`, `idsdb`, `idsdb-fts5`, and split `mojidata-api-*`
 packages that the benchmark runner depends on.
 
+## Compare idsfind FTS4 and FTS5
+
+Use the dedicated harness when comparing the FTS4 and FTS5 `idsfind.db`
+artifacts for long and complex IDS queries:
+
+```sh
+node ./packages/mojidata-api-bench/benchmarks/compare-idsfind-fts.mjs
+```
+
+To save the structured report:
+
+```sh
+node ./packages/mojidata-api-bench/benchmarks/compare-idsfind-fts.mjs \
+  --output artifacts/bench/idsfind-fts.json
+```
+
+See [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md)
+for the current decision and the latest recorded findings.
+
 ## Compare local backends
 
 Save comparable local benchmark runs as JSON:

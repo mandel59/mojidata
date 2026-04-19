@@ -18,6 +18,9 @@ For local regeneration inside this monorepo:
 corepack yarn workspace @mandel59/idsdb-fts5 prepare
 ```
 
+For the current compatibility report and the reason this remains a separate
+package, see [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md).
+
 ## License
 
 [MIT](./LICENSE.md)

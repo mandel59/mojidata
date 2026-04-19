@@ -15,4 +15,5 @@ yarn mojidata-api:bench --backend sqljs --output ./tmp/sqljs.json
 yarn mojidata-api:bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
 yarn mojidata-api:bench --backend node:sqlite --output ./tmp/node-sqlite.json
 yarn mojidata-api:bench:compare ./tmp/sqljs.json ./tmp/better-sqlite3.json
+node ./benchmarks/compare-idsfind-fts.mjs --output ./tmp/idsfind-fts.json
 ```
