@@ -1,0 +1,26 @@
+{
+  "name": "@mandel59/idsdb-d1",
+  "version": "1.8.0",
+  "description": "FTS5 idsfind database package for Cloudflare D1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/idsdb-d1"
+  },
+  "exports": {
+    "./idsfind.db": "./idsfind.db"
+  },
+  "files": [
+    "idsfind.db",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "bash scripts/prepare",
+    "prepack": "yarn prepare",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT"
+}

@@ -1,0 +1,11 @@
+cache
+resources
+dist
+*.tgz
+node_modules
+*.js
+*.js.map
+*.d.ts
+!@types/**/*.d.ts
+*.db
+.idsdb-d1.input.sha256

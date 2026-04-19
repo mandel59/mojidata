@@ -20,7 +20,6 @@
   ],
   "scripts": {
     "prepare": "bash scripts/prepare",
-    "prepare:d1": "MOJIDATA_IDSDB_FTS_VERSION=5 bash scripts/prepare",
     "publish": "yarn prepare && yarn npm publish --access public"
   },
   "author": "Ryusei Yamaguchi",

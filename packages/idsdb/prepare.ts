@@ -42,11 +42,12 @@ function resolvePnpVirtualPath(filePath: string) {
 
 async function main() {
     const idsfindFtsModule = getIdsfindFtsModule()
+    const outDir = process.env.MOJIDATA_IDSDB_OUT_DIR ?? __dirname
     const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
 
-    const dbpath = path.join(__dirname, "idsfind.db")
+    const dbpath = path.join(outDir, "idsfind.db")
     fs.rmSync(dbpath, { force: true })
-    fs.rmSync(path.join(__dirname, "idsdecompose.db"), { force: true })
+    fs.rmSync(path.join(outDir, "idsdecompose.db"), { force: true })
     const db = new Database(dbpath)
 
     db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
@@ -68,7 +69,7 @@ async function main() {
     const insert_idsfind = db.prepare(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
     const decomposer = await IDSDecomposer.create({
-        dbpath: path.join(__dirname, "idsdecompose.db"),
+        dbpath: path.join(outDir, "idsdecompose.db"),
         expandZVariants: true,
         normalizeKdpvRadicalVariants: true,
         idstable: "ids",

@@ -33,8 +33,9 @@ This package is still an initial D1 PoC. Full parity for all mojidata-api
 queries still depends on follow-up work around custom SQL function usage, FTS
 compatibility, and D1 data import flow.
 
-For local D1-oriented `idsfind` assets, rebuild `@mandel59/idsdb` with FTS5:
+For local D1-oriented `idsfind` assets, use the separate `@mandel59/idsdb-d1`
+package:
 
 ```sh
-corepack yarn workspace @mandel59/idsdb prepare:d1
+corepack yarn workspace @mandel59/idsdb-d1 prepare
 ```

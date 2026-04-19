@@ -19,6 +19,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/idsdb"\
     },\
     {\
+      "name": "@mandel59/idsdb-d1",\
+      "reference": "workspace:packages/idsdb-d1"\
+    },\
+    {\
       "name": "@mandel59/idsdb-utils",\
       "reference": "workspace:packages/idsdb-utils"\
     },\
@@ -80,6 +84,7 @@ const RAW_RUNTIME_STATE =
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
     ["@mandel59/idsdb", ["workspace:packages/idsdb"]],\
+    ["@mandel59/idsdb-d1", ["workspace:packages/idsdb-d1"]],\
     ["@mandel59/idsdb-utils", ["workspace:packages/idsdb-utils"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
@@ -1068,6 +1073,15 @@ const RAW_RUNTIME_STATE =
           ["better-sqlite3", "npm:12.5.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/idsdb-d1", [\
+      ["workspace:packages/idsdb-d1", {\
+        "packageLocation": "./packages/idsdb-d1/",\
+        "packageDependencies": [\
+          ["@mandel59/idsdb-d1", "workspace:packages/idsdb-d1"]\
         ],\
         "linkType": "SOFT"\
       }]\
