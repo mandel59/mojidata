@@ -42,6 +42,7 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
 
 ## Notes
 
+- The `Validate` workflow runs for pull requests and direct pushes to `develop`. Direct pushes to `main` are checked inside the `Release` workflow to avoid duplicate `test` and `pack` runs.
 - `id-token: write` is required because npm Trusted Publishing uses GitHub Actions OIDC.
 - The release workflow uses Node.js 24 so npm meets Trusted Publishing's current runtime requirements.
 - `packages/mojidata` build artifacts are restored from cache before release work to reduce repeated DB rebuild cost.

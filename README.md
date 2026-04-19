@@ -23,7 +23,8 @@ yarn && yarn build
 
 `react-mojidata-api` browser integration tests are not part of the default CI path. The standard CI flow uses the in-process/unit test paths.
 
-The `Validate` workflow uses the affected-package path for pull requests and the full path for direct pushes to `main` or `develop`.
+The `Validate` workflow uses the affected-package path for pull requests and the full path for direct pushes to `develop`.
+Direct pushes to `main` are validated by the `Release` workflow before it creates or updates a release pull request or publishes packages.
 CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or permission noise.
 
 ## Release
