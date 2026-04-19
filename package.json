@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "changeset": "changeset",
-        "build:idsdb-stack": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb-utils && yarn prepare) && (cd packages/idsdb && yarn prepare)",
+        "build:idsdb-stack": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb && yarn prepare)",
         "build:mojidata-api-split": "(cd packages/mojidata-api-core && yarn prepare) && (cd packages/mojidata-api-sqljs && yarn prepare) && (cd packages/mojidata-api-hono && yarn prepare) && (cd packages/mojidata-api-runtime && yarn prepare)",
         "ci:build:affected": "node ./scripts/run-affected-workspaces.mjs build",
         "ci:build": "yarn build",

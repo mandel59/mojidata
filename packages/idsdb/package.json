@@ -19,7 +19,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "yarn workspace @mandel59/idsdb-utils prepare && ts-node --files prepare.ts",
+    "prepare": "bash scripts/prepare",
     "publish": "yarn prepare && yarn npm publish --access public"
   },
   "author": "Ryusei Yamaguchi",

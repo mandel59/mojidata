@@ -1,0 +1,21 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+STAMP=".idsdb.input.sha256"
+
+yarn workspace @mandel59/idsdb-utils prepare
+CURRENT_HASH="$(python3 scripts/input-hash.py)"
+
+if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
+  PREV_HASH="$(cat "$STAMP")"
+  if [ "$CURRENT_HASH" = "$PREV_HASH" ]; then
+    echo "idsdb prepare: inputs unchanged, skipping rebuild"
+    exit 0
+  fi
+fi
+
+echo "idsdb prepare: inputs changed (or first build), rebuilding"
+ts-node --files prepare.ts
+FINAL_HASH="$(python3 scripts/input-hash.py)"
+echo "$FINAL_HASH" > "$STAMP"
