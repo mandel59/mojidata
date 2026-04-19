@@ -21,7 +21,9 @@ Save comparable local benchmark runs as JSON:
 ```sh
 yarn mojidata-api:bench --backend sqljs --output artifacts/bench/sqljs.json
 yarn mojidata-api:bench --backend better-sqlite3 --output artifacts/bench/better-sqlite3.json
+yarn mojidata-api:bench --backend node:sqlite --output artifacts/bench/node-sqlite.json
 yarn mojidata-api:bench:compare artifacts/bench/sqljs.json artifacts/bench/better-sqlite3.json
+yarn mojidata-api:bench:compare artifacts/bench/better-sqlite3.json artifacts/bench/node-sqlite.json
 ```
 
 For a one-command local bundle, use:
@@ -34,8 +36,15 @@ That command writes:
 
 - `sqljs.json`
 - `better-sqlite3.json`
+- `node-sqlite.json`
 - `compare.txt`
 - `compare.json`
+- `compare-sqljs-vs-better-sqlite3.txt`
+- `compare-sqljs-vs-better-sqlite3.json`
+- `compare-sqljs-vs-node-sqlite.txt`
+- `compare-sqljs-vs-node-sqlite.json`
+- `compare-better-sqlite3-vs-node-sqlite.txt`
+- `compare-better-sqlite3-vs-node-sqlite.json`
 
 ## Limit the scenario set
 
@@ -89,6 +98,7 @@ The repository provides a manual workflow, `Mojidata API Benchmark`, that benchm
 
 - in-process `sql.js`
 - in-process `better-sqlite3`
+- in-process `node:sqlite`
 - an optional remote target via `remote_base_url`
 
 It uploads JSON outputs and comparison reports as workflow artifacts and copies the text comparison into the job summary.

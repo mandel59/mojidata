@@ -110,6 +110,22 @@ jobs:
           fi
           corepack yarn workspace @mandel59/mojidata-api-bench bench "${args[@]}"
 
+      - name: Benchmark node:sqlite backend
+        shell: bash
+        run: |
+          args=(
+            --backend node:sqlite
+            --label github-actions:node-sqlite
+            --iterations "${{ inputs.iterations }}"
+            --warmup "${{ inputs.warmup }}"
+            --cold "${{ inputs.cold }}"
+            --output artifacts/mojidata-api-bench-node-sqlite.json
+          )
+          if [[ -n "${{ inputs.scenario }}" ]]; then
+            args+=(--scenario "${{ inputs.scenario }}")
+          fi
+          corepack yarn workspace @mandel59/mojidata-api-bench bench "${args[@]}"
+
       - name: Benchmark remote target
         if: inputs.remote_base_url != ''
         shell: bash
@@ -131,12 +147,30 @@ jobs:
           corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
             artifacts/mojidata-api-bench-sqljs.json \
             artifacts/mojidata-api-bench-better-sqlite3.json \
-            > artifacts/mojidata-api-bench-compare.txt
+            > artifacts/mojidata-api-bench-compare-sqljs-vs-better-sqlite3.txt
           corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
             --format json \
             artifacts/mojidata-api-bench-sqljs.json \
             artifacts/mojidata-api-bench-better-sqlite3.json \
-            > artifacts/mojidata-api-bench-compare.json
+            > artifacts/mojidata-api-bench-compare-sqljs-vs-better-sqlite3.json
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+            artifacts/mojidata-api-bench-sqljs.json \
+            artifacts/mojidata-api-bench-node-sqlite.json \
+            > artifacts/mojidata-api-bench-compare-sqljs-vs-node-sqlite.txt
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+            --format json \
+            artifacts/mojidata-api-bench-sqljs.json \
+            artifacts/mojidata-api-bench-node-sqlite.json \
+            > artifacts/mojidata-api-bench-compare-sqljs-vs-node-sqlite.json
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+            artifacts/mojidata-api-bench-better-sqlite3.json \
+            artifacts/mojidata-api-bench-node-sqlite.json \
+            > artifacts/mojidata-api-bench-compare-better-sqlite3-vs-node-sqlite.txt
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+            --format json \
+            artifacts/mojidata-api-bench-better-sqlite3.json \
+            artifacts/mojidata-api-bench-node-sqlite.json \
+            > artifacts/mojidata-api-bench-compare-better-sqlite3-vs-node-sqlite.json
           if [[ -f artifacts/mojidata-api-bench-remote.json ]]; then
             corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
               artifacts/mojidata-api-bench-better-sqlite3.json \
@@ -156,8 +190,22 @@ jobs:
             echo
             echo "Scenario input: \`${{ inputs.scenario || 'all' }}\`"
             echo
+            echo "### sql.js vs better-sqlite3"
+            echo
             echo '```text'
-            cat artifacts/mojidata-api-bench-compare.txt
+            cat artifacts/mojidata-api-bench-compare-sqljs-vs-better-sqlite3.txt
+            echo '```'
+            echo
+            echo "### sql.js vs node:sqlite"
+            echo
+            echo '```text'
+            cat artifacts/mojidata-api-bench-compare-sqljs-vs-node-sqlite.txt
+            echo '```'
+            echo
+            echo "### better-sqlite3 vs node:sqlite"
+            echo
+            echo '```text'
+            cat artifacts/mojidata-api-bench-compare-better-sqlite3-vs-node-sqlite.txt
             echo '```'
             if [[ -f artifacts/mojidata-api-bench-remote-compare.txt ]]; then
               echo

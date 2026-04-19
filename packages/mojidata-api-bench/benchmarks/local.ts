@@ -7,6 +7,43 @@ type Options = {
   forwardedArgs: string[]
 }
 
+type LocalBackend = {
+  name: "sqljs" | "better-sqlite3" | "node:sqlite"
+  outputFile: string
+}
+
+type ComparisonSpec = {
+  baseline: LocalBackend
+  candidate: LocalBackend
+  slug: string
+  legacyAlias?: boolean
+}
+
+const localBackends: LocalBackend[] = [
+  { name: "sqljs", outputFile: "sqljs.json" },
+  { name: "better-sqlite3", outputFile: "better-sqlite3.json" },
+  { name: "node:sqlite", outputFile: "node-sqlite.json" },
+]
+
+const comparisons: ComparisonSpec[] = [
+  {
+    baseline: localBackends[0],
+    candidate: localBackends[1],
+    slug: "sqljs-vs-better-sqlite3",
+    legacyAlias: true,
+  },
+  {
+    baseline: localBackends[0],
+    candidate: localBackends[2],
+    slug: "sqljs-vs-node-sqlite",
+  },
+  {
+    baseline: localBackends[1],
+    candidate: localBackends[2],
+    slug: "better-sqlite3-vs-node-sqlite",
+  },
+]
+
 function parseArgs(argv: string[]): Options {
   const forwardedArgs: string[] = []
   let outputDir = "artifacts/local"
@@ -37,7 +74,7 @@ Options:
   --output-dir <path>  Directory for saved benchmark outputs (default: artifacts/local)
   --help               Show this help
 
-Additional arguments are forwarded to both backend benchmark runs. Example:
+Additional arguments are forwarded to all local backend benchmark runs. Example:
   yarn bench:local --output-dir ../../tmp/bench -- --scenario ivs-list --iterations 10`)
 }
 
@@ -76,41 +113,47 @@ function main() {
 
   mkdirSync(outputDir, { recursive: true })
 
-  const sqljsPath = path.join(outputDir, "sqljs.json")
-  const betterSqlite3Path = path.join(outputDir, "better-sqlite3.json")
-  const compareTextPath = path.join(outputDir, "compare.txt")
-  const compareJsonPath = path.join(outputDir, "compare.json")
-
-  runNodeScript(runScript, [
-    "--backend",
-    "sqljs",
-    "--output",
-    sqljsPath,
-    ...options.forwardedArgs,
-  ])
-
-  runNodeScript(runScript, [
-    "--backend",
-    "better-sqlite3",
-    "--output",
-    betterSqlite3Path,
-    ...options.forwardedArgs,
-  ])
-
-  const compareText = runNodeScript(
-    compareScript,
-    [sqljsPath, betterSqlite3Path],
-    { captureStdout: true },
+  const resultPaths = new Map(
+    localBackends.map((backend) => [backend.name, path.join(outputDir, backend.outputFile)]),
   )
-  process.stdout.write(compareText)
-  writeFileSync(compareTextPath, compareText)
 
-  const compareJson = runNodeScript(
-    compareScript,
-    ["--format", "json", sqljsPath, betterSqlite3Path],
-    { captureStdout: true },
-  )
-  writeFileSync(compareJsonPath, compareJson)
+  for (const backend of localBackends) {
+    runNodeScript(runScript, [
+      "--backend",
+      backend.name,
+      "--output",
+      resultPaths.get(backend.name)!,
+      ...options.forwardedArgs,
+    ])
+  }
+
+  for (const comparison of comparisons) {
+    const baselinePath = resultPaths.get(comparison.baseline.name)!
+    const candidatePath = resultPaths.get(comparison.candidate.name)!
+    const compareText = runNodeScript(
+      compareScript,
+      [baselinePath, candidatePath],
+      { captureStdout: true },
+    )
+    process.stdout.write(`\n# ${comparison.slug}\n`)
+    process.stdout.write(compareText)
+
+    const textPath = path.join(outputDir, `compare-${comparison.slug}.txt`)
+    const jsonPath = path.join(outputDir, `compare-${comparison.slug}.json`)
+    writeFileSync(textPath, compareText)
+
+    const compareJson = runNodeScript(
+      compareScript,
+      ["--format", "json", baselinePath, candidatePath],
+      { captureStdout: true },
+    )
+    writeFileSync(jsonPath, compareJson)
+
+    if (comparison.legacyAlias) {
+      writeFileSync(path.join(outputDir, "compare.txt"), compareText)
+      writeFileSync(path.join(outputDir, "compare.json"), compareJson)
+    }
+  }
 
   console.error(`Saved local benchmark outputs to ${outputDir}`)
 }

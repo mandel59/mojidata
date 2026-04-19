@@ -47,10 +47,10 @@ function parseIntegerOption(value: string | undefined, fallback: number, name: s
 
 function parseBackendOption(value: string | undefined): NodeDbBackend | undefined {
   if (value === undefined) return undefined
-  if (value === "sqljs" || value === "better-sqlite3") {
+  if (value === "sqljs" || value === "better-sqlite3" || value === "node:sqlite") {
     return value
   }
-  throw new Error(`backend must be "sqljs" or "better-sqlite3", got: ${value}`)
+  throw new Error(`backend must be "sqljs", "better-sqlite3", or "node:sqlite", got: ${value}`)
 }
 
 function parseArgs(argv: string[]): Options {
@@ -129,7 +129,7 @@ function printHelp() {
   console.log(`Usage: yarn bench [options]
 
 Options:
-  --backend <sqljs|better-sqlite3>
+  --backend <sqljs|better-sqlite3|node:sqlite>
                          Select the local in-process backend (default: sqljs)
   --base-url <url>       Benchmark an already-running HTTP server
   --label <label>        Override the benchmark target label
@@ -144,6 +144,7 @@ Options:
 Examples:
   yarn bench --backend sqljs
   yarn bench --backend better-sqlite3 --output ./tmp/better-sqlite3.json
+  yarn bench --backend node:sqlite --output ./tmp/node-sqlite.json
   yarn bench --base-url http://localhost:3001 --label worker-http --output ./tmp/worker.json
 
 Scenarios:
