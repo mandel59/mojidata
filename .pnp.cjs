@@ -35,6 +35,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/mojidata-api"\
     },\
     {\
+      "name": "@mandel59/mojidata-api-bench",\
+      "reference": "workspace:packages/mojidata-api-bench"\
+    },\
+    {\
       "name": "@mandel59/mojidata-api-core",\
       "reference": "workspace:packages/mojidata-api-core"\
     },\
@@ -68,6 +72,7 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["workspace:packages/mojidata-api"]],\
+    ["@mandel59/mojidata-api-bench", ["workspace:packages/mojidata-api-bench"]],\
     ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
     ["@mandel59/mojidata-api-hono", ["workspace:packages/mojidata-api-hono"]],\
     ["@mandel59/mojidata-api-runtime", ["virtual:3fe34f3d5921ef56a0e5e377dc65c747acfe0d9361bb659e96ed466f678870e501194e575c7bc7a07b4e3fd000fbe4027550827cc2b229a7c907e32bb6f827b1#workspace:packages/mojidata-api-runtime", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"]],\
@@ -1131,6 +1136,20 @@ const RAW_RUNTIME_STATE =
           ["@types/sql.js", "npm:1.4.9"],\
           ["better-sqlite3", "npm:12.5.0"],\
           ["prettier", "npm:2.8.8"],\
+          ["tsx", "npm:4.21.0"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-bench", [\
+      ["workspace:packages/mojidata-api-bench", {\
+        "packageLocation": "./packages/mojidata-api-bench/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api-bench", "workspace:packages/mojidata-api-bench"],\
+          ["@mandel59/mojidata-api-runtime", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-runtime"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["better-sqlite3", "npm:12.5.0"],\
           ["tsx", "npm:4.21.0"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\

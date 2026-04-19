@@ -73,7 +73,7 @@ jobs:
         run: corepack yarn install --immutable
 
       - name: Prepare mojidata-api benchmark dependencies
-        run: corepack yarn workspace @mandel59/mojidata-api bench:prepare
+        run: corepack yarn workspace @mandel59/mojidata-api-bench bench:prepare
 
       - name: Create artifact directory
         run: mkdir -p artifacts
@@ -92,7 +92,7 @@ jobs:
           if [[ -n "${{ inputs.scenario }}" ]]; then
             args+=(--scenario "${{ inputs.scenario }}")
           fi
-          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+          corepack yarn workspace @mandel59/mojidata-api-bench bench "${args[@]}"
 
       - name: Benchmark better-sqlite3 backend
         shell: bash
@@ -108,7 +108,7 @@ jobs:
           if [[ -n "${{ inputs.scenario }}" ]]; then
             args+=(--scenario "${{ inputs.scenario }}")
           fi
-          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+          corepack yarn workspace @mandel59/mojidata-api-bench bench "${args[@]}"
 
       - name: Benchmark remote target
         if: inputs.remote_base_url != ''
@@ -124,25 +124,25 @@ jobs:
           if [[ -n "${{ inputs.scenario }}" ]]; then
             args+=(--scenario "${{ inputs.scenario }}")
           fi
-          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+          corepack yarn workspace @mandel59/mojidata-api-bench bench "${args[@]}"
 
       - name: Compare benchmark outputs
         run: |
-          corepack yarn workspace @mandel59/mojidata-api bench:compare \
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
             artifacts/mojidata-api-bench-sqljs.json \
             artifacts/mojidata-api-bench-better-sqlite3.json \
             > artifacts/mojidata-api-bench-compare.txt
-          corepack yarn workspace @mandel59/mojidata-api bench:compare \
+          corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
             --format json \
             artifacts/mojidata-api-bench-sqljs.json \
             artifacts/mojidata-api-bench-better-sqlite3.json \
             > artifacts/mojidata-api-bench-compare.json
           if [[ -f artifacts/mojidata-api-bench-remote.json ]]; then
-            corepack yarn workspace @mandel59/mojidata-api bench:compare \
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
               artifacts/mojidata-api-bench-better-sqlite3.json \
               artifacts/mojidata-api-bench-remote.json \
               > artifacts/mojidata-api-bench-remote-compare.txt
-            corepack yarn workspace @mandel59/mojidata-api bench:compare \
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
               --format json \
               artifacts/mojidata-api-bench-better-sqlite3.json \
               artifacts/mojidata-api-bench-remote.json \

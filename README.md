@@ -27,6 +27,15 @@ The `Validate` workflow uses the affected-package path for pull requests and the
 Direct pushes to `main` are validated by the `Release` workflow before it creates or updates a release pull request or publishes packages.
 CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or permission noise.
 
+## Benchmarks
+
+- `yarn mojidata-api:bench:prepare`: prepare the local benchmark dependencies for `mojidata-api`
+- `yarn mojidata-api:bench --backend sqljs`: benchmark the `sql.js` backend locally
+- `yarn mojidata-api:bench --backend better-sqlite3`: benchmark the `better-sqlite3` backend locally
+- `yarn mojidata-api:bench:compare <baseline.json> <candidate.json>`: compare two saved benchmark runs
+
+The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
+
 ## Release
 
 - `yarn changeset`: create a release note for changed packages
@@ -40,7 +49,7 @@ On pull requests, CI also runs `yarn changeset status`, so changes to publishabl
 
 ### Release Policy
 
-- All workspace packages under `packages/*` are treated as publishable by Changesets.
+- All workspace packages under `packages/*` are treated as publishable by Changesets except explicitly private/internal workspaces such as `@mandel59/mojidata-api-bench`.
 - Use a normal changeset when a change affects a published package's runtime behavior, API surface, CLI behavior, package metadata, or release notes.
 - Use an empty changeset for CI/CD, workflow, repository policy, or documentation changes that should pass the release gate without bumping package versions.
 - The compatibility facade package `@mandel59/mojidata-api` remains publishable and should continue to receive changesets when its published surface or package metadata changes.
