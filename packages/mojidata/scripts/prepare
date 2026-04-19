@@ -17,4 +17,5 @@ echo "mojidata prepare: inputs changed (or first build), rebuilding"
 bash scripts/clean
 bash scripts/build
 mkdir -p dist
-echo "$CURRENT_HASH" > "$STAMP"
+FINAL_HASH="$(python3 scripts/db-input-hash.py)"
+echo "$FINAL_HASH" > "$STAMP"
