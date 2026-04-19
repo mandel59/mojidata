@@ -5,7 +5,7 @@
     "scripts": {
         "changeset": "changeset",
         "build:idsdb-stack": "(cd packages/mojidata && yarn prepare) && (cd packages/idsdb && yarn prepare)",
-        "build:mojidata-api-split": "(cd packages/mojidata-api-core && yarn prepare) && (cd packages/mojidata-api-hono && yarn prepare) && (cd packages/mojidata-api-runtime && yarn prepare) && (cd packages/mojidata-api-sqljs && yarn prepare) && (cd packages/mojidata-api-better-sqlite3 && yarn prepare) && (cd packages/mojidata-api-node-sqlite && yarn prepare)",
+        "build:mojidata-api-split": "(cd packages/mojidata-api-core && yarn prepare) && (cd packages/mojidata-api-hono && yarn prepare) && (cd packages/mojidata-api-runtime && yarn prepare) && (cd packages/mojidata-api-sqljs && yarn prepare) && (cd packages/mojidata-api-better-sqlite3 && yarn prepare) && (cd packages/mojidata-api-node-sqlite && yarn prepare) && (cd packages/mojidata-api-d1 && yarn prepare)",
         "ci:build:affected": "node ./scripts/run-affected-workspaces.mjs build",
         "ci:build": "yarn build",
         "ci:pack:affected": "node ./scripts/run-affected-workspaces.mjs pack",
@@ -17,7 +17,7 @@
         "mojidata-api:bench:local": "yarn workspace @mandel59/mojidata-api-bench bench:local",
         "mojidata-api:bench:prepare": "yarn workspace @mandel59/mojidata-api-bench bench:prepare",
         "release": "yarn ci:build && changeset publish",
-        "test": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/mojidata-api-sqljs && yarn test) && (cd packages/mojidata-api-better-sqlite3 && yarn test) && (cd packages/mojidata-api-node-sqlite && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
+        "test": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/mojidata-api-sqljs && yarn test) && (cd packages/mojidata-api-better-sqlite3 && yarn test) && (cd packages/mojidata-api-node-sqlite && yarn test) && (cd packages/mojidata-api-d1 && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",
         "version-packages": "changeset version",
         "build": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata-api && yarn prepare) && (cd packages/react-mojidata-api && yarn prepare) && (cd packages/idstool && yarn prepare) && (cd packages/mojidata-cli && yarn prepare)"
     },

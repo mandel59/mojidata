@@ -1,0 +1,47 @@
+{
+  "name": "@mandel59/mojidata-api-d1",
+  "version": "1.8.0",
+  "description": "Cloudflare D1 integration package for mojidata-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/mojidata-api-d1"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "require": "./dist/lib/*.js",
+      "default": "./dist/lib/*.js"
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
+    "test": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/mojidata-api-core": "^1.8.0",
+    "@mandel59/mojidata-api-hono": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

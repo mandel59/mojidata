@@ -47,6 +47,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/mojidata-api-core"\
     },\
     {\
+      "name": "@mandel59/mojidata-api-d1",\
+      "reference": "workspace:packages/mojidata-api-d1"\
+    },\
+    {\
       "name": "@mandel59/mojidata-api-hono",\
       "reference": "workspace:packages/mojidata-api-hono"\
     },\
@@ -83,6 +87,7 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/mojidata-api-bench", ["workspace:packages/mojidata-api-bench"]],\
     ["@mandel59/mojidata-api-better-sqlite3", ["virtual:786ff3bbd6eef7688a833439a338e46d6a1c41d5fd70226af8748ed2e6ea5e91db2c741160011bc5d1947617ca1a1682e3ff4cb4aa28f74212bb5b59b725f144#workspace:packages/mojidata-api-better-sqlite3", "workspace:packages/mojidata-api-better-sqlite3"]],\
     ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
+    ["@mandel59/mojidata-api-d1", ["workspace:packages/mojidata-api-d1"]],\
     ["@mandel59/mojidata-api-hono", ["workspace:packages/mojidata-api-hono"]],\
     ["@mandel59/mojidata-api-node-sqlite", ["workspace:packages/mojidata-api-node-sqlite"]],\
     ["@mandel59/mojidata-api-runtime", ["workspace:packages/mojidata-api-runtime"]],\
@@ -1210,6 +1215,20 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
           ["@types/node", "npm:24.10.4"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/mojidata-api-d1", [\
+      ["workspace:packages/mojidata-api-d1", {\
+        "packageLocation": "./packages/mojidata-api-d1/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@mandel59/mojidata-api-d1", "workspace:packages/mojidata-api-d1"],\
+          ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["tsx", "npm:4.21.0"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\
         "linkType": "SOFT"\
