@@ -173,14 +173,32 @@ jobs:
             > artifacts/mojidata-api-bench-compare-better-sqlite3-vs-node-sqlite.json
           if [[ -f artifacts/mojidata-api-bench-remote.json ]]; then
             corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+              artifacts/mojidata-api-bench-sqljs.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare-sqljs.txt
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+              --format json \
+              artifacts/mojidata-api-bench-sqljs.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare-sqljs.json
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
               artifacts/mojidata-api-bench-better-sqlite3.json \
               artifacts/mojidata-api-bench-remote.json \
-              > artifacts/mojidata-api-bench-remote-compare.txt
+              > artifacts/mojidata-api-bench-remote-compare-better-sqlite3.txt
             corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
               --format json \
               artifacts/mojidata-api-bench-better-sqlite3.json \
               artifacts/mojidata-api-bench-remote.json \
-              > artifacts/mojidata-api-bench-remote-compare.json
+              > artifacts/mojidata-api-bench-remote-compare-better-sqlite3.json
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+              artifacts/mojidata-api-bench-node-sqlite.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare-node-sqlite.txt
+            corepack yarn workspace @mandel59/mojidata-api-bench bench:compare \
+              --format json \
+              artifacts/mojidata-api-bench-node-sqlite.json \
+              artifacts/mojidata-api-bench-remote.json \
+              > artifacts/mojidata-api-bench-remote-compare-node-sqlite.json
           fi
 
       - name: Summarize benchmark comparison
@@ -207,12 +225,26 @@ jobs:
             echo '```text'
             cat artifacts/mojidata-api-bench-compare-better-sqlite3-vs-node-sqlite.txt
             echo '```'
-            if [[ -f artifacts/mojidata-api-bench-remote-compare.txt ]]; then
+            if [[ -f artifacts/mojidata-api-bench-remote-compare-better-sqlite3.txt ]]; then
               echo
               echo "### Remote Comparison"
               echo
+              echo "#### sql.js vs remote"
+              echo
               echo '```text'
-              cat artifacts/mojidata-api-bench-remote-compare.txt
+              cat artifacts/mojidata-api-bench-remote-compare-sqljs.txt
+              echo '```'
+              echo
+              echo "#### better-sqlite3 vs remote"
+              echo
+              echo '```text'
+              cat artifacts/mojidata-api-bench-remote-compare-better-sqlite3.txt
+              echo '```'
+              echo
+              echo "#### node:sqlite vs remote"
+              echo
+              echo '```text'
+              cat artifacts/mojidata-api-bench-remote-compare-node-sqlite.txt
               echo '```'
             fi
           } >> "$GITHUB_STEP_SUMMARY"

@@ -16,6 +16,7 @@
         "mojidata-api:bench": "yarn workspace @mandel59/mojidata-api-bench bench",
         "mojidata-api:bench:compare": "yarn workspace @mandel59/mojidata-api-bench bench:compare",
         "mojidata-api:bench:local": "yarn workspace @mandel59/mojidata-api-bench bench:local",
+        "mojidata-api:bench:remote": "yarn workspace @mandel59/mojidata-api-bench bench:remote",
         "mojidata-api:bench:prepare": "yarn workspace @mandel59/mojidata-api-bench bench:prepare",
         "release": "yarn ci:build && changeset publish",
         "test": "yarn build:idsdb-stack && yarn build:mojidata-api-split && (cd packages/mojidata && yarn test) && (cd packages/mojidata-api && yarn test) && (cd packages/mojidata-api-sqljs && yarn test) && (cd packages/mojidata-api-better-sqlite3 && yarn test) && (cd packages/mojidata-api-node-sqlite && yarn test) && (cd packages/mojidata-api-d1 && yarn test) && (cd packages/react-mojidata-api && yarn test:unit) && (cd packages/idstool && yarn test) && (cd packages/mojidata-cli && yarn test)",

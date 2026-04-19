@@ -112,6 +112,30 @@ yarn mojidata-api:bench:compare \
   artifacts/bench/worker-d1.json
 ```
 
+To bundle the remote run together with fresh local baselines in one output
+directory:
+
+```sh
+yarn mojidata-api:bench:remote \
+  --base-url https://example.com \
+  --label worker-d1 \
+  --output-dir artifacts/bench/worker-d1 \
+  -- --scenario idsfind-ids
+```
+
+That command writes:
+
+- `sqljs.json`
+- `better-sqlite3.json`
+- `node-sqlite.json`
+- `worker-d1.json`
+- `compare-sqljs-vs-worker-d1.txt`
+- `compare-sqljs-vs-worker-d1.json`
+- `compare-better-sqlite3-vs-worker-d1.txt`
+- `compare-better-sqlite3-vs-worker-d1.json`
+- `compare-node-sqlite-vs-worker-d1.txt`
+- `compare-node-sqlite-vs-worker-d1.json`
+
 ## GitHub Actions
 
 The repository provides a manual workflow, `Mojidata API Benchmark`, that benchmarks:

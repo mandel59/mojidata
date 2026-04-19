@@ -69,3 +69,25 @@ Those `.sql` files can then be imported with Wrangler, for example:
 npx wrangler d1 execute MOJIDATA_DB --remote --file ./tmp/d1-import/mojidata.sql
 npx wrangler d1 execute IDSFIND_DB --remote --file ./tmp/d1-import/idsdb-fts5.sql
 ```
+
+## Benchmarking a deployed D1 target
+
+Once a Worker backed by `createD1App()` is deployed, compare it against the
+local backends with:
+
+```sh
+corepack yarn mojidata-api:bench:remote \
+  --base-url https://example.com \
+  --label worker-d1 \
+  --output-dir artifacts/bench/worker-d1
+```
+
+This saves the remote benchmark JSON plus fresh local baseline runs in one
+directory, along with comparison files for:
+
+- `sql.js` vs D1
+- `better-sqlite3` vs D1
+- `node:sqlite` vs D1
+
+For more detail, see
+[docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md).
