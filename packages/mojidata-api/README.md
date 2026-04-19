@@ -57,6 +57,12 @@ transport noise and makes before/after comparisons easier.
 yarn bench
 ```
 
+On a fresh clone or a clean CI runner, prepare the benchmark dependencies first:
+
+```sh
+yarn bench:prepare
+```
+
 Select a local backend explicitly when comparing executor implementations:
 
 ```sh
@@ -95,6 +101,10 @@ Supported options:
 - `--format <table|json>`: switch between human-readable and machine-readable output
 - `--label <name>`: override the benchmark target label, useful for remote deployments
 - `--output <path>`: write JSON results to a file for later comparison
+
+There is also a manual GitHub Actions workflow, `Mojidata API Benchmark`, which runs
+the `sql.js` and `better-sqlite3` benchmarks on GitHub-hosted runners and uploads
+the JSON outputs plus comparison artifacts.
 
 Current built-in scenarios:
 

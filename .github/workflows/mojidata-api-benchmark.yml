@@ -1,0 +1,131 @@
+name: Mojidata API Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: Measured iterations per benchmark scenario
+        required: false
+        default: "20"
+        type: string
+      warmup:
+        description: Warmup iterations per benchmark scenario
+        required: false
+        default: "3"
+        type: string
+      cold:
+        description: Cold-start iterations for in-process runs
+        required: false
+        default: "1"
+        type: string
+      scenario:
+        description: Optional single scenario name to benchmark
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: benchmark-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      NO_UPDATE_NOTIFIER: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Restore mojidata build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/mojidata/dist
+            packages/mojidata/cache
+            packages/mojidata/resources
+          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          restore-keys: |
+            mojidata-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Prepare mojidata-api benchmark dependencies
+        run: corepack yarn workspace @mandel59/mojidata-api bench:prepare
+
+      - name: Create artifact directory
+        run: mkdir -p artifacts
+
+      - name: Benchmark sql.js backend
+        shell: bash
+        run: |
+          args=(
+            --backend sqljs
+            --label github-actions:sqljs
+            --iterations "${{ inputs.iterations }}"
+            --warmup "${{ inputs.warmup }}"
+            --cold "${{ inputs.cold }}"
+            --output artifacts/mojidata-api-bench-sqljs.json
+          )
+          if [[ -n "${{ inputs.scenario }}" ]]; then
+            args+=(--scenario "${{ inputs.scenario }}")
+          fi
+          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+
+      - name: Benchmark better-sqlite3 backend
+        shell: bash
+        run: |
+          args=(
+            --backend better-sqlite3
+            --label github-actions:better-sqlite3
+            --iterations "${{ inputs.iterations }}"
+            --warmup "${{ inputs.warmup }}"
+            --cold "${{ inputs.cold }}"
+            --output artifacts/mojidata-api-bench-better-sqlite3.json
+          )
+          if [[ -n "${{ inputs.scenario }}" ]]; then
+            args+=(--scenario "${{ inputs.scenario }}")
+          fi
+          corepack yarn workspace @mandel59/mojidata-api bench "${args[@]}"
+
+      - name: Compare benchmark outputs
+        run: |
+          corepack yarn workspace @mandel59/mojidata-api bench:compare \
+            artifacts/mojidata-api-bench-sqljs.json \
+            artifacts/mojidata-api-bench-better-sqlite3.json \
+            > artifacts/mojidata-api-bench-compare.txt
+          corepack yarn workspace @mandel59/mojidata-api bench:compare \
+            --format json \
+            artifacts/mojidata-api-bench-sqljs.json \
+            artifacts/mojidata-api-bench-better-sqlite3.json \
+            > artifacts/mojidata-api-bench-compare.json
+
+      - name: Summarize benchmark comparison
+        run: |
+          {
+            echo "## Mojidata API Benchmark"
+            echo
+            echo "Scenario input: \`${{ inputs.scenario || 'all' }}\`"
+            echo
+            echo '```text'
+            cat artifacts/mojidata-api-bench-compare.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mojidata-api-benchmark-${{ github.run_id }}
+          path: artifacts/
