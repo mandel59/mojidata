@@ -148,4 +148,48 @@ describe('createSqlApiDb', () => {
     assert.deepEqual(mojidata.queryCalls[0]?.params, ['一', '1'])
     assert.doesNotMatch(mojidata.queryCalls[0]?.sql ?? '', /parse_int|regexp/)
   })
+
+  test('getMojidataJson computes unihan_rs outside SQL regexp_all', async () => {
+    const mojidata = createRecordingExecutor({
+      query: async (sql, params) => {
+        if (sql.includes('FROM radicals')) {
+          assert.deepEqual(params, {
+            '@indices': JSON.stringify([85]),
+            '@radicals': JSON.stringify(['85']),
+          })
+          return [
+            { 部首: 85, 部首漢字: '水', radical: '85', radical_CJKUI: '水' },
+          ]
+        }
+        throw new Error(`Unexpected query: ${sql}`)
+      },
+      queryOne: async (sql) => {
+        if (sql.includes('SELECT json_object(')) {
+          assert.doesNotMatch(sql, /regexp_all/)
+          return { vs: '{}' }
+        }
+        if (sql.includes('FROM unihan_kRSAdobe_Japan1_6')) {
+          return { value: 'C+1533+85.3.10' }
+        }
+        if (sql.includes('FROM unihan_kRSUnicode')) {
+          return { value: '85.11' }
+        }
+        throw new Error(`Unexpected queryOne: ${sql}`)
+      },
+    })
+    const idsfind = createRecordingExecutor()
+    const db = createSqlApiDb({
+      getMojidataDb: async () => mojidata.executor,
+      getIdsfindDb: async () => idsfind.executor,
+    })
+
+    const result = await db.getMojidataJson('漢', ['unihan_rs'])
+
+    assert.deepEqual(JSON.parse(result ?? 'null'), {
+      unihan_rs: {
+        kRSAdobe_Japan1_6: [[85, 10, '水', 3, 'CID+1533']],
+        kRSUnicode: [[85, 11, '水', '85']],
+      },
+    })
+  })
 })

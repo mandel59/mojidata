@@ -3,8 +3,12 @@ import { createIdsfind } from "./idsfind-sql"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import { createLibSearch } from "./libsearch"
-import { buildMojidataSelectQuery } from "./mojidata-query"
+import {
+  buildMojidataSelectQuery,
+  mojidataComputedFieldNames,
+} from "./mojidata-query"
 import type { SqlExecutor } from "./sql-executor"
+import { buildUnihanRsValue } from "./unihan-rs"
 
 type DbProvider = () => Promise<SqlExecutor>
 
@@ -101,6 +105,8 @@ export function createSqlApiDb({
 }): MojidataApiDb {
   const { search, filterChars } = createLibSearch(getMojidataDb)
   const idsfind = createIdsfind(getIdsfindDb)
+  const shouldIncludeComputedField = (selection: string[], field: string) =>
+    selection.length === 0 || selection.includes(field)
 
   return {
     async getMojidataJson(char: string, select: string[]) {
@@ -108,7 +114,19 @@ export function createSqlApiDb({
       const query = buildMojidataSelectQuery(select)
       const row =
         (await db.queryOne<{ vs?: string }>(query, { "@ucs": char })) ?? {}
-      return row.vs ?? null
+      const vs = row.vs
+      if (typeof vs !== "string") {
+        return null
+      }
+      if (![...mojidataComputedFieldNames].some((field) => shouldIncludeComputedField(select, field))) {
+        return vs
+      }
+
+      const result = JSON.parse(vs) as Record<string, unknown>
+      if (shouldIncludeComputedField(select, "unihan_rs")) {
+        result.unihan_rs = await buildUnihanRsValue(db, char)
+      }
+      return JSON.stringify(result)
     },
     async getIvsList(char: string) {
       const db = await getMojidataDb()
