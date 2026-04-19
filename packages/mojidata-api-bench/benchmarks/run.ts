@@ -4,7 +4,7 @@ import { performance } from "node:perf_hooks"
 
 import { createBetterSqlite3App } from "@mandel59/mojidata-api-better-sqlite3"
 import { createNodeSqliteApp } from "@mandel59/mojidata-api-node-sqlite"
-import { createNodeApp } from "@mandel59/mojidata-api-runtime"
+import { createSqlJsApp } from "@mandel59/mojidata-api-sqljs"
 
 import {
   benchmarkFormatVersion,
@@ -65,7 +65,7 @@ function createLocalApp(backend: LocalBackend) {
       return createNodeSqliteApp()
     case "sqljs":
     default:
-      return createNodeApp()
+      return createSqlJsApp()
   }
 }
 

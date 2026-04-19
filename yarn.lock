@@ -820,7 +820,7 @@ __metadata:
   resolution: "@mandel59/idstool@workspace:packages/idstool"
   dependencies:
     "@mandel59/idsdb-utils": "npm:^1.7.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     ava: "npm:^3.15.0"
     ts-node: "npm:^10.9.2"
@@ -845,7 +845,7 @@ __metadata:
   dependencies:
     "@mandel59/mojidata-api-better-sqlite3": "npm:^1.8.0"
     "@mandel59/mojidata-api-node-sqlite": "npm:^1.8.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     tsx: "npm:^4.21.0"
@@ -910,11 +910,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime"
   dependencies:
-    "@mandel59/idsdb": "npm:^1.7.0"
-    "@mandel59/mojidata": "npm:^1.7.0"
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
-    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     typescript: "npm:^5.9.3"
   languageName: unknown
@@ -924,10 +920,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"
   dependencies:
+    "@mandel59/idsdb": "npm:^1.7.0"
+    "@mandel59/mojidata": "npm:^1.7.0"
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     "@types/sql.js": "npm:^1.4.9"
     sql.js: "npm:^1.13.0"
+    tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -958,7 +959,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     ava: "npm:^3.15.0"
     ts-node: "npm:^10.9.2"

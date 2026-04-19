@@ -11,18 +11,20 @@ It also has split packages for composing the API yourself:
 
 - `@mandel59/mojidata-api-core`: backend-neutral SQL API composition
 - `@mandel59/mojidata-api-hono`: Hono app wiring
-- `@mandel59/mojidata-api-runtime`: Node defaults and worker client helpers
-- `@mandel59/mojidata-api-sqljs`: `sql.js` executor and openers
+- `@mandel59/mojidata-api-runtime`: worker client helpers and shared runtime utilities
+- `@mandel59/mojidata-api-sqljs`: explicit `sql.js` backend package
 
 The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades and forward to the split packages.
 
-For Node.js, `createNodeDb()` in this package uses the portable `sql.js` backend:
+For Node.js compatibility usage, `createNodeDb()` in this package uses the portable `sql.js` backend:
 
 ```ts
-import { createNodeDb } from "@mandel59/mojidata-api-runtime"
+import { createNodeDb } from "@mandel59/mojidata-api"
 
 const db = createNodeDb()
 ```
+
+For new code that selects the backend explicitly, prefer `@mandel59/mojidata-api-sqljs`.
 
 Native Node backends are published separately so installing `@mandel59/mojidata-api`
 does not pull native SQLite concerns into the default path:
@@ -83,7 +85,7 @@ import { createApp } from "@mandel59/mojidata-api-hono"
 import { createMojidataApiWorkerClient } from "@mandel59/mojidata-api/browser-client"
 
 const worker = new Worker(
-  new URL("@mandel59/mojidata-api-runtime/browser-worker", import.meta.url),
+  new URL("@mandel59/mojidata-api-sqljs/browser-worker", import.meta.url),
   { type: "module" },
 )
 

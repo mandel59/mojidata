@@ -64,11 +64,9 @@ test(
     const fixtureRoot = path.join(pkgDir, "tests", "fixture-app")
     const repoRoot = path.resolve(pkgDir, "..", "..")
 
-    const requireFromHere = createRequire(import.meta.url)
-    const mojidataApiSqljsPkgJson = requireFromHere.resolve(
-      "@mandel59/mojidata-api-sqljs/package.json",
+    const requireFromMojidataApiSqljs = createRequire(
+      path.join(repoRoot, "packages", "mojidata-api-sqljs", "package.json"),
     )
-    const requireFromMojidataApiSqljs = createRequire(mojidataApiSqljsPkgJson)
     const sqlWasmPath = requireFromMojidataApiSqljs.resolve("sql.js/dist/sql-wasm.wasm")
 
     const initSqlJsMod = requireFromMojidataApiSqljs("sql.js") as any
@@ -144,16 +142,28 @@ test(
         resolve: {
           alias: {
             "@mandel59/react-mojidata-api": path.join(pkgDir, "index.ts"),
+            "@mandel59/mojidata-api-core": path.join(
+              repoRoot,
+              "packages",
+              "mojidata-api-core",
+              "index.ts",
+            ),
             "@mandel59/mojidata-api-hono": path.join(
               repoRoot,
               "packages",
               "mojidata-api-hono",
               "index.ts",
             ),
+            "@mandel59/mojidata-api-sqljs/browser-worker": path.join(
+              repoRoot,
+              "packages",
+              "mojidata-api-sqljs",
+              "browser-worker.ts",
+            ),
             "@mandel59/mojidata-api-runtime/browser-worker": path.join(
               repoRoot,
               "packages",
-              "mojidata-api-runtime",
+              "mojidata-api-sqljs",
               "browser-worker.ts",
             ),
             "@mandel59/mojidata-api-runtime": path.join(

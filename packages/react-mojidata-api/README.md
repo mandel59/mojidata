@@ -17,7 +17,7 @@ import { useMojidataApi } from "@mandel59/react-mojidata-api"
 function MyComponent() {
   const { ready, client, error } = useMojidataApi({
     createWorker: () =>
-      new Worker(new URL("@mandel59/mojidata-api-runtime/browser-worker", import.meta.url), {
+      new Worker(new URL("@mandel59/mojidata-api-sqljs/browser-worker", import.meta.url), {
         type: "module",
       }),
     init: {

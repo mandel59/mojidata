@@ -27,7 +27,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-runtime": "^1.7.0"
+    "@mandel59/mojidata-api-sqljs": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

@@ -1,7 +1,7 @@
-import { createNodeDb } from "@mandel59/mojidata-api-runtime"
+import { createSqlJsDb } from "@mandel59/mojidata-api-sqljs"
 
 export class IDSFinder {
-    private db = createNodeDb()
+    private db = createSqlJsDb()
     close() {
         // no-op (sql.js db is cached internally)
     }

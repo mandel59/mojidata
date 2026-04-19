@@ -1,2 +1,5 @@
-export type { NodeDbBackend } from "@mandel59/mojidata-api-runtime"
-export { createNodeApp, createNodeDb } from "@mandel59/mojidata-api-runtime"
+export type NodeDbBackend = "sqljs"
+export {
+  createSqlJsApp as createNodeApp,
+  createSqlJsDb as createNodeDb,
+} from "@mandel59/mojidata-api-sqljs"

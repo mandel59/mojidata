@@ -1,4 +1,6 @@
-export { createMojidataDbProvider, installMojidataSqlFunctions } from "./lib/mojidata-db"
+export { installMojidataSqlFunctions } from "@mandel59/mojidata-api-core"
+export { createMojidataDbProvider } from "./lib/mojidata-db"
 export { createSqlJsExecutor } from "./lib/sqljs-executor"
+export { createSqlJsApp, createSqlJsDb } from "./lib/sqljs-runtime"
 export { getSqlJsNode, openDatabaseFromFile } from "./lib/sqljs-node"
 export { getSqlJsWeb, openDatabaseFromUrl } from "./lib/sqljs-web"

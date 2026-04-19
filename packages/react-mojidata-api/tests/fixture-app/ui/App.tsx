@@ -11,7 +11,7 @@ export function App() {
   const { ready, client, error } = useMojidataApi({
     createWorker: () => {
       const w = new Worker(
-        new URL("@mandel59/mojidata-api-runtime/browser-worker", import.meta.url),
+        new URL("@mandel59/mojidata-api-sqljs/browser-worker", import.meta.url),
         {
           type: "module",
         },

@@ -1,4 +1,6 @@
 export {
+  createSqlJsApp,
+  createSqlJsDb,
   createMojidataDbProvider,
   installMojidataSqlFunctions,
   createSqlJsExecutor,

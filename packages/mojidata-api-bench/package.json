@@ -8,13 +8,13 @@
     "bench:compare": "node --import tsx ./benchmarks/compare.ts",
     "bench:local": "node --import tsx ./benchmarks/local.ts",
     "bench:prepare": "yarn run prepare:test-deps && yarn prepare",
-    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
     "prepare": "tsc --noEmit"
   },
   "dependencies": {
     "@mandel59/mojidata-api-better-sqlite3": "^1.8.0",
     "@mandel59/mojidata-api-node-sqlite": "^1.8.0",
-    "@mandel59/mojidata-api-runtime": "^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

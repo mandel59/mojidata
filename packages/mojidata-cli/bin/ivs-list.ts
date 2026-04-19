@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { createNodeDb } from "@mandel59/mojidata-api-runtime"
+import { createSqlJsDb } from "@mandel59/mojidata-api-sqljs"
 
-const db = createNodeDb()
+const db = createSqlJsDb()
 
 function help() {
     console.log("usage: ivs-list CHAR")

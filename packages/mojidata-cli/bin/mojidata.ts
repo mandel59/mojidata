@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { createNodeDb } from "@mandel59/mojidata-api-runtime"
+import { createSqlJsDb } from "@mandel59/mojidata-api-sqljs"
 import { queryExpressions } from "./query-expressions"
 
-const db = createNodeDb()
+const db = createSqlJsDb()
 
 function argparse(argv: string[]) {
     return {
