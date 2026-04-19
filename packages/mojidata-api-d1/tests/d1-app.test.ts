@@ -113,11 +113,22 @@ function createFakeMojidataDb() {
 
 function createFakeIdsfindDb() {
   return new FakeD1Database((sql, values, mode) => {
+    const normalizedSql = sql.replaceAll(/\s+/g, " ").trim()
+
     if (sql.includes("from idsfind_fts")) {
       assert.equal(mode, "run")
       assert.equal(values.length, 1)
       assert.equal(typeof values[0], "string")
       return [{ UCS: "信" }]
+    }
+
+    if (
+      normalizedSql ===
+      "SELECT UCS, IDS_tokens FROM idsfind WHERE UCS IN (SELECT value FROM json_each(?1))"
+    ) {
+      assert.equal(mode, "run")
+      assert.deepEqual(new Set(JSON.parse(String(values[0]))), new Set(["信", "⿰", "亻", "言"]))
+      return [{ UCS: "信", IDS_tokens: "⿰ 亻 言" }]
     }
 
     if (sql === "SELECT IDS_tokens FROM idsfind WHERE UCS = ?1") {

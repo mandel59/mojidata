@@ -7,6 +7,41 @@ import { idsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import type { SqlExecutor } from "./sql-executor"
 
+const idsTokensPrefetchQuery = `
+  SELECT UCS, IDS_tokens
+  FROM idsfind
+  WHERE UCS IN (SELECT value FROM json_each($ucslist))
+`
+
+const idsTokensPrefetchBatchSize = 256
+
+function isPatternVariableToken(token: string) {
+  return /^[a-zａ-ｚ]$/u.test(token)
+}
+
+function chunkArray<T>(values: T[], size: number) {
+  const out: T[][] = []
+  for (let index = 0; index < values.length; index += size) {
+    out.push(values.slice(index, index + size))
+  }
+  return out
+}
+
+function collectAuditLookupUcs(idslist: TokenList[][]) {
+  const tokens = new Set<string>()
+  for (const patterns of idslist) {
+    for (const pattern of patterns) {
+      for (const token of pattern) {
+        if (token === "§" || token === "？" || isPatternVariableToken(token)) {
+          continue
+        }
+        tokens.add(token)
+      }
+    }
+  }
+  return [...tokens]
+}
+
 async function idsmatch(
   tokens: string[],
   pattern: TokenList,
@@ -104,6 +139,33 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
     const tokenized = tokenizeIdsList(idslist)
     const idsTokensCache = new Map<string, Promise<string[]>>()
 
+    const prefetchIDSTokens = async (ucsValues: Iterable<string>) => {
+      const pending = [...new Set(ucsValues)].filter((ucs) => !idsTokensCache.has(ucs))
+      for (const chunk of chunkArray(pending, idsTokensPrefetchBatchSize)) {
+        if (chunk.length === 0) {
+          continue
+        }
+        const prefetched = new Map<string, string[]>(chunk.map((ucs) => [ucs, []]))
+        const rows = await db.query<{ UCS?: string; IDS_tokens?: string }>(
+          idsTokensPrefetchQuery,
+          { $ucslist: JSON.stringify(chunk) },
+        )
+        for (const row of rows) {
+          if (typeof row.UCS !== "string" || typeof row.IDS_tokens !== "string") {
+            continue
+          }
+          const list = prefetched.get(row.UCS)
+          if (!list) {
+            continue
+          }
+          list.push(row.IDS_tokens)
+        }
+        for (const [ucs, tokens] of prefetched) {
+          idsTokensCache.set(ucs, Promise.resolve(tokens))
+        }
+      }
+    }
+
     const getIDSTokensForUcs = async (ucs: string) => {
       let rowsPromise = idsTokensCache.get(ucs)
       if (!rowsPromise) {
@@ -126,6 +188,10 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
     const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
       $idslist: JSON.stringify(tokenized.forQuery),
     })
+    await prefetchIDSTokens([
+      ...rows.flatMap((row) => (typeof row.UCS === "string" ? [row.UCS] : [])),
+      ...collectAuditLookupUcs(tokenized.forAudit),
+    ])
     for (const row of rows) {
       const ucs = row.UCS
       if (typeof ucs !== "string") continue
