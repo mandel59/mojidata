@@ -1,11 +1,11 @@
 {
-  "name": "@mandel59/mojidata-api-runtime",
+  "name": "@mandel59/mojidata-api-node-sqlite",
   "version": "1.8.0",
-  "description": "Runtime helper package for mojidata-api",
+  "description": "node:sqlite integration package for mojidata-api",
   "repository": {
     "type": "git",
     "url": "https://github.com/mandel59/mojidata.git",
-    "directory": "packages/mojidata-api-runtime"
+    "directory": "packages/mojidata-api-node-sqlite"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,11 +14,6 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "default": "./dist/index.js"
-    },
-    "./browser-worker": {
-      "types": "./dist/browser-worker.d.ts",
-      "require": "./dist/browser-worker.js",
-      "default": "./dist/browser-worker.js"
     },
     "./lib/*": {
       "types": "./dist/lib/*.d.ts",
@@ -34,7 +29,10 @@
   ],
   "scripts": {
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare",
+    "publish": "yarn prepare && yarn npm publish --access public",
+    "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
@@ -47,6 +45,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.4",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

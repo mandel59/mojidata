@@ -71,7 +71,7 @@
   "scripts": {
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
-    "prepare": "tsc",
+    "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
     "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
@@ -87,23 +87,17 @@
     "@mandel59/mojidata-api-sqljs": "^1.8.0"
   },
   "peerDependencies": {
-    "@hono/node-server": "^1.19.7",
-    "better-sqlite3": "^12.5.0"
+    "@hono/node-server": "^1.19.7"
   },
   "peerDependenciesMeta": {
     "@hono/node-server": {
-      "optional": true
-    },
-    "better-sqlite3": {
       "optional": true
     }
   },
   "devDependencies": {
     "@hono/node-server": "^1.19.7",
-    "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^24.10.4",
     "@types/sql.js": "^1.4.9",
-    "better-sqlite3": "^12.5.0",
     "prettier": "^2.8.8",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
-import { createNodeDb } from "../node"
+import { createNodeSqliteDb } from "../index"
 
-describe("createNodeDb", () => {
-  test("supports better-sqlite3 as a node backend", async () => {
-    const db = createNodeDb({ backend: "better-sqlite3" })
+describe("createNodeSqliteDb", () => {
+  test("supports node:sqlite as an explicit native backend", async () => {
+    const db = createNodeSqliteDb()
 
     const mojidata = await db.getMojidataJson("漢", ["UCS"])
     const idsfind = await db.idsfind(["⿰亻言"])

@@ -2,7 +2,9 @@ import { mkdirSync, writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { performance } from "node:perf_hooks"
 
-import { createNodeApp, type NodeDbBackend } from "@mandel59/mojidata-api-runtime"
+import { createBetterSqlite3App } from "@mandel59/mojidata-api-better-sqlite3"
+import { createNodeSqliteApp } from "@mandel59/mojidata-api-node-sqlite"
+import { createNodeApp } from "@mandel59/mojidata-api-runtime"
 
 import {
   benchmarkFormatVersion,
@@ -15,7 +17,7 @@ import {
 import { loadScenarioManifest, type Scenario } from "./scenario-manifest"
 
 type Options = {
-  backend?: NodeDbBackend
+  backend?: LocalBackend
   baseUrl?: string
   label?: string
   outputPath?: string
@@ -26,6 +28,8 @@ type Options = {
   scenarioNames: string[]
 }
 
+type LocalBackend = "sqljs" | "better-sqlite3" | "node:sqlite"
+
 type ScenarioSamples = {
   name: string
   description: string
@@ -34,7 +38,7 @@ type ScenarioSamples = {
 }
 
 const defaultOrigin = "http://benchmark.local"
-const defaultLocalBackend: NodeDbBackend = "sqljs"
+const defaultLocalBackend: LocalBackend = "sqljs"
 
 function parseIntegerOption(value: string | undefined, fallback: number, name: string) {
   if (value === undefined) return fallback
@@ -45,12 +49,24 @@ function parseIntegerOption(value: string | undefined, fallback: number, name: s
   return parsed
 }
 
-function parseBackendOption(value: string | undefined): NodeDbBackend | undefined {
+function parseBackendOption(value: string | undefined): LocalBackend | undefined {
   if (value === undefined) return undefined
   if (value === "sqljs" || value === "better-sqlite3" || value === "node:sqlite") {
     return value
   }
   throw new Error(`backend must be "sqljs", "better-sqlite3", or "node:sqlite", got: ${value}`)
+}
+
+function createLocalApp(backend: LocalBackend) {
+  switch (backend) {
+    case "better-sqlite3":
+      return createBetterSqlite3App()
+    case "node:sqlite":
+      return createNodeSqliteApp()
+    case "sqljs":
+    default:
+      return createNodeApp()
+  }
 }
 
 function parseArgs(argv: string[]): Options {
@@ -323,14 +339,14 @@ async function runScenario(
   if (options.coldIterations > 0) {
     result.coldStartMs = []
     for (let index = 0; index < options.coldIterations; index += 1) {
-      const app = createNodeApp({ backend })
+      const app = createLocalApp(backend)
       result.coldStartMs.push(
         await timedRequest((url) => app.fetch(new Request(url)), scenario, baseUrl),
       )
     }
   }
 
-  const app = createNodeApp({ backend })
+  const app = createLocalApp(backend)
   for (let index = 0; index < options.warmupIterations; index += 1) {
     await timedRequest((url) => app.fetch(new Request(url)), scenario, baseUrl)
   }

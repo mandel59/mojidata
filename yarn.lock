@@ -843,11 +843,32 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-bench@workspace:packages/mojidata-api-bench"
   dependencies:
+    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.8.0"
+    "@mandel59/mojidata-api-node-sqlite": "npm:^1.8.0"
     "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/mojidata-api-better-sqlite3@npm:^1.8.0, @mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3"
+  dependencies:
+    "@mandel59/idsdb": "npm:^1.7.0"
+    "@mandel59/mojidata": "npm:^1.7.0"
+    "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
+    "@types/better-sqlite3": "npm:^5.4.1"
+    "@types/node": "npm:^24.10.4"
+    better-sqlite3: "npm:^12.5.0"
+    tsx: "npm:^4.21.0"
+    typescript: "npm:^5.9.3"
+  peerDependencies:
+    better-sqlite3: ^12.5.0
   languageName: unknown
   linkType: soft
 
@@ -872,6 +893,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mandel59/mojidata-api-node-sqlite@npm:^1.8.0, @mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite"
+  dependencies:
+    "@mandel59/idsdb": "npm:^1.7.0"
+    "@mandel59/mojidata": "npm:^1.7.0"
+    "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
+    "@types/node": "npm:^24.10.4"
+    tsx: "npm:^4.21.0"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/mojidata-api-runtime@npm:^1.7.0, @mandel59/mojidata-api-runtime@npm:^1.8.0, @mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime"
@@ -881,14 +917,8 @@ __metadata:
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
-    "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
     typescript: "npm:^5.9.3"
-  peerDependencies:
-    better-sqlite3: ^12.5.0
-  peerDependenciesMeta:
-    better-sqlite3:
-      optional: true
   languageName: unknown
   linkType: soft
 
@@ -913,20 +943,15 @@ __metadata:
     "@mandel59/mojidata-api-hono": "npm:^1.8.0"
     "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
-    "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
     "@types/sql.js": "npm:^1.4.9"
-    better-sqlite3: "npm:^12.5.0"
     prettier: "npm:^2.8.8"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   peerDependencies:
     "@hono/node-server": ^1.19.7
-    better-sqlite3: ^12.5.0
   peerDependenciesMeta:
     "@hono/node-server":
-      optional: true
-    better-sqlite3:
       optional: true
   languageName: unknown
   linkType: soft

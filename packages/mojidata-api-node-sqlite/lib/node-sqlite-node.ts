@@ -4,7 +4,6 @@ import type { SqlExecutor } from "@mandel59/mojidata-api-core"
 import { installMojidataSqlFunctions } from "@mandel59/mojidata-api-sqljs"
 
 import { createNodeSqliteExecutor } from "./node-sqlite-executor"
-import { createCachedPromise } from "./promise-cache"
 
 type NodeSqliteModule = typeof import("node:sqlite")
 
@@ -40,10 +39,9 @@ export function createNodeSqliteMojidataDbProvider(path: string) {
 }
 
 export function createNodeSqliteExecutorProvider(path: string) {
-  const getDb = createCachedPromise(() =>
-    Promise.resolve(createNodeSqliteExecutor(openDatabaseFromFile(path))),
-  )
+  let executorPromise: Promise<SqlExecutor> | undefined
   return function getExecutor(): Promise<SqlExecutor> {
-    return getDb()
+    executorPromise ??= Promise.resolve(createNodeSqliteExecutor(openDatabaseFromFile(path)))
+    return executorPromise
   }
 }

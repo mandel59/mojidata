@@ -4,7 +4,6 @@ import type { SqlExecutor } from "@mandel59/mojidata-api-core"
 import { installMojidataSqlFunctions } from "@mandel59/mojidata-api-sqljs"
 
 import { createBetterSqlite3Executor } from "./better-sqlite3-executor"
-import { createCachedPromise } from "./promise-cache"
 
 function getBetterSqlite3Ctor(): typeof BetterSqlite3Database {
   return require("better-sqlite3") as typeof BetterSqlite3Database
@@ -31,10 +30,11 @@ export function createBetterSqlite3MojidataDbProvider(path: string) {
 }
 
 export function createBetterSqlite3ExecutorProvider(path: string) {
-  const getDb = createCachedPromise(() =>
-    Promise.resolve(createBetterSqlite3Executor(openDatabaseFromFile(path))),
-  )
+  let executorPromise: Promise<SqlExecutor> | undefined
   return function getExecutor(): Promise<SqlExecutor> {
-    return getDb()
+    executorPromise ??= Promise.resolve(
+      createBetterSqlite3Executor(openDatabaseFromFile(path)),
+    )
+    return executorPromise
   }
 }

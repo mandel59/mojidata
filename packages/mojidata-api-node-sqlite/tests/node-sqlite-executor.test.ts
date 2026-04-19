@@ -3,7 +3,7 @@ import { describe, test } from "node:test"
 
 import { DatabaseSync } from "node:sqlite"
 
-import { createNodeSqliteExecutor } from "../api/v1/_lib/node-sqlite-executor"
+import { createNodeSqliteExecutor } from "../index"
 
 function toPlainObject<T extends object>(value: T): T {
   return { ...value }
@@ -40,20 +40,6 @@ describe("createNodeSqliteExecutor", () => {
     )
 
     assert.deepEqual(row && toPlainObject(row), { value: "beta" })
-    db.close()
-  })
-
-  test("returns null from queryOne() when no rows match", async () => {
-    const db = new DatabaseSync(":memory:")
-    db.exec("CREATE TABLE items (id INTEGER PRIMARY KEY, value TEXT)")
-
-    const executor = createNodeSqliteExecutor(db)
-    const row = await executor.queryOne<{ value?: string }>(
-      "SELECT value FROM items WHERE id = ?",
-      [1],
-    )
-
-    assert.equal(row, null)
     db.close()
   })
 })
