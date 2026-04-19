@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Compatibility facade package for mojidata-api split packages",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -82,10 +82,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-hono": "^1.8.0",
-    "@mandel59/mojidata-api-runtime": "^1.8.0",
-    "@mandel59/mojidata-api-sqljs": "^1.8.0"
+    "@mandel59/mojidata-api-core": "^1.9.0",
+    "@mandel59/mojidata-api-hono": "^1.9.0",
+    "@mandel59/mojidata-api-runtime": "^1.9.0",
+    "@mandel59/mojidata-api-sqljs": "^1.9.0"
   },
   "peerDependencies": {
     "@hono/node-server": "^1.19.7",
