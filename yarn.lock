@@ -789,9 +789,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/idsdb-d1@workspace:packages/idsdb-d1":
+"@mandel59/idsdb-fts5@npm:^1.8.0, @mandel59/idsdb-fts5@workspace:packages/idsdb-fts5":
   version: 0.0.0-use.local
-  resolution: "@mandel59/idsdb-d1@workspace:packages/idsdb-d1"
+  resolution: "@mandel59/idsdb-fts5@workspace:packages/idsdb-fts5"
   languageName: unknown
   linkType: soft
 
@@ -817,6 +817,7 @@ __metadata:
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -863,7 +864,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3"
   dependencies:
-    "@mandel59/idsdb": "npm:^1.7.0"
+    "@mandel59/idsdb-fts5": "npm:^1.8.0"
     "@mandel59/mojidata": "npm:^1.7.0"
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.0"
@@ -914,7 +915,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite"
   dependencies:
-    "@mandel59/idsdb": "npm:^1.7.0"
+    "@mandel59/idsdb-fts5": "npm:^1.8.0"
     "@mandel59/mojidata": "npm:^1.7.0"
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.0"

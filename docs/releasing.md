@@ -30,9 +30,9 @@ For the split `mojidata-api` packages, use this bootstrap flow for:
 - `@mandel59/mojidata-api-node-sqlite`
 - `@mandel59/mojidata-api-d1`
 
-For the D1-oriented IDS database package, use the same bootstrap flow for:
+For the FTS5 IDS database package, use the same bootstrap flow for:
 
-- `@mandel59/idsdb-d1`
+- `@mandel59/idsdb-fts5`
 
 ## Normal flow
 

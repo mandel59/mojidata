@@ -2,10 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-STAMP=".idsdb-d1.input.sha256"
+STAMP=".idsdb-fts5.input.sha256"
 FTS_VERSION="5"
-
-yarn workspace @mandel59/idsdb-utils prepare
 
 CURRENT_HASH="$(
   MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
@@ -15,15 +13,15 @@ CURRENT_HASH="$(
 if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
   PREV_HASH="$(cat "$STAMP")"
   if [ "$CURRENT_HASH" = "$PREV_HASH" ]; then
-    echo "idsdb-d1 prepare (fts${FTS_VERSION}): inputs unchanged, skipping rebuild"
+    echo "idsdb-fts5 prepare (fts${FTS_VERSION}): inputs unchanged, skipping rebuild"
     exit 0
   fi
 fi
 
-echo "idsdb-d1 prepare (fts${FTS_VERSION}): inputs changed (or first build), rebuilding"
+echo "idsdb-fts5 prepare (fts${FTS_VERSION}): inputs changed (or first build), rebuilding"
 MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
 MOJIDATA_IDSDB_OUT_DIR="$PWD" \
-  yarn --cwd ../idsdb exec ts-node --files prepare.ts
+  yarn --cwd ../idsdb exec node --import tsx prepare.ts
 FINAL_HASH="$(
   MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
     python3 ../idsdb/scripts/input-hash.py

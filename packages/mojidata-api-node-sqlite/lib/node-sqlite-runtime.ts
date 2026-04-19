@@ -7,7 +7,16 @@ import {
 } from "./node-sqlite-node"
 
 const mojidataDbPath = require.resolve("@mandel59/mojidata/dist/moji.db")
-const idsfindDbPath = require.resolve("@mandel59/idsdb/idsfind.db")
+
+function resolveIdsfindDbPath() {
+  try {
+    return require.resolve("@mandel59/idsdb-fts5/idsfind.db")
+  } catch {
+    return require.resolve("@mandel59/idsdb/idsfind.db")
+  }
+}
+
+const idsfindDbPath = resolveIdsfindDbPath()
 
 export function createNodeSqliteDb() {
   return createSqlApiDb({

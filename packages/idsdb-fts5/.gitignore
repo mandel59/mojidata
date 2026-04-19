@@ -8,4 +8,4 @@ node_modules
 *.d.ts
 !@types/**/*.d.ts
 *.db
-.idsdb-d1.input.sha256
+.idsdb-fts5.input.sha256

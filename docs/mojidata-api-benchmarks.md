@@ -12,7 +12,8 @@ Run the benchmark dependency preparation once before local runs:
 yarn mojidata-api:bench:prepare
 ```
 
-This prepares the `mojidata`, `idsdb`, and split `mojidata-api-*` packages that the benchmark runner depends on.
+This prepares the `mojidata`, `idsdb`, `idsdb-fts5`, and split `mojidata-api-*`
+packages that the benchmark runner depends on.
 
 ## Compare local backends
 

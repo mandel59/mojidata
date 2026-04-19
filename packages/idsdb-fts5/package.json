@@ -1,11 +1,11 @@
 {
-  "name": "@mandel59/idsdb-d1",
+  "name": "@mandel59/idsdb-fts5",
   "version": "1.8.0",
-  "description": "FTS5 idsfind database package for Cloudflare D1",
+  "description": "FTS5 idsfind database package for mojidata backends",
   "repository": {
     "type": "git",
     "url": "https://github.com/mandel59/mojidata.git",
-    "directory": "packages/idsdb-d1"
+    "directory": "packages/idsdb-fts5"
   },
   "exports": {
     "./idsfind.db": "./idsfind.db"
