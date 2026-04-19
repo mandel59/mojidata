@@ -20,6 +20,8 @@ From the repository root:
 
 ```sh
 corepack yarn mojidata-api:d1:prepare-import --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:provision
+corepack yarn mojidata-api:d1:import -- --output-dir /tmp/mojidata-d1-import
 corepack yarn mojidata-api:d1:check
 corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
 corepack yarn mojidata-api:d1:dev

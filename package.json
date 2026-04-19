@@ -12,6 +12,8 @@
         "ci:pack": "corepack yarn workspaces foreach -A --no-private exec yarn npm publish -n",
         "ci:test:affected": "node ./scripts/run-affected-workspaces.mjs test",
         "ci:test": "yarn test",
+        "mojidata-api:d1:provision": "node ./scripts/provision-mojidata-api-d1.mjs",
+        "mojidata-api:d1:import": "node ./scripts/import-mojidata-api-d1.mjs",
         "mojidata-api:d1:prepare-import": "node ./scripts/prepare-mojidata-d1-import.mjs",
         "mojidata-api:d1:check": "./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1/tsconfig.json && ./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1-worker/tsconfig.json --noEmit",
         "mojidata-api:d1:dev": "cd packages/mojidata-api-d1-worker && npx wrangler dev",

@@ -88,6 +88,8 @@ Worker entrypoint plus a `wrangler.jsonc` template.
 
 Useful root commands:
 
+- `yarn mojidata-api:d1:provision`
+- `yarn mojidata-api:d1:import`
 - `yarn mojidata-api:d1:check`
 - `yarn mojidata-api:d1:typegen`
 - `yarn mojidata-api:d1:dev`
@@ -99,6 +101,11 @@ The `dev`, `deploy`, and `typegen` commands intentionally shell out to
 `npx wrangler` instead of vendoring Wrangler into this repository. The first run
 may therefore download the CLI.
 
+The `provision` helper reuses an existing database if `wrangler d1 info` can
+find it; otherwise it creates the database and rewrites
+[packages/mojidata-api-d1-worker/wrangler.jsonc](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker/wrangler.jsonc)
+with the resolved IDs.
+
 ## Standalone Worker setup
 
 1. Prepare SQL dumps:
@@ -107,43 +114,38 @@ may therefore download the CLI.
    corepack yarn mojidata-api:d1:prepare-import --output-dir /tmp/mojidata-d1-import
    ```
 
-2. Create the D1 databases:
+2. Provision the D1 databases and write their IDs into the Worker config:
 
    ```sh
-   npx wrangler d1 create mojidata-api-d1-mojidata
-   npx wrangler d1 create mojidata-api-d1-idsfind
+   corepack yarn mojidata-api:d1:provision
    ```
 
-3. Copy the resulting database IDs into
-   [packages/mojidata-api-d1-worker/wrangler.jsonc](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker/wrangler.jsonc).
-
-4. Import the generated SQL:
+3. Import the generated SQL:
 
    ```sh
-   npx wrangler d1 execute mojidata-api-d1-mojidata --remote --file /tmp/mojidata-d1-import/mojidata.sql
-   npx wrangler d1 execute mojidata-api-d1-idsfind --remote --file /tmp/mojidata-d1-import/idsdb-fts5.sql
+   corepack yarn mojidata-api:d1:import -- --output-dir /tmp/mojidata-d1-import
    ```
 
-5. Check the Worker package:
+4. Check the Worker package:
 
    ```sh
    corepack yarn mojidata-api:d1:check
    ```
 
-6. Preview or deploy:
+5. Preview or deploy:
 
    ```sh
    corepack yarn mojidata-api:d1:dev
    corepack yarn mojidata-api:d1:deploy
    ```
 
-7. Run the remote smoke test:
+6. Run the remote smoke test:
 
    ```sh
    corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
    ```
 
-8. Benchmark the deployed target:
+7. Benchmark the deployed target:
 
    ```sh
    corepack yarn mojidata-api:bench:remote \
