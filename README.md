@@ -32,6 +32,7 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 - `yarn mojidata-api:bench:prepare`: prepare the local benchmark dependencies for `mojidata-api`
 - `yarn mojidata-api:bench --backend sqljs`: benchmark the `sql.js` backend locally
 - `yarn mojidata-api:bench --backend better-sqlite3`: benchmark the `better-sqlite3` backend locally
+- `yarn mojidata-api:bench:local`: run both local backends and save a comparison bundle
 - `yarn mojidata-api:bench:compare <baseline.json> <candidate.json>`: compare two saved benchmark runs
 
 The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
