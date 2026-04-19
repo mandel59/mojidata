@@ -4,6 +4,7 @@ node_modules
 *.db
 
 .vscode/settings.json
+.workspaces/
 
 .yarn/*
 !.yarn/cache
