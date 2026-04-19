@@ -9,7 +9,14 @@ import { createCachedPromise } from "./promise-cache"
 type NodeSqliteModule = typeof import("node:sqlite")
 
 function getNodeSqliteModule(): NodeSqliteModule {
-  return require("node:sqlite") as NodeSqliteModule
+  try {
+    return require("node:sqlite") as NodeSqliteModule
+  } catch (error) {
+    const message =
+      'The "node:sqlite" backend requires a Node.js release with built-in node:sqlite support (for example Node.js 22.13+, 23.4+, or newer).'
+    const details = error instanceof Error && error.message ? ` Original error: ${error.message}` : ""
+    throw new Error(`${message}${details}`)
+  }
 }
 
 function openDatabaseFromFile(path: string): DatabaseSync {

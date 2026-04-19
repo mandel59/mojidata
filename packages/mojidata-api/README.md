@@ -26,6 +26,9 @@ const db = createNodeDb({ backend: "better-sqlite3" })
 const nodeSqliteDb = createNodeDb({ backend: "node:sqlite" })
 ```
 
+The `node:sqlite` backend needs a Node.js release that includes the built-in
+`node:sqlite` module. In practice, use Node.js `22.13+` or a newer current/LTS release.
+
 ## Tests
 
 Tests live under `tests/`.
