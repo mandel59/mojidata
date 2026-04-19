@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
-    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare",
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
     "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts"
@@ -40,8 +40,7 @@
     "@mandel59/idsdb": "^1.7.0",
     "@mandel59/mojidata": "^1.7.0",
     "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-hono": "^1.8.0",
-    "@mandel59/mojidata-api-sqljs": "^1.8.0"
+    "@mandel59/mojidata-api-hono": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

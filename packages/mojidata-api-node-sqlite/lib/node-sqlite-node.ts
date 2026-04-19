@@ -1,7 +1,6 @@
 import type { DatabaseSync, SQLInputValue } from "node:sqlite"
 
-import type { SqlExecutor } from "@mandel59/mojidata-api-core"
-import { installMojidataSqlFunctions } from "@mandel59/mojidata-api-sqljs"
+import { installMojidataSqlFunctions, type SqlExecutor } from "@mandel59/mojidata-api-core"
 
 import { createNodeSqliteExecutor } from "./node-sqlite-executor"
 

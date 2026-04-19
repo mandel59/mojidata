@@ -1,7 +1,6 @@
 import type BetterSqlite3Database from "better-sqlite3"
 
-import type { SqlExecutor } from "@mandel59/mojidata-api-core"
-import { installMojidataSqlFunctions } from "@mandel59/mojidata-api-sqljs"
+import { installMojidataSqlFunctions, type SqlExecutor } from "@mandel59/mojidata-api-core"
 
 import { createBetterSqlite3Executor } from "./better-sqlite3-executor"
 
