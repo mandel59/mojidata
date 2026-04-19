@@ -1,0 +1,41 @@
+{
+  "scenarioSetVersion": 1,
+  "scenarios": [
+    {
+      "name": "mojidata-basic",
+      "description": "Single-character mojidata lookup",
+      "pathname": "/api/v1/mojidata",
+      "query": { "char": "漢" }
+    },
+    {
+      "name": "mojidata-select",
+      "description": "mojidata lookup with select filter",
+      "pathname": "/api/v1/mojidata",
+      "query": { "char": "漢", "select": ["char", "UCS", "mji"] }
+    },
+    {
+      "name": "ivs-list",
+      "description": "IVS list lookup",
+      "pathname": "/api/v1/ivs-list",
+      "query": { "char": "漢" }
+    },
+    {
+      "name": "mojidata-variants",
+      "description": "Variant relation lookup for multiple chars",
+      "pathname": "/api/v1/mojidata-variants",
+      "query": { "char": ["漢", "漢"] }
+    },
+    {
+      "name": "idsfind-ids",
+      "description": "IDS fragment search",
+      "pathname": "/api/v1/idsfind",
+      "query": { "ids": ["⿰亻言"], "limit": 20 }
+    },
+    {
+      "name": "idsfind-property",
+      "description": "Property search by total strokes",
+      "pathname": "/api/v1/idsfind",
+      "query": { "p": ["totalStrokes"], "q": ["13"], "limit": 20 }
+    }
+  ]
+}

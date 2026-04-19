@@ -2,7 +2,6 @@ import { execFileSync, spawnSync } from "node:child_process"
 import process from "node:process"
 
 export const benchmarkFormatVersion = 1
-export const benchmarkScenarioSetVersion = 1
 
 export type BenchmarkMode = "in-process" | "remote"
 

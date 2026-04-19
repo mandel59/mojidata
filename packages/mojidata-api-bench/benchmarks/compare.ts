@@ -3,7 +3,6 @@ import { resolve } from "node:path"
 
 import {
   benchmarkFormatVersion,
-  benchmarkScenarioSetVersion,
   deltaPct,
   formatDeltaMs,
   formatDeltaPct,
@@ -12,6 +11,7 @@ import {
   type BenchmarkRun,
   type ScenarioResult,
 } from "./lib"
+import { loadScenarioManifest } from "./scenario-manifest"
 
 type CompareOptions = {
   baselinePath: string
@@ -85,11 +85,12 @@ Options:
 }
 
 function parseRun(filePath: string): BenchmarkRun {
+  const { scenarioSetVersion } = loadScenarioManifest()
   const raw = JSON.parse(readFileSync(resolve(filePath), "utf8")) as BenchmarkRun
   return {
     ...raw,
     formatVersion: raw.formatVersion ?? benchmarkFormatVersion,
-    scenarioSetVersion: raw.scenarioSetVersion ?? benchmarkScenarioSetVersion,
+    scenarioSetVersion: raw.scenarioSetVersion ?? scenarioSetVersion,
     selectedScenarios:
       raw.selectedScenarios && raw.selectedScenarios.length > 0
         ? raw.selectedScenarios

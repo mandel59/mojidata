@@ -6,20 +6,13 @@ import { createNodeApp, type NodeDbBackend } from "@mandel59/mojidata-api-runtim
 
 import {
   benchmarkFormatVersion,
-  benchmarkScenarioSetVersion,
   collectBenchmarkEnvironment,
   formatMs,
   summarize,
   type BenchmarkRun,
   type ScenarioResult,
 } from "./lib"
-
-type Scenario = {
-  name: string
-  description: string
-  pathname: string
-  query?: Record<string, string | number | boolean | Array<string | number | boolean>>
-}
+import { loadScenarioManifest, type Scenario } from "./scenario-manifest"
 
 type Options = {
   backend?: NodeDbBackend
@@ -42,45 +35,6 @@ type ScenarioSamples = {
 
 const defaultOrigin = "http://benchmark.local"
 const defaultLocalBackend: NodeDbBackend = "sqljs"
-
-const scenarios: Scenario[] = [
-  {
-    name: "mojidata-basic",
-    description: "Single-character mojidata lookup",
-    pathname: "/api/v1/mojidata",
-    query: { char: "漢" },
-  },
-  {
-    name: "mojidata-select",
-    description: "mojidata lookup with select filter",
-    pathname: "/api/v1/mojidata",
-    query: { char: "漢", select: ["char", "UCS", "mji"] },
-  },
-  {
-    name: "ivs-list",
-    description: "IVS list lookup",
-    pathname: "/api/v1/ivs-list",
-    query: { char: "漢" },
-  },
-  {
-    name: "mojidata-variants",
-    description: "Variant relation lookup for multiple chars",
-    pathname: "/api/v1/mojidata-variants",
-    query: { char: ["漢", "漢"] },
-  },
-  {
-    name: "idsfind-ids",
-    description: "IDS fragment search",
-    pathname: "/api/v1/idsfind",
-    query: { ids: ["⿰亻言"], limit: 20 },
-  },
-  {
-    name: "idsfind-property",
-    description: "Property search by total strokes",
-    pathname: "/api/v1/idsfind",
-    query: { p: ["totalStrokes"], q: ["13"], limit: 20 },
-  },
-]
 
 function parseIntegerOption(value: string | undefined, fallback: number, name: string) {
   if (value === undefined) return fallback
@@ -171,6 +125,7 @@ function parseArgs(argv: string[]): Options {
 }
 
 function printHelp() {
+  const { scenarios } = loadScenarioManifest()
   console.log(`Usage: yarn bench [options]
 
 Options:
@@ -196,6 +151,7 @@ ${scenarios.map((scenario) => `  - ${scenario.name}: ${scenario.description}`).j
 }
 
 function getSelectedScenarios(names: string[]): Scenario[] {
+  const { scenarios } = loadScenarioManifest()
   if (names.length === 0) return scenarios
   return names.map((name) => {
     const scenario = scenarios.find((entry) => entry.name === name)
@@ -269,13 +225,14 @@ function benchmarkLabel(options: Options): string {
 
 function createPayload(
   results: ScenarioSamples[],
+  scenarioSetVersion: number,
   selectedScenarios: Scenario[],
   options: Options,
 ): BenchmarkRun {
   const label = benchmarkLabel(options)
   return {
     formatVersion: benchmarkFormatVersion,
-    scenarioSetVersion: benchmarkScenarioSetVersion,
+    scenarioSetVersion,
     selectedScenarios: selectedScenarios.map((scenario) => scenario.name),
     mode: options.baseUrl ? "remote" : "in-process",
     label,
@@ -387,6 +344,7 @@ async function runScenario(
 
 async function main() {
   const options = parseArgs(process.argv.slice(2))
+  const { scenarioSetVersion } = loadScenarioManifest()
   const selectedScenarios = getSelectedScenarios(options.scenarioNames)
   const results: ScenarioSamples[] = []
 
@@ -394,7 +352,7 @@ async function main() {
     results.push(await runScenario(scenario, options))
   }
 
-  const payload = createPayload(results, selectedScenarios, options)
+  const payload = createPayload(results, scenarioSetVersion, selectedScenarios, options)
 
   if (options.outputPath) {
     writeJsonOutput(payload, options.outputPath)
