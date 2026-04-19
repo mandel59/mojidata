@@ -36,6 +36,7 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 - `yarn mojidata-api:bench:compare <baseline.json> <candidate.json>`: compare two saved benchmark runs
 
 The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
+See [docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md) for the baseline, branch comparison, and remote target workflows.
 
 ## Release
 
