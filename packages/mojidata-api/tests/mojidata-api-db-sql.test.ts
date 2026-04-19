@@ -145,7 +145,7 @@ describe('createSqlApiDb', () => {
     const result = await db.search(['UCS'], ['4E00'])
 
     assert.deepEqual(result, ['一', '丁'])
-    assert.deepEqual(mojidata.queryCalls[0]?.params, ['4E00'])
-    assert.match(mojidata.queryCalls[0]?.sql ?? '', /parse_int/)
+    assert.deepEqual(mojidata.queryCalls[0]?.params, ['一', '1'])
+    assert.doesNotMatch(mojidata.queryCalls[0]?.sql ?? '', /parse_int|regexp/)
   })
 })

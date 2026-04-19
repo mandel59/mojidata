@@ -7,9 +7,49 @@ type QuerySpec = {
   args?: (q: string) => string[]
 }
 
+const ucsSearchCharPattern = /^[\p{L}\p{N}\p{S}]$/u
+
+function parseUnicodeCodePoint(q: string): number | null {
+  const match = /^(?:U\+)?([0-9A-Fa-f]{1,6})$/.exec(q.trim())
+  if (!match) return null
+  const codePoint = Number.parseInt(match[1], 16)
+  if (!Number.isSafeInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) {
+    return null
+  }
+  if (codePoint >= 0xd800 && codePoint <= 0xdfff) {
+    return null
+  }
+  return codePoint
+}
+
+export function normalizeUcsQueryChar(q: string): string | null {
+  const codePoint = parseUnicodeCodePoint(q)
+  if (codePoint == null) {
+    return null
+  }
+  return String.fromCodePoint(codePoint)
+}
+
+function withNormalizedUcsChar(q: string): [string, string] {
+  return [q, normalizeUcsQueryChar(q) ?? q]
+}
+
+function withNormalizedTokenArgs(q: string): [string, string, string, string, string] {
+  return [q, normalizeUcsQueryChar(q) ?? q, q, q, q]
+}
+
+function getUcsSearchArgs(q: string): [string, string] {
+  const char = normalizeUcsQueryChar(q)
+  if (char != null && ucsSearchCharPattern.test(char)) {
+    return [char, "1"]
+  }
+  return ["", "0"]
+}
+
 const queries: Partial<Record<string, QuerySpec>> = {
   UCS: {
-    query: `WITH x(x) AS (VALUES (parse_int(?, 16))) SELECT DISTINCT char(x) AS r FROM x WHERE char(x) regexp '^[\\p{L}\\p{N}\\p{S}]$'`,
+    query: `SELECT ? AS r WHERE cast(? as integer) = 1`,
+    args: getUcsSearchArgs,
   },
   'mji.読み': {
     query: `
@@ -112,24 +152,24 @@ const queries: Partial<Record<string, QuerySpec>> = {
     SELECT DISTINCT UCS AS r
     FROM unihan_variant
     WHERE property = 'kTraditionalVariant'
-      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
-    args: (q) => [q, q],
+      AND (value = ? OR value = ?)`,
+    args: withNormalizedUcsChar,
   },
   'unihan.kSimplifiedVariant': {
     query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_variant
     WHERE property = 'kSimplifiedVariant'
-      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
-    args: (q) => [q, q],
+      AND (value = ? OR value = ?)`,
+    args: withNormalizedUcsChar,
   },
   'unihan.kSemanticVariant': {
     query: `
     SELECT DISTINCT UCS AS r
     FROM unihan_variant
     WHERE property = 'kSemanticVariant'
-      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
-    args: (q) => [q, q],
+      AND (value = ? OR value = ?)`,
+    args: withNormalizedUcsChar,
   },
   'unihan.kTraditionalVariant.glob': {
     query: `
@@ -160,8 +200,8 @@ function addUnihanVariantProperty(property: string) {
     SELECT DISTINCT UCS AS r
     FROM unihan_variant
     WHERE property = '${property}'
-      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
-    args: (q) => [q, q],
+      AND (value = ? OR value = ?)`,
+    args: withNormalizedUcsChar,
   }
   queries[`unihan.${property}.glob`] = {
     query: `
@@ -233,12 +273,12 @@ for (const property of unihanGeneralProperties) {
     WHERE property = '${property}'
       AND (
         value = ?
-        OR value = char(parse_int(replace(upper(?), 'U+', ''), 16))
+        OR value = ?
         OR value glob (? || ' *')
         OR value glob ('* ' || ? || ' *')
         OR value glob ('* ' || ?)
       )`,
-    args: (q) => [q, q, q, q, q],
+    args: withNormalizedTokenArgs,
   }
   queries[`unihan.${property}.glob`] = {
     query: `
@@ -282,8 +322,8 @@ for (const c of strangeCategories) {
     SELECT DISTINCT UCS AS r
     FROM unihan_strange
     WHERE category = '${c}'
-      AND (value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16)))`,
-    args: (q) => [q, q],
+      AND (value = ? OR value = ?)`,
+    args: withNormalizedUcsChar,
   }
   queries[`unihan.kStrange.${c}.glob`] = {
     query: `
@@ -298,8 +338,8 @@ queries['unihan.kStrange'] = {
   query: `
   SELECT DISTINCT UCS AS r
   FROM unihan_strange
-  WHERE value = ? OR value = char(parse_int(replace(upper(?), 'U+', ''), 16))`,
-  args: (q) => [q, q],
+  WHERE value = ? OR value = ?`,
+  args: withNormalizedUcsChar,
 }
 
 queries['unihan.kStrange.glob'] = {

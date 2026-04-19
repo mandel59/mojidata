@@ -28,19 +28,29 @@ describe('libsearch query key resolution', () => {
   test('supports unihan variant keys and U+ fallback arg expansion', () => {
     const [query, args] = getQueryAndArgs('unihan.kTraditionalVariant', 'U+9280')
     assert.ok(query.includes("property = 'kTraditionalVariant'"))
+    assert.ok(!query.includes('parse_int'))
     assert.equal(args.length, 2)
-    assert.deepEqual(args, ['U+9280', 'U+9280'])
+    assert.deepEqual(args, ['U+9280', '銀'])
   })
 
   test('supports unihan.kStrange category key resolution', () => {
     const [query, args] = getQueryAndArgs('unihan.kStrange.I', 'U+9F8D')
     assert.ok(query.includes('FROM unihan_strange'))
     assert.ok(query.includes("category = 'I'"))
-    assert.deepEqual(args, ['U+9F8D', 'U+9F8D'])
+    assert.ok(!query.includes('parse_int'))
+    assert.deepEqual(args, ['U+9F8D', '龍'])
 
     const [query2, args2] = getQueryAndArgs('unihan.kStrange.I.glob', '龍*')
     assert.ok(query2.includes("ifnull(value, '') glob ?"))
     assert.deepEqual(args2, ['龍*'])
+  })
+
+  test('normalizes UCS search input in JS instead of SQL functions', () => {
+    const [query, args] = getQueryAndArgs('UCS', '4E00')
+    assert.ok(query.includes('SELECT ? AS r'))
+    assert.ok(!query.includes('parse_int'))
+    assert.ok(!query.includes('regexp'))
+    assert.deepEqual(args, ['一', '1'])
   })
 
   test('supports .ne and .notGlob key resolution', () => {
