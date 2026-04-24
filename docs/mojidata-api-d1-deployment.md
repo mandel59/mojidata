@@ -83,8 +83,10 @@ The repository includes a private deployment workspace for this purpose:
 
 - [packages/mojidata-api-d1-worker](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker)
 
-It wraps `createD1App()` from `@mandel59/mojidata-api-d1` and exposes a minimal
-Worker entrypoint plus a `wrangler.jsonc` template.
+It wraps `createD1FetchHandler()` from `@mandel59/mojidata-api-d1` and exposes a
+minimal Worker entrypoint plus a `wrangler.jsonc` template. The same helper is
+intended for a future `mojidata-web-app` Worker embedding, where the app receives
+the same `MOJIDATA_DB` and `IDSFIND_DB` D1 bindings directly.
 
 Useful root commands:
 

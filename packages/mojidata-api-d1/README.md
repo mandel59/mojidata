@@ -8,6 +8,8 @@ It currently includes:
 - `createD1Executor()`: a `SqlExecutor` adapter for a D1 binding
 - `createD1Db()`: bind `mojidata-api-core` to two D1 databases
 - `createD1App()`: create a Hono app backed by D1 bindings
+- `createD1AppFromEnv()`: create the app from standard Cloudflare binding names
+- `createD1FetchHandler()`: create a reusable fetch handler for Workers or embedded apps
 
 Named SQL parameters are rewritten to ordered placeholders because Cloudflare D1
 currently supports ordered and anonymous parameters, but not named parameters,
@@ -16,18 +18,27 @@ via the Worker Binding API.
 Example:
 
 ```ts
-import { createD1App } from "@mandel59/mojidata-api-d1"
+import {
+  createD1FetchHandler,
+  type MojidataApiD1Env,
+} from "@mandel59/mojidata-api-d1"
+
+const handleFetch = createD1FetchHandler()
 
 export default {
-  fetch(request: Request, env: { MOJIDATA_DB: unknown; IDSFIND_DB: unknown }) {
-    const app = createD1App({
-      mojidataDb: env.MOJIDATA_DB as any,
-      idsfindDb: env.IDSFIND_DB as any,
-    })
-    return app.fetch(request, env)
+  fetch(request: Request, env: MojidataApiD1Env) {
+    return handleFetch(request, env)
   },
 }
 ```
+
+`MojidataApiD1Env` expects these D1 bindings:
+
+- `MOJIDATA_DB`
+- `IDSFIND_DB`
+
+Use `createD1App({ mojidataDb, idsfindDb })` directly if your host application
+uses different binding names and wants to map them explicitly.
 
 This package is still an initial D1 PoC. Full parity for all mojidata-api
 queries still depends on follow-up work around custom SQL function usage, FTS

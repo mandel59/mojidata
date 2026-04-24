@@ -5,7 +5,7 @@ validating `@mandel59/mojidata-api-d1` on Cloudflare Workers.
 
 It is not a published package. Its purpose is to provide:
 
-- a minimal Worker entrypoint using `createD1App()`
+- a minimal Worker entrypoint using `createD1FetchHandler()`
 - a `wrangler.jsonc` template with the required D1 bindings
 - a reproducible local/remote deployment path for `#19`
 
