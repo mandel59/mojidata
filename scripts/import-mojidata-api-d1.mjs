@@ -11,7 +11,7 @@ const defaultConfigPath = path.join(
 )
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs [--config path] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
+  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs [--config path] [--env staging] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
 
 Prepares SQL dumps if needed and imports mojidata / idsfind data into the D1
 databases referenced by the mojidata-api D1 worker config.`)
@@ -19,6 +19,7 @@ databases referenced by the mojidata-api D1 worker config.`)
 
 function parseArgs(argv) {
   let configPath = defaultConfigPath
+  let env
   let outputDir = "/tmp/mojidata-d1-import"
   let skipPrepare = false
 
@@ -29,6 +30,10 @@ function parseArgs(argv) {
     }
     if (arg === "--config") {
       configPath = path.resolve(argv[++i])
+      continue
+    }
+    if (arg === "--env") {
+      env = argv[++i]
       continue
     }
     if (arg === "--output-dir") {
@@ -46,7 +51,7 @@ function parseArgs(argv) {
     throw new Error(`Unknown argument: ${arg}`)
   }
 
-  return { configPath, outputDir, skipPrepare }
+  return { configPath, env, outputDir, skipPrepare }
 }
 
 function parseJsonc(text) {
@@ -60,11 +65,31 @@ function run(command, args, cwd) {
   }
 }
 
+function getConfigTarget(config, env) {
+  const target = env ? config.env?.[env] : config
+  if (!target) {
+    throw new Error(`wrangler config must define env.${env}`)
+  }
+  if (!Array.isArray(target.d1_databases)) {
+    throw new Error(
+      env
+        ? `wrangler config must define env.${env}.d1_databases`
+        : "wrangler config must define d1_databases",
+    )
+  }
+  return target
+}
+
 async function main() {
-  const { configPath, outputDir, skipPrepare } = parseArgs(process.argv.slice(2))
+  const { configPath, env, outputDir, skipPrepare } = parseArgs(
+    process.argv.slice(2),
+  )
   const cwd = path.dirname(configPath)
   const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
-  const byBinding = new Map(config.d1_databases.map((entry) => [entry.binding, entry]))
+  const configTarget = getConfigTarget(config, env)
+  const byBinding = new Map(
+    configTarget.d1_databases.map((entry) => [entry.binding, entry]),
+  )
 
   const mojidataDb = byBinding.get("MOJIDATA_DB")
   const idsfindDb = byBinding.get("IDSFIND_DB")
@@ -82,8 +107,34 @@ async function main() {
     throw new Error(`expected SQL dumps in ${outputDir}`)
   }
 
-  run("npx", ["wrangler", "d1", "execute", mojidataDb.database_name, "--remote", "--file", mojidataSql, "--yes"], cwd)
-  run("npx", ["wrangler", "d1", "execute", idsfindDb.database_name, "--remote", "--file", idsfindSql, "--yes"], cwd)
+  run(
+    "npx",
+    [
+      "wrangler",
+      "d1",
+      "execute",
+      mojidataDb.database_name,
+      "--remote",
+      "--file",
+      mojidataSql,
+      "--yes",
+    ],
+    cwd,
+  )
+  run(
+    "npx",
+    [
+      "wrangler",
+      "d1",
+      "execute",
+      idsfindDb.database_name,
+      "--remote",
+      "--file",
+      idsfindSql,
+      "--yes",
+    ],
+    cwd,
+  )
 }
 
 await main()

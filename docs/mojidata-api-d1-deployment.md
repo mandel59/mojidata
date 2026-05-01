@@ -1,18 +1,22 @@
 # mojidata-api D1 deployment
 
 This document tracks the current deployment shape for the Cloudflare D1 backend
-of `mojidata-api`.
+of `mojidata-api` and the contract used by `mojidata-web-app`.
 
 ## Scope
 
-The current target is a bounded D1 proof of concept:
+The current target is a bounded D1 rollout path:
 
 - stand up a minimal Cloudflare Worker backed by two D1 databases
 - import `mojidata` and `idsfind` data from generated SQL dumps
 - verify the core API routes remotely
 - run a small remote benchmark against the deployed target
+- point `mojidata-web-app` at this Worker via `MOJIDATA_API_BASE_URL`
 
-This is intentionally narrower than a full production rollout.
+The standalone Worker remains intentionally narrower than a fully embedded
+Next.js integration. It is the first production-like target because D1 import,
+query behavior, CORS, and benchmark regressions can be validated without also
+debugging the OpenNext migration.
 
 ## Deployment shapes
 
@@ -156,10 +160,34 @@ with the resolved IDs.
      --output-dir artifacts/bench/worker-d1
    ```
 
-## Future mojidata-web-app integration
+## mojidata-web-app integration
 
-If `mojidata-web-app` moves to Cloudflare Workers later, there are two likely
-integration shapes:
+The initial Cloudflare migration for `mojidata-web-app` should use the
+standalone API Worker over HTTP:
+
+```sh
+MOJIDATA_API_BASE_URL=https://mojidata-api-d1-production.<account>.workers.dev/
+```
+
+The app should keep the browser SPA database assets in R2 and use D1 only for
+server-side API responses. This keeps the heavy sql.js DB downloads out of the
+Worker bundle while giving server-rendered pages a Cloudflare-native data path.
+
+The API contract is the existing `mojidata-api-hono` HTTP surface:
+
+- `/api/v1/mojidata`
+- `/api/v1/ivs-list`
+- `/api/v1/idsfind`
+
+The remote smoke script checks those routes and should be run before wiring a
+new Worker URL into `mojidata-web-app`:
+
+```sh
+corepack yarn mojidata-api:d1:smoke \
+  --base-url https://mojidata-api-d1-production.<account>.workers.dev/
+```
+
+There are still two possible later integration shapes:
 
 1. Keep a separate D1-backed API Worker and point the app at it over HTTP
 2. Embed the D1 backend package into the app's own Worker runtime and bind the
@@ -172,3 +200,19 @@ target and as a fallback deployment topology.
 
 `#19` should end with a recommendation about which of those two shapes is the
 default path forward.
+
+## Environment-specific D1 targets
+
+`packages/mojidata-api-d1-worker/wrangler.jsonc` defines top-level, `staging`,
+and `production` D1 bindings. The root helpers can provision and import a
+specific environment:
+
+```sh
+corepack yarn mojidata-api:d1:provision -- --env staging
+corepack yarn mojidata-api:d1:import -- --env staging --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:deploy --env staging
+```
+
+Use `--env production` for the production Worker. Keep staging and production
+D1 database names separate; do not reuse the same D1 databases for import tests
+and public traffic.

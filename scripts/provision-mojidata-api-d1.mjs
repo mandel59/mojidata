@@ -13,7 +13,7 @@ const defaultConfigPath = path.join(
 const controlPlaneCwd = rootDir
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/provision-mojidata-api-d1.mjs [--config path] [--location wnam]
+  console.log(`Usage: node ./scripts/provision-mojidata-api-d1.mjs [--config path] [--env staging] [--location wnam]
 
 Ensures the D1 databases referenced by the mojidata-api D1 worker exist and
 updates wrangler.jsonc with their database IDs.`)
@@ -21,6 +21,7 @@ updates wrangler.jsonc with their database IDs.`)
 
 function parseArgs(argv) {
   let configPath = defaultConfigPath
+  let env
   let location
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -30,6 +31,10 @@ function parseArgs(argv) {
     }
     if (arg === "--config") {
       configPath = path.resolve(argv[++i])
+      continue
+    }
+    if (arg === "--env") {
+      env = argv[++i]
       continue
     }
     if (arg === "--location") {
@@ -43,7 +48,7 @@ function parseArgs(argv) {
     throw new Error(`Unknown argument: ${arg}`)
   }
 
-  return { configPath, location }
+  return { configPath, env, location }
 }
 
 function parseJsonc(text) {
@@ -53,8 +58,19 @@ function parseJsonc(text) {
 function readConfig(configPath) {
   const text = fs.readFileSync(configPath, "utf8")
   const json = parseJsonc(text)
-  assert.ok(Array.isArray(json.d1_databases), "wrangler config must define d1_databases")
   return json
+}
+
+function getConfigTarget(config, env) {
+  const target = env ? config.env?.[env] : config
+  assert.ok(target, `wrangler config must define env.${env}`)
+  assert.ok(
+    Array.isArray(target.d1_databases),
+    env
+      ? `wrangler config must define env.${env}.d1_databases`
+      : "wrangler config must define d1_databases",
+  )
+  return target
 }
 
 function writeConfig(configPath, config) {
@@ -125,23 +141,27 @@ function createDatabase({ binding, databaseName, location }) {
   const stdout = runWrangler(args)
   const databaseId = findFirstUuid(stdout)
   if (!databaseId) {
-    throw new Error(`Could not parse database ID from wrangler output for ${databaseName}`)
+    throw new Error(
+      `Could not parse database ID from wrangler output for ${databaseName}`,
+    )
   }
   return databaseId
 }
 
 async function main() {
-  const { configPath, location } = parseArgs(process.argv.slice(2))
+  const { configPath, env, location } = parseArgs(process.argv.slice(2))
   const config = readConfig(configPath)
+  const configTarget = getConfigTarget(config, env)
   const existingDatabases = listDatabases()
 
   const nextDatabases = []
-  for (const entry of config.d1_databases) {
+  for (const entry of configTarget.d1_databases) {
     assert.equal(typeof entry.binding, "string")
     assert.equal(typeof entry.database_name, "string")
 
     let databaseId =
-      existingDatabases.find((item) => item?.name === entry.database_name)?.uuid ??
+      existingDatabases.find((item) => item?.name === entry.database_name)
+        ?.uuid ??
       getDatabaseIdFromInfo(entry.database_name)
     let action = "reused"
     if (!databaseId) {
@@ -157,12 +177,14 @@ async function main() {
       ...entry,
       database_id: databaseId,
     })
-    console.log(`${action} ${entry.binding}: ${entry.database_name} (${databaseId})`)
+    console.log(
+      `${action} ${entry.binding}: ${entry.database_name} (${databaseId})`,
+    )
   }
 
-  config.d1_databases = nextDatabases
+  configTarget.d1_databases = nextDatabases
   writeConfig(configPath, config)
-  console.log(`updated ${configPath}`)
+  console.log(`updated ${configPath}${env ? ` env.${env}` : ""}`)
 }
 
 await main()

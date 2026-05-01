@@ -2,10 +2,13 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "mojidata-api-d1",
   "main": "src/index.ts",
-  "compatibility_date": "2026-04-19",
+  "compatibility_date": "2026-05-01",
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
+  },
+  "vars": {
+    "MOJIDATA_API_DEPLOYMENT": "default"
   },
   "d1_databases": [
     {
@@ -20,5 +23,47 @@
       // Replace with the real database ID returned by `wrangler d1 create`.
       "database_id": "00000000-0000-0000-0000-000000000002"
     }
-  ]
+  ],
+  "env": {
+    "staging": {
+      "name": "mojidata-api-d1-staging",
+      "vars": {
+        "MOJIDATA_API_DEPLOYMENT": "staging"
+      },
+      "d1_databases": [
+        {
+          "binding": "MOJIDATA_DB",
+          "database_name": "mojidata-api-d1-staging-mojidata",
+          // Replace with the real staging database ID returned by `wrangler d1 create`.
+          "database_id": "00000000-0000-0000-0000-000000000101"
+        },
+        {
+          "binding": "IDSFIND_DB",
+          "database_name": "mojidata-api-d1-staging-idsfind",
+          // Replace with the real staging database ID returned by `wrangler d1 create`.
+          "database_id": "00000000-0000-0000-0000-000000000102"
+        }
+      ]
+    },
+    "production": {
+      "name": "mojidata-api-d1-production",
+      "vars": {
+        "MOJIDATA_API_DEPLOYMENT": "production"
+      },
+      "d1_databases": [
+        {
+          "binding": "MOJIDATA_DB",
+          "database_name": "mojidata-api-d1-production-mojidata",
+          // Replace with the real production database ID returned by `wrangler d1 create`.
+          "database_id": "00000000-0000-0000-0000-000000000201"
+        },
+        {
+          "binding": "IDSFIND_DB",
+          "database_name": "mojidata-api-d1-production-idsfind",
+          // Replace with the real production database ID returned by `wrangler d1 create`.
+          "database_id": "00000000-0000-0000-0000-000000000202"
+        }
+      ]
+    }
+  }
 }
