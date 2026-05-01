@@ -14,14 +14,12 @@
     {
       "binding": "MOJIDATA_DB",
       "database_name": "mojidata-api-d1-mojidata",
-      // Replace with the real database ID returned by `wrangler d1 create`.
-      "database_id": "00000000-0000-0000-0000-000000000001"
+      "database_id": "7db8cd1a-c166-4192-a90e-0c1e782a1654"
     },
     {
       "binding": "IDSFIND_DB",
       "database_name": "mojidata-api-d1-idsfind",
-      // Replace with the real database ID returned by `wrangler d1 create`.
-      "database_id": "00000000-0000-0000-0000-000000000002"
+      "database_id": "095f48e1-4a92-481f-83c8-ef71a35ac98f"
     }
   ],
   "env": {
