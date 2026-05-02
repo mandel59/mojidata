@@ -45,6 +45,20 @@ jobs:
           restore-keys: |
             mojidata-${{ runner.os }}-
 
+      - name: Restore idsdb build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/idsdb/idsfind.db
+            packages/idsdb/idsdecompose.db
+            packages/idsdb/.idsdb.input.sha256
+            packages/idsdb-fts5/idsfind.db
+            packages/idsdb-fts5/idsdecompose.db
+            packages/idsdb-fts5/.idsdb-fts5.input.sha256
+          key: idsdb-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json', 'packages/idsdb/package.json', 'packages/idsdb/tsconfig.json', 'packages/idsdb/prepare.ts', 'packages/idsdb/scripts/**', 'packages/idsdb-fts5/package.json', 'packages/idsdb-fts5/scripts/**', 'packages/idsdb-utils/package.json', 'packages/idsdb-utils/tsconfig.json', 'packages/idsdb-utils/index.ts', 'packages/idsdb-utils/node.ts', 'packages/idsdb-utils/lib/**') }}
+          restore-keys: |
+            idsdb-${{ runner.os }}-
+
       - name: Install dependencies
         run: corepack yarn install --immutable
 
