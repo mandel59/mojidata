@@ -4,7 +4,7 @@ Internal benchmark tooling for comparing `mojidata-api` backends and deployments
 
 This workspace is private and is not published to npm.
 
-The benchmark scenario set is versioned in [benchmarks/scenarios.json](/Users/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/scenarios.json).
+The benchmark scenario set is versioned in [benchmarks/scenarios.json](benchmarks/scenarios.json).
 
 Common commands from the repository root:
 

@@ -85,7 +85,7 @@ It is not the right target for:
 
 The repository includes a private deployment workspace for this purpose:
 
-- [packages/mojidata-api-d1-worker](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker)
+- [packages/mojidata-api-d1-worker](../packages/mojidata-api-d1-worker)
 
 It wraps `createD1FetchHandler()` from `@mandel59/mojidata-api-d1` and exposes a
 minimal Worker entrypoint plus a `wrangler.jsonc` template. The same helper is
@@ -109,7 +109,7 @@ may therefore download the CLI.
 
 The `provision` helper reuses an existing database if `wrangler d1 info` can
 find it; otherwise it creates the database and rewrites
-[packages/mojidata-api-d1-worker/wrangler.jsonc](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker/wrangler.jsonc)
+[packages/mojidata-api-d1-worker/wrangler.jsonc](../packages/mojidata-api-d1-worker/wrangler.jsonc)
 with the resolved IDs.
 
 ## Standalone Worker setup

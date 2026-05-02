@@ -2,7 +2,7 @@
 
 `mojidata-api` backend benchmarks live in the private workspace `@mandel59/mojidata-api-bench`.
 
-The benchmark scenario set is defined and versioned in [packages/mojidata-api-bench/benchmarks/scenarios.json](/Users/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/scenarios.json). Keep that version stable when comparing historical results. If the scenario set changes, bump `scenarioSetVersion` in the manifest so older result files can be identified correctly.
+The benchmark scenario set is defined and versioned in [packages/mojidata-api-bench/benchmarks/scenarios.json](../packages/mojidata-api-bench/benchmarks/scenarios.json). Keep that version stable when comparing historical results. If the scenario set changes, bump `scenarioSetVersion` in the manifest so older result files can be identified correctly.
 
 ## Prepare
 
@@ -31,7 +31,7 @@ node ./packages/mojidata-api-bench/benchmarks/compare-idsfind-fts.mjs \
   --output artifacts/bench/idsfind-fts.json
 ```
 
-See [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md)
+See [docs/idsfind-fts-comparison.md](idsfind-fts-comparison.md)
 for the current decision and the latest recorded findings.
 
 ## Compare local backends

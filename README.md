@@ -44,9 +44,9 @@ CI sets `NO_UPDATE_NOTIFIER=1` so AVA's update-check does not emit sandbox or pe
 
 The benchmark tooling lives in the private workspace `@mandel59/mojidata-api-bench`, not in the published `@mandel59/mojidata-api` compatibility facade.
 The native Node.js backends are now published as explicit packages instead of being part of the default portable runtime/facade install path.
-See [docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md) for the baseline, branch comparison, and remote target workflows.
-See [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md) for the current FTS4/FTS5 decision on `idsfind.db`.
-See [docs/mojidata-api-d1-deployment.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-d1-deployment.md) for the current D1 Worker deployment path and the Cloudflare integration options for `mojidata-web-app`.
+See [docs/mojidata-api-benchmarks.md](docs/mojidata-api-benchmarks.md) for the baseline, branch comparison, and remote target workflows.
+See [docs/idsfind-fts-comparison.md](docs/idsfind-fts-comparison.md) for the current FTS4/FTS5 decision on `idsfind.db`.
+See [docs/mojidata-api-d1-deployment.md](docs/mojidata-api-d1-deployment.md) for the current D1 Worker deployment path and the Cloudflare integration options for `mojidata-web-app`.
 
 ## Release
 
@@ -74,4 +74,4 @@ On pull requests, CI also runs `yarn changeset status`, so changes to publishabl
 4. Merge the release PR after CI passes.
 5. Confirm npm publish succeeded from the Actions run.
 
-See [docs/releasing.md](/Users/mandel59/ws/mojidata/docs/releasing.md) for GitHub secret requirements and the manual retry flow.
+See [docs/releasing.md](docs/releasing.md) for GitHub secret requirements and the manual retry flow.

@@ -11,8 +11,8 @@ It is not a published package. Its purpose is to provide:
 
 ## Files
 
-- [src/index.ts](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker/src/index.ts)
-- [wrangler.jsonc](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker/wrangler.jsonc)
+- [src/index.ts](src/index.ts)
+- [wrangler.jsonc](wrangler.jsonc)
 
 ## Usage
 
@@ -46,4 +46,4 @@ has production-like smoke and benchmark results.
 
 For the full setup flow and the Cloudflare integration notes for
 `mojidata-web-app`, see
-[docs/mojidata-api-d1-deployment.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-d1-deployment.md).
+[docs/mojidata-api-d1-deployment.md](../../docs/mojidata-api-d1-deployment.md).
