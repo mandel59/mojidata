@@ -7,6 +7,8 @@ type QuerySpec = {
   args?: (q: string) => string[]
 }
 
+const noArgs = (): string[] => []
+
 const ucsSearchCharPattern = /^[\p{L}\p{N}\p{S}]$/u
 
 function parseUnicodeCodePoint(q: string): number | null {
@@ -75,6 +77,14 @@ const queries: Partial<Record<string, QuerySpec>> = {
     WHERE mji.対応するUCS IS NOT NULL
       AND mji_reading.読み glob ?`,
   },
+  'mji.読み.has': {
+    query: `
+    SELECT DISTINCT mji.対応するUCS AS r
+    FROM mji
+      JOIN mji_reading USING (MJ文字図形名)
+    WHERE mji.対応するUCS IS NOT NULL`,
+    args: noArgs,
+  },
   'mji.総画数': {
     query: `
     SELECT DISTINCT mji.対応するUCS AS r
@@ -110,12 +120,28 @@ const queries: Partial<Record<string, QuerySpec>> = {
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.総画数 >= cast(? as integer)`,
   },
+  'mji.総画数.has': {
+    query: `
+    SELECT DISTINCT mji.対応するUCS AS r
+    FROM mji
+    WHERE mji.対応するUCS IS NOT NULL
+      AND mji.総画数 IS NOT NULL`,
+    args: noArgs,
+  },
   'mji.MJ文字図形名': {
     query: `
     SELECT DISTINCT mji.対応するUCS AS r
     FROM mji
     WHERE mji.対応するUCS IS NOT NULL
       AND mji.MJ文字図形名 = ?`,
+  },
+  'mji.MJ文字図形名.has': {
+    query: `
+    SELECT DISTINCT mji.対応するUCS AS r
+    FROM mji
+    WHERE mji.対応するUCS IS NOT NULL
+      AND mji.MJ文字図形名 IS NOT NULL`,
+    args: noArgs,
   },
   'unihan.kTotalStrokes': {
     query: `
@@ -146,6 +172,12 @@ const queries: Partial<Record<string, QuerySpec>> = {
     SELECT DISTINCT UCS AS r
     FROM unihan_kTotalStrokes
     WHERE cast(value as integer) >= cast(? as integer)`,
+  },
+  'unihan.kTotalStrokes.has': {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_kTotalStrokes`,
+    args: noArgs,
   },
   'unihan.kTraditionalVariant': {
     query: `
@@ -210,6 +242,13 @@ function addUnihanVariantProperty(property: string) {
     WHERE property = '${property}'
       AND value glob ?`,
   }
+  queries[`unihan.${property}.has`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_variant
+    WHERE property = ?`,
+    args: () => [property],
+  }
 }
 
 for (const property of [
@@ -226,6 +265,12 @@ for (const property of [
 
 const unihanGeneralProperties = [
   'kIICore',
+  'kAlternateTotalStrokes',
+  'kBigFive',
+  'kCCCII',
+  'kCNS1986',
+  'kCNS1992',
+  'kCangjie',
   'kIRG_GSource',
   'kIRG_HSource',
   'kIRG_JSource',
@@ -237,6 +282,7 @@ const unihanGeneralProperties = [
   'kIRG_UKSource',
   'kIRG_USource',
   'kIRG_VSource',
+  'kRSAdobe_Japan1_6',
   'kRSUnicode',
   'kTotalStrokes',
   'kAccountingNumeric',
@@ -245,6 +291,52 @@ const unihanGeneralProperties = [
   'kTayNumeric',
   'kVietnameseNumeric',
   'kZhuangNumeric',
+  'kCheungBauer',
+  'kCheungBauerIndex',
+  'kCihaiT',
+  'kCowles',
+  'kDaeJaweon',
+  'kEACC',
+  'kFenn',
+  'kFennIndex',
+  'kFourCornerCode',
+  'kGB0',
+  'kGB1',
+  'kGB3',
+  'kGB5',
+  'kGB8',
+  'kGSR',
+  'kGradeLevel',
+  'kHDZRadBreak',
+  'kHKGlyph',
+  'kHanYu',
+  'kIBMJapan',
+  'kIRGDaeJaweon',
+  'kIRGDaiKanwaZiten',
+  'kIRGHanyuDaZidian',
+  'kIRGKangXi',
+  'kJIS0213',
+  'kJis0',
+  'kJis1',
+  'kKangXi',
+  'kKarlgren',
+  'kKoreanEducationHanja',
+  'kKoreanName',
+  'kLau',
+  'kMainlandTelegraph',
+  'kMatthews',
+  'kMeyerWempe',
+  'kMojiJoho',
+  'kMorohashi',
+  'kNelson',
+  'kPhonetic',
+  'kPseudoGB1',
+  'kSBGY',
+  'kSMSZD2003Index',
+  'kTGH',
+  'kTaiwanTelegraph',
+  'kUnihanCore2020',
+  'kXerox',
   'kCantonese',
   'kDefinition',
   'kFanqie',
@@ -286,6 +378,13 @@ for (const property of unihanGeneralProperties) {
     FROM unihan
     WHERE property = '${property}'
       AND value glob ?`,
+  }
+  queries[`unihan.${property}.has`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan
+    WHERE property = ?`,
+    args: () => [property],
   }
 }
 
@@ -332,6 +431,13 @@ for (const c of strangeCategories) {
     WHERE category = '${c}'
       AND ifnull(value, '') glob ?`,
   }
+  queries[`unihan.kStrange.${c}.has`] = {
+    query: `
+    SELECT DISTINCT UCS AS r
+    FROM unihan_strange
+    WHERE category = ?`,
+    args: () => [c],
+  }
 }
 
 queries['unihan.kStrange'] = {
@@ -349,22 +455,50 @@ queries['unihan.kStrange.glob'] = {
   WHERE ifnull(value, '') glob ?`,
 }
 
-const queries2: Partial<Record<string, string>> = {
-  totalStrokes: `SELECT * FROM (${queries[
-    'unihan.kTotalStrokes'
-  ]!.query.trim()} UNION ${queries['mji.総画数']!.query.trim()})`,
-  'totalStrokes.lt': `SELECT * FROM (${queries[
-    'unihan.kTotalStrokes.lt'
-  ]!.query.trim()} UNION ${queries['mji.総画数.lt']!.query.trim()})`,
-  'totalStrokes.le': `SELECT * FROM (${queries[
-    'unihan.kTotalStrokes.le'
-  ]!.query.trim()} UNION ${queries['mji.総画数.le']!.query.trim()})`,
-  'totalStrokes.gt': `SELECT * FROM (${queries[
-    'unihan.kTotalStrokes.gt'
-  ]!.query.trim()} UNION ${queries['mji.総画数.gt']!.query.trim()})`,
-  'totalStrokes.ge': `SELECT * FROM (${queries[
-    'unihan.kTotalStrokes.ge'
-  ]!.query.trim()} UNION ${queries['mji.総画数.ge']!.query.trim()})`,
+queries['unihan.kStrange.has'] = {
+  query: `
+  SELECT DISTINCT UCS AS r
+  FROM unihan_strange`,
+  args: noArgs,
+}
+
+const queries2: Partial<Record<string, QuerySpec>> = {
+  totalStrokes: {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes'
+    ]!.query.trim()} UNION ${queries['mji.総画数']!.query.trim()})`,
+    args: (q) => [q, q],
+  },
+  'totalStrokes.lt': {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes.lt'
+    ]!.query.trim()} UNION ${queries['mji.総画数.lt']!.query.trim()})`,
+    args: (q) => [q, q],
+  },
+  'totalStrokes.le': {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes.le'
+    ]!.query.trim()} UNION ${queries['mji.総画数.le']!.query.trim()})`,
+    args: (q) => [q, q],
+  },
+  'totalStrokes.gt': {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes.gt'
+    ]!.query.trim()} UNION ${queries['mji.総画数.gt']!.query.trim()})`,
+    args: (q) => [q, q],
+  },
+  'totalStrokes.ge': {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes.ge'
+    ]!.query.trim()} UNION ${queries['mji.総画数.ge']!.query.trim()})`,
+    args: (q) => [q, q],
+  },
+  'totalStrokes.has': {
+    query: `SELECT * FROM (${queries[
+      'unihan.kTotalStrokes.has'
+    ]!.query.trim()} UNION ${queries['mji.総画数.has']!.query.trim()})`,
+    args: noArgs,
+  },
 }
 
 function normalizeQueryKey(p: string): string {
@@ -382,7 +516,7 @@ function getPositiveQueryAndArgs(p: string, q: string): QueryAndArgs {
   }
   const query2 = queries2[key]
   if (query2) {
-    return [query2.trim(), [q, q]]
+    return [query2.query.trim(), query2.args ? query2.args(q) : [q]]
   }
   throw new Error(`Unknown query key: ${p}`)
 }
@@ -396,6 +530,11 @@ function negateQuery(query: string): string {
 }
 
 export function getQueryAndArgs(p: string, q: string): QueryAndArgs {
+  if (p.endsWith('.notHas')) {
+    const base = p.slice(0, -7)
+    const [query, args] = getPositiveQueryAndArgs(`${base}.has`, q)
+    return [negateQuery(query), args]
+  }
   if (p.endsWith('.ne')) {
     const base = p.slice(0, -3)
     const [query, args] = getPositiveQueryAndArgs(base, q)

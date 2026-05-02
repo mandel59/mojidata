@@ -154,6 +154,8 @@ paths:
            search (same as `api/v1/_lib/libsearch.ts`).
 
         Arrays can be passed as repeated query parameters (e.g. `p=UCS&p=totalStrokes`).
+        Property existence filters use `.has` / `.notHas` keys with an empty corresponding `q`
+        value, for example `p=unihan.kMorohashi.has&q=`.
       parameters:
         - name: ids
           in: query
@@ -191,10 +193,12 @@ paths:
               value: [totalStrokes]
             reading:
               value: ["mji.読み"]
+            morohashiExists:
+              value: ["unihan.kMorohashi.has"]
         - name: q
           in: query
           required: false
-          description: Values corresponding to `p` (must have same length as `p`).
+          description: Values corresponding to `p` (must have same length as `p`). Use an empty string for `.has` / `.notHas` keys.
           style: form
           explode: true
           schema:
@@ -206,6 +210,8 @@ paths:
               value: ["13"]
             reading:
               value: ["かん"]
+            morohashiExists:
+              value: [""]
         - name: limit
           in: query
           required: false
@@ -543,26 +549,83 @@ components:
       additionalProperties: false
     SearchPropertyKey:
       type: string
+      description: |
+        Property search key. Existence checks are represented with `.has` and `.notHas`, paired with an empty `q` value.
       enum:
         - UCS
         - mji.読み
         - mji.読み.prefix
+        - mji.読み.glob
+        - mji.読み.has
+        - mji.読み.notHas
         - mji.MJ文字図形名
+        - mji.MJ文字図形名.has
+        - mji.MJ文字図形名.notHas
         - mji.総画数
         - mji.総画数.lt
         - mji.総画数.le
         - mji.総画数.gt
         - mji.総画数.ge
+        - mji.総画数.has
+        - mji.総画数.notHas
         - unihan.kTotalStrokes
         - unihan.kTotalStrokes.lt
         - unihan.kTotalStrokes.le
         - unihan.kTotalStrokes.gt
         - unihan.kTotalStrokes.ge
+        - unihan.kTotalStrokes.has
+        - unihan.kTotalStrokes.notHas
+        - unihan.kHanYu.has
+        - unihan.kHanYu.notHas
+        - unihan.kIRGHanyuDaZidian.has
+        - unihan.kIRGHanyuDaZidian.notHas
+        - unihan.kIRGKangXi.has
+        - unihan.kIRGKangXi.notHas
+        - unihan.kKangXi.has
+        - unihan.kKangXi.notHas
+        - unihan.kCihaiT.has
+        - unihan.kCihaiT.notHas
+        - unihan.kSBGY.has
+        - unihan.kSBGY.notHas
+        - unihan.kNelson.has
+        - unihan.kNelson.notHas
+        - unihan.kCowles.has
+        - unihan.kCowles.notHas
+        - unihan.kMatthews.has
+        - unihan.kMatthews.notHas
+        - unihan.kGSR.has
+        - unihan.kGSR.notHas
+        - unihan.kFennIndex.has
+        - unihan.kFennIndex.notHas
+        - unihan.kKarlgren.has
+        - unihan.kKarlgren.notHas
+        - unihan.kMeyerWempe.has
+        - unihan.kMeyerWempe.notHas
+        - unihan.kLau.has
+        - unihan.kLau.notHas
+        - unihan.kCheungBauerIndex.has
+        - unihan.kCheungBauerIndex.notHas
+        - unihan.kMorohashi.has
+        - unihan.kMorohashi.notHas
+        - unihan.kDaeJaweon.has
+        - unihan.kDaeJaweon.notHas
+        - unihan.kIRGDaeJaweon.has
+        - unihan.kIRGDaeJaweon.notHas
+        - unihan.kIRGDaiKanwaZiten.has
+        - unihan.kIRGDaiKanwaZiten.notHas
+        - unihan.kSMSZD2003Index.has
+        - unihan.kSMSZD2003Index.notHas
+        - unihan.kStrange.has
+        - unihan.kStrange.notHas
+        - unihan.kStrange.I.has
+        - unihan.kStrange.I.notHas
         - totalStrokes
         - totalStrokes.lt
         - totalStrokes.le
         - totalStrokes.gt
         - totalStrokes.ge
+        - totalStrokes.has
+        - totalStrokes.notHas
     IdsfindResponse:
       type: object
       required: [query, results]

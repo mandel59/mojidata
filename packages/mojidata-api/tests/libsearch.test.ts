@@ -67,12 +67,40 @@ describe('libsearch query key resolution', () => {
     assert.deepEqual(notGlobArgs, ['か*'])
   })
 
+  test('supports .has and .notHas key resolution', () => {
+    const [hasQuery, hasArgs] = getQueryAndArgs('unihan.kMorohashi.has', '')
+    assert.ok(hasQuery.includes('FROM unihan'))
+    assert.ok(hasQuery.includes('property = ?'))
+    assert.deepEqual(hasArgs, ['kMorohashi'])
+
+    const [notHasQuery, notHasArgs] = getQueryAndArgs('unihan.kMorohashi.notHas', '')
+    assert.ok(notHasQuery.includes('SELECT DISTINCT UCS AS r'))
+    assert.ok(notHasQuery.includes('FROM ids'))
+    assert.ok(notHasQuery.includes('NOT IN'))
+    assert.deepEqual(notHasArgs, ['kMorohashi'])
+
+    const [mjiHasQuery, mjiHasArgs] = getQueryAndArgs('mji.MJ文字図形名.has', '')
+    assert.ok(mjiHasQuery.includes('FROM mji'))
+    assert.ok(mjiHasQuery.includes('MJ文字図形名 IS NOT NULL'))
+    assert.deepEqual(mjiHasArgs, [])
+
+    const [totalHasQuery, totalHasArgs] = getQueryAndArgs('totalStrokes.has', '')
+    assert.ok(totalHasQuery.includes('unihan_kTotalStrokes'))
+    assert.ok(totalHasQuery.includes('mji.総画数 IS NOT NULL'))
+    assert.deepEqual(totalHasArgs, [])
+  })
+
   test('supports newly added unihan property keys', () => {
     const keys = [
       'unihan.kIRG_JSource',
       'unihan.kIRG_USource',
       'unihan.kDefinition',
       'unihan.kJapaneseOn',
+      'unihan.kMorohashi',
+      'unihan.kKangXi',
+      'unihan.kHanYu',
+      'unihan.kIRGDaiKanwaZiten',
+      'unihan.kSMSZD2003Index',
       'unihan.kAccountingNumeric',
       'unihan.kAccountingNumeric.ge',
       'unihan.kZhuangNumeric.le',

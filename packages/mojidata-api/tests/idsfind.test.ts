@@ -262,6 +262,74 @@ describe('GET /api/v1/idsfind', () => {
     )
   })
 
+  test('supports .has and .notHas existence operators', async () => {
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['UCS', 'unihan.kMorohashi.has'],
+        q: ['U+9A6B', ''],
+        limit: 5,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        5,
+        ['UCS', 'unihan.kMorohashi.has'],
+        ['U+9A6B', ''],
+      )
+      assert.ok(json.results.includes('驫'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['UCS', 'unihan.kMorohashi.notHas'],
+        q: ['U+3403', ''],
+        limit: 5,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        5,
+        ['UCS', 'unihan.kMorohashi.notHas'],
+        ['U+3403', ''],
+      )
+      assert.ok(json.results.includes('㐃'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['UCS', 'totalStrokes.has'],
+        q: ['U+9A6B', ''],
+        limit: 5,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        5,
+        ['UCS', 'totalStrokes.has'],
+        ['U+9A6B', ''],
+      )
+      assert.ok(json.results.includes('驫'))
+    }
+  })
+
+  test('composes existence filters with IDS and stroke filters', async () => {
+    const { response, json } = await fetchJson('/api/v1/idsfind', {
+      ids: ['馬'],
+      p: ['totalStrokes.ge', 'unihan.kMorohashi.has'],
+      q: ['25', ''],
+      limit: 200,
+    })
+
+    assertBasicSuccess(
+      response,
+      json,
+      200,
+      ['totalStrokes.ge', 'unihan.kMorohashi.has'],
+      ['25', ''],
+    )
+    assert.ok(json.results.includes('驫'))
+  })
+
   test('supports multiple mixed condition combinations without server errors', async () => {
     const cases: Array<{
       p: string[]
@@ -290,6 +358,11 @@ describe('GET /api/v1/idsfind', () => {
       {
         p: ['unihan.kTraditionalVariant.ne', 'totalStrokes.ge'],
         q: ['線', '1'],
+        expectNonEmpty: true,
+      },
+      {
+        p: ['unihan.kMorohashi.has', 'totalStrokes.ge'],
+        q: ['', '25'],
         expectNonEmpty: true,
       },
     ]

@@ -32,6 +32,23 @@ does not pull native SQLite concerns into the default path:
 - `@mandel59/mojidata-api-better-sqlite3`
 - `@mandel59/mojidata-api-node-sqlite`
 
+## Property existence search
+
+`/api/v1/idsfind` supports property existence filters through `p` keys ending in
+`.has` or `.notHas`. Keep `p` and `q` arrays aligned and pass an empty `q`
+value for existence checks:
+
+```text
+/api/v1/idsfind?ids=馬&p=totalStrokes.ge&q=25&p=unihan.kMorohashi.has&q=&limit=20
+```
+
+Representative supported keys include:
+
+- `unihan.kMorohashi.has` / `unihan.kMorohashi.notHas`
+- `unihan.kKangXi.has`, `unihan.kHanYu.has`, and other Unihan dictionary/index properties
+- `mji.読み.has`, `mji.MJ文字図形名.has`, `mji.総画数.has`
+- `totalStrokes.has` / `totalStrokes.notHas`
+
 ## Tests
 
 Tests live under `tests/`.
