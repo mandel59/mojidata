@@ -46,7 +46,7 @@ jobs:
 
       - name: Check changesets on pull requests
         if: github.event_name == 'pull_request' && !startsWith(github.head_ref, 'changeset-release/')
-        run: corepack yarn changeset status
+        run: corepack yarn changeset status --since=origin/${{ github.base_ref }}
 
       - name: Build workspace for pull requests
         if: github.event_name == 'pull_request'
