@@ -5,8 +5,10 @@ import sqlite3InitModule from "@sqlite.org/sqlite-wasm"
 
 import {
   createSqliteWasmExecutor,
+  createSqliteWasmDbFromOpfsSAHPool,
   installMojidataSqliteWasmFunctions,
   isOpfsSAHPoolSupported,
+  openOpfsSAHPoolDatabase,
   tryEnsureOpfsSAHPoolDatabase,
   tryInstallOpfsSAHPool,
   type SqliteWasmSAHPoolUtil,
@@ -75,6 +77,51 @@ describe("installMojidataSqliteWasmFunctions", () => {
 })
 
 describe("OPFS fallback helpers", () => {
+  test("does not materialize OPFS databases during DB initialization", async () => {
+    const poolUtil = {
+      getFileNames() {
+        throw new Error("database should not be materialized during initialization")
+      },
+      OpfsSAHPoolDb: class {},
+    } as unknown as SqliteWasmSAHPoolUtil
+
+    await assert.doesNotReject(() =>
+      createSqliteWasmDbFromOpfsSAHPool({
+        poolUtil,
+        mojidata: {
+          name: "/mojidata/moji.db",
+          assetUrl: "https://example.test/moji.db",
+          assetVersion: "moji-db-v1",
+        },
+        idsfind: {
+          name: "/mojidata/idsfind.db",
+          assetUrl: "https://example.test/idsfind.db",
+          assetVersion: "idsfind-db-v1",
+        },
+      }),
+    )
+  })
+
+  test("configures OPFS databases to keep temporary storage in memory", () => {
+    const execCalls: string[] = []
+    const poolUtil = {
+      OpfsSAHPoolDb: class {
+        constructor(
+          readonly filename: string,
+          readonly flags?: string,
+        ) {}
+
+        exec(sql: string) {
+          execCalls.push(sql)
+        }
+      },
+    } as unknown as SqliteWasmSAHPoolUtil
+
+    openOpfsSAHPoolDatabase(poolUtil, "/mojidata/moji.db")
+
+    assert.deepEqual(execCalls, ["PRAGMA temp_store=memory"])
+  })
+
   test("reports unsupported OPFS contexts without throwing", async () => {
     assert.equal(isOpfsSAHPoolSupported(), false)
     const sqlite3 = await sqlite3InitModule()

@@ -5,6 +5,8 @@ export type WorkerInit = {
   mojidataDbUrl: string
   idsfindDbUrl: string
   sqliteWasm?: {
+    wasmUrl?: string
+    wasmBinary?: ArrayBuffer | Uint8Array
     opfsName?: string
     opfsDirectory?: string
     initialCapacity?: number

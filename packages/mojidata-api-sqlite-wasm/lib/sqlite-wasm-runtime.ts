@@ -45,7 +45,9 @@ export function openOpfsSAHPoolDatabase(
   name: string,
   flags = "r",
 ): Database {
-  return new poolUtil.OpfsSAHPoolDb(name, flags)
+  const db = new poolUtil.OpfsSAHPoolDb(name, flags)
+  db.exec("PRAGMA temp_store=memory")
+  return db
 }
 
 export type CreateSqliteWasmDbFromOpfsSAHPoolOptions = {
@@ -59,15 +61,14 @@ export async function createSqliteWasmDbFromOpfsSAHPool({
   mojidata,
   idsfind,
 }: CreateSqliteWasmDbFromOpfsSAHPoolOptions): Promise<MojidataApiDb> {
-  await ensureOpfsSAHPoolDatabase(poolUtil, mojidata)
-  await ensureOpfsSAHPoolDatabase(poolUtil, idsfind)
-
   return createSqliteWasmDb({
-    getMojidataDb: createSqliteWasmMojidataDbProvider(() =>
-      openOpfsSAHPoolDatabase(poolUtil, mojidata.name),
-    ),
-    getIdsfindDb: createSqliteWasmExecutorProvider(() =>
-      openOpfsSAHPoolDatabase(poolUtil, idsfind.name),
-    ),
+    getMojidataDb: createSqliteWasmMojidataDbProvider(async () => {
+      await ensureOpfsSAHPoolDatabase(poolUtil, mojidata)
+      return openOpfsSAHPoolDatabase(poolUtil, mojidata.name)
+    }),
+    getIdsfindDb: createSqliteWasmExecutorProvider(async () => {
+      await ensureOpfsSAHPoolDatabase(poolUtil, idsfind)
+      return openOpfsSAHPoolDatabase(poolUtil, idsfind.name)
+    }),
   })
 }

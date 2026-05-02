@@ -29,7 +29,7 @@ const worker = new Worker(
 )
 
 const db = createMojidataApiWorkerClient(worker, {
-  sqlWasmUrl: "",
+  sqlWasmUrl: "/assets/sqlite3.wasm",
   mojidataDbUrl: "/assets/moji.db",
   idsfindDbUrl: "/assets/idsfind.db",
   sqliteWasm: {
@@ -42,6 +42,16 @@ const db = createMojidataApiWorkerClient(worker, {
 
 await db.ready
 ```
+
+`sqlWasmUrl` is passed to SQLite wasm as the `sqlite3.wasm` URL. Applications
+can also pass `sqliteWasm.wasmUrl` to override it, or `sqliteWasm.wasmBinary`
+when the app already fetched the wasm bytes through its own asset pipeline.
+Custom workers can call `getSqliteWasm({ wasmUrl, wasmBinary, locateFile })`
+directly when they need lower-level control.
+
+The browser worker initializes SQLite and the OPFS pool during `ready`, but DB
+assets are imported lazily. `moji.db` is downloaded/imported on the first
+mojidata query, and `idsfind.db` is downloaded/imported on the first IDS query.
 
 `opfs-sahpool` is only available from Worker contexts with OPFS APIs. In
 unsupported contexts, use `tryEnsureOpfsSAHPoolDatabase()` or catch

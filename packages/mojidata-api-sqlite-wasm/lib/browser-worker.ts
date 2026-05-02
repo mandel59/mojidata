@@ -21,7 +21,11 @@ function serializeError(error: unknown) {
 }
 
 async function initWorker(init: WorkerInit) {
-  const sqlite3 = await getSqliteWasm()
+  const wasmUrl = init.sqliteWasm?.wasmUrl ?? init.sqlWasmUrl
+  const sqlite3 = await getSqliteWasm({
+    wasmUrl: wasmUrl || undefined,
+    wasmBinary: init.sqliteWasm?.wasmBinary,
+  })
   const poolUtil = await installOpfsSAHPool(sqlite3, {
     name: init.sqliteWasm?.opfsName,
     directory: init.sqliteWasm?.opfsDirectory,

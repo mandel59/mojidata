@@ -68,8 +68,48 @@ export class SqliteWasmOpfsError extends Error {
 
 let sqlite3Promise: Promise<Sqlite3Static> | undefined
 
-export function getSqliteWasm(): Promise<Sqlite3Static> {
-  sqlite3Promise ??= sqlite3InitModule()
+export type SqliteWasmInitOptions = {
+  wasmUrl?: string | URL
+  wasmBinary?: ArrayBuffer | Uint8Array
+  locateFile?: (path: string, scriptDirectory: string) => string
+  instantiateWasm?: (
+    imports: WebAssembly.Imports,
+    successCallback: (
+      instance: WebAssembly.Instance,
+      module: WebAssembly.Module,
+    ) => void,
+  ) => WebAssembly.Exports | Promise<WebAssembly.Exports> | void
+}
+
+type EmscriptenSqliteWasmInitOptions = Omit<SqliteWasmInitOptions, "wasmUrl">
+
+type SqliteWasmInitModule = (
+  options?: EmscriptenSqliteWasmInitOptions,
+) => Promise<Sqlite3Static>
+
+function toEmscriptenSqliteWasmInitOptions(
+  options: SqliteWasmInitOptions = {},
+): EmscriptenSqliteWasmInitOptions {
+  const { wasmUrl, locateFile, ...rest } = options
+  if (wasmUrl === undefined) {
+    return locateFile === undefined ? rest : { ...rest, locateFile }
+  }
+  const sqliteWasmUrl = String(wasmUrl)
+  return {
+    ...rest,
+    locateFile: (path, scriptDirectory) => {
+      if (path === "sqlite3.wasm") {
+        return sqliteWasmUrl
+      }
+      return locateFile?.(path, scriptDirectory) ?? `${scriptDirectory}${path}`
+    },
+  }
+}
+
+export function getSqliteWasm(options?: SqliteWasmInitOptions): Promise<Sqlite3Static> {
+  sqlite3Promise ??= (sqlite3InitModule as SqliteWasmInitModule)(
+    options === undefined ? undefined : toEmscriptenSqliteWasmInitOptions(options),
+  )
   return sqlite3Promise
 }
 

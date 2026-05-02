@@ -28,5 +28,6 @@ export {
   type OpfsSAHPoolMaterializeOptions,
   type SqliteWasmOpfsFailure,
   type SqliteWasmOpfsFailureReason,
+  type SqliteWasmInitOptions,
   type SqliteWasmSAHPoolUtil,
 } from "./lib/opfs-sahpool.js"
