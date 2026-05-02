@@ -9,7 +9,7 @@ For backends that support SQLite FTS5, use the separate
 `@mandel59/idsdb-fts5` package, which publishes an FTS5-flavored `idsfind.db`.
 
 For the current compatibility decision and the recorded FTS4/FTS5 comparison,
-see [docs/idsfind-fts-comparison.md](/Users/mandel59/ws/mojidata/docs/idsfind-fts-comparison.md).
+see [docs/idsfind-fts-comparison.md](../../docs/idsfind-fts-comparison.md).
 
 ## License
 

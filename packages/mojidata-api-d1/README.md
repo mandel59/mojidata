@@ -46,9 +46,9 @@ compatibility, and D1 data import flow.
 
 For a deployable Cloudflare Worker target in this repository, see the private
 workspace
-[packages/mojidata-api-d1-worker](/Users/mandel59/ws/mojidata/packages/mojidata-api-d1-worker)
+[packages/mojidata-api-d1-worker](../mojidata-api-d1-worker)
 and
-[docs/mojidata-api-d1-deployment.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-d1-deployment.md).
+[docs/mojidata-api-d1-deployment.md](../../docs/mojidata-api-d1-deployment.md).
 
 For local D1-oriented `idsfind` assets, use the separate `@mandel59/idsdb-fts5`
 package:
@@ -107,4 +107,4 @@ directory, along with comparison files for:
 - `node:sqlite` vs D1
 
 For more detail, see
-[docs/mojidata-api-benchmarks.md](/Users/mandel59/ws/mojidata/docs/mojidata-api-benchmarks.md).
+[docs/mojidata-api-benchmarks.md](../../docs/mojidata-api-benchmarks.md).
