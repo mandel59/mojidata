@@ -8,6 +8,7 @@
 - [Mojidata API compatibility facade](packages/mojidata-api)
 - [Mojidata API runtime](packages/mojidata-api-runtime)
 - [Mojidata API sql.js backend](packages/mojidata-api-sqljs)
+- [Mojidata API SQLite wasm OPFS backend](packages/mojidata-api-sqlite-wasm)
 - [Mojidata API better-sqlite3 backend](packages/mojidata-api-better-sqlite3)
 - [Mojidata API node:sqlite backend](packages/mojidata-api-node-sqlite)
 - [Mojidata API D1 backend](packages/mojidata-api-d1)

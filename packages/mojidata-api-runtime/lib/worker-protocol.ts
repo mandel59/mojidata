@@ -4,6 +4,21 @@ export type WorkerInit = {
   sqlWasmUrl: string
   mojidataDbUrl: string
   idsfindDbUrl: string
+  sqliteWasm?: {
+    wasmUrl?: string
+    wasmBinary?: ArrayBuffer | Uint8Array
+    opfsName?: string
+    opfsDirectory?: string
+    initialCapacity?: number
+    clearOnInit?: boolean
+    manifestDirectory?: string
+    mojidataDbName?: string
+    idsfindDbName?: string
+    mojidataDbVersion?: string
+    idsfindDbVersion?: string
+    mojidataDbByteLength?: number
+    idsfindDbByteLength?: number
+  }
 }
 
 export type WorkerCall = {
