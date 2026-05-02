@@ -1,0 +1,55 @@
+{
+  "name": "@mandel59/mojidata-api-sqlite-wasm",
+  "version": "1.8.0",
+  "description": "SQLite wasm OPFS integration package for mojidata-api",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/mojidata-api-sqlite-wasm"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./browser-worker": {
+      "types": "./dist/browser-worker.d.ts",
+      "import": "./dist/browser-worker.js",
+      "default": "./dist/browser-worker.js"
+    },
+    "./lib/*": {
+      "types": "./dist/lib/*.d.ts",
+      "import": "./dist/lib/*.js",
+      "default": "./dist/lib/*.js"
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && ../../.yarn/sdks/typescript/bin/tsc",
+    "prepare:test-deps": "(cd ../mojidata-api-core && ../../.yarn/sdks/typescript/bin/tsc) && (cd ../mojidata-api-runtime && node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && ../../.yarn/sdks/typescript/bin/tsc)",
+    "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "publish": "yarn prepare && yarn npm publish --access public"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT",
+  "dependencies": {
+    "@mandel59/mojidata-api-core": "^1.8.0",
+    "@mandel59/mojidata-api-runtime": "^1.8.0",
+    "@sqlite.org/sqlite-wasm": "^3.53.0-build1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

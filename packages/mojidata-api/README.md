@@ -13,6 +13,7 @@ It also has split packages for composing the API yourself:
 - `@mandel59/mojidata-api-hono`: Hono app wiring
 - `@mandel59/mojidata-api-runtime`: worker client helpers and shared runtime utilities
 - `@mandel59/mojidata-api-sqljs`: explicit `sql.js` backend package
+- `@mandel59/mojidata-api-sqlite-wasm`: browser SQLite wasm OPFS backend package
 
 The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades and forward to the split packages.
 
@@ -25,6 +26,8 @@ const db = createNodeDb()
 ```
 
 For new code that selects the backend explicitly, prefer `@mandel59/mojidata-api-sqljs`.
+For browser SPAs that need persistent OPFS storage, use
+`@mandel59/mojidata-api-sqlite-wasm` explicitly.
 
 Native Node backends are published separately so installing `@mandel59/mojidata-api`
 does not pull native SQLite concerns into the default path:

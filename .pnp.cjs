@@ -71,6 +71,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/mojidata-api-runtime"\
     },\
     {\
+      "name": "@mandel59/mojidata-api-sqlite-wasm",\
+      "reference": "workspace:packages/mojidata-api-sqlite-wasm"\
+    },\
+    {\
       "name": "@mandel59/mojidata-api-sqljs",\
       "reference": "workspace:packages/mojidata-api-sqljs"\
     },\
@@ -101,6 +105,7 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/mojidata-api-hono", ["workspace:packages/mojidata-api-hono"]],\
     ["@mandel59/mojidata-api-node-sqlite", ["workspace:packages/mojidata-api-node-sqlite"]],\
     ["@mandel59/mojidata-api-runtime", ["workspace:packages/mojidata-api-runtime"]],\
+    ["@mandel59/mojidata-api-sqlite-wasm", ["workspace:packages/mojidata-api-sqlite-wasm"]],\
     ["@mandel59/mojidata-api-sqljs", ["workspace:packages/mojidata-api-sqljs"]],\
     ["@mandel59/mojidata-cli", ["workspace:packages/mojidata-cli"]],\
     ["@mandel59/react-mojidata-api", ["workspace:packages/react-mojidata-api"]],\
@@ -1307,6 +1312,21 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["@mandel59/mojidata-api-sqlite-wasm", [\
+      ["workspace:packages/mojidata-api-sqlite-wasm", {\
+        "packageLocation": "./packages/mojidata-api-sqlite-wasm/",\
+        "packageDependencies": [\
+          ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
+          ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
+          ["@mandel59/mojidata-api-sqlite-wasm", "workspace:packages/mojidata-api-sqlite-wasm"],\
+          ["@sqlite.org/sqlite-wasm", "npm:3.53.0-build1"],\
+          ["@types/node", "npm:24.10.4"],\
+          ["tsx", "npm:4.21.0"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@mandel59/mojidata-api-sqljs", [\
       ["workspace:packages/mojidata-api-sqljs", {\
         "packageLocation": "./packages/mojidata-api-sqljs/",\
@@ -1670,6 +1690,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/@sindresorhus-is-npm-0.14.0-9f906ea34b-789cd128f0.zip/node_modules/@sindresorhus/is/",\
         "packageDependencies": [\
           ["@sindresorhus/is", "npm:0.14.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@sqlite.org/sqlite-wasm", [\
+      ["npm:3.53.0-build1", {\
+        "packageLocation": "./.yarn/cache/@sqlite.org-sqlite-wasm-npm-3.53.0-build1-38c03d882c-7e8aedffb6.zip/node_modules/@sqlite.org/sqlite-wasm/",\
+        "packageDependencies": [\
+          ["@sqlite.org/sqlite-wasm", "npm:3.53.0-build1"]\
         ],\
         "linkType": "HARD"\
       }]\

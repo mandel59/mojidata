@@ -945,6 +945,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mandel59/mojidata-api-sqlite-wasm@workspace:packages/mojidata-api-sqlite-wasm":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/mojidata-api-sqlite-wasm@workspace:packages/mojidata-api-sqlite-wasm"
+  dependencies:
+    "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
+    "@sqlite.org/sqlite-wasm": "npm:^3.53.0-build1"
+    "@types/node": "npm:^24.10.4"
+    tsx: "npm:^4.21.0"
+    typescript: "npm:^5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/mojidata-api-sqljs@npm:^1.7.0, @mandel59/mojidata-api-sqljs@npm:^1.8.0, @mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"
@@ -1299,6 +1312,13 @@ __metadata:
   version: 0.14.0
   resolution: "@sindresorhus/is@npm:0.14.0"
   checksum: 10/789cd128f0b43e158e657c4505539c8997905fcb5c06d750b7df778cab2b6887bc1eb8878026a20d84524528786ef69fc3d12a964ae56a478a87bcfc7f8272f3
+  languageName: node
+  linkType: hard
+
+"@sqlite.org/sqlite-wasm@npm:^3.53.0-build1":
+  version: 3.53.0-build1
+  resolution: "@sqlite.org/sqlite-wasm@npm:3.53.0-build1"
+  checksum: 10/7e8aedffb6dbb5790c681728b62febbd918eba9094c4eb5b5e5d4ac965a31b5cc371a1e0fe9eab48e93b23c09ae0c23b198667de271858a695e9b4aca145105a
   languageName: node
   linkType: hard
 

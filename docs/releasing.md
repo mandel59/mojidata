@@ -24,6 +24,7 @@ For the split `mojidata-api` packages, use this bootstrap flow for:
 
 - `@mandel59/mojidata-api-core`
 - `@mandel59/mojidata-api-sqljs`
+- `@mandel59/mojidata-api-sqlite-wasm`
 - `@mandel59/mojidata-api-hono`
 - `@mandel59/mojidata-api-runtime`
 - `@mandel59/mojidata-api-better-sqlite3`
