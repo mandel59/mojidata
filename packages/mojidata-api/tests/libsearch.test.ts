@@ -5,6 +5,39 @@ const { getQueryAndArgs } = require('../api/v1/_lib/libsearch.ts') as {
   getQueryAndArgs: (p: string, q: string) => [string, string[]]
 }
 
+const unihanDictionaryIndexProperties = [
+  'kHanYu',
+  'kIRGHanyuDaZidian',
+  'kIRGKangXi',
+  'kKangXi',
+  'kCihaiT',
+  'kSBGY',
+  'kNelson',
+  'kCowles',
+  'kMatthews',
+  'kGSR',
+  'kFennIndex',
+  'kKarlgren',
+  'kMeyerWempe',
+  'kLau',
+  'kCheungBauerIndex',
+  'kMorohashi',
+  'kDaeJaweon',
+  'kIRGDaeJaweon',
+  'kSMSZD2003Index',
+]
+
+const unihanAdditionalIndexLikeProperties = [
+  'kFourCornerCode',
+  'kCangjie',
+  'kPhonetic',
+  'kFenn',
+  'kCheungBauer',
+  'kRSAdobe_Japan1_6',
+  'kHDZRadBreak',
+  'kIRGDaiKanwaZiten',
+]
+
 describe('libsearch query key resolution', () => {
   test('supports .eq alias for numeric keys', () => {
     const [q1, a1] = getQueryAndArgs('unihan.kTotalStrokes.eq', '6')
@@ -112,5 +145,43 @@ describe('libsearch query key resolution', () => {
       const [query] = getQueryAndArgs(key, 'dummy')
       assert.ok(query.includes('SELECT DISTINCT UCS AS r'))
     }
+  })
+
+  test('supports dictionary/index Unihan property search operators', () => {
+    for (const property of [
+      ...unihanDictionaryIndexProperties,
+      ...unihanAdditionalIndexLikeProperties,
+    ]) {
+      const baseKey = `unihan.${property}`
+
+      const [exactQuery, exactArgs] = getQueryAndArgs(baseKey, '03246')
+      assert.ok(exactQuery.includes('FROM unihan'))
+      assert.ok(exactQuery.includes(`property = '${property}'`))
+      assert.equal(exactArgs.length, 5)
+
+      const [globQuery, globArgs] = getQueryAndArgs(`${baseKey}.glob`, '0324*')
+      assert.ok(globQuery.includes('value glob ?'))
+      assert.deepEqual(globArgs, ['0324*'])
+
+      const [neQuery, neArgs] = getQueryAndArgs(`${baseKey}.ne`, '03246')
+      assert.ok(neQuery.includes('FROM ids'))
+      assert.ok(neQuery.includes('NOT IN'))
+      assert.equal(neArgs.length, 5)
+
+      const [notGlobQuery, notGlobArgs] = getQueryAndArgs(
+        `${baseKey}.notGlob`,
+        '0324*',
+      )
+      assert.ok(notGlobQuery.includes('FROM ids'))
+      assert.ok(notGlobQuery.includes('NOT IN'))
+      assert.deepEqual(notGlobArgs, ['0324*'])
+    }
+  })
+
+  test('does not add generic ranges for dictionary/index Unihan properties', () => {
+    assert.throws(
+      () => getQueryAndArgs('unihan.kMorohashi.ge', '03246'),
+      /Unknown query key/,
+    )
   })
 })

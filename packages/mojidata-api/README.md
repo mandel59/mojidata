@@ -32,11 +32,19 @@ does not pull native SQLite concerns into the default path:
 - `@mandel59/mojidata-api-better-sqlite3`
 - `@mandel59/mojidata-api-node-sqlite`
 
-## Property existence search
+## Property search keys
 
-`/api/v1/idsfind` supports property existence filters through `p` keys ending in
-`.has` or `.notHas`. Keep `p` and `q` arrays aligned and pass an empty `q`
-value for existence checks:
+`/api/v1/idsfind` supports property search through paired `p` and `q`
+parameters. Dictionary/index-like Unihan properties can be searched by exact
+value, `.glob`, `.ne`, and `.notGlob` keys:
+
+```text
+/api/v1/idsfind?p=unihan.kMorohashi&q=03246
+/api/v1/idsfind?p=unihan.kMorohashi.glob&q=4509*
+```
+
+Existence filters use `p` keys ending in `.has` or `.notHas`. Keep `p` and `q`
+arrays aligned and pass an empty `q` value for existence checks:
 
 ```text
 /api/v1/idsfind?ids=馬&p=totalStrokes.ge&q=25&p=unihan.kMorohashi.has&q=&limit=20
@@ -44,8 +52,8 @@ value for existence checks:
 
 Representative supported keys include:
 
-- `unihan.kMorohashi.has` / `unihan.kMorohashi.notHas`
-- `unihan.kKangXi.has`, `unihan.kHanYu.has`, and other Unihan dictionary/index properties
+- `unihan.kMorohashi`, `unihan.kMorohashi.glob`, `unihan.kMorohashi.has`
+- `unihan.kKangXi`, `unihan.kHanYu`, and other Unihan dictionary/index properties
 - `mji.読み.has`, `mji.MJ文字図形名.has`, `mji.総画数.has`
 - `totalStrokes.has` / `totalStrokes.notHas`
 

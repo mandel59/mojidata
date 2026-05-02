@@ -27,6 +27,32 @@ describe('GET /api/v1/idsfind', () => {
     }
   }
 
+  const unihanDictionaryIndexCases: Array<{
+    property: string
+    q: string
+    expected: string
+  }> = [
+    { property: 'kHanYu', q: '10015.030', expected: '㐀' },
+    { property: 'kIRGHanyuDaZidian', q: '10015.030', expected: '㐀' },
+    { property: 'kIRGKangXi', q: '0078.010', expected: '㐀' },
+    { property: 'kKangXi', q: '0172.130', expected: '台' },
+    { property: 'kCihaiT', q: '37.103', expected: '㐁' },
+    { property: 'kSBGY', q: '328.25', expected: '㐭' },
+    { property: 'kNelson', q: '0265', expected: '㐂' },
+    { property: 'kCowles', q: '3772', expected: '㐅' },
+    { property: 'kMatthews', q: '7187', expected: '㐅' },
+    { property: 'kGSR', q: '0004f', expected: '㐌' },
+    { property: 'kFennIndex', q: '313.05', expected: '㐬' },
+    { property: 'kKarlgren', q: '554', expected: '㐭' },
+    { property: 'kMeyerWempe', q: '1719b', expected: '㑝' },
+    { property: 'kLau', q: '2479', expected: '㓟' },
+    { property: 'kCheungBauerIndex', q: '402.06', expected: '㒼' },
+    { property: 'kMorohashi', q: '03246', expected: '台' },
+    { property: 'kDaeJaweon', q: '0129.010', expected: '一' },
+    { property: 'kIRGDaeJaweon', q: '0129.010', expected: '一' },
+    { property: 'kSMSZD2003Index', q: '26.07', expected: '㑇' },
+  ]
+
   test('finds characters by IDS fragments', async () => {
     const limit = 5
     const { response, json } = await fetchJson('/api/v1/idsfind', {
@@ -328,6 +354,66 @@ describe('GET /api/v1/idsfind', () => {
       ['25', ''],
     )
     assert.ok(json.results.includes('驫'))
+  })
+
+  test('supports dictionary/index Unihan property exact search keys', async () => {
+    for (const { property, q, expected } of unihanDictionaryIndexCases) {
+      const p = `unihan.${property}`
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: [p],
+        q: [q],
+        limit: 50,
+      })
+      assertBasicSuccess(response, json, 50, [p], [q])
+      assert.ok(
+        json.results.includes(expected),
+        `${p}=${q} should include ${expected}`,
+      )
+    }
+  })
+
+  test('supports dictionary/index Unihan glob and notGlob keys', async () => {
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kMorohashi.glob', 'totalStrokes.ge'],
+        q: ['4509*', '25'],
+        limit: 50,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        50,
+        ['unihan.kMorohashi.glob', 'totalStrokes.ge'],
+        ['4509*', '25'],
+      )
+      assert.ok(json.results.includes('驫'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['UCS', 'unihan.kMorohashi.notGlob'],
+        q: ['U+53F0', '4509*'],
+        limit: 5,
+      })
+      assertBasicSuccess(
+        response,
+        json,
+        5,
+        ['UCS', 'unihan.kMorohashi.notGlob'],
+        ['U+53F0', '4509*'],
+      )
+      assert.ok(json.results.includes('台'))
+    }
+
+    {
+      const { response, json } = await fetchJson('/api/v1/idsfind', {
+        p: ['unihan.kHanYu.glob'],
+        q: ['42385.*'],
+        limit: 20,
+      })
+      assertBasicSuccess(response, json, 20, ['unihan.kHanYu.glob'], ['42385.*'])
+      assert.ok(json.results.includes('示'))
+    }
   })
 
   test('supports multiple mixed condition combinations without server errors', async () => {

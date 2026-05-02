@@ -251,7 +251,7 @@ function addUnihanVariantProperty(property: string) {
   }
 }
 
-for (const property of [
+const unihanVariantProperties = [
   'kCompatibilityVariant',
   'kSemanticVariant',
   'kSimplifiedVariant',
@@ -259,9 +259,44 @@ for (const property of [
   'kSpoofingVariant',
   'kTraditionalVariant',
   'kZVariant',
-]) {
+] as const
+
+for (const property of unihanVariantProperties) {
   addUnihanVariantProperty(property)
 }
+
+const unihanDictionaryIndexProperties = [
+  'kHanYu',
+  'kIRGHanyuDaZidian',
+  'kIRGKangXi',
+  'kKangXi',
+  'kCihaiT',
+  'kSBGY',
+  'kNelson',
+  'kCowles',
+  'kMatthews',
+  'kGSR',
+  'kFennIndex',
+  'kKarlgren',
+  'kMeyerWempe',
+  'kLau',
+  'kCheungBauerIndex',
+  'kMorohashi',
+  'kDaeJaweon',
+  'kIRGDaeJaweon',
+  'kSMSZD2003Index',
+] as const
+
+const unihanAdditionalIndexLikeProperties = [
+  'kCheungBauer',
+  'kFenn',
+  'kFourCornerCode',
+  'kCangjie',
+  'kPhonetic',
+  'kRSAdobe_Japan1_6',
+  'kHDZRadBreak',
+  'kIRGDaiKanwaZiten',
+] as const
 
 const unihanGeneralProperties = [
   'kIICore',
@@ -270,7 +305,6 @@ const unihanGeneralProperties = [
   'kCCCII',
   'kCNS1986',
   'kCNS1992',
-  'kCangjie',
   'kIRG_GSource',
   'kIRG_HSource',
   'kIRG_JSource',
@@ -282,7 +316,6 @@ const unihanGeneralProperties = [
   'kIRG_UKSource',
   'kIRG_USource',
   'kIRG_VSource',
-  'kRSAdobe_Japan1_6',
   'kRSUnicode',
   'kTotalStrokes',
   'kAccountingNumeric',
@@ -291,48 +324,25 @@ const unihanGeneralProperties = [
   'kTayNumeric',
   'kVietnameseNumeric',
   'kZhuangNumeric',
-  'kCheungBauer',
-  'kCheungBauerIndex',
-  'kCihaiT',
-  'kCowles',
-  'kDaeJaweon',
+  ...unihanDictionaryIndexProperties,
+  ...unihanAdditionalIndexLikeProperties,
   'kEACC',
-  'kFenn',
-  'kFennIndex',
-  'kFourCornerCode',
   'kGB0',
   'kGB1',
   'kGB3',
   'kGB5',
   'kGB8',
-  'kGSR',
   'kGradeLevel',
-  'kHDZRadBreak',
   'kHKGlyph',
-  'kHanYu',
   'kIBMJapan',
-  'kIRGDaeJaweon',
-  'kIRGDaiKanwaZiten',
-  'kIRGHanyuDaZidian',
-  'kIRGKangXi',
   'kJIS0213',
   'kJis0',
   'kJis1',
-  'kKangXi',
-  'kKarlgren',
   'kKoreanEducationHanja',
   'kKoreanName',
-  'kLau',
   'kMainlandTelegraph',
-  'kMatthews',
-  'kMeyerWempe',
   'kMojiJoho',
-  'kMorohashi',
-  'kNelson',
-  'kPhonetic',
   'kPseudoGB1',
-  'kSBGY',
-  'kSMSZD2003Index',
   'kTGH',
   'kTaiwanTelegraph',
   'kUnihanCore2020',

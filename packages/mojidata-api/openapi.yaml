@@ -550,7 +550,8 @@ components:
     SearchPropertyKey:
       type: string
       description: |
-        Property search key. Existence checks are represented with `.has` and `.notHas`, paired with an empty `q` value.
+        Property search key. Dictionary/index Unihan properties support exact, `.glob`, `.ne`, `.notGlob`, `.has`, and `.notHas`.
+        Existence checks are represented with `.has` and `.notHas`, paired with an empty `q` value.
       enum:
         - UCS
         - mji.読み
@@ -575,44 +576,124 @@ components:
         - unihan.kTotalStrokes.ge
         - unihan.kTotalStrokes.has
         - unihan.kTotalStrokes.notHas
+        - unihan.kHanYu
+        - unihan.kHanYu.glob
+        - unihan.kHanYu.ne
+        - unihan.kHanYu.notGlob
         - unihan.kHanYu.has
         - unihan.kHanYu.notHas
+        - unihan.kIRGHanyuDaZidian
+        - unihan.kIRGHanyuDaZidian.glob
+        - unihan.kIRGHanyuDaZidian.ne
+        - unihan.kIRGHanyuDaZidian.notGlob
         - unihan.kIRGHanyuDaZidian.has
         - unihan.kIRGHanyuDaZidian.notHas
+        - unihan.kIRGKangXi
+        - unihan.kIRGKangXi.glob
+        - unihan.kIRGKangXi.ne
+        - unihan.kIRGKangXi.notGlob
         - unihan.kIRGKangXi.has
         - unihan.kIRGKangXi.notHas
+        - unihan.kKangXi
+        - unihan.kKangXi.glob
+        - unihan.kKangXi.ne
+        - unihan.kKangXi.notGlob
         - unihan.kKangXi.has
         - unihan.kKangXi.notHas
+        - unihan.kCihaiT
+        - unihan.kCihaiT.glob
+        - unihan.kCihaiT.ne
+        - unihan.kCihaiT.notGlob
         - unihan.kCihaiT.has
         - unihan.kCihaiT.notHas
+        - unihan.kSBGY
+        - unihan.kSBGY.glob
+        - unihan.kSBGY.ne
+        - unihan.kSBGY.notGlob
         - unihan.kSBGY.has
         - unihan.kSBGY.notHas
+        - unihan.kNelson
+        - unihan.kNelson.glob
+        - unihan.kNelson.ne
+        - unihan.kNelson.notGlob
         - unihan.kNelson.has
         - unihan.kNelson.notHas
+        - unihan.kCowles
+        - unihan.kCowles.glob
+        - unihan.kCowles.ne
+        - unihan.kCowles.notGlob
         - unihan.kCowles.has
         - unihan.kCowles.notHas
+        - unihan.kMatthews
+        - unihan.kMatthews.glob
+        - unihan.kMatthews.ne
+        - unihan.kMatthews.notGlob
         - unihan.kMatthews.has
         - unihan.kMatthews.notHas
+        - unihan.kGSR
+        - unihan.kGSR.glob
+        - unihan.kGSR.ne
+        - unihan.kGSR.notGlob
         - unihan.kGSR.has
         - unihan.kGSR.notHas
+        - unihan.kFennIndex
+        - unihan.kFennIndex.glob
+        - unihan.kFennIndex.ne
+        - unihan.kFennIndex.notGlob
         - unihan.kFennIndex.has
         - unihan.kFennIndex.notHas
+        - unihan.kKarlgren
+        - unihan.kKarlgren.glob
+        - unihan.kKarlgren.ne
+        - unihan.kKarlgren.notGlob
         - unihan.kKarlgren.has
         - unihan.kKarlgren.notHas
+        - unihan.kMeyerWempe
+        - unihan.kMeyerWempe.glob
+        - unihan.kMeyerWempe.ne
+        - unihan.kMeyerWempe.notGlob
         - unihan.kMeyerWempe.has
         - unihan.kMeyerWempe.notHas
+        - unihan.kLau
+        - unihan.kLau.glob
+        - unihan.kLau.ne
+        - unihan.kLau.notGlob
         - unihan.kLau.has
         - unihan.kLau.notHas
+        - unihan.kCheungBauerIndex
+        - unihan.kCheungBauerIndex.glob
+        - unihan.kCheungBauerIndex.ne
+        - unihan.kCheungBauerIndex.notGlob
         - unihan.kCheungBauerIndex.has
         - unihan.kCheungBauerIndex.notHas
+        - unihan.kMorohashi
+        - unihan.kMorohashi.glob
+        - unihan.kMorohashi.ne
+        - unihan.kMorohashi.notGlob
         - unihan.kMorohashi.has
         - unihan.kMorohashi.notHas
+        - unihan.kDaeJaweon
+        - unihan.kDaeJaweon.glob
+        - unihan.kDaeJaweon.ne
+        - unihan.kDaeJaweon.notGlob
         - unihan.kDaeJaweon.has
         - unihan.kDaeJaweon.notHas
+        - unihan.kIRGDaeJaweon
+        - unihan.kIRGDaeJaweon.glob
+        - unihan.kIRGDaeJaweon.ne
+        - unihan.kIRGDaeJaweon.notGlob
         - unihan.kIRGDaeJaweon.has
         - unihan.kIRGDaeJaweon.notHas
+        - unihan.kIRGDaiKanwaZiten
+        - unihan.kIRGDaiKanwaZiten.glob
+        - unihan.kIRGDaiKanwaZiten.ne
+        - unihan.kIRGDaiKanwaZiten.notGlob
         - unihan.kIRGDaiKanwaZiten.has
         - unihan.kIRGDaiKanwaZiten.notHas
+        - unihan.kSMSZD2003Index
+        - unihan.kSMSZD2003Index.glob
+        - unihan.kSMSZD2003Index.ne
+        - unihan.kSMSZD2003Index.notGlob
         - unihan.kSMSZD2003Index.has
         - unihan.kSMSZD2003Index.notHas
         - unihan.kStrange.has
