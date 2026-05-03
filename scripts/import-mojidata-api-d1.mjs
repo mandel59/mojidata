@@ -11,10 +11,14 @@ const defaultConfigPath = path.join(
 )
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs [--config path] [--env staging] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
+  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs --release-manifest /tmp/mojidata-api-d1-release.json [--config path] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
+       node ./scripts/import-mojidata-api-d1.mjs --unsafe-active [--config path] [--env staging] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
 
 Prepares SQL dumps if needed and imports mojidata / idsfind data into the D1
-databases referenced by the mojidata-api D1 worker config.`)
+databases in a blue/green release manifest.
+
+Importing directly into active wrangler bindings is disabled by default because
+it is not a zero-downtime operation.`)
 }
 
 function parseArgs(argv) {
@@ -22,6 +26,8 @@ function parseArgs(argv) {
   let env
   let outputDir = "/tmp/mojidata-d1-import"
   let skipPrepare = false
+  let releaseManifestPath
+  let unsafeActive = false
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
@@ -40,8 +46,16 @@ function parseArgs(argv) {
       outputDir = path.resolve(argv[++i])
       continue
     }
+    if (arg === "--release-manifest") {
+      releaseManifestPath = path.resolve(argv[++i])
+      continue
+    }
     if (arg === "--skip-prepare") {
       skipPrepare = true
+      continue
+    }
+    if (arg === "--unsafe-active") {
+      unsafeActive = true
       continue
     }
     if (arg === "--help" || arg === "-h") {
@@ -51,7 +65,18 @@ function parseArgs(argv) {
     throw new Error(`Unknown argument: ${arg}`)
   }
 
-  return { configPath, env, outputDir, skipPrepare }
+  if (releaseManifestPath && unsafeActive) {
+    throw new Error("--release-manifest and --unsafe-active cannot be combined")
+  }
+
+  return {
+    configPath,
+    env,
+    outputDir,
+    skipPrepare,
+    releaseManifestPath,
+    unsafeActive,
+  }
 }
 
 function parseJsonc(text) {
@@ -80,22 +105,67 @@ function getConfigTarget(config, env) {
   return target
 }
 
-async function main() {
-  const { configPath, env, outputDir, skipPrepare } = parseArgs(
-    process.argv.slice(2),
-  )
-  const cwd = path.dirname(configPath)
-  const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
-  const configTarget = getConfigTarget(config, env)
-  const byBinding = new Map(
-    configTarget.d1_databases.map((entry) => [entry.binding, entry]),
-  )
+function readReleaseManifest(manifestPath, env) {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"))
+  if (manifest.kind !== "mojidata-api-d1-blue-green-release") {
+    throw new Error(
+      `release manifest must have kind mojidata-api-d1-blue-green-release: ${manifestPath}`,
+    )
+  }
+  if (!Array.isArray(manifest.releaseDatabases)) {
+    throw new Error("release manifest must define releaseDatabases")
+  }
+  const manifestEnv = manifest.env ?? undefined
+  if (env !== undefined && manifestEnv !== undefined && env !== manifestEnv) {
+    throw new Error(`--env ${env} does not match release manifest env ${manifestEnv}`)
+  }
+  if (env !== undefined && manifestEnv === undefined) {
+    throw new Error("--env was provided but the release manifest targets default")
+  }
+  return manifest
+}
 
+function getDatabasesByBinding(databases) {
+  const byBinding = new Map(databases.map((entry) => [entry.binding, entry]))
   const mojidataDb = byBinding.get("MOJIDATA_DB")
   const idsfindDb = byBinding.get("IDSFIND_DB")
   if (!mojidataDb || !idsfindDb) {
-    throw new Error("wrangler config must define MOJIDATA_DB and IDSFIND_DB bindings")
+    throw new Error("target must define MOJIDATA_DB and IDSFIND_DB bindings")
   }
+  return { mojidataDb, idsfindDb }
+}
+
+async function main() {
+  const {
+    configPath,
+    env,
+    outputDir,
+    skipPrepare,
+    releaseManifestPath,
+    unsafeActive,
+  } = parseArgs(process.argv.slice(2))
+  const cwd = path.dirname(configPath)
+  const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
+  let targetDatabases
+
+  if (releaseManifestPath) {
+    const manifest = readReleaseManifest(releaseManifestPath, env)
+    targetDatabases = manifest.releaseDatabases
+    console.log(`importing into release manifest: ${releaseManifestPath}`)
+  } else {
+    if (!unsafeActive) {
+      throw new Error(
+        "refusing to import into active D1 bindings. Use --release-manifest for blue/green import, or --unsafe-active for one-off destructive testing.",
+      )
+    }
+    const configTarget = getConfigTarget(config, env)
+    targetDatabases = configTarget.d1_databases
+    console.warn(
+      "WARNING: importing into active D1 bindings. This is not a zero-downtime operation.",
+    )
+  }
+
+  const { mojidataDb, idsfindDb } = getDatabasesByBinding(targetDatabases)
 
   if (!skipPrepare) {
     run("node", ["./scripts/prepare-mojidata-d1-import.mjs", "--output-dir", outputDir], rootDir)
