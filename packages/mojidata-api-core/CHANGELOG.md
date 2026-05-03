@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.9.1
+
+### Patch Changes
+
+- [#45](https://github.com/mandel59/mojidata/pull/45) [`8a1930a`](https://github.com/mandel59/mojidata/commit/8a1930a7d1fe68264813dc312aa93d4f5cd13fc6) Thanks [@mandel59](https://github.com/mandel59)! - Optimize mojidata full-field D1 lookup SQL to use index-friendly predicates for IDS, IVS, SVS, TGHB, MJIH, and KDPV data.
+  Include current IDS mirror and rotation operators in `ids_similar` lookups while keeping legacy aliases.
+
 ## 1.9.0
 
 ### Minor Changes
