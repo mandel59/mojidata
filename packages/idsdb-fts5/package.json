@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idsdb-fts5",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "FTS5 idsfind database package for mojidata backends",
   "repository": {
     "type": "git",

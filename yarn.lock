@@ -789,7 +789,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mandel59/idsdb-fts5@npm:^1.8.0, @mandel59/idsdb-fts5@workspace:packages/idsdb-fts5":
+"@mandel59/idsdb-fts5@npm:^1.9.0, @mandel59/idsdb-fts5@workspace:packages/idsdb-fts5":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb-fts5@workspace:packages/idsdb-fts5"
   languageName: unknown
@@ -850,9 +850,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-bench@workspace:packages/mojidata-api-bench"
   dependencies:
-    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.8.0"
-    "@mandel59/mojidata-api-node-sqlite": "npm:^1.8.0"
-    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
+    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.9.0"
+    "@mandel59/mojidata-api-node-sqlite": "npm:^1.9.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     tsx: "npm:^4.21.0"
@@ -860,14 +860,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-better-sqlite3@npm:^1.8.0, @mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3":
+"@mandel59/mojidata-api-better-sqlite3@npm:^1.9.0, @mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3"
   dependencies:
-    "@mandel59/idsdb-fts5": "npm:^1.8.0"
-    "@mandel59/mojidata": "npm:^1.7.0"
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/mojidata": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
     "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
@@ -878,7 +878,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-core@npm:^1.7.0, @mandel59/mojidata-api-core@npm:^1.8.0, @mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
+"@mandel59/mojidata-api-core@npm:^1.9.0, @mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core"
   dependencies:
@@ -902,44 +902,44 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-d1@workspace:packages/mojidata-api-d1"
   dependencies:
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-hono@npm:^1.7.0, @mandel59/mojidata-api-hono@npm:^1.8.0, @mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono":
+"@mandel59/mojidata-api-hono@npm:^1.8.1, @mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-hono@workspace:packages/mojidata-api-hono"
   dependencies:
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@types/node": "npm:^24.10.4"
     hono: "npm:^4.9.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-node-sqlite@npm:^1.8.0, @mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite":
+"@mandel59/mojidata-api-node-sqlite@npm:^1.9.0, @mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-node-sqlite@workspace:packages/mojidata-api-node-sqlite"
   dependencies:
-    "@mandel59/idsdb-fts5": "npm:^1.8.0"
-    "@mandel59/mojidata": "npm:^1.7.0"
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/mojidata": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-runtime@npm:^1.7.0, @mandel59/mojidata-api-runtime@npm:^1.8.0, @mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
+"@mandel59/mojidata-api-runtime@npm:^2.0.0, @mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-runtime@workspace:packages/mojidata-api-runtime"
   dependencies:
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@types/node": "npm:^24.10.4"
     typescript: "npm:^5.9.3"
   languageName: unknown
@@ -949,8 +949,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqlite-wasm@workspace:packages/mojidata-api-sqlite-wasm"
   dependencies:
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-runtime": "npm:^2.0.0"
     "@sqlite.org/sqlite-wasm": "npm:^3.53.0-build1"
     "@types/node": "npm:^24.10.4"
     tsx: "npm:^4.21.0"
@@ -958,15 +958,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-sqljs@npm:^1.7.0, @mandel59/mojidata-api-sqljs@npm:^1.8.0, @mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs":
+"@mandel59/mojidata-api-sqljs@npm:^1.8.0, @mandel59/mojidata-api-sqljs@npm:^1.8.1, @mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-sqljs@workspace:packages/mojidata-api-sqljs"
   dependencies:
     "@mandel59/idsdb": "npm:^1.7.0"
-    "@mandel59/mojidata": "npm:^1.7.0"
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
+    "@mandel59/mojidata": "npm:^1.8.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
+    "@mandel59/mojidata-api-runtime": "npm:^2.0.0"
     "@types/node": "npm:^24.10.4"
     "@types/sql.js": "npm:^1.4.9"
     sql.js: "npm:^1.13.0"
@@ -980,12 +980,12 @@ __metadata:
   resolution: "@mandel59/mojidata-api@workspace:packages/mojidata-api"
   dependencies:
     "@hono/node-server": "npm:^1.19.7"
-    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.8.0"
-    "@mandel59/mojidata-api-core": "npm:^1.8.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.8.0"
-    "@mandel59/mojidata-api-node-sqlite": "npm:^1.8.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
-    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
+    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.9.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
+    "@mandel59/mojidata-api-node-sqlite": "npm:^1.9.0"
+    "@mandel59/mojidata-api-runtime": "npm:^2.0.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"
     "@types/sql.js": "npm:^1.4.9"
     prettier: "npm:^2.8.8"
@@ -993,8 +993,8 @@ __metadata:
     typescript: "npm:^5.9.3"
   peerDependencies:
     "@hono/node-server": ^1.19.7
-    "@mandel59/mojidata-api-better-sqlite3": ^1.8.0
-    "@mandel59/mojidata-api-node-sqlite": ^1.8.0
+    "@mandel59/mojidata-api-better-sqlite3": ^1.9.0
+    "@mandel59/mojidata-api-node-sqlite": ^1.9.0
   peerDependenciesMeta:
     "@hono/node-server":
       optional: true
@@ -1009,7 +1009,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-cli@workspace:packages/mojidata-cli"
   dependencies:
-    "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"
     ava: "npm:^3.15.0"
     ts-node: "npm:^10.9.2"
@@ -1022,7 +1022,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata@npm:^1.7.0, @mandel59/mojidata@workspace:packages/mojidata":
+"@mandel59/mojidata@npm:^1.7.0, @mandel59/mojidata@npm:^1.8.0, @mandel59/mojidata@workspace:packages/mojidata":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata@workspace:packages/mojidata"
   dependencies:
@@ -1056,10 +1056,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/react-mojidata-api@workspace:packages/react-mojidata-api"
   dependencies:
-    "@mandel59/mojidata-api-core": "npm:^1.7.0"
-    "@mandel59/mojidata-api-hono": "npm:^1.7.0"
-    "@mandel59/mojidata-api-runtime": "npm:^1.7.0"
-    "@mandel59/mojidata-api-sqljs": "npm:^1.7.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
+    "@mandel59/mojidata-api-hono": "npm:^1.8.1"
+    "@mandel59/mojidata-api-runtime": "npm:^2.0.0"
+    "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
     "@testing-library/dom": "npm:^10.4.1"
     "@testing-library/react": "npm:^16.3.0"
     "@types/jsdom": "npm:^21.1.7"

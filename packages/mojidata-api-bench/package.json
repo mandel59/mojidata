@@ -13,9 +13,9 @@
     "prepare": "tsc --noEmit"
   },
   "dependencies": {
-    "@mandel59/mojidata-api-better-sqlite3": "^1.8.0",
-    "@mandel59/mojidata-api-node-sqlite": "^1.8.0",
-    "@mandel59/mojidata-api-sqljs": "^1.8.0"
+    "@mandel59/mojidata-api-better-sqlite3": "^1.9.0",
+    "@mandel59/mojidata-api-node-sqlite": "^1.9.0",
+    "@mandel59/mojidata-api-sqljs": "^1.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

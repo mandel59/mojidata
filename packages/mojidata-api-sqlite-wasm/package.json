@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-sqlite-wasm",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "SQLite wasm OPFS integration package for mojidata-api",
   "type": "module",
   "repository": {
@@ -53,8 +53,8 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-runtime": "^1.8.0",
+    "@mandel59/mojidata-api-core": "^1.9.0",
+    "@mandel59/mojidata-api-runtime": "^2.0.0",
     "@sqlite.org/sqlite-wasm": "^3.53.0-build1"
   },
   "devDependencies": {

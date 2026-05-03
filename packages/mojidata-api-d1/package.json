@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-d1",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Cloudflare D1 integration package for mojidata-api",
   "repository": {
     "type": "git",
@@ -36,8 +36,8 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-hono": "^1.8.0"
+    "@mandel59/mojidata-api-core": "^1.9.0",
+    "@mandel59/mojidata-api-hono": "^1.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

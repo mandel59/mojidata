@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-sqljs",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "sql.js integration package for mojidata-api",
   "repository": {
     "type": "git",
@@ -43,10 +43,10 @@
   "license": "MIT",
   "dependencies": {
     "@mandel59/idsdb": "^1.7.0",
-    "@mandel59/mojidata": "^1.7.0",
-    "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-hono": "^1.8.0",
-    "@mandel59/mojidata-api-runtime": "^1.8.0",
+    "@mandel59/mojidata": "^1.8.0",
+    "@mandel59/mojidata-api-core": "^1.9.0",
+    "@mandel59/mojidata-api-hono": "^1.8.1",
+    "@mandel59/mojidata-api-runtime": "^2.0.0",
     "sql.js": "^1.13.0"
   },
   "devDependencies": {

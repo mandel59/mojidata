@@ -1,5 +1,41 @@
 # Change Log
 
+## 2.0.0
+
+### Major Changes
+
+- [`c121956`](https://github.com/mandel59/mojidata/commit/c12195685a8dcae6f2f5c15ee6a08dc866e20f77) Thanks [@mandel59](https://github.com/mandel59)! - Move the native Node.js backends out of the portable `mojidata-api` runtime and
+  compatibility facade.
+
+  `@mandel59/mojidata-api` and `@mandel59/mojidata-api-runtime` now keep the
+  default `sql.js` path only, while the native backends are published as the new
+  explicit packages `@mandel59/mojidata-api-better-sqlite3` and
+  `@mandel59/mojidata-api-node-sqlite`.
+
+### Minor Changes
+
+- [`d75402f`](https://github.com/mandel59/mojidata/commit/d75402f46c75c25419160e8eafb1bc3f86fe705e) Thanks [@mandel59](https://github.com/mandel59)! - Add `/api/v1/idsfind` property existence filters with `.has` and `.notHas`, and add dictionary/index-like Unihan property value search keys such as `unihan.kMorohashi` and `unihan.kMorohashi.glob`.
+
+- [#39](https://github.com/mandel59/mojidata/pull/39) [`9e5fa3a`](https://github.com/mandel59/mojidata/commit/9e5fa3a8e481507dd6202c93a3c1286d93a2cc75) Thanks [@mandel59](https://github.com/mandel59)! - Add documented bundler-safe mojidata-api entrypoints, public runtime/sqlite-wasm
+  subpath exports, static entrypoint smoke tests, and sqlite-wasm idsfind FTS5
+  schema validation.
+
+### Patch Changes
+
+- [#38](https://github.com/mandel59/mojidata/pull/38) [`6c932e6`](https://github.com/mandel59/mojidata/commit/6c932e64de9280bf886fc469758546cedd979d2e) Thanks [@mandel59](https://github.com/mandel59)! - Add a generated `unihan_value_ref` reverse lookup table and use it for
+  `unihan_fts` queries so D1-backed `/api/v1/mojidata` requests no longer scan the
+  full Unihan value table.
+
+- [#38](https://github.com/mandel59/mojidata/pull/38) [`ce35942`](https://github.com/mandel59/mojidata/commit/ce359424defe3d78b263c655a5461b5c8a2e75ea) Thanks [@mandel59](https://github.com/mandel59)! - Add `Cache-Control: no-store` to mojidata-api JSON responses so D1 blue/green
+  cutovers are not hidden by stale consumer-side caches.
+- Updated dependencies [[`efd9a85`](https://github.com/mandel59/mojidata/commit/efd9a8589d7711043b83524c9b6bad7bd895068a), [`6c932e6`](https://github.com/mandel59/mojidata/commit/6c932e64de9280bf886fc469758546cedd979d2e), [`d75402f`](https://github.com/mandel59/mojidata/commit/d75402f46c75c25419160e8eafb1bc3f86fe705e), [`c121956`](https://github.com/mandel59/mojidata/commit/c12195685a8dcae6f2f5c15ee6a08dc866e20f77), [`ce35942`](https://github.com/mandel59/mojidata/commit/ce359424defe3d78b263c655a5461b5c8a2e75ea), [`30b6de0`](https://github.com/mandel59/mojidata/commit/30b6de0de5f7a38aeb0895c98c6b48299b15c6da), [`9e5fa3a`](https://github.com/mandel59/mojidata/commit/9e5fa3a8e481507dd6202c93a3c1286d93a2cc75)]:
+  - @mandel59/mojidata-api-better-sqlite3@1.9.0
+  - @mandel59/mojidata-api-node-sqlite@1.9.0
+  - @mandel59/mojidata-api-core@1.9.0
+  - @mandel59/mojidata-api-runtime@2.0.0
+  - @mandel59/mojidata-api-hono@1.8.1
+  - @mandel59/mojidata-api-sqljs@1.8.1
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
