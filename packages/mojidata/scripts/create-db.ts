@@ -693,6 +693,7 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     db.exec(`drop view if exists "${prefix}"`)
     db.exec(`drop view if exists "${prefix}_variant"`)
     db.exec(`drop view if exists "${prefix}_strange"`)
+    db.exec(`drop table if exists "${prefix}_value_ref"`)
     for (const table of db.prepare(
         `select tbl_name
         from sqlite_master
@@ -869,6 +870,60 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
             `))
         }
     }
+
+    const excludedRefProperties = new Set([
+        "kJapanese",
+        "kSMSZD2003Readings",
+        "kFanqie",
+    ])
+    const extractValueRefs = (value: string) => {
+        const refs = new Set<string>()
+        for (const char of value) {
+            const codePoint = char.codePointAt(0)
+            if (codePoint !== undefined && codePoint > 0xFF) {
+                refs.add(char)
+            }
+        }
+        for (const match of value.matchAll(/U\+([0-9A-F]{4,6})(?![0-9A-F])/g)) {
+            const codePoint = Number.parseInt(match[1], 16)
+            if (
+                Number.isSafeInteger(codePoint) &&
+                codePoint > 0xFF &&
+                codePoint <= 0x10FFFF &&
+                (codePoint < 0xD800 || codePoint > 0xDFFF)
+            ) {
+                refs.add(String.fromCodePoint(codePoint))
+            }
+        }
+        return refs
+    }
+
+    db.exec(format(`CREATE TABLE "${prefix}_value_ref" (
+        "ref" TEXT NOT NULL,
+        "UCS" TEXT NOT NULL,
+        "property" TEXT NOT NULL,
+        "value" TEXT NOT NULL
+    )`))
+    const selectUnihanValues = db.prepare(
+        `SELECT "UCS", "property", "value" FROM "${prefix}" ORDER BY "UCS", "property"`,
+    )
+    const insertValueRef = db.prepare(
+        `INSERT INTO "${prefix}_value_ref" ("ref", "UCS", "property", "value") VALUES (?, ?, ?, ?)`,
+    )
+    const valueRefs: [string, string, string, string][] = []
+    for (const row of selectUnihanValues.iterate() as Iterable<{ UCS: string, property: string, value: string }>) {
+        if (excludedRefProperties.has(row.property)) continue
+        for (const ref of extractValueRefs(row.value)) {
+            valueRefs.push([ref, row.UCS, row.property, row.value])
+        }
+    }
+    await transaction(db, async () => {
+        for (const valueRef of valueRefs) {
+            insertValueRef.run(valueRef)
+        }
+    })
+    db.exec(format(`CREATE INDEX "${prefix}_value_ref_ref_UCS" ON "${prefix}_value_ref" ("ref", "UCS")`))
+    db.exec(format(`CREATE INDEX "${prefix}_value_ref_UCS" ON "${prefix}_value_ref" ("UCS")`))
 }
 
 async function createAj1(db: import("better-sqlite3").Database) {

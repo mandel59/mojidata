@@ -69,6 +69,10 @@ are not storage but:
 - whether representative requests stay under the daily rows-read budget
 - whether repeated imports become too expensive for routine CI usage
 
+The `mojidata` database includes a materialized `unihan_value_ref` reverse
+lookup table so `/api/v1/mojidata` can answer `unihan_fts` lookups by indexed
+character reference instead of scanning every Unihan value row on D1.
+
 The working assumption is that Free is enough for:
 
 - one-off imports

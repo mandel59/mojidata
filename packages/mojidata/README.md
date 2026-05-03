@@ -22,6 +22,12 @@ The following data are included:
 - [出入国在留管理庁], [在留カード等に係る漢字氏名の表記等に関する告示](https://www.moj.go.jp/isa/content/930002422.pdf) 別表第四 (nyukan)
 - [国务院], [通用规范汉字表](http://www.gov.cn/zwgk/2013-08/19/content_2469793.htm) (tghb)
 
+The generated SQLite database also includes `unihan_value_ref`, a compact
+reverse lookup table for Unihan values that reference another character either
+directly or with a `U+XXXX` token. This table is derived from the Unihan data and
+is used by `mojidata-api` to avoid scanning the full Unihan table for
+`unihan_fts` lookups.
+
 [Adobe]: https://www.adobe.com/
 [Unicode]: https://home.unicode.org/
 [CITPC]: https://moji.or.jp/mojikiban/
