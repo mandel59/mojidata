@@ -224,7 +224,7 @@ describe('createSqlApiDb', () => {
     await db.getMojidataJson('漢', [])
 
     const sql = mojidata.queryOneCalls[0]?.sql ?? ''
-    assert.match(sql, /ids\.IDS IN \('〾' \|\| @ucs, '↔' \|\| @ucs, '↷' \|\| @ucs\)/)
+    assert.match(sql, /ids\.IDS IN \('〾' \|\| @ucs, '⿾' \|\| @ucs, '⿿' \|\| @ucs, '↔' \|\| @ucs, '↷' \|\| @ucs\)/)
     assert.match(sql, /ivs\.IVS >= @ucs AND ivs\.IVS < char\(unicode\(@ucs\) \+ 1\)/)
     assert.match(sql, /SVS >= @ucs AND SVS < char\(unicode\(@ucs\) \+ 1\)/)
     assert.match(sql, /tghb\.规范字 IN \(SELECT v\.规范字 FROM tghb_variants AS v WHERE v\.异体字 = @ucs\)/)

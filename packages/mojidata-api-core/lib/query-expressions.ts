@@ -18,7 +18,7 @@ export const queryExpressions = [
   ],
   [
     'ids_similar',
-    `(SELECT json_group_array(json_object('UCS', ids.UCS, 'IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.IDS IN ('〾' || @ucs, '↔' || @ucs, '↷' || @ucs))`,
+    `(SELECT json_group_array(json_object('UCS', ids.UCS, 'IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.IDS IN ('〾' || @ucs, '⿾' || @ucs, '⿿' || @ucs, '↔' || @ucs, '↷' || @ucs))`,
   ],
   [
     'ids_comment',

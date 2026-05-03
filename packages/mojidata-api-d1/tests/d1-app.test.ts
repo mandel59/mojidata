@@ -221,7 +221,7 @@ describe("createD1App", () => {
 
     const fullFieldSql =
       mojidataDb.preparedSql.find((sql) => sql.startsWith("SELECT json_object('char'")) ?? ""
-    assert.match(fullFieldSql, /ids\.IDS IN \('〾' \|\| \?1, '↔' \|\| \?1, '↷' \|\| \?1\)/)
+    assert.match(fullFieldSql, /ids\.IDS IN \('〾' \|\| \?1, '⿾' \|\| \?1, '⿿' \|\| \?1, '↔' \|\| \?1, '↷' \|\| \?1\)/)
     assert.match(fullFieldSql, /ivs\.IVS >= \?1 AND ivs\.IVS < char\(unicode\(\?1\) \+ 1\)/)
     assert.match(fullFieldSql, /SVS >= \?1 AND SVS < char\(unicode\(\?1\) \+ 1\)/)
     assert.match(fullFieldSql, /SELECT MJ文字図形名 FROM mjih_phonetic WHERE 音価 = \?1/)
