@@ -17,6 +17,30 @@ It also has split packages for composing the API yourself:
 
 The original `@mandel59/mojidata-api/*` subpath entrypoints remain available as compatibility facades and forward to the split packages.
 
+## Bundler-safe entrypoints
+
+For bundled applications, choose the narrowest entrypoint for the runtime you
+are targeting. The root compatibility facade is convenient for Node scripts, but
+apps such as Cloudflare Workers, OpenNext, browser SPAs, and Web Workers should
+avoid importing backend packages they do not use.
+
+| Target | Import | Notes |
+| --- | --- | --- |
+| Hono app wiring | `@mandel59/mojidata-api/app` | Edge-safe app factory. Does not select a database backend. |
+| Browser worker client | `@mandel59/mojidata-api/browser-client` | Re-exports the shared worker client. |
+| Worker protocol types | `@mandel59/mojidata-api/worker-protocol` | Type-only protocol surface for custom workers. |
+| Browser SQL.js worker | `@mandel59/mojidata-api/browser-worker` | Compatibility SQL.js worker entrypoint. |
+| Node SQL.js backend | `@mandel59/mojidata-api/node-sqljs` | Portable Node backend without native SQLite packages. |
+| Node `better-sqlite3` backend | `@mandel59/mojidata-api/node-better-sqlite3` | Requires installing `@mandel59/mojidata-api-better-sqlite3` and its `better-sqlite3` peer. |
+| Node `node:sqlite` backend | `@mandel59/mojidata-api/node-sqlite` | Requires installing `@mandel59/mojidata-api-node-sqlite`. |
+| SQLite wasm OPFS backend | `@mandel59/mojidata-api-sqlite-wasm` | Use the split ESM package directly for browser OPFS. |
+| SQLite wasm OPFS helpers | `@mandel59/mojidata-api-sqlite-wasm/opfs-sahpool` | Stable public helper subpath; avoid private `lib/*` imports. |
+
+`@mandel59/mojidata-api/node-better-sqlite3` and
+`@mandel59/mojidata-api/node-sqlite` are optional facade subpaths. They do not
+make native backends part of the default dependency path; install the matching
+split backend package when you import those subpaths.
+
 For Node.js compatibility usage, `createNodeDb()` in this package uses the portable `sql.js` backend:
 
 ```ts
@@ -25,7 +49,9 @@ import { createNodeDb } from "@mandel59/mojidata-api"
 const db = createNodeDb()
 ```
 
-For new code that selects the backend explicitly, prefer `@mandel59/mojidata-api-sqljs`.
+For new code that selects the backend explicitly, prefer
+`@mandel59/mojidata-api/node-sqljs` or the split
+`@mandel59/mojidata-api-sqljs` package.
 For browser SPAs that need persistent OPFS storage, use
 `@mandel59/mojidata-api-sqlite-wasm` explicitly.
 
@@ -134,6 +160,10 @@ const body = await res.json()
 // Cleanup when you're done:
 db.terminate()
 ```
+
+Custom browser workers can import protocol types from
+`@mandel59/mojidata-api/worker-protocol` instead of reaching into
+`@mandel59/mojidata-api-runtime/lib/*`.
 
 ## Advanced composition
 

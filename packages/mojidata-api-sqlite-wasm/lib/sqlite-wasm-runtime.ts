@@ -56,6 +56,41 @@ export type CreateSqliteWasmDbFromOpfsSAHPoolOptions = {
   idsfind: OpfsSAHPoolMaterializeOptions
 }
 
+export class SqliteWasmIdsfindSchemaError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "SqliteWasmIdsfindSchemaError"
+  }
+}
+
+export type SqliteWasmIdsfindSchemaDatabase = Pick<Database, "selectObject">
+
+export function assertSqliteWasmIdsfindFts5Schema(
+  db: SqliteWasmIdsfindSchemaDatabase,
+) {
+  const row = db.selectObject(
+    "SELECT sql FROM sqlite_master WHERE name = 'idsfind_fts'",
+  ) as { sql?: string } | undefined
+  const sql = row?.sql ?? ""
+  if (/\bUSING\s+fts5\b/iu.test(sql)) return
+
+  const detected = /\bUSING\s+fts4\b/iu.test(sql) ? "FTS4" : "a non-FTS5"
+  throw new SqliteWasmIdsfindSchemaError(
+    `sqlite-wasm idsfind requires an FTS5 idsfind.db from @mandel59/idsdb-fts5; supplied database appears to use ${detected} schema.`,
+  )
+}
+
+export function createSqliteWasmIdsfindDbProvider(openDatabase: DatabaseOpener) {
+  let dbPromise: Promise<SqlExecutor> | undefined
+  return function getDb(): Promise<SqlExecutor> {
+    dbPromise ??= Promise.resolve(openDatabase()).then((db) => {
+      assertSqliteWasmIdsfindFts5Schema(db)
+      return createSqliteWasmExecutor(db)
+    })
+    return dbPromise
+  }
+}
+
 export async function createSqliteWasmDbFromOpfsSAHPool({
   poolUtil,
   mojidata,
@@ -66,7 +101,7 @@ export async function createSqliteWasmDbFromOpfsSAHPool({
       await ensureOpfsSAHPoolDatabase(poolUtil, mojidata)
       return openOpfsSAHPoolDatabase(poolUtil, mojidata.name)
     }),
-    getIdsfindDb: createSqliteWasmExecutorProvider(async () => {
+    getIdsfindDb: createSqliteWasmIdsfindDbProvider(async () => {
       await ensureOpfsSAHPoolDatabase(poolUtil, idsfind)
       return openOpfsSAHPoolDatabase(poolUtil, idsfind.name)
     }),

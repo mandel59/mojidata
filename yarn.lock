@@ -980,8 +980,10 @@ __metadata:
   resolution: "@mandel59/mojidata-api@workspace:packages/mojidata-api"
   dependencies:
     "@hono/node-server": "npm:^1.19.7"
+    "@mandel59/mojidata-api-better-sqlite3": "npm:^1.8.0"
     "@mandel59/mojidata-api-core": "npm:^1.8.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.0"
+    "@mandel59/mojidata-api-node-sqlite": "npm:^1.8.0"
     "@mandel59/mojidata-api-runtime": "npm:^1.8.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.0"
     "@types/node": "npm:^24.10.4"
@@ -991,8 +993,14 @@ __metadata:
     typescript: "npm:^5.9.3"
   peerDependencies:
     "@hono/node-server": ^1.19.7
+    "@mandel59/mojidata-api-better-sqlite3": ^1.8.0
+    "@mandel59/mojidata-api-node-sqlite": ^1.8.0
   peerDependenciesMeta:
     "@hono/node-server":
+      optional: true
+    "@mandel59/mojidata-api-better-sqlite3":
+      optional: true
+    "@mandel59/mojidata-api-node-sqlite":
       optional: true
   languageName: unknown
   linkType: soft

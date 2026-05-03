@@ -45,6 +45,21 @@
       "require": "./dist/node.js",
       "default": "./dist/node.js"
     },
+    "./node-better-sqlite3": {
+      "types": "./dist/node-better-sqlite3.d.ts",
+      "require": "./dist/node-better-sqlite3.js",
+      "default": "./dist/node-better-sqlite3.js"
+    },
+    "./node-sqlite": {
+      "types": "./dist/node-sqlite.d.ts",
+      "require": "./dist/node-sqlite.js",
+      "default": "./dist/node-sqlite.js"
+    },
+    "./node-sqljs": {
+      "types": "./dist/node-sqljs.d.ts",
+      "require": "./dist/node-sqljs.js",
+      "default": "./dist/node-sqljs.js"
+    },
     "./runtime": {
       "types": "./dist/runtime.d.ts",
       "require": "./dist/runtime.js",
@@ -54,6 +69,11 @@
       "types": "./dist/sqljs.d.ts",
       "require": "./dist/sqljs.js",
       "default": "./dist/sqljs.js"
+    },
+    "./worker-protocol": {
+      "types": "./dist/worker-protocol.d.ts",
+      "require": "./dist/worker-protocol.js",
+      "default": "./dist/worker-protocol.js"
     },
     "./api/v1/_lib/*": {
       "types": "./dist/api/v1/_lib/*.d.ts",
@@ -72,7 +92,7 @@
     "start": "node --import tsx ./server.ts",
     "dev": "tsx watch ./server.ts",
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
-    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare",
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-fts5 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
     "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
     "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts"
@@ -87,15 +107,25 @@
     "@mandel59/mojidata-api-sqljs": "^1.8.0"
   },
   "peerDependencies": {
-    "@hono/node-server": "^1.19.7"
+    "@hono/node-server": "^1.19.7",
+    "@mandel59/mojidata-api-better-sqlite3": "^1.8.0",
+    "@mandel59/mojidata-api-node-sqlite": "^1.8.0"
   },
   "peerDependenciesMeta": {
     "@hono/node-server": {
+      "optional": true
+    },
+    "@mandel59/mojidata-api-better-sqlite3": {
+      "optional": true
+    },
+    "@mandel59/mojidata-api-node-sqlite": {
       "optional": true
     }
   },
   "devDependencies": {
     "@hono/node-server": "^1.19.7",
+    "@mandel59/mojidata-api-better-sqlite3": "^1.8.0",
+    "@mandel59/mojidata-api-node-sqlite": "^1.8.0",
     "@types/node": "^24.10.4",
     "@types/sql.js": "^1.4.9",
     "prettier": "^2.8.8",

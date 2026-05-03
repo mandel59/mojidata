@@ -2,10 +2,14 @@ export {
   createSqliteWasmDb,
   createSqliteWasmDbFromOpfsSAHPool,
   createSqliteWasmExecutorProvider,
+  createSqliteWasmIdsfindDbProvider,
   createSqliteWasmMojidataDbProvider,
   openOpfsSAHPoolDatabase,
+  assertSqliteWasmIdsfindFts5Schema,
   type CreateSqliteWasmDbFromOpfsSAHPoolOptions,
+  type SqliteWasmIdsfindSchemaDatabase,
 } from "./lib/sqlite-wasm-runtime.js"
+export { SqliteWasmIdsfindSchemaError } from "./lib/sqlite-wasm-runtime.js"
 export {
   createSqliteWasmExecutor,
   type SqliteWasmDatabaseLike,

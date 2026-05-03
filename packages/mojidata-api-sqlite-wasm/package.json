@@ -21,6 +21,16 @@
       "import": "./dist/browser-worker.js",
       "default": "./dist/browser-worker.js"
     },
+    "./opfs-sahpool": {
+      "types": "./dist/lib/opfs-sahpool.d.ts",
+      "import": "./dist/lib/opfs-sahpool.js",
+      "default": "./dist/lib/opfs-sahpool.js"
+    },
+    "./sqlite-wasm-executor": {
+      "types": "./dist/lib/sqlite-wasm-executor.d.ts",
+      "import": "./dist/lib/sqlite-wasm-executor.js",
+      "default": "./dist/lib/sqlite-wasm-executor.js"
+    },
     "./lib/*": {
       "types": "./dist/lib/*.d.ts",
       "import": "./dist/lib/*.js",
