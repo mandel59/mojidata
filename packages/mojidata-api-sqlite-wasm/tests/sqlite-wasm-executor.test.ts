@@ -3,8 +3,11 @@ import { describe, test } from "node:test"
 
 import sqlite3InitModule from "@sqlite.org/sqlite-wasm"
 
+import appModule from "../../mojidata-api-hono/lib/app.ts"
+import conformanceModule from "../../mojidata-api/tests/api-conformance.ts"
 import {
   createSqliteWasmExecutor,
+  createSqliteWasmDb,
   createSqliteWasmDbFromOpfsSAHPool,
   installMojidataSqliteWasmFunctions,
   isOpfsSAHPoolSupported,
@@ -16,6 +19,10 @@ import {
   type SqliteWasmIdsfindSchemaDatabase,
   type SqliteWasmSAHPoolUtil,
 } from "../index.js"
+
+const { createApp } = appModule as typeof import("../../mojidata-api-hono/lib/app")
+const { runMojidataApiConformanceTests } =
+  conformanceModule as typeof import("../../mojidata-api/tests/api-conformance")
 
 describe("createSqliteWasmExecutor", () => {
   test("supports positional and named parameters", async () => {
@@ -52,6 +59,57 @@ describe("createSqliteWasmExecutor", () => {
       db.close()
     }
   })
+})
+
+describe("createSqliteWasmDb", () => {
+  test("returns ids_similar entries for current IDS mirror and rotation operators", async () => {
+    const sqlite3 = await sqlite3InitModule()
+    const mojidataDb = new sqlite3.oo1.DB(":memory:")
+    const idsfindDb = new sqlite3.oo1.DB(":memory:")
+    try {
+      mojidataDb.exec("CREATE TABLE ids (UCS TEXT NOT NULL, source TEXT NOT NULL, IDS TEXT NOT NULL)")
+      mojidataDb.exec("INSERT INTO ids (UCS, source, IDS) VALUES ('卐', 'GT', '⿾卍'), ('𠄏', 'GTP', '⿿了')")
+
+      const db = createSqliteWasmDb({
+        getMojidataDb: async () => createSqliteWasmExecutor(mojidataDb),
+        getIdsfindDb: async () => createSqliteWasmExecutor(idsfindDb),
+      })
+
+      const mirror = JSON.parse((await db.getMojidataJson("卍", ["ids_similar"])) ?? "{}")
+      const rotation = JSON.parse((await db.getMojidataJson("了", ["ids_similar"])) ?? "{}")
+
+      assert.deepEqual(mirror.ids_similar, [
+        { UCS: "卐", IDS: "⿾卍", source: "GT" },
+      ])
+      assert.deepEqual(rotation.ids_similar, [
+        { UCS: "𠄏", IDS: "⿿了", source: "GTP" },
+      ])
+    } finally {
+      mojidataDb.close()
+      idsfindDb.close()
+    }
+  })
+})
+
+runMojidataApiConformanceTests("sqlite-wasm API conformance", async () => {
+  const sqlite3 = await sqlite3InitModule()
+  const mojidataDb = new sqlite3.oo1.DB(":memory:")
+  const idsfindDb = new sqlite3.oo1.DB(":memory:")
+
+  mojidataDb.exec("CREATE TABLE ids (UCS TEXT NOT NULL, source TEXT NOT NULL, IDS TEXT NOT NULL)")
+  mojidataDb.exec("INSERT INTO ids (UCS, source, IDS) VALUES ('卐', 'GT', '⿾卍'), ('𠄏', 'GTP', '⿿了')")
+  mojidataDb.exec("CREATE TABLE ivs (IVS TEXT NOT NULL, collection TEXT NOT NULL, code TEXT NOT NULL)")
+  mojidataDb.exec("INSERT INTO ivs (IVS, collection, code) VALUES ('一󠄀', 'ExampleCollection', 'CID+1200')")
+
+  idsfindDb.exec("CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)")
+  idsfindDb.exec("CREATE VIRTUAL TABLE idsfind_fts USING fts5(IDS_tokens)")
+  idsfindDb.exec("INSERT INTO idsfind (rowid, UCS, IDS_tokens) VALUES (1, '信', '⿰ 亻 言')")
+  idsfindDb.exec("INSERT INTO idsfind_fts (rowid, IDS_tokens) VALUES (1, '⿰ 亻 言')")
+
+  return createApp(createSqliteWasmDb({
+    getMojidataDb: async () => createSqliteWasmExecutor(mojidataDb),
+    getIdsfindDb: async () => createSqliteWasmExecutor(idsfindDb),
+  }))
 })
 
 describe("installMojidataSqliteWasmFunctions", () => {

@@ -10,6 +10,18 @@ test('lookup SVS', t => {
     t.deepEqual(svs, ['\u795E\uFE00'])
 })
 
+test('includes indexes for D1 full-field lookup predicates', t => {
+    const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
+    const indexes = new Set(db.prepare(`
+        SELECT name FROM sqlite_schema
+        WHERE type = 'index'
+          AND name IN ('ids_IDS', 'mjih_phonetic_MJ文字図形名')
+    `).pluck().all())
+
+    t.true(indexes.has('ids_IDS'))
+    t.true(indexes.has('mjih_phonetic_MJ文字図形名'))
+})
+
 test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
     const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
     const legacy = db.prepare(`

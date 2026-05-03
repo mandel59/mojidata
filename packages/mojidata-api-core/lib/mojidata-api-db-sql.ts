@@ -19,7 +19,7 @@ const ivsListQuery = `
     collection,
     code
   FROM ivs
-  WHERE IVS GLOB @ucs || '*'
+  WHERE IVS >= @ucs AND IVS < char(unicode(@ucs) + 1)
 `
 
 // Copied from `packages/mojidata-cli/bin/mojidata-variants.ts` (better-sqlite3),

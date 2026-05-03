@@ -210,4 +210,27 @@ describe('createSqlApiDb', () => {
     assert.match(sql, /FROM unihan_value_ref/)
     assert.doesNotMatch(sql, /unihan\.value glob|FROM unihan\s/)
   })
+
+  test('getMojidataJson emits index-friendly full-field lookup predicates', async () => {
+    const mojidata = createRecordingExecutor({
+      queryOne: async () => ({ vs: '{}' }),
+    })
+    const idsfind = createRecordingExecutor()
+    const db = createSqlApiDb({
+      getMojidataDb: async () => mojidata.executor,
+      getIdsfindDb: async () => idsfind.executor,
+    })
+
+    await db.getMojidataJson('漢', [])
+
+    const sql = mojidata.queryOneCalls[0]?.sql ?? ''
+    assert.match(sql, /ids\.IDS IN \('〾' \|\| @ucs, '⿾' \|\| @ucs, '⿿' \|\| @ucs, '↔' \|\| @ucs, '↷' \|\| @ucs\)/)
+    assert.match(sql, /ivs\.IVS >= @ucs AND ivs\.IVS < char\(unicode\(@ucs\) \+ 1\)/)
+    assert.match(sql, /SVS >= @ucs AND SVS < char\(unicode\(@ucs\) \+ 1\)/)
+    assert.match(sql, /tghb\.规范字 IN \(SELECT v\.规范字 FROM tghb_variants AS v WHERE v\.异体字 = @ucs\)/)
+    assert.match(sql, /SELECT MJ文字図形名 FROM mjih_phonetic WHERE 音価 = @ucs/)
+    assert.match(sql, /subject >= @ucs AND subject < char\(unicode\(@ucs\) \+ 1\)/)
+    assert.match(sql, /object >= @ucs AND object < char\(unicode\(@ucs\) \+ 1\)/)
+    assert.doesNotMatch(sql, /glob\s+\(?@ucs\s*\|\|\s*'\*'/i)
+  })
 })
