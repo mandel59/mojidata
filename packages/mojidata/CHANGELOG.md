@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.8.0
+
+### Minor Changes
+
+- [#38](https://github.com/mandel59/mojidata/pull/38) [`6c932e6`](https://github.com/mandel59/mojidata/commit/6c932e64de9280bf886fc469758546cedd979d2e) Thanks [@mandel59](https://github.com/mandel59)! - Add a generated `unihan_value_ref` reverse lookup table and use it for
+  `unihan_fts` queries so D1-backed `/api/v1/mojidata` requests no longer scan the
+  full Unihan value table.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
@@ -64,7 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Update MJ文字情報一覧表 to version 006.02
+- Update MJ 文字情報一覧表 to version 006.02
 - Update UCD/Unihan to version 15.1
 - Change definition of radicals table
 
@@ -74,7 +82,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Add MJ文字情報一覧表 変体仮名編 https://moji.or.jp/mojikiban/mjlist/
+- Add MJ 文字情報一覧表 変体仮名編 https://moji.or.jp/mojikiban/mjlist/
 
 [1.3.0]: https://github.com/mandel59/mojidata/compare/v1.2.0...v1.3.0
 
@@ -95,13 +103,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [1.1.0]: https://github.com/mandel59/mojidata/compare/v1.0.0...v1.1.0
 
 ## [1.0.0] - 2022-10-12
+
 ### Changed
+
 - Update `IVD_Sequences.txt` to <https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt>.
+
 ### Fixed
+
 - `radeqv`: Fix EquivalentUnifiedIdeograph.txt loader.
 
 [1.0.0]: https://github.com/mandel59/mojidata/releases/tag/v1.0.0
 
 ## 0.5.0 - 2022-07-13
+
 ### Changed
+
 - Update data from Unicode Character Database to version 15.0.

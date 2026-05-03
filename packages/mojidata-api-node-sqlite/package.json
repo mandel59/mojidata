@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-node-sqlite",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "node:sqlite integration package for mojidata-api",
   "repository": {
     "type": "git",
@@ -37,10 +37,10 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/idsdb-fts5": "^1.8.0",
-    "@mandel59/mojidata": "^1.7.0",
-    "@mandel59/mojidata-api-core": "^1.8.0",
-    "@mandel59/mojidata-api-hono": "^1.8.0"
+    "@mandel59/idsdb-fts5": "^1.9.0",
+    "@mandel59/mojidata": "^1.8.0",
+    "@mandel59/mojidata-api-core": "^1.9.0",
+    "@mandel59/mojidata-api-hono": "^1.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",

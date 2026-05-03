@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-hono",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Hono app wiring package for mojidata-api",
   "repository": {
     "type": "git",
@@ -39,7 +39,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-core": "^1.8.0",
+    "@mandel59/mojidata-api-core": "^1.9.0",
     "hono": "^4.9.0"
   },
   "devDependencies": {

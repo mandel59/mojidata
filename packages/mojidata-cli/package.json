@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-cli",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/mojidata-api-sqljs": "^1.8.0"
+    "@mandel59/mojidata-api-sqljs": "^1.8.1"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",
