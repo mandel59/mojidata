@@ -11,8 +11,61 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  prepare-db-cache:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      NO_UPDATE_NOTIFIER: "1"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+
+      - name: Restore mojidata build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/mojidata/dist
+            packages/mojidata/cache
+            packages/mojidata/resources
+          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          restore-keys: |
+            mojidata-${{ runner.os }}-
+
+      - name: Restore idsdb build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/idsdb/idsfind.db
+            packages/idsdb/idsdecompose.db
+            packages/idsdb/.idsdb.input.sha256
+            packages/idsdb-fts5/idsfind.db
+            packages/idsdb-fts5/idsdecompose.db
+            packages/idsdb-fts5/.idsdb-fts5.input.sha256
+          key: idsdb-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json', 'packages/idsdb/package.json', 'packages/idsdb/tsconfig.json', 'packages/idsdb/prepare.ts', 'packages/idsdb/scripts/**', 'packages/idsdb-fts5/package.json', 'packages/idsdb-fts5/scripts/**', 'packages/idsdb-utils/package.json', 'packages/idsdb-utils/tsconfig.json', 'packages/idsdb-utils/index.ts', 'packages/idsdb-utils/node.ts', 'packages/idsdb-utils/lib/**') }}
+          restore-keys: |
+            idsdb-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: corepack yarn install --immutable
+
+      - name: Prepare mojidata and IDS database artifacts
+        run: |
+          corepack yarn build:idsdb-stack
+          corepack yarn workspace @mandel59/idsdb-fts5 run prepare
+
   release:
     runs-on: ubuntu-latest
+    needs: prepare-db-cache
     permissions:
       contents: write
       id-token: write
