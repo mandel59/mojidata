@@ -18,8 +18,7 @@
   ],
   "scripts": {
     "prepare": "bash scripts/prepare",
-    "prepack": "yarn prepare",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "prepack": "yarn prepare"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT"

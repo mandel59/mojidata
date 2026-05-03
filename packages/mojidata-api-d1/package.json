@@ -30,8 +30,7 @@
   "scripts": {
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
     "test": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
-    "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",

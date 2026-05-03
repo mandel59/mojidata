@@ -19,8 +19,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "bash scripts/prepare",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "prepare": "bash scripts/prepare"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",

@@ -2,6 +2,11 @@
   "name": "@mandel59/mojidata-api",
   "version": "2.0.0",
   "description": "Compatibility facade package for mojidata-api split packages",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/mojidata-api"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -93,7 +98,6 @@
     "dev": "tsx watch ./server.ts",
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
     "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-fts5 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
-    "publish": "yarn prepare && yarn npm publish --access public",
     "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
     "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },

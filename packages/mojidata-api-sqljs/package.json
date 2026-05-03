@@ -36,8 +36,7 @@
     "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
     "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare",
     "test": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
-    "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "test:ci": "yarn run prepare:test-deps && yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
