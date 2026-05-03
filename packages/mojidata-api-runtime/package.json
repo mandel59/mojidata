@@ -38,8 +38,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "prepare": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",

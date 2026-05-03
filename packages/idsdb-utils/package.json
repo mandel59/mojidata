@@ -34,8 +34,7 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "tsc",
-    "publish": "yarn prepare && yarn npm publish --access public"
+    "prepare": "tsc"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
