@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
+import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-conformance"
 import { createD1App, createD1AppFromEnv, createD1FetchHandler } from "../index"
 import type {
   D1DatabaseLike,
@@ -60,13 +61,31 @@ function createFakeMojidataDb() {
     if (normalizedSql.startsWith("SELECT json_object('char', ?1,'UCS'")) {
       assert.equal(mode, "first")
       assert.deepEqual(values, ["漢"])
-      return { vs: JSON.stringify({ UCS: "U+6F22" }) }
+      return { vs: JSON.stringify({ char: "漢", UCS: "U+6F22" }) }
     }
 
     if (normalizedSql.startsWith("SELECT json_object('UCS'")) {
       assert.equal(mode, "first")
       assert.deepEqual(values, ["漢"])
       return { vs: JSON.stringify({ UCS: "U+6F22" }) }
+    }
+
+    if (normalizedSql.startsWith("SELECT json_object('ids_similar'")) {
+      assert.equal(mode, "first")
+      if (values[0] === "卍") {
+        return {
+          vs: JSON.stringify({
+            ids_similar: [{ UCS: "卐", IDS: "⿾卍", source: "GT" }],
+          }),
+        }
+      }
+      if (values[0] === "了") {
+        return {
+          vs: JSON.stringify({
+            ids_similar: [{ UCS: "𠄏", IDS: "⿿了", source: "GTP" }],
+          }),
+        }
+      }
     }
 
     if (normalizedSql.includes("FROM chars")) {
@@ -81,11 +100,13 @@ function createFakeMojidataDb() {
       )
     ) {
       assert.equal(mode, "run")
-      assert.deepEqual(values, ["漢"])
+      assert.ok(values[0] === "漢" || values[0] === "一")
+      const base = values[0] === "一" ? "一" : "漢"
+      const unicode = values[0] === "一" ? "4E00 E0100" : "6F22 E0100"
       return [
         {
-          IVS: "漢󠄀",
-          unicode: "6F22 E0100",
+          IVS: `${base}󠄀`,
+          unicode,
           collection: "ExampleCollection",
           code: "CID+1234",
         },
@@ -174,6 +195,7 @@ describe("createD1App", () => {
       assert.deepEqual(json, {
         query: { char: "漢" },
         results: {
+          char: "漢",
           UCS: "U+6F22",
           unihan_rs: {
             kRSAdobe_Japan1_6: null,
@@ -272,3 +294,10 @@ describe("createD1App", () => {
     })
   })
 })
+
+runMojidataApiConformanceTests("D1 API conformance", () =>
+  createD1App({
+    mojidataDb: createFakeMojidataDb(),
+    idsfindDb: createFakeIdsfindDb(),
+  }),
+)

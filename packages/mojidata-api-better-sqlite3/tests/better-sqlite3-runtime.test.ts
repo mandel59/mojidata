@@ -1,7 +1,8 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
-import { createBetterSqlite3Db } from "../index"
+import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-conformance"
+import { createBetterSqlite3App, createBetterSqlite3Db } from "../index"
 
 describe("createBetterSqlite3Db", () => {
   test("supports better-sqlite3 as an explicit native backend", async () => {
@@ -29,3 +30,5 @@ describe("createBetterSqlite3Db", () => {
     ])
   })
 })
+
+runMojidataApiConformanceTests("better-sqlite3 API conformance", () => createBetterSqlite3App())

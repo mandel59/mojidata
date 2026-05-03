@@ -1,7 +1,8 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
-import { createNodeSqliteDb } from "../index"
+import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-conformance"
+import { createNodeSqliteApp, createNodeSqliteDb } from "../index"
 
 describe("createNodeSqliteDb", () => {
   test("supports node:sqlite as an explicit native backend", async () => {
@@ -29,3 +30,5 @@ describe("createNodeSqliteDb", () => {
     ])
   })
 })
+
+runMojidataApiConformanceTests("node:sqlite API conformance", () => createNodeSqliteApp())

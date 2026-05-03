@@ -11,5 +11,5 @@
     "moduleResolution": "node",
     "lib": ["ES2020", "DOM"]
   },
-  "exclude": ["dist"]
+  "exclude": ["dist", "tests"]
 }

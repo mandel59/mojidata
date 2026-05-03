@@ -1,7 +1,8 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
-import { createSqlJsDb } from "../index"
+import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-conformance"
+import { createSqlJsApp, createSqlJsDb } from "../index"
 
 describe("createSqlJsDb", () => {
   test("supports sql.js as an explicit backend package", async () => {
@@ -29,3 +30,5 @@ describe("createSqlJsDb", () => {
     ])
   })
 })
+
+runMojidataApiConformanceTests("sql.js API conformance", () => createSqlJsApp())
