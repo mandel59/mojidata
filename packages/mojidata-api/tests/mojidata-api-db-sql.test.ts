@@ -192,4 +192,22 @@ describe('createSqlApiDb', () => {
       },
     })
   })
+
+  test('getMojidataJson uses the Unihan reverse lookup table for unihan_fts', async () => {
+    const mojidata = createRecordingExecutor({
+      queryOne: async () => ({ vs: '{"unihan_fts":[]}' }),
+    })
+    const idsfind = createRecordingExecutor()
+    const db = createSqlApiDb({
+      getMojidataDb: async () => mojidata.executor,
+      getIdsfindDb: async () => idsfind.executor,
+    })
+
+    const result = await db.getMojidataJson('漢', ['unihan_fts'])
+
+    assert.equal(result, '{"unihan_fts":[]}')
+    const sql = mojidata.queryOneCalls[0]?.sql ?? ''
+    assert.match(sql, /FROM unihan_value_ref/)
+    assert.doesNotMatch(sql, /unihan\.value glob|FROM unihan\s/)
+  })
 })

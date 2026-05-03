@@ -45,7 +45,7 @@ async function fetchJson(app: ReturnType<typeof createApp>, path: string) {
 }
 
 describe('createApp', () => {
-  test('returns mojidata JSON with CORS headers', async () => {
+  test('returns mojidata JSON with CORS and cache headers', async () => {
     const app = createApp(createFakeDb())
 
     const { response, json } = await fetchJson(
@@ -55,6 +55,7 @@ describe('createApp', () => {
 
     assert.equal(response.status, 200)
     assert.equal(response.headers.get('access-control-allow-origin'), '*')
+    assert.equal(response.headers.get('cache-control'), 'no-store')
     assert.deepEqual(json.query, { char: '漢', select: ['char', 'UCS'] })
     assert.deepEqual(json.results, { char: '漢', UCS: 'U+6F22' })
   })

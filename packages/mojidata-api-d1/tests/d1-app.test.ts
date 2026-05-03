@@ -159,6 +159,7 @@ describe("createD1App", () => {
       const response = await app.request("http://example.test/api/v1/mojidata?char=漢&select=UCS")
       assert.equal(response.status, 200)
       assert.equal(response.headers.get("access-control-allow-origin"), "*")
+      assert.equal(response.headers.get("cache-control"), "no-store")
       const json = await response.json()
       assert.deepEqual(json, {
         query: { char: "漢", select: ["UCS"] },

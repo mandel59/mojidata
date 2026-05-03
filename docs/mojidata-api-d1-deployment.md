@@ -62,12 +62,20 @@ The current D1 runtime uses two bindings:
 - `MOJIDATA_DB`
 - `IDSFIND_DB`
 
-That fits comfortably inside the Free-plan database-count limits. The main risks
-are not storage but:
+That fits comfortably inside the Free-plan database-count limits for one active
+target. A blue/green D1 rollout temporarily keeps at least four databases for an
+environment: the active pair and the release pair. Keep old rollback pairs only
+as long as they are useful so the account stays under the database-count limit.
+
+The main risks are not storage but:
 
 - whether `idsfind` stays under the D1 per-invocation query limit
 - whether representative requests stay under the daily rows-read budget
 - whether repeated imports become too expensive for routine CI usage
+
+The `mojidata` database includes a materialized `unihan_value_ref` reverse
+lookup table so `/api/v1/mojidata` can answer `unihan_fts` lookups by indexed
+character reference instead of scanning every Unihan value row on D1.
 
 The working assumption is that Free is enough for:
 
@@ -95,7 +103,9 @@ the same `MOJIDATA_DB` and `IDSFIND_DB` D1 bindings directly.
 Useful root commands:
 
 - `yarn mojidata-api:d1:provision`
+- `yarn mojidata-api:d1:create-release`
 - `yarn mojidata-api:d1:import`
+- `yarn mojidata-api:d1:promote-release`
 - `yarn mojidata-api:d1:check`
 - `yarn mojidata-api:d1:typegen`
 - `yarn mojidata-api:d1:dev`
@@ -107,12 +117,16 @@ The `dev`, `deploy`, and `typegen` commands intentionally shell out to
 `npx wrangler` instead of vendoring Wrangler into this repository. The first run
 may therefore download the CLI.
 
-The `provision` helper reuses an existing database if `wrangler d1 info` can
-find it; otherwise it creates the database and rewrites
+The `provision` helper exists for initial bootstrap only. It reuses an existing
+database if `wrangler d1 info` can find it; otherwise it creates the database
+and rewrites
 [packages/mojidata-api-d1-worker/wrangler.jsonc](../packages/mojidata-api-d1-worker/wrangler.jsonc)
 with the resolved IDs.
 
-## Standalone Worker setup
+Routine data refreshes should use the blue/green release helpers instead of
+importing into the active bindings.
+
+## Blue/green standalone Worker setup
 
 1. Prepare SQL dumps:
 
@@ -120,38 +134,63 @@ with the resolved IDs.
    corepack yarn mojidata-api:d1:prepare-import --output-dir /tmp/mojidata-d1-import
    ```
 
-2. Provision the D1 databases and write their IDs into the Worker config:
+2. Create a release D1 pair without changing the active Worker config:
 
    ```sh
-   corepack yarn mojidata-api:d1:provision
+   corepack yarn mojidata-api:d1:create-release \
+     -- --env production \
+     --release 20260503-unihan-ref \
+     --manifest /tmp/mojidata-api-d1-release.json
    ```
 
-3. Import the generated SQL:
+   Omit `--env production` only when intentionally targeting the top-level
+   default Worker config.
+
+3. Import the generated SQL into the release pair:
 
    ```sh
-   corepack yarn mojidata-api:d1:import -- --output-dir /tmp/mojidata-d1-import
+   corepack yarn mojidata-api:d1:import \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --output-dir /tmp/mojidata-d1-import \
+     --skip-prepare
    ```
 
-4. Check the Worker package:
+   The import helper refuses to import into active bindings unless
+   `--unsafe-active` is passed. That flag is only for one-off destructive
+   testing, not for public traffic.
+
+4. Promote the release pair in `wrangler.jsonc` and write a rollback manifest:
 
    ```sh
+   corepack yarn mojidata-api:d1:promote-release \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --rollback-manifest /tmp/mojidata-api-d1-rollback.json
+   ```
+
+5. Review the config diff and check the Worker package:
+
+   ```sh
+   jj diff --git packages/mojidata-api-d1-worker/wrangler.jsonc
    corepack yarn mojidata-api:d1:check
    ```
 
-5. Preview or deploy:
+6. Deploy the Worker, then smoke-test the promoted target:
 
    ```sh
-   corepack yarn mojidata-api:d1:dev
-   corepack yarn mojidata-api:d1:deploy
-   ```
-
-6. Run the remote smoke test:
-
-   ```sh
+   corepack yarn mojidata-api:d1:deploy --env production
    corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
    ```
 
-7. Benchmark the deployed target:
+7. Roll back by promoting the rollback manifest and deploying again:
+
+   ```sh
+   corepack yarn mojidata-api:d1:promote-release \
+     -- --release-manifest /tmp/mojidata-api-d1-rollback.json
+   corepack yarn mojidata-api:d1:deploy --env production
+   corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
+   ```
+
+8. Benchmark the deployed target:
 
    ```sh
    corepack yarn mojidata-api:bench:remote \
@@ -168,6 +207,17 @@ standalone API Worker over HTTP:
 ```sh
 MOJIDATA_API_BASE_URL=https://mojidata-api-d1-production.<account>.workers.dev/
 ```
+
+Keep this URL stable across D1 blue/green releases. `mojidata-web-app` should
+not receive release database names, release manifest paths, or temporary Worker
+URLs. The release flow switches the D1 bindings behind the same Worker name, so
+the app does not need a release-time redeploy when only the D1 data changes.
+
+The API returns `Cache-Control: no-store` for JSON responses so a promoted D1
+release is not hidden behind stale application, browser, or CDN caches. If a
+future cache policy is added, it must include an explicit invalidation strategy
+in the API Worker release flow instead of requiring `mojidata-web-app` to know
+about D1 release IDs.
 
 The app should keep the browser SPA database assets in R2 and use D1 only for
 server-side API responses. This keeps the heavy sql.js DB downloads out of the
@@ -204,15 +254,27 @@ default path forward.
 ## Environment-specific D1 targets
 
 `packages/mojidata-api-d1-worker/wrangler.jsonc` defines top-level, `staging`,
-and `production` D1 bindings. The root helpers can provision and import a
-specific environment:
+and `production` D1 bindings. The root helpers can create, import, and promote a
+release for a specific environment:
 
 ```sh
-corepack yarn mojidata-api:d1:provision -- --env staging
-corepack yarn mojidata-api:d1:import -- --env staging --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:create-release \
+  -- --env staging \
+  --release 20260503-unihan-ref \
+  --manifest /tmp/mojidata-api-d1-staging-release.json
+corepack yarn mojidata-api:d1:import \
+  -- --release-manifest /tmp/mojidata-api-d1-staging-release.json \
+  --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:promote-release \
+  -- --release-manifest /tmp/mojidata-api-d1-staging-release.json
 corepack yarn mojidata-api:d1:deploy --env staging
 ```
 
 Use `--env production` for the production Worker. Keep staging and production
 D1 database names separate; do not reuse the same D1 databases for import tests
 and public traffic.
+
+The safest production pattern is to run the full release flow on staging first,
+including remote smoke checks, then repeat the same release label for
+production. The production import still targets inactive release databases; only
+the final Worker deploy changes live traffic.

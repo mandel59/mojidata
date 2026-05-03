@@ -93,12 +93,9 @@ export const queryExpressions = [
   [
     'unihan_fts',
     `(SELECT json_group_array(json_array(printf('U+%04X', unicode(UCS)), UCS, property, value)) FROM
-      (SELECT * FROM unihan
-        WHERE unicode(@ucs) > 0xFF AND (
-          unihan.value glob printf('*%s*', @ucs)
-          OR (unihan.value glob printf('*U+%04X*', unicode(@ucs))
-            AND NOT unihan.value glob printf('*U+%04X[0-9A-F]*', unicode(@ucs))))
-          AND unihan.property NOT IN ('kJapanese', 'kSMSZD2003Readings', 'kFanqie')
+      (SELECT UCS, property, value FROM unihan_value_ref
+        WHERE unicode(@ucs) > 0xFF AND ref = @ucs
+          AND property NOT IN ('kJapanese', 'kSMSZD2003Readings', 'kFanqie')
         ORDER BY UCS
         LIMIT 100))`,
   ],

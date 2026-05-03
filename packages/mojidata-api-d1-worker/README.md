@@ -20,21 +20,39 @@ From the repository root:
 
 ```sh
 corepack yarn mojidata-api:d1:prepare-import --output-dir /tmp/mojidata-d1-import
-corepack yarn mojidata-api:d1:provision
-corepack yarn mojidata-api:d1:import -- --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:create-release \
+  -- --manifest /tmp/mojidata-api-d1-release.json
+corepack yarn mojidata-api:d1:import \
+  -- --release-manifest /tmp/mojidata-api-d1-release.json \
+  --output-dir /tmp/mojidata-d1-import \
+  --skip-prepare
+corepack yarn mojidata-api:d1:promote-release \
+  -- --release-manifest /tmp/mojidata-api-d1-release.json
 corepack yarn mojidata-api:d1:check
 corepack yarn mojidata-api:d1:smoke -- --base-url https://<worker>.workers.dev
 corepack yarn mojidata-api:d1:dev
 ```
 
 For staging or production bindings, pass the Wrangler environment through the
-root helpers:
+release helpers and the deploy command:
 
 ```sh
-corepack yarn mojidata-api:d1:provision -- --env staging
-corepack yarn mojidata-api:d1:import -- --env staging --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:create-release \
+  -- --env staging \
+  --release 20260503-unihan-ref \
+  --manifest /tmp/mojidata-api-d1-staging-release.json
+corepack yarn mojidata-api:d1:import \
+  -- --release-manifest /tmp/mojidata-api-d1-staging-release.json \
+  --output-dir /tmp/mojidata-d1-import
+corepack yarn mojidata-api:d1:promote-release \
+  -- --release-manifest /tmp/mojidata-api-d1-staging-release.json
 corepack yarn mojidata-api:d1:deploy --env staging
 ```
+
+`mojidata-api:d1:provision` is for initial bootstrap. Routine data refreshes
+should create and import into inactive release databases first. The import
+helper refuses active binding imports unless `--unsafe-active` is provided for
+one-off destructive testing.
 
 `dev`, `deploy`, and `cf-typegen` use `npx wrangler`, so the first invocation
 may download Wrangler if it is not already available locally.

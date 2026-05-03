@@ -13,13 +13,13 @@
   "d1_databases": [
     {
       "binding": "MOJIDATA_DB",
-      "database_name": "mojidata-api-d1-mojidata",
-      "database_id": "7db8cd1a-c166-4192-a90e-0c1e782a1654"
+      "database_name": "mojidata-api-d1-mojidata-20260503-bg",
+      "database_id": "7d7a62e6-bc66-4c83-8716-ceab92fb972d"
     },
     {
       "binding": "IDSFIND_DB",
-      "database_name": "mojidata-api-d1-idsfind",
-      "database_id": "095f48e1-4a92-481f-83c8-ef71a35ac98f"
+      "database_name": "mojidata-api-d1-idsfind-20260503-bg",
+      "database_id": "950b99cd-dc7f-451f-b7fe-2f01385fb3df"
     }
   ],
   "env": {
