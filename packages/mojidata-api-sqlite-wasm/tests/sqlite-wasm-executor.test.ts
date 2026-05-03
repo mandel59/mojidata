@@ -5,6 +5,7 @@ import sqlite3InitModule from "@sqlite.org/sqlite-wasm"
 
 import {
   createSqliteWasmExecutor,
+  createSqliteWasmDb,
   createSqliteWasmDbFromOpfsSAHPool,
   installMojidataSqliteWasmFunctions,
   isOpfsSAHPoolSupported,
@@ -50,6 +51,36 @@ describe("createSqliteWasmExecutor", () => {
       assert.equal(await executor.queryOne("SELECT 1 WHERE 0"), null)
     } finally {
       db.close()
+    }
+  })
+})
+
+describe("createSqliteWasmDb", () => {
+  test("returns ids_similar entries for current IDS mirror and rotation operators", async () => {
+    const sqlite3 = await sqlite3InitModule()
+    const mojidataDb = new sqlite3.oo1.DB(":memory:")
+    const idsfindDb = new sqlite3.oo1.DB(":memory:")
+    try {
+      mojidataDb.exec("CREATE TABLE ids (UCS TEXT NOT NULL, source TEXT NOT NULL, IDS TEXT NOT NULL)")
+      mojidataDb.exec("INSERT INTO ids (UCS, source, IDS) VALUES ('卐', 'GT', '⿾卍'), ('𠄏', 'GTP', '⿿了')")
+
+      const db = createSqliteWasmDb({
+        getMojidataDb: async () => createSqliteWasmExecutor(mojidataDb),
+        getIdsfindDb: async () => createSqliteWasmExecutor(idsfindDb),
+      })
+
+      const mirror = JSON.parse((await db.getMojidataJson("卍", ["ids_similar"])) ?? "{}")
+      const rotation = JSON.parse((await db.getMojidataJson("了", ["ids_similar"])) ?? "{}")
+
+      assert.deepEqual(mirror.ids_similar, [
+        { UCS: "卐", IDS: "⿾卍", source: "GT" },
+      ])
+      assert.deepEqual(rotation.ids_similar, [
+        { UCS: "𠄏", IDS: "⿿了", source: "GTP" },
+      ])
+    } finally {
+      mojidataDb.close()
+      idsfindDb.close()
     }
   })
 })
