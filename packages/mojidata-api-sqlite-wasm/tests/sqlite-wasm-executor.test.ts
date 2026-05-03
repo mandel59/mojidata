@@ -9,8 +9,11 @@ import {
   installMojidataSqliteWasmFunctions,
   isOpfsSAHPoolSupported,
   openOpfsSAHPoolDatabase,
+  assertSqliteWasmIdsfindFts5Schema,
+  SqliteWasmIdsfindSchemaError,
   tryEnsureOpfsSAHPoolDatabase,
   tryInstallOpfsSAHPool,
+  type SqliteWasmIdsfindSchemaDatabase,
   type SqliteWasmSAHPoolUtil,
 } from "../index.js"
 
@@ -142,5 +145,41 @@ describe("OPFS fallback helpers", () => {
     if (!result.ok) {
       assert.equal(result.reason, "unsupported")
     }
+  })
+})
+
+describe("sqlite-wasm idsfind schema validation", () => {
+  function schemaDb(sql: string | undefined): SqliteWasmIdsfindSchemaDatabase {
+    return {
+      selectObject() {
+        return sql === undefined ? undefined : { sql }
+      },
+    } as SqliteWasmIdsfindSchemaDatabase
+  }
+
+  test("accepts an FTS5 idsfind virtual table", () => {
+    assert.doesNotThrow(() =>
+      assertSqliteWasmIdsfindFts5Schema(
+        schemaDb('CREATE VIRTUAL TABLE "idsfind_fts" USING fts5 ("IDS_tokens")'),
+      ),
+    )
+  })
+
+  test("rejects an FTS4 idsfind virtual table with package guidance", () => {
+    assert.throws(
+      () =>
+        assertSqliteWasmIdsfindFts5Schema(
+          schemaDb('CREATE VIRTUAL TABLE "idsfind_fts" USING fts4 ("IDS_tokens")'),
+        ),
+      (error) =>
+        error instanceof SqliteWasmIdsfindSchemaError &&
+        error.message.includes("@mandel59/idsdb-fts5") &&
+        error.message.includes("FTS4"),
+    )
+  })
+
+  test("public OPFS subpath is importable", async () => {
+    const opfs = await import("@mandel59/mojidata-api-sqlite-wasm/opfs-sahpool")
+    assert.equal(typeof opfs.ensureOpfsSAHPoolDatabase, "function")
   })
 })

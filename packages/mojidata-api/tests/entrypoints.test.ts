@@ -36,8 +36,12 @@ describe('package entrypoints', () => {
       './core',
       './hono',
       './node',
+      './node-better-sqlite3',
+      './node-sqlite',
+      './node-sqljs',
       './runtime',
       './sqljs',
+      './worker-protocol',
     ])
   })
 
@@ -70,5 +74,18 @@ describe('package entrypoints', () => {
     assert.equal(typeof ivsCompat.createIvsListHandler, 'function')
     assert.equal(typeof variantsCompat.createMojidataVariantsHandler, 'function')
     assert.equal(typeof idsfindCompat.createIdsfindHandler, 'function')
+  })
+
+  test('declares target-specific entrypoints for bundled apps', async () => {
+    const [browserClient, workerProtocol, nodeSqljs] = await Promise.all([
+      import('@mandel59/mojidata-api/browser-client'),
+      import('@mandel59/mojidata-api/worker-protocol'),
+      import('@mandel59/mojidata-api/node-sqljs'),
+    ])
+
+    assert.equal(typeof browserClient.createMojidataApiWorkerClient, 'function')
+    assert.deepEqual(Object.keys(workerProtocol), [])
+    assert.equal(typeof nodeSqljs.createSqlJsDb, 'function')
+    assert.equal(typeof nodeSqljs.openDatabaseFromFile, 'function')
   })
 })

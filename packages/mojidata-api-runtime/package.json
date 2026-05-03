@@ -15,6 +15,16 @@
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./browser-client": {
+      "types": "./dist/lib/browser-client.d.ts",
+      "require": "./dist/lib/browser-client.js",
+      "default": "./dist/lib/browser-client.js"
+    },
+    "./worker-protocol": {
+      "types": "./dist/lib/worker-protocol.d.ts",
+      "require": "./dist/lib/worker-protocol.js",
+      "default": "./dist/lib/worker-protocol.js"
+    },
     "./lib/*": {
       "types": "./dist/lib/*.d.ts",
       "require": "./dist/lib/*.js",

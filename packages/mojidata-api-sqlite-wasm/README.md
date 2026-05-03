@@ -18,6 +18,14 @@ It includes:
 - `createSqliteWasmDbFromOpfsSAHPool()`: wires OPFS DB handles to `createSqlApiDb()`
 - `@mandel59/mojidata-api-sqlite-wasm/browser-worker`: worker entrypoint using the shared mojidata-api worker protocol
 
+Public subpaths:
+
+- `@mandel59/mojidata-api-sqlite-wasm/browser-worker`
+- `@mandel59/mojidata-api-sqlite-wasm/opfs-sahpool`
+- `@mandel59/mojidata-api-sqlite-wasm/sqlite-wasm-executor`
+
+Use these public subpaths instead of private `lib/*` paths.
+
 Example worker client:
 
 ```ts
@@ -52,6 +60,27 @@ directly when they need lower-level control.
 The browser worker initializes SQLite and the OPFS pool during `ready`, but DB
 assets are imported lazily. `moji.db` is downloaded/imported on the first
 mojidata query, and `idsfind.db` is downloaded/imported on the first IDS query.
+
+## idsfind DB requirement
+
+SQLite wasm supports FTS5 but not the legacy FTS4 module used by
+`@mandel59/idsdb`. For sqlite-wasm backends, `idsfindDbUrl` must point at the
+FTS5 database from `@mandel59/idsdb-fts5`.
+
+The OPFS runtime validates the `idsfind_fts` virtual table before creating the
+idsfind executor. If an FTS4 database is supplied, initialization fails with
+`SqliteWasmIdsfindSchemaError` and a message that points to
+`@mandel59/idsdb-fts5`.
+
+Typical browser asset wiring:
+
+```ts
+const db = createMojidataApiWorkerClient(worker, {
+  sqlWasmUrl: "/assets/sqlite3.wasm",
+  mojidataDbUrl: "/assets/moji.db",
+  idsfindDbUrl: "/assets/idsfind-fts5.db",
+})
+```
 
 `opfs-sahpool` is only available from Worker contexts with OPFS APIs. In
 unsupported contexts, use `tryEnsureOpfsSAHPoolDatabase()` or catch

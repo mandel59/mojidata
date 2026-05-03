@@ -98,7 +98,7 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["workspace:packages/mojidata-api"]],\
     ["@mandel59/mojidata-api-bench", ["workspace:packages/mojidata-api-bench"]],\
-    ["@mandel59/mojidata-api-better-sqlite3", ["virtual:786ff3bbd6eef7688a833439a338e46d6a1c41d5fd70226af8748ed2e6ea5e91db2c741160011bc5d1947617ca1a1682e3ff4cb4aa28f74212bb5b59b725f144#workspace:packages/mojidata-api-better-sqlite3", "workspace:packages/mojidata-api-better-sqlite3"]],\
+    ["@mandel59/mojidata-api-better-sqlite3", ["virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3", "workspace:packages/mojidata-api-better-sqlite3"]],\
     ["@mandel59/mojidata-api-core", ["workspace:packages/mojidata-api-core"]],\
     ["@mandel59/mojidata-api-d1", ["workspace:packages/mojidata-api-d1"]],\
     ["@mandel59/mojidata-api-d1-worker", ["workspace:packages/mojidata-api-d1-worker"]],\
@@ -1167,8 +1167,10 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@hono/node-server", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#npm:1.19.7"],\
           ["@mandel59/mojidata-api", "workspace:packages/mojidata-api"],\
+          ["@mandel59/mojidata-api-better-sqlite3", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
           ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
+          ["@mandel59/mojidata-api-node-sqlite", "workspace:packages/mojidata-api-node-sqlite"],\
           ["@mandel59/mojidata-api-runtime", "workspace:packages/mojidata-api-runtime"],\
           ["@mandel59/mojidata-api-sqljs", "workspace:packages/mojidata-api-sqljs"],\
           ["@types/node", "npm:24.10.4"],\
@@ -1185,7 +1187,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/mojidata-api-bench/",\
         "packageDependencies": [\
           ["@mandel59/mojidata-api-bench", "workspace:packages/mojidata-api-bench"],\
-          ["@mandel59/mojidata-api-better-sqlite3", "virtual:786ff3bbd6eef7688a833439a338e46d6a1c41d5fd70226af8748ed2e6ea5e91db2c741160011bc5d1947617ca1a1682e3ff4cb4aa28f74212bb5b59b725f144#workspace:packages/mojidata-api-better-sqlite3"],\
+          ["@mandel59/mojidata-api-better-sqlite3", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3"],\
           ["@mandel59/mojidata-api-node-sqlite", "workspace:packages/mojidata-api-node-sqlite"],\
           ["@mandel59/mojidata-api-sqljs", "workspace:packages/mojidata-api-sqljs"],\
           ["@types/node", "npm:24.10.4"],\
@@ -1197,12 +1199,12 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/mojidata-api-better-sqlite3", [\
-      ["virtual:786ff3bbd6eef7688a833439a338e46d6a1c41d5fd70226af8748ed2e6ea5e91db2c741160011bc5d1947617ca1a1682e3ff4cb4aa28f74212bb5b59b725f144#workspace:packages/mojidata-api-better-sqlite3", {\
-        "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-better-sqlite3-virtual-9374ea863f/1/packages/mojidata-api-better-sqlite3/",\
+      ["virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3", {\
+        "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-better-sqlite3-virtual-2b63c2bef4/1/packages/mojidata-api-better-sqlite3/",\
         "packageDependencies": [\
           ["@mandel59/idsdb-fts5", "workspace:packages/idsdb-fts5"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-          ["@mandel59/mojidata-api-better-sqlite3", "virtual:786ff3bbd6eef7688a833439a338e46d6a1c41d5fd70226af8748ed2e6ea5e91db2c741160011bc5d1947617ca1a1682e3ff4cb4aa28f74212bb5b59b725f144#workspace:packages/mojidata-api-better-sqlite3"],\
+          ["@mandel59/mojidata-api-better-sqlite3", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
           ["@mandel59/mojidata-api-hono", "workspace:packages/mojidata-api-hono"],\
           ["@types/better-sqlite3", "npm:5.4.2"],\
@@ -1210,9 +1212,6 @@ const RAW_RUNTIME_STATE =
           ["better-sqlite3", "npm:12.5.0"],\
           ["tsx", "npm:4.21.0"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
-        ],\
-        "packagePeers": [\
-          "better-sqlite3"\
         ],\
         "linkType": "SOFT"\
       }],\
