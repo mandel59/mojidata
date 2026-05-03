@@ -208,6 +208,17 @@ standalone API Worker over HTTP:
 MOJIDATA_API_BASE_URL=https://mojidata-api-d1-production.<account>.workers.dev/
 ```
 
+Keep this URL stable across D1 blue/green releases. `mojidata-web-app` should
+not receive release database names, release manifest paths, or temporary Worker
+URLs. The release flow switches the D1 bindings behind the same Worker name, so
+the app does not need a release-time redeploy when only the D1 data changes.
+
+The API returns `Cache-Control: no-store` for JSON responses so a promoted D1
+release is not hidden behind stale application, browser, or CDN caches. If a
+future cache policy is added, it must include an explicit invalidation strategy
+in the API Worker release flow instead of requiring `mojidata-web-app` to know
+about D1 release IDs.
+
 The app should keep the browser SPA database assets in R2 and use D1 only for
 server-side API responses. This keeps the heavy sql.js DB downloads out of the
 Worker bundle while giving server-rendered pages a Cloudflare-native data path.
