@@ -218,6 +218,16 @@ describe("createD1App", () => {
     assert.ok(mojidataDb.preparedSql.some((sql) => sql.includes("SELECT json_object('char'")))
     assert.ok(mojidataDb.preparedSql.some((sql) => sql.includes("FROM ivs")))
     assert.ok(idsfindDb.preparedSql.some((sql) => sql.includes("from idsfind_fts")))
+
+    const fullFieldSql =
+      mojidataDb.preparedSql.find((sql) => sql.startsWith("SELECT json_object('char'")) ?? ""
+    assert.match(fullFieldSql, /ids\.IDS IN \('〾' \|\| \?1, '↔' \|\| \?1, '↷' \|\| \?1\)/)
+    assert.match(fullFieldSql, /ivs\.IVS >= \?1 AND ivs\.IVS < char\(unicode\(\?1\) \+ 1\)/)
+    assert.match(fullFieldSql, /SVS >= \?1 AND SVS < char\(unicode\(\?1\) \+ 1\)/)
+    assert.match(fullFieldSql, /SELECT MJ文字図形名 FROM mjih_phonetic WHERE 音価 = \?1/)
+    assert.match(fullFieldSql, /subject >= \?1 AND subject < char\(unicode\(\?1\) \+ 1\)/)
+    assert.match(fullFieldSql, /object >= \?1 AND object < char\(unicode\(\?1\) \+ 1\)/)
+    assert.doesNotMatch(fullFieldSql, /glob\s+\(?\?1\s*\|\|\s*'\*'/i)
   })
 
   test("can be created from standard Cloudflare D1 binding names", async () => {

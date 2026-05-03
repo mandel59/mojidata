@@ -18,7 +18,7 @@ export const queryExpressions = [
   ],
   [
     'ids_similar',
-    `(SELECT json_group_array(json_object('UCS', ids.UCS, 'IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.IDS glob ('[〾↔↷]' || @ucs))`,
+    `(SELECT json_group_array(json_object('UCS', ids.UCS, 'IDS', ids.IDS, 'source', ids.source)) FROM ids WHERE ids.IDS IN ('〾' || @ucs, '↔' || @ucs, '↷' || @ucs))`,
   ],
   [
     'ids_comment',
@@ -30,7 +30,8 @@ export const queryExpressions = [
         'char', ivs.IVS,
         'IVS', printf('%04X_%04X', unicode(ivs.IVS), unicode(substr(ivs.IVS, 2))),
         'collection', ivs.collection,
-        'code', ivs.code)) FROM ivs WHERE ivs.IVS glob (@ucs || '*'))`,
+        'code', ivs.code)) FROM ivs
+      WHERE ivs.IVS >= @ucs AND ivs.IVS < char(unicode(@ucs) + 1))`,
   ],
   [
     'svs_cjkci',
@@ -41,7 +42,7 @@ export const queryExpressions = [
             'CJKCI_char', CJKCI,
             'CJKCI', printf('U+%04X', unicode(CJKCI))))
         FROM svs_cjkci
-        WHERE (SVS glob @ucs || '*') OR (CJKCI glob @ucs || '*'))`,
+        WHERE (SVS >= @ucs AND SVS < char(unicode(@ucs) + 1)) OR CJKCI = @ucs)`,
   ],
   [
     'unihan',
@@ -110,7 +111,8 @@ export const queryExpressions = [
             )) FROM tghb_variants AS v WHERE v.规范字 = tghb.规范字)
         ))
         FROM tghb
-        WHERE @ucs = tghb.规范字 OR @ucs IN (SELECT v.异体字 FROM tghb_variants AS v WHERE v.规范字 = tghb.规范字)
+        WHERE tghb.规范字 = @ucs
+          OR tghb.规范字 IN (SELECT v.规范字 FROM tghb_variants AS v WHERE v.异体字 = @ucs)
     )`,
   ],
   [
@@ -186,16 +188,26 @@ export const queryExpressions = [
       '国語研URL', 国語研URL,
       '備考', 備考
     ))
-    FROM mjih WHERE @ucs = mjih.文字 OR @ucs = mjih.字母 OR @ucs IN (SELECT 音価 FROM mjih_phonetic AS p WHERE p.MJ文字図形名 = mjih.MJ文字図形名))`,
+    FROM mjih
+    WHERE MJ文字図形名 IN (
+      SELECT MJ文字図形名 FROM mjih WHERE 文字 = @ucs
+      UNION
+      SELECT MJ文字図形名 FROM mjih WHERE 字母 = @ucs
+      UNION
+      SELECT MJ文字図形名 FROM mjih_phonetic WHERE 音価 = @ucs
+    ))`,
   ],
   [
     'kdpv',
     `(
         SELECT json_group_object(rel, json(cs)) FROM (
             SELECT rel, json_group_array(c) AS cs FROM (
-                SELECT DISTINCT rel, object AS c FROM kdpv WHERE subject glob @ucs || '*'
+                SELECT DISTINCT rel, object AS c FROM kdpv
+                WHERE subject >= @ucs AND subject < char(unicode(@ucs) + 1)
                 UNION
-                SELECT DISTINCT ifnull(rev, '~' || kdpv.rel) AS rel, subject AS c FROM kdpv LEFT JOIN kdpv_rels ON kdpv_rels.rel = kdpv.rel WHERE object glob @ucs || '*'
+                SELECT DISTINCT ifnull(rev, '~' || kdpv.rel) AS rel, subject AS c
+                FROM kdpv LEFT JOIN kdpv_rels ON kdpv_rels.rel = kdpv.rel
+                WHERE object >= @ucs AND object < char(unicode(@ucs) + 1)
             )
             GROUP BY rel
         )

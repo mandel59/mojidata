@@ -425,6 +425,7 @@ async function createMjih(db: import("better-sqlite3").Database) {
 
     db.exec(`CREATE INDEX "mjih_文字" ON "mjih" ("文字")`)
     db.exec(`CREATE INDEX "mjih_字母" ON "mjih" ("字母")`)
+    db.exec(`CREATE INDEX "mjih_phonetic_MJ文字図形名" ON "mjih_phonetic" ("MJ文字図形名")`)
     db.exec(`CREATE INDEX "mjih_phonetic_文字" ON "mjih_phonetic" ("文字")`)
     db.exec(`CREATE INDEX "mjih_phonetic_音価" ON "mjih_phonetic" ("音価")`)
 }
@@ -1114,6 +1115,7 @@ async function createIDS(
     })
 
     db.exec(`CREATE INDEX "${prefix}_UCS" ON "${prefix}" ("UCS")`)
+    db.exec(`CREATE INDEX "${prefix}_IDS" ON "${prefix}" ("IDS")`)
     db.exec(`CREATE INDEX "${prefix}_comment_UCS" ON "${prefix}_comment" ("UCS")`)
 }
 
