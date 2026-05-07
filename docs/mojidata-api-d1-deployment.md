@@ -101,6 +101,10 @@ endings via `.gitattributes`. This matters on Windows checkouts because the
 prepare scripts are executed by bash and the download manifests are read by
 curl-based scripts.
 
+`packages/idsdb-fts5/scripts/prepare` normalizes its output directory with
+`cygpath -w` when running under Git Bash. Without this, Windows Node receives a
+POSIX-style `/c/...` output path and can miss `packages/idsdb-fts5/idsfind.db`.
+
 ## Minimal Worker target
 
 The repository includes a private deployment workspace for this purpose:
