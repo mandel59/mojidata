@@ -89,6 +89,18 @@ It is not the right target for:
 - repeated full imports in CI
 - larger load tests
 
+## Local toolchain notes
+
+D1 release/import work should currently be run with Node.js 22 on Windows. Node
+24 has been observed to fail in the `ts-node`-based prepare path with
+`EBADF: bad file descriptor, fstat`, while Node 22.21.1 completed the same
+workflow.
+
+The repository keeps package shell scripts and download manifests on LF line
+endings via `.gitattributes`. This matters on Windows checkouts because the
+prepare scripts are executed by bash and the download manifests are read by
+curl-based scripts.
+
 ## Minimal Worker target
 
 The repository includes a private deployment workspace for this purpose:
