@@ -493,11 +493,15 @@ function buildIdsdbFts5ImportSql(sourceDbPath) {
   ].join("\n")
 }
 
+export function isIdsfindDbPath(sourceDbPath) {
+  return sourceDbPath.split(/[\\/]/).at(-1) === "idsfind.db"
+}
+
 function writeDumpFile(sourceDbPath, outputPath) {
   if (!fs.existsSync(sourceDbPath)) {
     throw new Error(`Missing SQLite database file: ${sourceDbPath}`)
   }
-  const sanitized = sourceDbPath.endsWith("/idsfind.db")
+  const sanitized = isIdsfindDbPath(sourceDbPath)
     ? buildIdsdbFts5ImportSql(sourceDbPath)
     : sanitizeDumpForD1(dumpSqliteDatabase(sourceDbPath), { sourceDbPath })
   fs.writeFileSync(outputPath, sanitized)
