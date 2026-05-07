@@ -157,6 +157,16 @@ importing into the active bindings.
      --manifest /tmp/mojidata-api-d1-release.json
    ```
 
+   Release database names are generated from fixed binding bases, not from the
+   currently active database names. This prevents names from growing after
+   repeated blue/green releases:
+
+   - `MOJIDATA_DB`: `mojidata-api-d1-mojidata-<release>`
+   - `IDSFIND_DB`: `mojidata-api-d1-idsfind-<release>`
+
+   Keep release labels short and descriptive. The helper refuses generated names
+   longer than 96 characters.
+
 3. Import the generated SQL into the release pair:
 
    ```sh

@@ -193,8 +193,27 @@ function copyD1Entry(entry) {
   return { ...entry }
 }
 
-function makeReleaseDatabaseName(databaseName, release) {
-  return `${databaseName}-${release}`
+function getReleaseDatabaseNameBase(entry) {
+  if (entry.release_database_name_base) {
+    return entry.release_database_name_base
+  }
+  if (entry.binding === "MOJIDATA_DB") {
+    return "mojidata-api-d1-mojidata"
+  }
+  if (entry.binding === "IDSFIND_DB") {
+    return "mojidata-api-d1-idsfind"
+  }
+  return `mojidata-api-d1-${entry.binding.toLowerCase().replace(/_db$/, "").replaceAll("_", "-")}`
+}
+
+function makeReleaseDatabaseName(entry, release) {
+  const databaseName = `${getReleaseDatabaseNameBase(entry)}-${release}`
+  if (databaseName.length > 96) {
+    throw new Error(
+      `generated D1 database name is too long (${databaseName.length} chars): ${databaseName}`,
+    )
+  }
+  return databaseName
 }
 
 function getSelectedBindings(bindings, previousByBinding) {
@@ -238,7 +257,7 @@ async function main() {
       continue
     }
 
-    const databaseName = makeReleaseDatabaseName(entry.database_name, release)
+    const databaseName = makeReleaseDatabaseName(entry, release)
     let databaseId =
       existingDatabases.find((item) => item?.name === databaseName)?.uuid ??
       getDatabaseIdFromInfo(databaseName)
