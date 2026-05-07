@@ -1,0 +1,9 @@
+* text=auto
+
+# Shell entrypoints are run by bash even when checked out on Windows.
+packages/*/scripts/* text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Download manifests are consumed by shell/curl scripts and must not gain CRLF.
+packages/*/download.txt text eol=lf

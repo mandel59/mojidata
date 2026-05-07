@@ -13,8 +13,8 @@
   "d1_databases": [
     {
       "binding": "MOJIDATA_DB",
-      "database_name": "mojidata-api-d1-mojidata-20260503-bg-20260504-d1-indexes",
-      "database_id": "54a92b59-a50b-41ce-a397-29353adfac0a"
+      "database_name": "mojidata-api-d1-mojidata-20260503-bg-20260504-d1-indexes-r20260507-unihan-views",
+      "database_id": "869556cd-9a42-4423-9b22-cff4c1eafca2"
     },
     {
       "binding": "IDSFIND_DB",
@@ -32,13 +32,11 @@
         {
           "binding": "MOJIDATA_DB",
           "database_name": "mojidata-api-d1-staging-mojidata",
-          // Replace with the real staging database ID returned by `wrangler d1 create`.
           "database_id": "00000000-0000-0000-0000-000000000101"
         },
         {
           "binding": "IDSFIND_DB",
           "database_name": "mojidata-api-d1-staging-idsfind",
-          // Replace with the real staging database ID returned by `wrangler d1 create`.
           "database_id": "00000000-0000-0000-0000-000000000102"
         }
       ]
@@ -52,13 +50,11 @@
         {
           "binding": "MOJIDATA_DB",
           "database_name": "mojidata-api-d1-production-mojidata",
-          // Replace with the real production database ID returned by `wrangler d1 create`.
           "database_id": "00000000-0000-0000-0000-000000000201"
         },
         {
           "binding": "IDSFIND_DB",
           "database_name": "mojidata-api-d1-production-idsfind",
-          // Replace with the real production database ID returned by `wrangler d1 create`.
           "database_id": "00000000-0000-0000-0000-000000000202"
         }
       ]

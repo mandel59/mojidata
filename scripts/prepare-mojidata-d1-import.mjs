@@ -2,7 +2,9 @@ import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { pathToFileURL } from "node:url"
 const rootDir = path.resolve(import.meta.dirname, "..")
+const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
 
 function printUsage() {
   console.log(`Usage: node ./scripts/prepare-mojidata-d1-import.mjs [--output-dir /tmp/mojidata-d1-import]
@@ -44,7 +46,7 @@ function preparePackage(packageDir) {
 }
 
 function dumpSqliteDatabase(dbPath) {
-  return execFileSync("sqlite3", [dbPath, ".dump"], {
+  return execFileSync(sqlite3Command, [dbPath, ".dump"], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -52,7 +54,7 @@ function dumpSqliteDatabase(dbPath) {
 }
 
 function querySqlite(dbPath, sql) {
-  return execFileSync("sqlite3", [dbPath, sql], {
+  return execFileSync(sqlite3Command, [dbPath, sql], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -61,7 +63,7 @@ function querySqlite(dbPath, sql) {
 
 function dumpTableAsInsertStatements(dbPath, tableName) {
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [dbPath, "-cmd", `.mode insert ${tableName}`, `SELECT * FROM "${tableName}";`],
     {
       cwd: rootDir,
@@ -71,12 +73,13 @@ function dumpTableAsInsertStatements(dbPath, tableName) {
   )
 }
 
-function listTables(dbPath, globPattern) {
+function listSqliteRelations(dbPath, globPattern, types) {
+  const typeList = types.map(encodeSqliteStringLiteral).join(", ")
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [
       dbPath,
-      `SELECT name FROM sqlite_schema WHERE type = 'table' AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
+      `SELECT name FROM sqlite_schema WHERE type IN (${typeList}) AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
     ],
     {
       cwd: rootDir,
@@ -86,6 +89,14 @@ function listTables(dbPath, globPattern) {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function listTables(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table"])
+}
+
+function listTablesAndViews(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table", "view"])
 }
 
 function decodeSqliteUnistrLiteral(value) {
@@ -110,9 +121,8 @@ function replaceUnsupportedFunctionsForD1(text) {
   )
 }
 
-function buildUnihanMaterializationStatements(sourceDbPath) {
-  const propertyTables = listTables(sourceDbPath, "unihan_k*")
-  if (propertyTables.length === 0) {
+export function buildUnihanMaterializationStatementsFromRelations(relations) {
+  if (relations.length === 0) {
     return ""
   }
 
@@ -127,7 +137,7 @@ function buildUnihanMaterializationStatements(sourceDbPath) {
     `CREATE INDEX "unihan_property_value" ON "unihan" ("property", "value");`,
   ]
 
-  for (const tableName of propertyTables) {
+  for (const tableName of relations) {
     const property = tableName.slice("unihan_".length)
     lines.push(
       `INSERT INTO "unihan" ("UCS", "property", "value") ` +
@@ -246,8 +256,8 @@ function buildMjsmMaterializationStatements(sourceDbPath) {
   return `${lines.join("\n")}\n`
 }
 
-function buildUnihanVariantMaterializationStatements(sourceDbPath) {
-  const tables = new Set(listTables(sourceDbPath, "unihan_k*"))
+export function buildUnihanVariantMaterializationStatementsFromRelations(relations) {
+  const tables = new Set(relations)
   const sources = [
     ["kCompatibilityVariant", `SELECT UCS, value FROM "unihan_kCompatibilityVariant"`],
     ["kSemanticVariant", `SELECT UCS, value FROM "unihan_kSemanticVariant"`],
@@ -297,9 +307,13 @@ function buildUnihanVariantMaterializationStatements(sourceDbPath) {
       `SELECT`,
       `  "UCS",`,
       `  "property",`,
-      `  (`,
-      `    SELECT char(sum((unicode(json_extract('"\\\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))`,
-      `    FROM json_each(json_array(substr(value_hex, 1, 2), substr(value_hex, 3, 2), substr(value_hex, 5, 2))) AS e`,
+      `  char(`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 1, 1)) - 1) * 1048576 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 2, 1)) - 1) * 65536 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 3, 1)) - 1) * 4096 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 4, 1)) - 1) * 256 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 5, 1)) - 1) * 16 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 6, 1)) - 1)`,
       `  ) AS "value",`,
       `  "additional_data"`,
       `FROM t;`,
@@ -307,6 +321,18 @@ function buildUnihanVariantMaterializationStatements(sourceDbPath) {
   }
 
   return `${lines.join("\n")}\n`
+}
+
+export function buildUnihanMaterializationStatements(sourceDbPath) {
+  return buildUnihanMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
+}
+
+function buildUnihanVariantMaterializationStatements(sourceDbPath) {
+  return buildUnihanVariantMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
 }
 
 function buildUnihanSourceMaterializationStatements(sourceDbPath) {
@@ -467,11 +493,15 @@ function buildIdsdbFts5ImportSql(sourceDbPath) {
   ].join("\n")
 }
 
+export function isIdsfindDbPath(sourceDbPath) {
+  return sourceDbPath.split(/[\\/]/).at(-1) === "idsfind.db"
+}
+
 function writeDumpFile(sourceDbPath, outputPath) {
   if (!fs.existsSync(sourceDbPath)) {
     throw new Error(`Missing SQLite database file: ${sourceDbPath}`)
   }
-  const sanitized = sourceDbPath.endsWith("/idsfind.db")
+  const sanitized = isIdsfindDbPath(sourceDbPath)
     ? buildIdsdbFts5ImportSql(sourceDbPath)
     : sanitizeDumpForD1(dumpSqliteDatabase(sourceDbPath), { sourceDbPath })
   fs.writeFileSync(outputPath, sanitized)
@@ -530,4 +560,6 @@ function main() {
   console.log(`Wrote D1 import dumps to ${outputDir}`)
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main()
+}

@@ -1,8 +1,16 @@
 import { spawnSync } from "node:child_process"
 import fs from "node:fs"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-const rootDir = path.resolve(new URL("..", import.meta.url).pathname)
+const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
+const npxCommand =
+  process.platform === "win32"
+    ? {
+        command: process.execPath,
+        args: [path.join(path.dirname(process.execPath), "node_modules/npm/bin/npx-cli.js")],
+      }
+    : { command: "npx", args: [] }
 const defaultConfigPath = path.join(
   rootDir,
   "packages",
@@ -11,11 +19,12 @@ const defaultConfigPath = path.join(
 )
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs --release-manifest /tmp/mojidata-api-d1-release.json [--config path] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
-       node ./scripts/import-mojidata-api-d1.mjs --unsafe-active [--config path] [--env staging] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare]
+  console.log(`Usage: node ./scripts/import-mojidata-api-d1.mjs --release-manifest /tmp/mojidata-api-d1-release.json [--config path] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare] [--binding MOJIDATA_DB]
+       node ./scripts/import-mojidata-api-d1.mjs --unsafe-active [--config path] [--env staging] [--output-dir /tmp/mojidata-d1-import] [--skip-prepare] [--binding MOJIDATA_DB]
 
 Prepares SQL dumps if needed and imports mojidata / idsfind data into the D1
-databases in a blue/green release manifest.
+databases in a blue/green release manifest. Pass --binding one or more times to
+import only selected bindings.
 
 Importing directly into active wrangler bindings is disabled by default because
 it is not a zero-downtime operation.`)
@@ -28,6 +37,7 @@ function parseArgs(argv) {
   let skipPrepare = false
   let releaseManifestPath
   let unsafeActive = false
+  const bindings = []
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
@@ -58,6 +68,10 @@ function parseArgs(argv) {
       unsafeActive = true
       continue
     }
+    if (arg === "--binding") {
+      bindings.push(argv[++i])
+      continue
+    }
     if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -76,6 +90,7 @@ function parseArgs(argv) {
     skipPrepare,
     releaseManifestPath,
     unsafeActive,
+    bindings,
   }
 }
 
@@ -125,14 +140,22 @@ function readReleaseManifest(manifestPath, env) {
   return manifest
 }
 
-function getDatabasesByBinding(databases) {
+function getDatabasesByBinding(databases, bindings) {
   const byBinding = new Map(databases.map((entry) => [entry.binding, entry]))
-  const mojidataDb = byBinding.get("MOJIDATA_DB")
-  const idsfindDb = byBinding.get("IDSFIND_DB")
-  if (!mojidataDb || !idsfindDb) {
-    throw new Error("target must define MOJIDATA_DB and IDSFIND_DB bindings")
+  const selected = bindings.length > 0 ? bindings : ["MOJIDATA_DB", "IDSFIND_DB"]
+  const deduped = [...new Set(selected)]
+  for (const binding of deduped) {
+    if (!byBinding.has(binding)) {
+      throw new Error(`target must define ${binding} binding`)
+    }
   }
-  return { mojidataDb, idsfindDb }
+  return deduped.map((binding) => byBinding.get(binding))
+}
+
+function getSqlPathForBinding(outputDir, binding) {
+  if (binding === "MOJIDATA_DB") return path.join(outputDir, "mojidata.sql")
+  if (binding === "IDSFIND_DB") return path.join(outputDir, "idsdb-fts5.sql")
+  throw new Error(`no SQL dump mapping is defined for ${binding}`)
 }
 
 async function main() {
@@ -143,6 +166,7 @@ async function main() {
     skipPrepare,
     releaseManifestPath,
     unsafeActive,
+    bindings,
   } = parseArgs(process.argv.slice(2))
   const cwd = path.dirname(configPath)
   const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
@@ -151,6 +175,9 @@ async function main() {
   if (releaseManifestPath) {
     const manifest = readReleaseManifest(releaseManifestPath, env)
     targetDatabases = manifest.releaseDatabases
+    if (bindings.length === 0 && Array.isArray(manifest.selectedBindings)) {
+      bindings.push(...manifest.selectedBindings)
+    }
     console.log(`importing into release manifest: ${releaseManifestPath}`)
   } else {
     if (!unsafeActive) {
@@ -165,46 +192,33 @@ async function main() {
     )
   }
 
-  const { mojidataDb, idsfindDb } = getDatabasesByBinding(targetDatabases)
+  const selectedDatabases = getDatabasesByBinding(targetDatabases, bindings)
 
   if (!skipPrepare) {
     run("node", ["./scripts/prepare-mojidata-d1-import.mjs", "--output-dir", outputDir], rootDir)
   }
 
-  const mojidataSql = path.join(outputDir, "mojidata.sql")
-  const idsfindSql = path.join(outputDir, "idsdb-fts5.sql")
-  if (!fs.existsSync(mojidataSql) || !fs.existsSync(idsfindSql)) {
-    throw new Error(`expected SQL dumps in ${outputDir}`)
+  for (const database of selectedDatabases) {
+    const sqlPath = getSqlPathForBinding(outputDir, database.binding)
+    if (!fs.existsSync(sqlPath)) {
+      throw new Error(`expected SQL dump for ${database.binding}: ${sqlPath}`)
+    }
+    run(
+      npxCommand.command,
+      [
+        ...npxCommand.args,
+        "wrangler",
+        "d1",
+        "execute",
+        database.database_name,
+        "--remote",
+        "--file",
+        sqlPath,
+        "--yes",
+      ],
+      cwd,
+    )
   }
-
-  run(
-    "npx",
-    [
-      "wrangler",
-      "d1",
-      "execute",
-      mojidataDb.database_name,
-      "--remote",
-      "--file",
-      mojidataSql,
-      "--yes",
-    ],
-    cwd,
-  )
-  run(
-    "npx",
-    [
-      "wrangler",
-      "d1",
-      "execute",
-      idsfindDb.database_name,
-      "--remote",
-      "--file",
-      idsfindSql,
-      "--yes",
-    ],
-    cwd,
-  )
 }
 
 await main()

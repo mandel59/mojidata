@@ -2,8 +2,9 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-const rootDir = path.resolve(new URL("..", import.meta.url).pathname)
+const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
 const defaultConfigPath = path.join(
   rootDir,
   "packages",
@@ -12,11 +13,12 @@ const defaultConfigPath = path.join(
 )
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/promote-mojidata-api-d1-release.mjs --release-manifest /tmp/mojidata-api-d1-release.json [--config path] [--env production] [--rollback-manifest /tmp/mojidata-api-d1-rollback.json] [--force]
+  console.log(`Usage: node ./scripts/promote-mojidata-api-d1-release.mjs --release-manifest /tmp/mojidata-api-d1-release.json [--config path] [--env production] [--rollback-manifest /tmp/mojidata-api-d1-rollback.json] [--binding MOJIDATA_DB] [--force]
 
-Promotes the D1 databases in a blue/green release manifest by writing their IDs
-into wrangler.jsonc. It also writes a rollback manifest for the previously
-active databases. Deploy the Worker after reviewing the config diff.`)
+Promotes D1 databases in a blue/green release manifest by writing their IDs into
+wrangler.jsonc. Pass --binding one or more times to promote only selected
+bindings. It also writes a rollback manifest for the previously active
+databases. Deploy the Worker after reviewing the config diff.`)
 }
 
 function parseArgs(argv) {
@@ -25,6 +27,7 @@ function parseArgs(argv) {
   let releaseManifestPath
   let rollbackManifestPath
   let force = false
+  const bindings = []
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
@@ -51,6 +54,10 @@ function parseArgs(argv) {
       force = true
       continue
     }
+    if (arg === "--binding") {
+      bindings.push(argv[++i])
+      continue
+    }
     if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -68,6 +75,7 @@ function parseArgs(argv) {
     releaseManifestPath,
     rollbackManifestPath,
     force,
+    bindings,
   }
 }
 
@@ -128,6 +136,11 @@ function normalizeDatabases(databases) {
     .sort((a, b) => a.binding.localeCompare(b.binding))
 }
 
+function selectDatabases(databases, bindings) {
+  const selected = new Set(bindings)
+  return databases.filter((entry) => selected.has(entry.binding))
+}
+
 function sameDatabases(left, right) {
   return (
     JSON.stringify(normalizeDatabases(left)) ===
@@ -135,11 +148,11 @@ function sameDatabases(left, right) {
   )
 }
 
-function ensureRequiredBindings(databases) {
+function ensureBindings(databases, bindings, label) {
   const byBinding = new Map(databases.map((entry) => [entry.binding, entry]))
-  for (const binding of ["MOJIDATA_DB", "IDSFIND_DB"]) {
+  for (const binding of bindings) {
     if (!byBinding.has(binding)) {
-      throw new Error(`manifest must define ${binding}`)
+      throw new Error(`${label} must define ${binding}`)
     }
   }
 }
@@ -195,17 +208,29 @@ async function main() {
   const currentDatabases = configTarget.d1_databases.map(copyD1Entry)
   const previousDatabases = manifest.previousDatabases.map(copyD1Entry)
   const releaseDatabases = manifest.releaseDatabases.map(copyD1Entry)
-  ensureRequiredBindings(releaseDatabases)
+  const selectedBindings =
+    args.bindings.length > 0
+      ? [...new Set(args.bindings)]
+      : (manifest.selectedBindings ?? releaseDatabases.map((entry) => entry.binding))
+  ensureBindings(previousDatabases, selectedBindings, "release manifest previousDatabases")
+  ensureBindings(releaseDatabases, selectedBindings, "release manifest releaseDatabases")
+  ensureBindings(currentDatabases, selectedBindings, "wrangler config")
 
-  if (!args.force && !sameDatabases(currentDatabases, previousDatabases)) {
+  if (
+    !args.force &&
+    !sameDatabases(
+      selectDatabases(currentDatabases, selectedBindings),
+      selectDatabases(previousDatabases, selectedBindings),
+    )
+  ) {
     throw new Error(
-      "current wrangler config does not match release manifest previousDatabases; refusing stale promotion. Pass --force if this is intentional.",
+      "current wrangler config does not match selected release manifest previousDatabases; refusing stale promotion. Pass --force if this is intentional.",
     )
   }
 
   configTarget.d1_databases = replaceDatabases(
     configTarget.d1_databases,
-    releaseDatabases,
+    selectDatabases(releaseDatabases, selectedBindings),
   )
   writeConfig(args.configPath, config)
 
@@ -220,7 +245,11 @@ async function main() {
     target: env ? `env.${env}` : "default",
     configPath: args.configPath,
     rollbackOf: manifest.release ?? null,
-    previousDatabases: releaseDatabases,
+    selectedBindings,
+    unchangedDatabases: currentDatabases.filter(
+      (entry) => !selectedBindings.includes(entry.binding),
+    ),
+    previousDatabases: configTarget.d1_databases.map(copyD1Entry),
     releaseDatabases: currentDatabases,
   }
 

@@ -3,8 +3,16 @@ import { spawnSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-const rootDir = path.resolve(new URL("..", import.meta.url).pathname)
+const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
+const npxCommand =
+  process.platform === "win32"
+    ? {
+        command: process.execPath,
+        args: [path.join(path.dirname(process.execPath), "node_modules/npm/bin/npx-cli.js")],
+      }
+    : { command: "npx", args: [] }
 const defaultConfigPath = path.join(
   rootDir,
   "packages",
@@ -14,10 +22,12 @@ const defaultConfigPath = path.join(
 const controlPlaneCwd = rootDir
 
 function printUsage() {
-  console.log(`Usage: node ./scripts/create-mojidata-api-d1-release.mjs [--config path] [--env production] [--release 20260503-unihan-ref] [--manifest /tmp/mojidata-api-d1-release.json] [--location wnam]
+  console.log(`Usage: node ./scripts/create-mojidata-api-d1-release.mjs [--config path] [--env production] [--release 20260503-unihan-ref] [--manifest /tmp/mojidata-api-d1-release.json] [--location wnam] [--binding MOJIDATA_DB]
 
-Creates a fresh pair of D1 databases for a blue/green mojidata-api release and
-writes a release manifest. The active wrangler config is not changed.`)
+Creates fresh D1 databases for a blue/green mojidata-api release and writes a
+release manifest. Pass --binding one or more times to create only selected
+bindings while keeping the others unchanged. The active wrangler config is not
+changed.`)
 }
 
 function parseArgs(argv) {
@@ -26,6 +36,7 @@ function parseArgs(argv) {
   let release = defaultReleaseLabel()
   let manifestPath
   let location
+  const bindings = []
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
@@ -52,6 +63,10 @@ function parseArgs(argv) {
       location = argv[++i]
       continue
     }
+    if (arg === "--binding") {
+      bindings.push(argv[++i])
+      continue
+    }
     if (arg === "--help" || arg === "-h") {
       printUsage()
       process.exit(0)
@@ -65,7 +80,7 @@ function parseArgs(argv) {
     `mojidata-api-d1-release-${release}.json`,
   )
 
-  return { configPath, env, release, manifestPath, location }
+  return { configPath, env, release, manifestPath, location, bindings }
 }
 
 function defaultReleaseLabel() {
@@ -102,7 +117,7 @@ function getConfigTarget(config, env) {
 }
 
 function runWrangler(args, cwd = controlPlaneCwd) {
-  const result = spawnSync("npx", ["wrangler", ...args], {
+  const result = spawnSync(npxCommand.command, [...npxCommand.args, "wrangler", ...args], {
     cwd,
     encoding: "utf8",
   })
@@ -178,12 +193,42 @@ function copyD1Entry(entry) {
   return { ...entry }
 }
 
-function makeReleaseDatabaseName(databaseName, release) {
-  return `${databaseName}-${release}`
+function getReleaseDatabaseNameBase(entry) {
+  if (entry.release_database_name_base) {
+    return entry.release_database_name_base
+  }
+  if (entry.binding === "MOJIDATA_DB") {
+    return "mojidata-api-d1-mojidata"
+  }
+  if (entry.binding === "IDSFIND_DB") {
+    return "mojidata-api-d1-idsfind"
+  }
+  return `mojidata-api-d1-${entry.binding.toLowerCase().replace(/_db$/, "").replaceAll("_", "-")}`
+}
+
+function makeReleaseDatabaseName(entry, release) {
+  const databaseName = `${getReleaseDatabaseNameBase(entry)}-${release}`
+  if (databaseName.length > 96) {
+    throw new Error(
+      `generated D1 database name is too long (${databaseName.length} chars): ${databaseName}`,
+    )
+  }
+  return databaseName
+}
+
+function getSelectedBindings(bindings, previousByBinding) {
+  const selected = bindings.length > 0 ? bindings : ["MOJIDATA_DB", "IDSFIND_DB"]
+  const deduped = [...new Set(selected)]
+  for (const binding of deduped) {
+    if (!previousByBinding.has(binding)) {
+      throw new Error(`wrangler config must define ${binding}`)
+    }
+  }
+  return deduped
 }
 
 async function main() {
-  const { configPath, env, release, manifestPath, location } = parseArgs(
+  const { configPath, env, release, manifestPath, location, bindings } = parseArgs(
     process.argv.slice(2),
   )
   const config = readConfig(configPath)
@@ -198,11 +243,21 @@ async function main() {
       throw new Error(`wrangler config must define ${binding}`)
     }
   }
+  const selectedBindings = getSelectedBindings(bindings, previousByBinding)
+  const selectedBindingSet = new Set(selectedBindings)
 
   const existingDatabases = listDatabases()
   const releaseDatabases = []
+  const unchangedDatabases = []
   for (const entry of previousDatabases) {
-    const databaseName = makeReleaseDatabaseName(entry.database_name, release)
+    if (!selectedBindingSet.has(entry.binding)) {
+      releaseDatabases.push(copyD1Entry(entry))
+      unchangedDatabases.push(copyD1Entry(entry))
+      console.log(`kept ${entry.binding}: ${entry.database_name} (${entry.database_id})`)
+      continue
+    }
+
+    const databaseName = makeReleaseDatabaseName(entry, release)
     let databaseId =
       existingDatabases.find((item) => item?.name === databaseName)?.uuid ??
       getDatabaseIdFromInfo(databaseName)
@@ -234,6 +289,8 @@ async function main() {
     configPath,
     previousDatabases,
     releaseDatabases,
+    selectedBindings,
+    unchangedDatabases,
   }
 
   fs.mkdirSync(path.dirname(manifestPath), { recursive: true })

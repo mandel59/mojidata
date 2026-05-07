@@ -89,6 +89,22 @@ It is not the right target for:
 - repeated full imports in CI
 - larger load tests
 
+## Local toolchain notes
+
+D1 release/import work should currently be run with Node.js 22 on Windows. Node
+24 has been observed to fail in the `ts-node`-based prepare path with
+`EBADF: bad file descriptor, fstat`, while Node 22.21.1 completed the same
+workflow.
+
+The repository keeps package shell scripts and download manifests on LF line
+endings via `.gitattributes`. This matters on Windows checkouts because the
+prepare scripts are executed by bash and the download manifests are read by
+curl-based scripts.
+
+`packages/idsdb-fts5/scripts/prepare` normalizes its output directory with
+`cygpath -w` when running under Git Bash. Without this, Windows Node receives a
+POSIX-style `/c/...` output path and can miss `packages/idsdb-fts5/idsfind.db`.
+
 ## Minimal Worker target
 
 The repository includes a private deployment workspace for this purpose:
@@ -146,6 +162,27 @@ importing into the active bindings.
    Omit `--env production` only when intentionally targeting the top-level
    default Worker config.
 
+   To release only one DB binding, pass `--binding` one or more times. The
+   release manifest keeps unselected bindings unchanged:
+
+   ```sh
+   corepack yarn mojidata-api:d1:create-release \
+     -- --env production \
+     --release 20260503-unihan-ref \
+     --binding MOJIDATA_DB \
+     --manifest /tmp/mojidata-api-d1-release.json
+   ```
+
+   Release database names are generated from fixed binding bases, not from the
+   currently active database names. This prevents names from growing after
+   repeated blue/green releases:
+
+   - `MOJIDATA_DB`: `mojidata-api-d1-mojidata-<release>`
+   - `IDSFIND_DB`: `mojidata-api-d1-idsfind-<release>`
+
+   Keep release labels short and descriptive. The helper refuses generated names
+   longer than 96 characters.
+
 3. Import the generated SQL into the release pair:
 
    ```sh
@@ -159,11 +196,33 @@ importing into the active bindings.
    `--unsafe-active` is passed. That flag is only for one-off destructive
    testing, not for public traffic.
 
+   When the release manifest was created with `--binding`, import defaults to
+   those selected bindings. You can also pass `--binding` explicitly to import a
+   subset:
+
+   ```sh
+   corepack yarn mojidata-api:d1:import \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --binding MOJIDATA_DB \
+     --output-dir /tmp/mojidata-d1-import \
+     --skip-prepare
+   ```
+
 4. Promote the release pair in `wrangler.jsonc` and write a rollback manifest:
 
    ```sh
    corepack yarn mojidata-api:d1:promote-release \
      -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --rollback-manifest /tmp/mojidata-api-d1-rollback.json
+   ```
+
+   For a per-DB release, promote only the selected binding. The stale manifest
+   check is applied to that binding, and unselected bindings remain as-is:
+
+   ```sh
+   corepack yarn mojidata-api:d1:promote-release \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --binding MOJIDATA_DB \
      --rollback-manifest /tmp/mojidata-api-d1-rollback.json
    ```
 
