@@ -1,8 +1,16 @@
 import { spawnSync } from "node:child_process"
 import fs from "node:fs"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-const rootDir = path.resolve(new URL("..", import.meta.url).pathname)
+const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
+const npxCommand =
+  process.platform === "win32"
+    ? {
+        command: process.execPath,
+        args: [path.join(path.dirname(process.execPath), "node_modules/npm/bin/npx-cli.js")],
+      }
+    : { command: "npx", args: [] }
 const defaultConfigPath = path.join(
   rootDir,
   "packages",
@@ -178,8 +186,9 @@ async function main() {
   }
 
   run(
-    "npx",
+    npxCommand.command,
     [
+      ...npxCommand.args,
       "wrangler",
       "d1",
       "execute",
@@ -192,8 +201,9 @@ async function main() {
     cwd,
   )
   run(
-    "npx",
+    npxCommand.command,
     [
+      ...npxCommand.args,
       "wrangler",
       "d1",
       "execute",

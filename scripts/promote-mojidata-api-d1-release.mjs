@@ -2,8 +2,9 @@ import assert from "node:assert/strict"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { fileURLToPath } from "node:url"
 
-const rootDir = path.resolve(new URL("..", import.meta.url).pathname)
+const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
 const defaultConfigPath = path.join(
   rootDir,
   "packages",

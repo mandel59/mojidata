@@ -78,6 +78,37 @@ describe("buildUnihanVariantMaterializationStatementsFromRelations", () => {
     assert.match(sql, /FROM \(SELECT UCS, value FROM "unihan_kTraditionalVariant"\) AS k/)
   })
 
+  test("decodes Unihan variant codepoints as Unicode characters", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mojidata-d1-import-test-"))
+    const dbPath = path.join(tempDir, "moji.db")
+
+    try {
+      execFileSync(sqlite3Command, [
+        dbPath,
+        [
+          `CREATE TABLE "unihan_kTraditionalVariant" ("UCS" TEXT NOT NULL, "value" TEXT NOT NULL);`,
+          `INSERT INTO "unihan_kTraditionalVariant" ("UCS", "value") VALUES ('线', 'U+7DDA');`,
+          buildUnihanVariantMaterializationStatementsFromRelations([
+            "unihan_kTraditionalVariant",
+          ]),
+        ].join("\n"),
+      ])
+
+      const valueHex = execFileSync(
+        sqlite3Command,
+        [
+          dbPath,
+          `SELECT hex(value) FROM "unihan_variant" WHERE "UCS" = '线' AND "property" = 'kTraditionalVariant';`,
+        ],
+        { encoding: "utf8" },
+      ).trim()
+
+      assert.equal(valueHex, "E7B79A")
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true })
+    }
+  })
+
   test("does not create an empty unihan_variant table without variant sources", () => {
     const sql = buildUnihanVariantMaterializationStatementsFromRelations([
       "unihan_kDefinition",
