@@ -17,7 +17,7 @@
         "mojidata-api:d1:import": "node ./scripts/import-mojidata-api-d1.mjs",
         "mojidata-api:d1:promote-release": "node ./scripts/promote-mojidata-api-d1-release.mjs",
         "mojidata-api:d1:prepare-import": "node ./scripts/prepare-mojidata-d1-import.mjs",
-        "mojidata-api:d1:check": "./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1/tsconfig.json && ./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1-worker/tsconfig.json --noEmit",
+        "mojidata-api:d1:check": "./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1/tsconfig.json && ./.yarn/sdks/typescript/bin/tsc -p packages/mojidata-api-d1-worker/tsconfig.json --noEmit && node --test scripts/prepare-mojidata-d1-import.test.mjs",
         "mojidata-api:d1:dev": "cd packages/mojidata-api-d1-worker && npx wrangler dev",
         "mojidata-api:d1:deploy": "cd packages/mojidata-api-d1-worker && npx wrangler deploy",
         "mojidata-api:d1:smoke": "node ./scripts/smoke-mojidata-api-remote.mjs",

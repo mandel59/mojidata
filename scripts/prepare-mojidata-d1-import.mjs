@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { pathToFileURL } from "node:url"
 const rootDir = path.resolve(import.meta.dirname, "..")
 
 function printUsage() {
@@ -71,12 +72,13 @@ function dumpTableAsInsertStatements(dbPath, tableName) {
   )
 }
 
-function listTables(dbPath, globPattern) {
+function listSqliteRelations(dbPath, globPattern, types) {
+  const typeList = types.map(encodeSqliteStringLiteral).join(", ")
   return execFileSync(
     "sqlite3",
     [
       dbPath,
-      `SELECT name FROM sqlite_schema WHERE type = 'table' AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
+      `SELECT name FROM sqlite_schema WHERE type IN (${typeList}) AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
     ],
     {
       cwd: rootDir,
@@ -86,6 +88,14 @@ function listTables(dbPath, globPattern) {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function listTables(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table"])
+}
+
+function listTablesAndViews(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table", "view"])
 }
 
 function decodeSqliteUnistrLiteral(value) {
@@ -246,8 +256,8 @@ function buildMjsmMaterializationStatements(sourceDbPath) {
   return `${lines.join("\n")}\n`
 }
 
-function buildUnihanVariantMaterializationStatements(sourceDbPath) {
-  const tables = new Set(listTables(sourceDbPath, "unihan_k*"))
+export function buildUnihanVariantMaterializationStatementsFromRelations(relations) {
+  const tables = new Set(relations)
   const sources = [
     ["kCompatibilityVariant", `SELECT UCS, value FROM "unihan_kCompatibilityVariant"`],
     ["kSemanticVariant", `SELECT UCS, value FROM "unihan_kSemanticVariant"`],
@@ -307,6 +317,12 @@ function buildUnihanVariantMaterializationStatements(sourceDbPath) {
   }
 
   return `${lines.join("\n")}\n`
+}
+
+function buildUnihanVariantMaterializationStatements(sourceDbPath) {
+  return buildUnihanVariantMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
 }
 
 function buildUnihanSourceMaterializationStatements(sourceDbPath) {
@@ -530,4 +546,6 @@ function main() {
   console.log(`Wrote D1 import dumps to ${outputDir}`)
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main()
+}
