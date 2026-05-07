@@ -120,9 +120,8 @@ function replaceUnsupportedFunctionsForD1(text) {
   )
 }
 
-function buildUnihanMaterializationStatements(sourceDbPath) {
-  const propertyTables = listTables(sourceDbPath, "unihan_k*")
-  if (propertyTables.length === 0) {
+export function buildUnihanMaterializationStatementsFromRelations(relations) {
+  if (relations.length === 0) {
     return ""
   }
 
@@ -137,7 +136,7 @@ function buildUnihanMaterializationStatements(sourceDbPath) {
     `CREATE INDEX "unihan_property_value" ON "unihan" ("property", "value");`,
   ]
 
-  for (const tableName of propertyTables) {
+  for (const tableName of relations) {
     const property = tableName.slice("unihan_".length)
     lines.push(
       `INSERT INTO "unihan" ("UCS", "property", "value") ` +
@@ -317,6 +316,12 @@ export function buildUnihanVariantMaterializationStatementsFromRelations(relatio
   }
 
   return `${lines.join("\n")}\n`
+}
+
+function buildUnihanMaterializationStatements(sourceDbPath) {
+  return buildUnihanMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
 }
 
 function buildUnihanVariantMaterializationStatements(sourceDbPath) {

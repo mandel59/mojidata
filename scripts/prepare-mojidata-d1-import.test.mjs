@@ -1,7 +1,30 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
-import { buildUnihanVariantMaterializationStatementsFromRelations } from "./prepare-mojidata-d1-import.mjs"
+import {
+  buildUnihanMaterializationStatementsFromRelations,
+  buildUnihanVariantMaterializationStatementsFromRelations,
+} from "./prepare-mojidata-d1-import.mjs"
+
+describe("buildUnihanMaterializationStatementsFromRelations", () => {
+  test("materializes every Unihan property source relation", () => {
+    const sql = buildUnihanMaterializationStatementsFromRelations([
+      "unihan_kJapanese",
+      "unihan_kTraditionalVariant",
+    ])
+
+    assert.match(sql, /CREATE TABLE "unihan"/)
+    assert.match(sql, /CREATE INDEX "unihan_property_value"/)
+    assert.match(
+      sql,
+      /SELECT "UCS", 'kJapanese', "value" FROM "unihan_kJapanese"/,
+    )
+    assert.match(
+      sql,
+      /SELECT "UCS", 'kTraditionalVariant', "value" FROM "unihan_kTraditionalVariant"/,
+    )
+  })
+})
 
 describe("buildUnihanVariantMaterializationStatementsFromRelations", () => {
   test("materializes Unihan variant relations from source relations", () => {
