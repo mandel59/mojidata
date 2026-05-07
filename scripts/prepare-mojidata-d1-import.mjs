@@ -4,6 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
 const rootDir = path.resolve(import.meta.dirname, "..")
+const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
 
 function printUsage() {
   console.log(`Usage: node ./scripts/prepare-mojidata-d1-import.mjs [--output-dir /tmp/mojidata-d1-import]
@@ -45,7 +46,7 @@ function preparePackage(packageDir) {
 }
 
 function dumpSqliteDatabase(dbPath) {
-  return execFileSync("sqlite3", [dbPath, ".dump"], {
+  return execFileSync(sqlite3Command, [dbPath, ".dump"], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -53,7 +54,7 @@ function dumpSqliteDatabase(dbPath) {
 }
 
 function querySqlite(dbPath, sql) {
-  return execFileSync("sqlite3", [dbPath, sql], {
+  return execFileSync(sqlite3Command, [dbPath, sql], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -62,7 +63,7 @@ function querySqlite(dbPath, sql) {
 
 function dumpTableAsInsertStatements(dbPath, tableName) {
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [dbPath, "-cmd", `.mode insert ${tableName}`, `SELECT * FROM "${tableName}";`],
     {
       cwd: rootDir,
@@ -75,7 +76,7 @@ function dumpTableAsInsertStatements(dbPath, tableName) {
 function listSqliteRelations(dbPath, globPattern, types) {
   const typeList = types.map(encodeSqliteStringLiteral).join(", ")
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [
       dbPath,
       `SELECT name FROM sqlite_schema WHERE type IN (${typeList}) AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
@@ -318,7 +319,7 @@ export function buildUnihanVariantMaterializationStatementsFromRelations(relatio
   return `${lines.join("\n")}\n`
 }
 
-function buildUnihanMaterializationStatements(sourceDbPath) {
+export function buildUnihanMaterializationStatements(sourceDbPath) {
   return buildUnihanMaterializationStatementsFromRelations(
     listTablesAndViews(sourceDbPath, "unihan_k*"),
   )
