@@ -146,6 +146,17 @@ importing into the active bindings.
    Omit `--env production` only when intentionally targeting the top-level
    default Worker config.
 
+   To release only one DB binding, pass `--binding` one or more times. The
+   release manifest keeps unselected bindings unchanged:
+
+   ```sh
+   corepack yarn mojidata-api:d1:create-release \
+     -- --env production \
+     --release 20260503-unihan-ref \
+     --binding MOJIDATA_DB \
+     --manifest /tmp/mojidata-api-d1-release.json
+   ```
+
 3. Import the generated SQL into the release pair:
 
    ```sh
@@ -159,11 +170,33 @@ importing into the active bindings.
    `--unsafe-active` is passed. That flag is only for one-off destructive
    testing, not for public traffic.
 
+   When the release manifest was created with `--binding`, import defaults to
+   those selected bindings. You can also pass `--binding` explicitly to import a
+   subset:
+
+   ```sh
+   corepack yarn mojidata-api:d1:import \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --binding MOJIDATA_DB \
+     --output-dir /tmp/mojidata-d1-import \
+     --skip-prepare
+   ```
+
 4. Promote the release pair in `wrangler.jsonc` and write a rollback manifest:
 
    ```sh
    corepack yarn mojidata-api:d1:promote-release \
      -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --rollback-manifest /tmp/mojidata-api-d1-rollback.json
+   ```
+
+   For a per-DB release, promote only the selected binding. The stale manifest
+   check is applied to that binding, and unselected bindings remain as-is:
+
+   ```sh
+   corepack yarn mojidata-api:d1:promote-release \
+     -- --release-manifest /tmp/mojidata-api-d1-release.json \
+     --binding MOJIDATA_DB \
      --rollback-manifest /tmp/mojidata-api-d1-rollback.json
    ```
 
