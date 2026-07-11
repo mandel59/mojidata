@@ -1023,6 +1023,7 @@ async function createIDS(
     filename = "IDS.TXT",
     patchFiles = [
         "ids-unicode-17.0.txt",
+        "ids-unicode-18.0.txt",
     ],
 ) {
     db.exec(`drop table if exists "${prefix}_fts"`)

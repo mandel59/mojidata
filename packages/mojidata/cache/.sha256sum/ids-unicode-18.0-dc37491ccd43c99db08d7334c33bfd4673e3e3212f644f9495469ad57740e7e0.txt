@@ -1,0 +1,40 @@
+U+35E9	㗩	^⿰口習$(GHTP)	^⿰口⿱⿰⿹𠃌𰀪⿹𠃌𰀪白$(JV)
+U+3862	㡢	^⿰巾㬅$(GTJ)	*U+3862(T) was ^⿰巾𭦟$ before Unicode 18.0
+U+43DE	䏞	^⿰月末$(GJ)	^⿰⺼末$(T)	*U+43DE(T) was ^⿰⺼未$ before Unicode 18.0
+U+4BCE	䯎	^⿰骨𫢉$(GTJ)	*U+4BCE(T) was ^⿰骨⿱八干$ before Unicode 18.0
+U+6B25	欥	^⿰日欠$(TJK)	^⿰曰欠$(GH)
+U+980B	頋	^⿰厄頁$(GMT)	^⿰⿸𠂆㔾頁$(JP)
+U+20089	𠂉	^𠂉$(GJVU)
+U+201A2	𠆢	^𠆢$(JU)
+U+20457	𠑗	^⿰亻⿱⿱⿴𦥑⿱㇒同大巳$(G)	^⿰亻⿱⿳⿴𦥑囟一八巳$(T)	^⿰亻⿱𦦉巳$(J)
+U+20B24	𠬤	^⿱又𰀁$(GVU)
+U+211AE	𡆮	^⿴囗土$(G)	^⿴囗士$(J)	*mojidata IDS: ^⿴囗士$(G) / ^⿴囗土$(Z)
+U+2148D	𡒍	^⿱聚土$(GTJ)
+U+21502	𡔂	^⿳宀㠭𪢾$(GTJ)
+U+21636	𡘶	^⿱䶹⿱大夲$(GTJ)
+U+22843	𢡃	^⿱𠶷心$(GTJ)
+U+23326	𣌦	^⿱日⿻{43}亅$(G)	^⿱日肀$(TJ)
+U+237E5	𣟥	^⿰木𢡃$(GJ)
+U+246C9	𤛉	^⿱𫝀⿳巛冖牟$(GT)
+U+248E9	𤣩	^𤣩$(HTJU)
+U+25A2B	𥨫	^⿱穴𪓑$(G)	^⿱⿱宀儿⿱丶黽$(T)	^⿱⿱宀儿𪓑$(JK)
+U+2669C	𦚜	^⿰⺼未$(T)	*U+2669C(T) was ^⿰⺼末$ before Unicode 18.0
+U+27FB7	𧾷	^𧾷$(JVU)
+U+29167	𩅧	^⿱雨衆$(GTP)
+U+296B1	𩚱	^⿰飠冋$(GTP)	^⿰𩙿冋$(J)
+U+2976E	𩝮	^⿰飠巸$(T)	^⿰𩙿巸$(J)
+U+2A8D8	𪣘	^⿰土吴$(G)	^⿰土吳$(T)	*U+2A8D8(G) was ^⿰土吳$ before Unicode 18.0
+U+2A917	𪤗	^⿰土翏$(GT)
+U+2AA90	𪪐	^⿸广⿱七文$(T)	*U+2AA90 was ^⿸虍文$ before Unicode 18.0
+U+2ADB8	𪶸	^⿰氵紊$(GT)
+U+2AE12	𪸒	^⿰火互$(GT)
+U+2B058	𫁘	^⿱穴黽$(G)	^⿱宂黽$(K)
+U+2B81E	𫠞	^⿰日欠$(G)	*U+2B81E=U+6B25(TJK);disunified from U+6B25 in Unicode 18.0
+U+2B876	𫡶	^⿰云甚$(G)
+U+2B8A0	𫢠	^⿰亻𱽗$(V)	*U+2B8A0 was ^⿰亻⿱艹尸$ before Unicode 18.0
+U+2DB7C	𭭼	^⿰止𠓗$(K)	*U+2DB7C was ^⿰止⿱⿷免丶⿰免⿷免丶$ before Unicode 18.0
+U+2EA07	𮨇	^⿰⿸厂㇯{18}一頁$(JS)	^⿰⿸厂巳頁$(TP)	*disunified from U+980B in Unicode 18.0
+U+30D12	𰴒	^⿰雨見$(G)
+U+312E7	𱋧	^⿰麦差$(G)	*U+312E7(G) was ^⿰麦⿱⿻𦍌㇒工$ before Unicode 18.0
+U+31F00	𱼀	^⿻夕丶$(US)
+U+31F1A	𱼚	^⿰未⿱成肉$(GUB)
