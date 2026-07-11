@@ -33,14 +33,14 @@ test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
                 AND NOT value glob printf('*U+%04X[0-9A-F]*', unicode(:ref)))
         )
         AND property NOT IN ('kJapanese', 'kSMSZD2003Readings', 'kFanqie')
-        ORDER BY UCS
+        ORDER BY UCS, property, value
         LIMIT 100
     `)
     const indexed = db.prepare(`
         SELECT printf('U+%04X', unicode(UCS)) AS code, UCS, property, value
         FROM unihan_value_ref
         WHERE unicode(:ref) > 0xFF AND ref = :ref
-        ORDER BY UCS
+        ORDER BY UCS, property, value
         LIMIT 100
     `)
 
