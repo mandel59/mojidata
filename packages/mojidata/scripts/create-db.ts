@@ -846,7 +846,8 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
 
     const unihanProperties = await scrapeUnihanDoc()
     for (const { Property, Delimiter } of unihanProperties) {
-        if (Delimiter === "space") {
+        const propertyExists = Boolean(db.prepare(`select ? in (select name from sqlite_schema)`).pluck().get(`${prefix}_${Property}`))
+        if (Delimiter === "space" && propertyExists) {
             db.exec(`drop view if exists "${prefix}_each_${Property}"`)
             db.exec(format(`
                 CREATE TABLE "${prefix}_each_${Property}" (
