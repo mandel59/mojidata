@@ -36,6 +36,9 @@ export function parseUnihanDoc(html: string): UnihanPropertyDoc[] {
         }).filter((entry): entry is [string, string] => {
             return Boolean(entry[0] && entry[1] != null)
         }))
+        if (!obj["Property"]) {
+            continue
+        }
         array.push(normalizeUnihanPropertyDoc(obj))
     }
     return array
