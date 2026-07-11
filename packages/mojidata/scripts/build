@@ -17,6 +17,7 @@ scripts/download USourceData.txt
 # scripts/download USourceData-draft.txt
 scripts/download IDS.TXT
 scripts/download ids-unicode-17.0.txt
+scripts/download ids-unicode-18.0.txt
 scripts/download doonnokanjiniyorukakikae1956.txt
 scripts/download cjkvi-variants_cjkvi-simplified.txt
 scripts/download cjkvi-variants_cjkvi-variants.txt
