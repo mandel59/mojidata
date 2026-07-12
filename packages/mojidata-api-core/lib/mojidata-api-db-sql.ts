@@ -1,5 +1,5 @@
 import type { MojidataApiDb } from "./mojidata-api-db"
-import { createIdsfind } from "./idsfind-sql"
+import { createIdsfind, type IdsfindCandidateProvider } from "./idsfind-sql"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import { createLibSearch } from "./libsearch"
@@ -99,12 +99,14 @@ SELECT c1, c2, f, j.value AS r FROM u JOIN json_each(u.rs) AS j
 export function createSqlApiDb({
   getMojidataDb,
   getIdsfindDb,
+  idsfindCandidateProvider,
 }: {
   getMojidataDb: DbProvider
   getIdsfindDb: DbProvider
+  idsfindCandidateProvider?: IdsfindCandidateProvider
 }): MojidataApiDb {
   const { search, filterChars } = createLibSearch(getMojidataDb)
-  const idsfind = createIdsfind(getIdsfindDb)
+  const idsfind = createIdsfind(getIdsfindDb, idsfindCandidateProvider)
   const shouldIncludeComputedField = (selection: string[], field: string) =>
     selection.length === 0 || selection.includes(field)
 

@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+STAMP=".idsdb-bvec.input.sha256"
+INDEX_MODE="bvec"
+CURRENT_HASH="$(MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" python3 ../idsdb/scripts/input-hash.py)"
+if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
+  PREV_HASH="$(cat "$STAMP")"
+  if [ "$CURRENT_HASH" = "$PREV_HASH" ]; then
+    echo "idsdb-bvec prepare: inputs unchanged, skipping rebuild"
+    exit 0
+  fi
+fi
+echo "idsdb-bvec prepare: inputs changed (or first build), rebuilding"
+MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" MOJIDATA_IDSDB_OUT_DIR="$PWD" \
+  yarn --cwd ../idsdb exec node --import tsx prepare.ts
+FINAL_HASH="$(MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" python3 ../idsdb/scripts/input-hash.py)"
+echo "$FINAL_HASH" > "$STAMP"

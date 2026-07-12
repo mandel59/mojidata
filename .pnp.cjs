@@ -19,6 +19,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/idsdb"\
     },\
     {\
+      "name": "@mandel59/idsdb-bvec",\
+      "reference": "workspace:packages/idsdb-bvec"\
+    },\
+    {\
       "name": "@mandel59/idsdb-fts5",\
       "reference": "workspace:packages/idsdb-fts5"\
     },\
@@ -92,6 +96,7 @@ const RAW_RUNTIME_STATE =
   "pnpZipBackend": "libzip",\
   "fallbackExclusionList": [\
     ["@mandel59/idsdb", ["workspace:packages/idsdb"]],\
+    ["@mandel59/idsdb-bvec", ["workspace:packages/idsdb-bvec"]],\
     ["@mandel59/idsdb-fts5", ["workspace:packages/idsdb-fts5"]],\
     ["@mandel59/idsdb-utils", ["workspace:packages/idsdb-utils"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
@@ -1088,6 +1093,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "SOFT"\
       }]\
     ]],\
+    ["@mandel59/idsdb-bvec", [\
+      ["workspace:packages/idsdb-bvec", {\
+        "packageLocation": "./packages/idsdb-bvec/",\
+        "packageDependencies": [\
+          ["@mandel59/idsdb-bvec", "workspace:packages/idsdb-bvec"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
     ["@mandel59/idsdb-fts5", [\
       ["workspace:packages/idsdb-fts5", {\
         "packageLocation": "./packages/idsdb-fts5/",\
@@ -1202,6 +1216,7 @@ const RAW_RUNTIME_STATE =
       ["virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3", {\
         "packageLocation": "./.yarn/__virtual__/@mandel59-mojidata-api-better-sqlite3-virtual-2b63c2bef4/1/packages/mojidata-api-better-sqlite3/",\
         "packageDependencies": [\
+          ["@mandel59/idsdb-bvec", "workspace:packages/idsdb-bvec"],\
           ["@mandel59/idsdb-fts5", "workspace:packages/idsdb-fts5"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@mandel59/mojidata-api-better-sqlite3", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3"],\
@@ -1218,6 +1233,7 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/mojidata-api-better-sqlite3", {\
         "packageLocation": "./packages/mojidata-api-better-sqlite3/",\
         "packageDependencies": [\
+          ["@mandel59/idsdb-bvec", "workspace:packages/idsdb-bvec"],\
           ["@mandel59/idsdb-fts5", "workspace:packages/idsdb-fts5"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
           ["@mandel59/mojidata-api-better-sqlite3", "workspace:packages/mojidata-api-better-sqlite3"],\

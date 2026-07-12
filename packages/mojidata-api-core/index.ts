@@ -1,5 +1,11 @@
 export type { MojidataApiDb } from "./lib/mojidata-api-db"
 export { createSqlApiDb } from "./lib/mojidata-api-db-sql"
+export { createBvecIdsfindCandidateProvider } from "./lib/idsfind-bvec"
+export {
+  createIdsfind,
+  ftsIdsfindCandidateProvider,
+  type IdsfindCandidateProvider,
+} from "./lib/idsfind-sql"
 export {
   buildMojidataSelectQuery,
   getSqlMojidataFields,

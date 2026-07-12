@@ -7,6 +7,19 @@ import { idsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import type { SqlExecutor } from "./sql-executor"
 
+export interface IdsfindCandidateProvider {
+  getCandidates(db: SqlExecutor, idslist: string[][][]): Promise<string[]>
+}
+
+export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist) {
+    const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
+      $idslist: JSON.stringify(idslist),
+    })
+    return rows.flatMap((row) => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
 const idsTokensPrefetchQuery = `
   SELECT UCS, IDS_tokens
   FROM idsfind
@@ -133,7 +146,10 @@ async function postaudit(
   return false
 }
 
-export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
+export function createIdsfind(
+  getDb: () => Promise<SqlExecutor>,
+  candidateProvider: IdsfindCandidateProvider = ftsIdsfindCandidateProvider,
+) {
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
     const tokenized = tokenizeIdsList(idslist)
@@ -185,16 +201,12 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
     }
 
     const out: string[] = []
-    const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
-      $idslist: JSON.stringify(tokenized.forQuery),
-    })
+    const candidates = await candidateProvider.getCandidates(db, tokenized.forQuery)
     await prefetchIDSTokens([
-      ...rows.flatMap((row) => (typeof row.UCS === "string" ? [row.UCS] : [])),
+      ...candidates,
       ...collectAuditLookupUcs(tokenized.forAudit),
     ])
-    for (const row of rows) {
-      const ucs = row.UCS
-      if (typeof ucs !== "string") continue
+    for (const ucs of candidates) {
       if (await postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
         out.push(ucs)
       }
