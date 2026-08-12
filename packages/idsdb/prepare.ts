@@ -137,6 +137,16 @@ function buildIdsfindBvec(db: Database.Database) {
 
 async function main() {
     const idsfindIndexMode = getIdsfindIndexMode()
+    const pageSizeText = process.env.MOJIDATA_IDSDB_PAGE_SIZE ?? "4096"
+    const pageSize = Number(pageSizeText)
+    if (
+        !Number.isSafeInteger(pageSize) ||
+        pageSize < 512 ||
+        pageSize > 65536 ||
+        (pageSize & (pageSize - 1)) !== 0
+    ) {
+        throw new Error("MOJIDATA_IDSDB_PAGE_SIZE must be a power of two between 512 and 65536")
+    }
     const outDir = process.env.MOJIDATA_IDSDB_OUT_DIR ?? __dirname
     const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
 
@@ -244,7 +254,7 @@ GROUP BY UCS`)
     }
 
     db.exec(`PRAGMA journal_mode = delete`)
-    db.exec(`PRAGMA page_size = 1024`)
+    db.exec(`PRAGMA page_size = ${pageSize}`)
     if (idsfindIndexMode !== "bvec") {
         db.exec(`INSERT INTO idsfind_fts (idsfind_fts) VALUES ('optimize')`)
     }

@@ -18,6 +18,10 @@ For local regeneration inside this monorepo:
 corepack yarn workspace @mandel59/idsdb-fts5 prepare
 ```
 
+The shared builder uses 4096-byte SQLite pages by default. Set
+`MOJIDATA_IDSDB_PAGE_SIZE` to a supported power of two from 512 through 65536
+to regenerate a different layout.
+
 For the current compatibility report and the reason this remains a separate
 package, see [docs/idsfind-fts-comparison.md](../../docs/idsfind-fts-comparison.md).
 

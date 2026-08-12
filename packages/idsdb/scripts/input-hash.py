@@ -48,5 +48,6 @@ add_file(workspace_root / "mojidata" / "dist" / "moji.db")
 add_line(f"ENV\tMOJIDATA_IDSDB_FTS_VERSION={os.getenv('MOJIDATA_IDSDB_FTS_VERSION', '4')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_INDEX_MODE={os.getenv('MOJIDATA_IDSDB_INDEX_MODE', '')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_BVEC_BLOCK_SIZE={os.getenv('MOJIDATA_IDSDB_BVEC_BLOCK_SIZE', '1024')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_PAGE_SIZE={os.getenv('MOJIDATA_IDSDB_PAGE_SIZE', '4096')}")
 
 print(h.hexdigest())
