@@ -9,6 +9,7 @@ export {
 export { tokenizeIDS } from "./lib/ids-tokenizer"
 export {
     encodeIdsBvec,
+    encodeIdsBvecPattern,
     idsBvecContainsMask,
     idsBvecFeatureVersion,
     idsBvecRecordBytes,
@@ -16,4 +17,5 @@ export {
     idsBvecUnion,
     idsBvecWordCount,
     type IdsBvec,
+    type IdsBvecPattern,
 } from "./lib/ids-bvec"

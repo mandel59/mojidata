@@ -5,6 +5,7 @@ import {
   createBvecIdsfindCandidateProvider,
   createIdsfind,
 } from "@mandel59/mojidata-api-core"
+import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokenize"
 
 import { createBetterSqlite3ExecutorProvider } from "../index"
 
@@ -13,6 +14,8 @@ const queryCases = [
   ["木"],
   ["⿰？心"],
   ["§⿱x⿰xx§"],
+  ["？木"],
+  ["⿰火"],
 ]
 
 describe("idsfind Bloom-vector compatibility", () => {
@@ -24,10 +27,13 @@ describe("idsfind Bloom-vector compatibility", () => {
       require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
     )
     const ftsIdsfind = createIdsfind(ftsProvider)
-    const bvecIdsfind = createIdsfind(
-      bvecProvider,
-      createBvecIdsfindCandidateProvider(),
+    const candidateProvider = createBvecIdsfindCandidateProvider()
+    const bvecIdsfind = createIdsfind(bvecProvider, candidateProvider)
+    const structuralCandidates = await candidateProvider.getCandidates(
+      await bvecProvider(),
+      tokenizeIdsList(["§⿱x⿰xx§"]).forQuery,
     )
+    assert.ok(structuralCandidates.length < 10_000)
 
     for (const query of queryCases) {
       const [expected, actual] = await Promise.all([

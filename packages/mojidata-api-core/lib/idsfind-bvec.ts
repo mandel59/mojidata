@@ -1,7 +1,9 @@
 import {
+  encodeIdsBvecPattern,
   idsBvecFeatureVersion,
   idsBvecRecordBytes,
   idsBvecTokenMask,
+  type IdsBvec,
 } from "@mandel59/idsdb-utils"
 
 import type { IdsfindCandidateProvider } from "./idsfind-sql"
@@ -47,14 +49,34 @@ function chunks<T>(values: T[], size: number) {
   return result
 }
 
+type BvecFilter =
+  | { kind: "positioned"; vector: IdsBvec }
+  | { kind: "union"; mask: number }
+
 function maskMatches(union: number, mask: number) {
   return (((union >>> 0) & (mask >>> 0)) >>> 0) === (mask >>> 0)
 }
 
-function groupsMatch(union: number, groups: number[][]) {
+function filterMatches(vector: IdsBvec, filter: BvecFilter) {
+  if (filter.kind === "union") {
+    return maskMatches(
+      vector[0] | vector[1] | vector[2] | vector[3],
+      filter.mask,
+    )
+  }
+  return filter.vector.every((mask, word) => maskMatches(vector[word], mask))
+}
+
+function groupsMatch(vector: IdsBvec, groups: BvecFilter[][]) {
   return groups.every((alternatives) =>
-    alternatives.some((mask) => maskMatches(union, mask)),
+    alternatives.some((filter) => filterMatches(vector, filter)),
   )
+}
+
+function filterKey(filter: BvecFilter) {
+  return filter.kind === "union"
+    ? `u:${filter.mask}`
+    : `p:${filter.vector.join(",")}`
 }
 
 async function compileMasks(db: SqlExecutor, idslist: string[][][]) {
@@ -80,32 +102,45 @@ async function compileMasks(db: SqlExecutor, idslist: string[][][]) {
     return promise
   }
 
-  const groups: number[][] = []
+  const groups: BvecFilter[][] = []
   for (const patterns of idslist) {
-    const masks: number[] = []
+    const filters: BvecFilter[] = []
     for (const pattern of patterns) {
-      let alternatives = [0]
+      const anchoredAtRoot = pattern[0] === "§"
+      let alternatives: string[][] = [[]]
       for (const token of pattern) {
-        if (
-          token === "§" ||
-          token === "？" ||
-          /^[a-zａ-ｚ]$/u.test(token)
-        ) {
-          continue
+        if (token === "§") continue
+        if (token === "？" || /^[a-zａ-ｚ]$/u.test(token)) {
+          alternatives = alternatives.map((tokens) => [...tokens, "？"])
+        } else {
+          const tokenAlternatives = await getAlternatives(token)
+          alternatives = alternatives.flatMap((tokens) =>
+            tokenAlternatives.map((items) => [...tokens, ...items]),
+          )
         }
-        const tokenAlternatives = await getAlternatives(token)
-        alternatives = alternatives.flatMap((mask) =>
-          tokenAlternatives.map((tokens) =>
-            tokens.reduce(
-              (value, item) => value | idsBvecTokenMask(item),
-              mask,
-            ) >>> 0,
-          ),
-        )
       }
-      masks.push(...alternatives)
+      for (const tokens of alternatives) {
+        const rootPattern = encodeIdsBvecPattern(tokens)
+        if (anchoredAtRoot) {
+          filters.push({ kind: "positioned", vector: rootPattern.vector })
+        } else if (rootPattern.rootCount === 1) {
+          for (const rootWord of [0, 1, 2, 3] as const) {
+            filters.push({
+              kind: "positioned",
+              vector: encodeIdsBvecPattern(tokens, rootWord).vector,
+            })
+          }
+        } else {
+          const mask = tokens.reduce((value, token) =>
+            token === "？" ? value : (value | idsBvecTokenMask(token)) >>> 0,
+          0)
+          filters.push({ kind: "union", mask })
+        }
+      }
     }
-    groups.push([...new Set(masks)])
+    groups.push([
+      ...new Map(filters.map((filter) => [filterKey(filter), filter])).values(),
+    ])
   }
   return groups
 }
@@ -162,13 +197,13 @@ export function createBvecIdsfindCandidateProvider(): IdsfindCandidateProvider {
           throw new Error("idsfind bvec blocks are not contiguous")
         }
         expectedFirstRowid += rowCount
-        const union = (
-          asInteger(block.union0, "union0") |
-          asInteger(block.union1, "union1") |
-          asInteger(block.union2, "union2") |
-          asInteger(block.union3, "union3")
-        ) >>> 0
-        return groupsMatch(union, groups) ? [asInteger(block.block_id, "block_id")] : []
+        const vector: [number, number, number, number] = [
+          asInteger(block.union0, "union0"),
+          asInteger(block.union1, "union1"),
+          asInteger(block.union2, "union2"),
+          asInteger(block.union3, "union3"),
+        ]
+        return groupsMatch(vector, groups) ? [asInteger(block.block_id, "block_id")] : []
       })
       if (expectedFirstRowid !== expectedRowCount + 1) {
         throw new Error("idsfind bvec block row counts do not match metadata")
@@ -190,11 +225,13 @@ export function createBvecIdsfindCandidateProvider(): IdsfindCandidateProvider {
         }
         const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
         for (let row = 0; row < rowCount; row++) {
-          let union = 0
+          const vector: [number, number, number, number] = [0, 0, 0, 0]
           for (let word = 0; word < 4; word++) {
-            union |= view.getUint32(row * idsBvecRecordBytes + word * 4, true)
+            vector[word] = view.getUint32(row * idsBvecRecordBytes + word * 4, true)
           }
-          if (groupsMatch(union >>> 0, groups)) rowids.push(firstRowid + row)
+          if (groupsMatch(vector, groups)) {
+            rowids.push(firstRowid + row)
+          }
         }
       }
 

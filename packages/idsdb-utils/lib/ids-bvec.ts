@@ -5,6 +5,10 @@ export const idsBvecWordCount = 4
 export const idsBvecRecordBytes = idsBvecWordCount * 4
 
 export type IdsBvec = readonly [number, number, number, number]
+export type IdsBvecPattern = {
+    vector: IdsBvec
+    rootCount: number
+}
 
 function utf8Bytes(value: string) {
     return new TextEncoder().encode(value)
@@ -75,6 +79,47 @@ export function encodeIdsBvec(tokens: readonly string[]): IdsBvec {
         root++
     }
     return words as [number, number, number, number]
+}
+
+/** Encode the positive features of a query pattern, omitting wildcard nodes. */
+export function encodeIdsBvecPattern(
+    tokens: readonly string[],
+    rootWord: 0 | 1 | 2 | 3 = 0,
+): IdsBvecPattern {
+    const words = [0, 0, 0, 0]
+
+    const encodeNode = (
+        index: number,
+        word: number,
+    ): { next: number; complete: boolean } => {
+        if (index >= tokens.length) return { next: index, complete: false }
+        const token = tokens[index]
+        if (token === "？" || /^[a-zａ-ｚ]$/u.test(token)) {
+            return { next: index + 1, complete: true }
+        }
+        const arity = tokenArgs[token] ?? 0
+        words[word] = (words[word] | idsBvecTokenMask(token)) >>> 0
+        let next = index + 1
+        for (let child = 0; child < arity; child++) {
+            const result = encodeNode(next, childWord(word, child, arity))
+            next = result.next
+            if (!result.complete) return { next, complete: false }
+        }
+        return { next, complete: true }
+    }
+
+    let index = 0
+    let rootCount = 0
+    while (index < tokens.length) {
+        const result = encodeNode(index, rootCount === 0 ? rootWord : 3)
+        index = result.next
+        rootCount++
+        if (!result.complete) break
+    }
+    return {
+        vector: words as [number, number, number, number],
+        rootCount,
+    }
 }
 
 export function idsBvecUnion(vector: IdsBvec) {
