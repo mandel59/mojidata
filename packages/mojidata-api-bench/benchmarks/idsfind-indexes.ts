@@ -17,6 +17,7 @@ import { createBetterSqlite3ExecutorProvider } from "@mandel59/mojidata-api-bett
 import {
   collectBenchmarkEnvironment,
   formatMs,
+  percentile,
   summarize,
   type BenchmarkSummary,
 } from "./lib"
@@ -33,7 +34,13 @@ type BenchmarkCase = {
 
 type CaseManifest = {
   caseSetVersion: number
+  stratification?: Record<string, unknown>
   cases: BenchmarkCase[]
+}
+
+type LoadedCaseManifest = CaseManifest & {
+  manifestPath: string
+  manifestSha256: string
 }
 
 type Options = {
@@ -43,6 +50,7 @@ type Options = {
   outputPath?: string
   format: "table" | "json"
   caseNames: string[]
+  manifestPath?: string
 }
 
 type Samples = {
@@ -83,6 +91,7 @@ function parseArgs(argv: string[]): Options {
     outputPath: process.env.MOJIDATA_API_BENCH_OUTPUT,
     format: process.env.MOJIDATA_BENCH_FORMAT === "json" ? "json" : "table",
     caseNames: [],
+    manifestPath: process.env.MOJIDATA_BENCH_MANIFEST,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -118,6 +127,10 @@ function parseArgs(argv: string[]): Options {
         options.caseNames.push(name)
         break
       }
+      case "--manifest":
+        options.manifestPath = argv[++index]
+        if (!options.manifestPath) throw new Error("--manifest requires a value")
+        break
       case "--help":
       case "-h":
         printHelp()
@@ -133,12 +146,20 @@ function parseArgs(argv: string[]): Options {
   return options
 }
 
-function loadCases(names: string[]): CaseManifest {
-  const manifestPath = resolve(__dirname, "idsfind-index-cases.json")
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as CaseManifest
-  if (names.length === 0) return manifest
+function loadCases(names: string[], requestedPath?: string): LoadedCaseManifest {
+  const manifestPath = requestedPath
+    ? resolve(process.cwd(), requestedPath)
+    : resolve(__dirname, "idsfind-index-cases.json")
+  const bytes = readFileSync(manifestPath)
+  const manifest = JSON.parse(bytes.toString("utf8")) as CaseManifest
+  const loaded = {
+    ...manifest,
+    manifestPath,
+    manifestSha256: createHash("sha256").update(bytes).digest("hex"),
+  }
+  if (names.length === 0) return loaded
   return {
-    caseSetVersion: manifest.caseSetVersion,
+    ...loaded,
     cases: names.map((name) => {
       const found = manifest.cases.find((entry) => entry.name === name)
       if (!found) {
@@ -164,6 +185,7 @@ function printHelp() {
     "  --output <path>       Write machine-readable JSON results",
     "  --format <table|json> Console output format (default: table)",
     "  --case <name>         Run only the named case (repeatable)",
+    "  --manifest <path>     Use an alternate versioned case manifest",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -267,12 +289,47 @@ function createEmptySamples(): Samples {
   }
 }
 
-function phase(samplesMs: number[]): { samplesMs: number[]; summary: BenchmarkSummary } {
-  return { samplesMs, summary: summarize(samplesMs) }
+function seedFrom(base: number, value: string) {
+  let seed = base >>> 0
+  for (const character of value) {
+    seed = Math.imul(seed ^ character.codePointAt(0)!, 16777619) >>> 0
+  }
+  return seed
+}
+
+function bootstrapMedian95(samplesMs: number[], seed: number) {
+  const resamples = 2_000
+  const random = createPrng(seed)
+  const medians: number[] = []
+  for (let repetition = 0; repetition < resamples; repetition++) {
+    const sample: number[] = []
+    for (let index = 0; index < samplesMs.length; index++) {
+      sample.push(samplesMs[Math.floor(random() * samplesMs.length)])
+    }
+    medians.push(summarize(sample).p50Ms)
+  }
+  medians.sort((left, right) => left - right)
+  return {
+    lowMs: percentile(medians, 0.025),
+    highMs: percentile(medians, 0.975),
+    resamples,
+  }
+}
+
+function phase(samplesMs: number[], seed: number): {
+  samplesMs: number[]
+  summary: BenchmarkSummary
+  p50Ci95: ReturnType<typeof bootstrapMedian95>
+} {
+  return {
+    samplesMs,
+    summary: summarize(samplesMs),
+    p50Ci95: bootstrapMedian95(samplesMs, seed),
+  }
 }
 
 function createPayload(
-  caseSetVersion: number,
+  manifest: LoadedCaseManifest,
   cases: BenchmarkCase[],
   options: Options,
   paths: Record<IndexName, string>,
@@ -284,18 +341,28 @@ function createPayload(
     const values = samples.get(key)
     const count = counts.get(key)
     if (!values || !count) throw new Error("Missing measurement for " + key)
+    const phaseSeed = (name: string) =>
+      seedFrom(options.seed, key + ":" + name)
     return {
       candidateCount: count.candidateCount,
-      candidate: phase(values.candidateMs),
-      endToEnd: phase(values.endToEndMs),
-      endToEndCandidate: phase(values.endToEndCandidateMs),
-      exactAndFetch: phase(values.exactAndFetchMs),
+      candidate: phase(values.candidateMs, phaseSeed("candidate")),
+      endToEnd: phase(values.endToEndMs, phaseSeed("endToEnd")),
+      endToEndCandidate: phase(
+        values.endToEndCandidateMs,
+        phaseSeed("endToEndCandidate"),
+      ),
+      exactAndFetch: phase(values.exactAndFetchMs, phaseSeed("exactAndFetch")),
     }
   }
 
   return {
     formatVersion,
-    caseSetVersion,
+    caseSetVersion: manifest.caseSetVersion,
+    caseManifest: {
+      path: manifest.manifestPath,
+      sha256: manifest.manifestSha256,
+      stratification: manifest.stratification,
+    },
     iterations: options.iterations,
     warmupIterations: options.warmupIterations,
     seed: options.seed,
@@ -358,7 +425,11 @@ function printTable(result: ReturnType<typeof createPayload>) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2))
-  const { caseSetVersion, cases } = loadCases(options.caseNames)
+  const manifest = loadCases(
+    options.caseNames,
+    options.manifestPath,
+  )
+  const { cases } = manifest
   const paths: Record<IndexName, string> = {
     fts5: require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
     bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
@@ -418,7 +489,7 @@ async function main() {
     values.exactAndFetchMs.push(Math.max(0, endToEndMs - search.candidateMs))
   }
 
-  const result = createPayload(caseSetVersion, cases, options, paths, counts, samples)
+  const result = createPayload(manifest, cases, options, paths, counts, samples)
   if (options.outputPath) {
     const outputPath = resolve(process.cwd(), options.outputPath)
     mkdirSync(dirname(outputPath), { recursive: true })

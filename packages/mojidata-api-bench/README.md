@@ -31,3 +31,14 @@ yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes \
   --iterations 20 --warmup 3 --seed 1 \
   --output ./tmp/idsfind-indexes.json
 ```
+
+Use `--manifest` to run a frozen alternate workload. Output records the
+manifest SHA-256 and a deterministic 2,000-resample bootstrap 95% interval for
+each phase median:
+
+```sh
+yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes \
+  --manifest benchmarks/idsfind-index-pilot-cases.json \
+  --iterations 20 --warmup 3 --seed 1 \
+  --output ./tmp/idsfind-index-pilot.json
+```
