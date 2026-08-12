@@ -24,14 +24,12 @@ import {
   type BenchmarkSummary,
 } from "./lib"
 
-type IndexName =
-  | "fts5"
-  | "fts5-cached"
-  | "fts5-stmt-cache"
-  | "bvec"
-  | "fts5-f1"
-  | "fts5-f2"
-type TargetName = IndexName | "selector" | "intersection"
+type TargetName = string
+
+type Fts5Variant = {
+  name: string
+  path: string
+}
 
 type BenchmarkCase = {
   name: string
@@ -67,6 +65,7 @@ type Options = {
   includeCachedFts: boolean
   includeStatementCache: boolean
   fts5Path?: string
+  fts5Variants: Fts5Variant[]
 }
 
 type Samples = {
@@ -115,6 +114,7 @@ function parseArgs(argv: string[]): Options {
     includeCachedFts: false,
     includeStatementCache: false,
     fts5Path: process.env.MOJIDATA_BENCH_FTS5,
+    fts5Variants: [],
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -179,6 +179,27 @@ function parseArgs(argv: string[]): Options {
         options.fts5Path = argv[++index]
         if (!options.fts5Path) throw new Error("--fts5-db requires a value")
         break
+      case "--fts5-variant": {
+        const value = argv[++index]
+        const separator = value?.indexOf("=") ?? -1
+        if (!value || separator < 1 || separator === value.length - 1) {
+          throw new Error("--fts5-variant requires <name>=<db>")
+        }
+        const name = value.slice(0, separator)
+        if (!/^fts5-[a-z0-9][a-z0-9-]*$/.test(name)) {
+          throw new Error(
+            "--fts5-variant name must match fts5-[a-z0-9][a-z0-9-]*",
+          )
+        }
+        if (options.fts5Variants.some((entry) => entry.name === name)) {
+          throw new Error("Duplicate FTS5 variant name: " + name)
+        }
+        options.fts5Variants.push({
+          name,
+          path: value.slice(separator + 1),
+        })
+        break
+      }
       case "--help":
       case "-h":
         printHelp()
@@ -245,6 +266,8 @@ function printHelp() {
     "  --cached-fts          Add a target with cached MATCH compilation",
     "  --statement-cache     Add a target reusing prepared SQL statements",
     "  --fts5-db <db>        Override the FTS5 database under test",
+    "  --fts5-variant <name>=<db>",
+    "                        Add a named FTS5 database target (repeatable)",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -564,6 +587,16 @@ async function main() {
     bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
   } as Record<TargetName, Target>
   const targetNames: TargetName[] = ["fts5"]
+  for (const variant of options.fts5Variants) {
+    const variantPath = resolve(__dirname, "../../..", variant.path)
+    paths[variant.name] = variantPath
+    targets[variant.name] = await createTarget(
+      variant.name,
+      variantPath,
+      ftsIdsfindCandidateProvider,
+    )
+    targetNames.push(variant.name)
+  }
   if (options.includeCachedFts) {
     targets["fts5-cached"] = await createTarget(
       "fts5-cached",
@@ -680,7 +713,7 @@ async function main() {
   if (options.outputPath) {
     const outputPath = resolve(process.cwd(), options.outputPath)
     mkdirSync(dirname(outputPath), { recursive: true })
-    writeFileSync(outputPath, JSON.stringify(result, null, 2))
+    writeFileSync(outputPath, JSON.stringify(result, null, 2) + "\n")
   }
   if (options.format === "json") {
     process.stdout.write(JSON.stringify(result, null, 2) + "\n")
