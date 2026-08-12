@@ -29,4 +29,22 @@ describe("idsfind query compatibility", () => {
     assert.deepEqual(results, ["灶"])
     db.close()
   })
+
+  test("rejects a root wildcard against an incomplete IDS row", async () => {
+    const db = new Database(":memory:")
+    db.exec(`
+      CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
+      INSERT INTO idsfind (UCS, IDS_tokens) VALUES ('X', '⿰ 火');
+    `)
+
+    const executor = createBetterSqlite3Executor(db)
+    const idsfind = createIdsfind(async () => executor, {
+      async getCandidates() {
+        return ["X"]
+      },
+    })
+
+    assert.deepEqual(await idsfind(["§？§"]), [])
+    db.close()
+  })
 })
