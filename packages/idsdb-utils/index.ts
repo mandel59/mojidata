@@ -19,3 +19,10 @@ export {
     type IdsBvec,
     type IdsBvecPattern,
 } from "./lib/ids-bvec"
+export {
+    collectIdsFtsFeatures,
+    encodeIdsFtsEdgeFeature,
+    encodeIdsFtsRootFeature,
+    idsFtsFeatureVersion,
+    type IdsFtsFeatureFamily,
+} from "./lib/ids-fts-features"

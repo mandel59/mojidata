@@ -8,6 +8,7 @@ import { performance } from "node:perf_hooks"
 import {
   createBvecIdsfindCandidateProvider,
   createIdsfind,
+  createStructuralFtsIdsfindCandidateProvider,
   ftsIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
 } from "@mandel59/mojidata-api-core"
@@ -22,7 +23,7 @@ import {
   type BenchmarkSummary,
 } from "./lib"
 
-type IndexName = "fts5" | "bvec"
+type IndexName = "fts5" | "bvec" | "fts5-f1" | "fts5-f2"
 type TargetName = IndexName | "selector" | "intersection"
 
 type BenchmarkCase = {
@@ -53,6 +54,7 @@ type Options = {
   caseNames: string[]
   manifestPath?: string
   includeHybrid: boolean
+  structuralFtsPath?: string
 }
 
 type Samples = {
@@ -95,6 +97,7 @@ function parseArgs(argv: string[]): Options {
     caseNames: [],
     manifestPath: process.env.MOJIDATA_BENCH_MANIFEST,
     includeHybrid: false,
+    structuralFtsPath: process.env.MOJIDATA_BENCH_STRUCTURAL_FTS,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -136,6 +139,12 @@ function parseArgs(argv: string[]): Options {
         break
       case "--include-hybrid":
         options.includeHybrid = true
+        break
+      case "--structural-fts":
+        options.structuralFtsPath = argv[++index]
+        if (!options.structuralFtsPath) {
+          throw new Error("--structural-fts requires a value")
+        }
         break
       case "--help":
       case "-h":
@@ -193,6 +202,7 @@ function printHelp() {
     "  --case <name>         Run only the named case (repeatable)",
     "  --manifest <path>     Use an alternate versioned case manifest",
     "  --include-hybrid      Add whole-anchor selector and candidate intersection",
+    "  --structural-fts <db> Add F1 root and F2 edge targets from a derived DB",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -255,7 +265,7 @@ function makeTasks(
 }
 
 async function createTarget(
-  name: IndexName,
+  name: TargetName,
   dbPath: string,
   provider: IdsfindCandidateProvider,
 ): Promise<Target> {
@@ -398,7 +408,7 @@ function createPayload(
   manifest: LoadedCaseManifest,
   cases: BenchmarkCase[],
   options: Options,
-  paths: Record<IndexName, string>,
+  paths: Record<string, string>,
   targetNames: TargetName[],
   counts: Map<string, { candidateCount: number; resultCount: number }>,
   samples: Map<string, Samples>,
@@ -440,12 +450,12 @@ function createPayload(
       jjWorkingCopySummary: readCommand("jj", ["diff", "--summary"]),
     },
     databases: Object.fromEntries(
-      (["fts5", "bvec"] as const).map((name) => [
+      Object.entries(paths).map(([name, path]) => [
         name,
         {
-          path: paths[name],
-          bytes: statSync(paths[name]).size,
-          sha256: hashFile(paths[name]),
+          path,
+          bytes: statSync(path).size,
+          sha256: hashFile(path),
         },
       ]),
     ),
@@ -499,7 +509,7 @@ async function main() {
     options.manifestPath,
   )
   const { cases } = manifest
-  const paths: Record<IndexName, string> = {
+  const paths: Record<string, string> = {
     fts5: require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
     bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
   }
@@ -508,6 +518,21 @@ async function main() {
     bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
   } as Record<TargetName, Target>
   const targetNames: TargetName[] = ["fts5", "bvec"]
+  if (options.structuralFtsPath) {
+    const structuralPath = resolve(__dirname, "../../..", options.structuralFtsPath)
+    paths.structuralFts = structuralPath
+    targets["fts5-f1"] = await createTarget(
+      "fts5-f1",
+      structuralPath,
+      createStructuralFtsIdsfindCandidateProvider(["root"]),
+    )
+    targets["fts5-f2"] = await createTarget(
+      "fts5-f2",
+      structuralPath,
+      createStructuralFtsIdsfindCandidateProvider(["root", "edge"]),
+    )
+    targetNames.push("fts5-f1", "fts5-f2")
+  }
   if (options.includeHybrid) {
     targets.selector = createWholeAnchorSelector(targets.fts5, targets.bvec)
     targets.intersection = await createIntersectionTarget(paths.fts5, paths.bvec)

@@ -74,3 +74,11 @@ export function makeIdsfindQuery(queryBody: string) {
 }
 
 export const idsfindQuery = makeIdsfindQuery(`select UCS from results`)
+
+export const idsfindStructuralQuery = makeIdsfindQuery(`
+select distinct results.UCS as UCS
+from results
+join idsfind on idsfind.UCS = results.UCS
+join idsfind_structural_fts on idsfind_structural_fts.rowid = idsfind.rowid
+where idsfind_structural_fts match $structural_pattern
+`)

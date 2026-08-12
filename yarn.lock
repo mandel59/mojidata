@@ -859,10 +859,12 @@ __metadata:
   dependencies:
     "@mandel59/idsdb-bvec": "workspace:^"
     "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/idsdb-utils": "workspace:^"
     "@mandel59/mojidata-api-better-sqlite3": "npm:^1.9.0"
     "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@mandel59/mojidata-api-node-sqlite": "npm:^1.9.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
+    "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     tsx: "npm:^4.21.0"

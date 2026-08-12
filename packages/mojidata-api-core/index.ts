@@ -2,6 +2,10 @@ export type { MojidataApiDb } from "./lib/mojidata-api-db"
 export { createSqlApiDb } from "./lib/mojidata-api-db-sql"
 export { createBvecIdsfindCandidateProvider } from "./lib/idsfind-bvec"
 export {
+  compileIdsfindStructuralPattern,
+  createStructuralFtsIdsfindCandidateProvider,
+} from "./lib/idsfind-structural"
+export {
   createIdsfind,
   ftsIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
