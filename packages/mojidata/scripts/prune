@@ -3,7 +3,8 @@
 set -eu
 cd "$(dirname "$0")/.."
 fgrep -v \
-    -f <(find cache -type l -exec readlink {} + | xargs basename) \
+    -f <(find cache -type l -exec readlink {} \; | while IFS= read -r target; do basename "$target"; done) \
     <(find cache/.sha256sum -type f -exec basename {} \;) \
-    | xargs printf 'cache/.sha256sum/%s\n' \
-    | xargs rm
+    | while IFS= read -r cachefile; do
+        rm "cache/.sha256sum/$cachefile"
+    done
