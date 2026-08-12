@@ -66,6 +66,7 @@ type Options = {
   embeddedCandidateTiming: boolean
   includeCachedFts: boolean
   includeStatementCache: boolean
+  fts5Path?: string
 }
 
 type Samples = {
@@ -113,6 +114,7 @@ function parseArgs(argv: string[]): Options {
     embeddedCandidateTiming: false,
     includeCachedFts: false,
     includeStatementCache: false,
+    fts5Path: process.env.MOJIDATA_BENCH_FTS5,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -172,6 +174,10 @@ function parseArgs(argv: string[]): Options {
         break
       case "--statement-cache":
         options.includeStatementCache = true
+        break
+      case "--fts5-db":
+        options.fts5Path = argv[++index]
+        if (!options.fts5Path) throw new Error("--fts5-db requires a value")
         break
       case "--help":
       case "-h":
@@ -238,6 +244,7 @@ function printHelp() {
     "                        Derive candidate timing from each end-to-end search",
     "  --cached-fts          Add a target with cached MATCH compilation",
     "  --statement-cache     Add a target reusing prepared SQL statements",
+    "  --fts5-db <db>        Override the FTS5 database under test",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -547,7 +554,9 @@ async function main() {
   )
   const { cases } = manifest
   const paths: Record<string, string> = {
-    fts5: require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
+    fts5: options.fts5Path
+      ? resolve(__dirname, "../../..", options.fts5Path)
+      : require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
     bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
   }
   const targets = {

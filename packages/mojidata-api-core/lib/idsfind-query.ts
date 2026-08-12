@@ -83,6 +83,42 @@ export const idsfindPatternQuery =
   `${idsfindPatternQueryContext}
 select pattern from token_pattern`
 
+export const idsfindPatternAnalysisQuery =
+  `${idsfindPatternQueryContext}
+select
+  pattern,
+  (
+    select count(*)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as phrase_count,
+  (
+    select min(length(tokens) - length(replace(tokens, ' ', '')) + 1)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as min_phrase_tokens,
+  (
+    select max(length(tokens) - length(replace(tokens, ' ', '')) + 1)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as max_phrase_tokens
+from token_pattern`
+
 export const idsfindDirectQuery = `
 select distinct idsfind.UCS AS UCS
 from idsfind_fts
