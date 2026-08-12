@@ -3,7 +3,11 @@ import {
   type TokenList,
 } from "@mandel59/idsdb-utils"
 
-import { idsfindQuery } from "./idsfind-query"
+import {
+  idsfindDirectQuery,
+  idsfindPatternQuery,
+  idsfindQuery,
+} from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import type { SqlExecutor } from "./sql-executor"
 
@@ -18,6 +22,38 @@ export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
     })
     return rows.flatMap((row) => typeof row.UCS === "string" ? [row.UCS] : [])
   },
+}
+
+/**
+ * Compile each normalized IDS query to an FTS MATCH expression once per
+ * database executor, then execute only the direct MATCH query on cache hits.
+ */
+export function createCachedFtsIdsfindCandidateProvider(): IdsfindCandidateProvider {
+  const cacheByDatabase = new WeakMap<SqlExecutor, Map<string, string>>()
+  return {
+    async getCandidates(db, idslist) {
+      let cache = cacheByDatabase.get(db)
+      if (!cache) {
+        cache = new Map()
+        cacheByDatabase.set(db, cache)
+      }
+      const key = JSON.stringify(idslist)
+      let pattern = cache.get(key)
+      if (pattern === undefined) {
+        const row = await db.queryOne<{ pattern?: unknown }>(
+          idsfindPatternQuery,
+          { $idslist: key },
+        )
+        if (typeof row?.pattern !== "string") return []
+        pattern = row.pattern
+        cache.set(key, pattern)
+      }
+      const rows = await db.query<{ UCS?: unknown }>(idsfindDirectQuery, {
+        $pattern: pattern,
+      })
+      return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+    },
+  }
 }
 
 const idsTokensPrefetchQuery = `

@@ -10,6 +10,7 @@ import {
 } from "@mandel59/idsdb-utils"
 import {
   createBvecIdsfindCandidateProvider,
+  createCachedFtsIdsfindCandidateProvider,
   createIdsfind,
   ftsIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
@@ -273,6 +274,7 @@ function createFixture(rows: IdsRow[]) {
   const executor = createBetterSqlite3Executor(db)
   const providers = {
     fts5: ftsIdsfindCandidateProvider,
+    fts5Cached: createCachedFtsIdsfindCandidateProvider(),
     bvec: createBvecIdsfindCandidateProvider(),
   }
   return { db, executor, providers }
@@ -301,11 +303,13 @@ describe("idsfind characterization matrix", () => {
       const fixture = createFixture(characterization.rows)
       try {
         for (const expectation of characterization.expectations) {
-          for (const indexName of ["fts5", "bvec"] as const) {
+          for (const indexName of ["fts5", "fts5Cached", "bvec"] as const) {
             const provider = fixture.providers[indexName]
             const observation = await observe(fixture, provider, expectation.query)
             const expectedCandidates =
-              expectation.candidates?.[indexName] ?? expectation.answers
+              expectation.candidates?.[
+                indexName === "fts5Cached" ? "fts5" : indexName
+              ] ?? expectation.answers
             assert.deepEqual(
               observation.candidates,
               sorted(expectedCandidates),

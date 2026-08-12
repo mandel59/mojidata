@@ -6,6 +6,7 @@ export {
   createStructuralFtsIdsfindCandidateProvider,
 } from "./lib/idsfind-structural"
 export {
+  createCachedFtsIdsfindCandidateProvider,
   createIdsfind,
   ftsIdsfindCandidateProvider,
   type IdsfindCandidateProvider,

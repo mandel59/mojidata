@@ -29,14 +29,25 @@ function applyParams<T>(
 
 export function createBetterSqlite3Executor(
   db: BetterSqlite3Database.Database,
+  options: { cacheStatements?: boolean } = {},
 ): SqlExecutor {
+  const statementCache = new Map<string, ReturnType<typeof db.prepare>>()
+  const prepare = (sql: string) => {
+    if (!options.cacheStatements) return db.prepare(sql)
+    let statement = statementCache.get(sql)
+    if (!statement) {
+      statement = db.prepare(sql)
+      statementCache.set(sql, statement)
+    }
+    return statement
+  }
   return {
     async query<T extends SqlRow>(sql: string, params?: SqlParams): Promise<T[]> {
-      const stmt = db.prepare<T[]>(sql)
+      const stmt = prepare(sql)
       return (applyParams(stmt, "all", params) as T[]) ?? []
     },
     async queryOne<T extends SqlRow>(sql: string, params?: SqlParams): Promise<T | null> {
-      const stmt = db.prepare<T>(sql)
+      const stmt = prepare(sql)
       return (applyParams(stmt, "get", params) as T | undefined) ?? null
     },
   }

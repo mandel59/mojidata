@@ -7,6 +7,7 @@ import { performance } from "node:perf_hooks"
 
 import {
   createBvecIdsfindCandidateProvider,
+  createCachedFtsIdsfindCandidateProvider,
   createIdsfind,
   createStructuralFtsIdsfindCandidateProvider,
   ftsIdsfindCandidateProvider,
@@ -23,7 +24,13 @@ import {
   type BenchmarkSummary,
 } from "./lib"
 
-type IndexName = "fts5" | "bvec" | "fts5-f1" | "fts5-f2"
+type IndexName =
+  | "fts5"
+  | "fts5-cached"
+  | "fts5-stmt-cache"
+  | "bvec"
+  | "fts5-f1"
+  | "fts5-f2"
 type TargetName = IndexName | "selector" | "intersection"
 
 type BenchmarkCase = {
@@ -57,6 +64,8 @@ type Options = {
   structuralFtsPath?: string
   includeBvec: boolean
   embeddedCandidateTiming: boolean
+  includeCachedFts: boolean
+  includeStatementCache: boolean
 }
 
 type Samples = {
@@ -102,6 +111,8 @@ function parseArgs(argv: string[]): Options {
     structuralFtsPath: process.env.MOJIDATA_BENCH_STRUCTURAL_FTS,
     includeBvec: true,
     embeddedCandidateTiming: false,
+    includeCachedFts: false,
+    includeStatementCache: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -155,6 +166,12 @@ function parseArgs(argv: string[]): Options {
         break
       case "--embedded-candidate-timing":
         options.embeddedCandidateTiming = true
+        break
+      case "--cached-fts":
+        options.includeCachedFts = true
+        break
+      case "--statement-cache":
+        options.includeStatementCache = true
         break
       case "--help":
       case "-h":
@@ -219,6 +236,8 @@ function printHelp() {
     "  --no-bvec             Omit BV128 from this run",
     "  --embedded-candidate-timing",
     "                        Derive candidate timing from each end-to-end search",
+    "  --cached-fts          Add a target with cached MATCH compilation",
+    "  --statement-cache     Add a target reusing prepared SQL statements",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -284,8 +303,9 @@ async function createTarget(
   name: TargetName,
   dbPath: string,
   provider: IdsfindCandidateProvider,
+  options: { cacheStatements?: boolean } = {},
 ): Promise<Target> {
-  const getDb = createBetterSqlite3ExecutorProvider(dbPath)
+  const getDb = createBetterSqlite3ExecutorProvider(dbPath, options)
   let lastCandidateMs = Number.NaN
   const timedProvider: IdsfindCandidateProvider = {
     async getCandidates(db, idslist) {
@@ -535,6 +555,23 @@ async function main() {
     bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
   } as Record<TargetName, Target>
   const targetNames: TargetName[] = ["fts5"]
+  if (options.includeCachedFts) {
+    targets["fts5-cached"] = await createTarget(
+      "fts5-cached",
+      paths.fts5,
+      createCachedFtsIdsfindCandidateProvider(),
+    )
+    targetNames.push("fts5-cached")
+  }
+  if (options.includeStatementCache) {
+    targets["fts5-stmt-cache"] = await createTarget(
+      "fts5-stmt-cache",
+      paths.fts5,
+      ftsIdsfindCandidateProvider,
+      { cacheStatements: true },
+    )
+    targetNames.push("fts5-stmt-cache")
+  }
   if (options.includeBvec) targetNames.push("bvec")
   if (options.structuralFtsPath) {
     const structuralPath = resolve(__dirname, "../../..", options.structuralFtsPath)

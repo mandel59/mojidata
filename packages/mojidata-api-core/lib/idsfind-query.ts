@@ -1,4 +1,4 @@
-export const idsfindQueryContext = `
+export const idsfindPatternQueryContext = `
 with tokens as (
     select
         idslist.key as key0,
@@ -59,7 +59,11 @@ token_pattern as (
         from patterns
         group by key0
     )
-),
+)
+`
+
+export const idsfindQueryContext = `
+${idsfindPatternQueryContext},
 results as (
     select distinct idsfind.UCS AS UCS
     from idsfind_fts
@@ -74,6 +78,17 @@ export function makeIdsfindQuery(queryBody: string) {
 }
 
 export const idsfindQuery = makeIdsfindQuery(`select UCS from results`)
+
+export const idsfindPatternQuery =
+  `${idsfindPatternQueryContext}
+select pattern from token_pattern`
+
+export const idsfindDirectQuery = `
+select distinct idsfind.UCS AS UCS
+from idsfind_fts
+join idsfind on idsfind.rowid = idsfind_fts.rowid
+where idsfind_fts match $pattern
+`
 
 export const idsfindStructuralQuery = makeIdsfindQuery(`
 select distinct results.UCS as UCS
