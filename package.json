@@ -24,6 +24,7 @@
         "mojidata-api:d1:typegen": "cd packages/mojidata-api-d1-worker && npx wrangler types ./cloudflare-env.d.ts",
         "mojidata-api:bench": "yarn workspace @mandel59/mojidata-api-bench bench",
         "mojidata-api:bench:compare": "yarn workspace @mandel59/mojidata-api-bench bench:compare",
+        "mojidata-api:bench:idsfind-indexes": "yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes",
         "mojidata-api:bench:local": "yarn workspace @mandel59/mojidata-api-bench bench:local",
         "mojidata-api:bench:remote": "yarn workspace @mandel59/mojidata-api-bench bench:remote",
         "mojidata-api:bench:prepare": "yarn workspace @mandel59/mojidata-api-bench bench:prepare",

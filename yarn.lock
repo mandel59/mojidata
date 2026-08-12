@@ -856,7 +856,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-bench@workspace:packages/mojidata-api-bench"
   dependencies:
+    "@mandel59/idsdb-bvec": "workspace:^"
+    "@mandel59/idsdb-fts5": "npm:^1.9.0"
     "@mandel59/mojidata-api-better-sqlite3": "npm:^1.9.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@mandel59/mojidata-api-node-sqlite": "npm:^1.9.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
     "@types/node": "npm:^24.10.4"

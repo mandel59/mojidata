@@ -1,0 +1,47 @@
+{
+  "caseSetVersion": 1,
+  "cases": [
+    {
+      "name": "exact-left-right-fire-earth",
+      "description": "Selective exact serialized fragment",
+      "ids": ["⿰火土"],
+      "stratum": "selective",
+      "family": "literal-structure"
+    },
+    {
+      "name": "broad-tree-literal",
+      "description": "Broad single-component literal",
+      "ids": ["木"],
+      "stratum": "broad",
+      "family": "literal"
+    },
+    {
+      "name": "wildcard-heart",
+      "description": "Structural fragment with a one-node wildcard",
+      "ids": ["⿰？心"],
+      "stratum": "medium",
+      "family": "wildcard"
+    },
+    {
+      "name": "whole-variable-triplicate",
+      "description": "Root-anchored repeated-variable structure",
+      "ids": ["§⿱x⿰xx§"],
+      "stratum": "medium",
+      "family": "variable"
+    },
+    {
+      "name": "boundary-crossing-tree",
+      "description": "Fragment that may cross a sibling boundary",
+      "ids": ["？木"],
+      "stratum": "broad",
+      "family": "boundary-fallback"
+    },
+    {
+      "name": "incomplete-left-right-fire",
+      "description": "Incomplete serialized prefix fragment",
+      "ids": ["⿰火"],
+      "stratum": "medium",
+      "family": "incomplete-prefix"
+    }
+  ]
+}

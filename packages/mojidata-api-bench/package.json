@@ -6,14 +6,18 @@
   "scripts": {
     "bench": "node --import tsx ./benchmarks/run.ts",
     "bench:compare": "node --import tsx ./benchmarks/compare.ts",
+    "bench:idsfind-indexes": "node --import tsx ./benchmarks/idsfind-indexes.ts",
     "bench:local": "node --import tsx ./benchmarks/local.ts",
     "bench:remote": "node --import tsx ./benchmarks/remote.ts",
     "bench:prepare": "yarn run prepare:test-deps && yarn prepare",
-    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-fts5 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
+    "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-fts5 run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-bvec run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
     "prepare": "tsc --noEmit"
   },
   "dependencies": {
+    "@mandel59/idsdb-bvec": "workspace:^",
+    "@mandel59/idsdb-fts5": "^1.9.0",
     "@mandel59/mojidata-api-better-sqlite3": "^1.9.0",
+    "@mandel59/mojidata-api-core": "^1.9.0",
     "@mandel59/mojidata-api-node-sqlite": "^1.9.0",
     "@mandel59/mojidata-api-sqljs": "^1.8.1"
   },

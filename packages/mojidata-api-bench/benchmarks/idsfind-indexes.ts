@@ -1,0 +1,437 @@
+import { execFileSync } from "node:child_process"
+import { createHash } from "node:crypto"
+import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs"
+import { createRequire } from "node:module"
+import { dirname, resolve } from "node:path"
+import { performance } from "node:perf_hooks"
+
+import {
+  createBvecIdsfindCandidateProvider,
+  createIdsfind,
+  ftsIdsfindCandidateProvider,
+  type IdsfindCandidateProvider,
+} from "@mandel59/mojidata-api-core"
+import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokenize"
+import { createBetterSqlite3ExecutorProvider } from "@mandel59/mojidata-api-better-sqlite3"
+
+import {
+  collectBenchmarkEnvironment,
+  formatMs,
+  summarize,
+  type BenchmarkSummary,
+} from "./lib"
+
+type IndexName = "fts5" | "bvec"
+
+type BenchmarkCase = {
+  name: string
+  description: string
+  ids: string[]
+  stratum: "selective" | "medium" | "broad"
+  family: string
+}
+
+type CaseManifest = {
+  caseSetVersion: number
+  cases: BenchmarkCase[]
+}
+
+type Options = {
+  iterations: number
+  warmupIterations: number
+  seed: number
+  outputPath?: string
+  format: "table" | "json"
+  caseNames: string[]
+}
+
+type Samples = {
+  candidateMs: number[]
+  endToEndMs: number[]
+  endToEndCandidateMs: number[]
+  exactAndFetchMs: number[]
+}
+
+type Target = {
+  name: IndexName
+  getCandidates: (ids: string[]) => Promise<string[]>
+  search: (ids: string[]) => Promise<{ results: string[]; candidateMs: number }>
+}
+
+type Task = {
+  caseIndex: number
+  targetName: IndexName
+}
+
+const require = createRequire(__filename)
+const formatVersion = 1
+
+function parseIntegerOption(value: string | undefined, fallback: number, name: string) {
+  if (value === undefined) return fallback
+  const parsed = Number.parseInt(value, 10)
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
+    throw new Error(name + " must be a non-negative integer, got: " + value)
+  }
+  return parsed
+}
+
+function parseArgs(argv: string[]): Options {
+  const options: Options = {
+    iterations: parseIntegerOption(process.env.MOJIDATA_BENCH_ITERATIONS, 20, "iterations"),
+    warmupIterations: parseIntegerOption(process.env.MOJIDATA_BENCH_WARMUP, 3, "warmup"),
+    seed: parseIntegerOption(process.env.MOJIDATA_BENCH_SEED, 1, "seed"),
+    outputPath: process.env.MOJIDATA_API_BENCH_OUTPUT,
+    format: process.env.MOJIDATA_BENCH_FORMAT === "json" ? "json" : "table",
+    caseNames: [],
+  }
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index]
+    switch (arg) {
+      case "--iterations":
+        options.iterations = parseIntegerOption(argv[++index], options.iterations, "iterations")
+        break
+      case "--warmup":
+        options.warmupIterations = parseIntegerOption(
+          argv[++index],
+          options.warmupIterations,
+          "warmup",
+        )
+        break
+      case "--seed":
+        options.seed = parseIntegerOption(argv[++index], options.seed, "seed")
+        break
+      case "--output":
+        options.outputPath = argv[++index]
+        break
+      case "--format": {
+        const format = argv[++index]
+        if (format !== "table" && format !== "json") {
+          throw new Error('format must be "table" or "json", got: ' + format)
+        }
+        options.format = format
+        break
+      }
+      case "--case": {
+        const name = argv[++index]
+        if (!name) throw new Error("--case requires a value")
+        options.caseNames.push(name)
+        break
+      }
+      case "--help":
+      case "-h":
+        printHelp()
+        process.exit(0)
+      default:
+        throw new Error("Unknown argument: " + arg)
+    }
+  }
+
+  if (options.iterations === 0) {
+    throw new Error("iterations must be greater than 0")
+  }
+  return options
+}
+
+function loadCases(names: string[]): CaseManifest {
+  const manifestPath = resolve(__dirname, "idsfind-index-cases.json")
+  const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as CaseManifest
+  if (names.length === 0) return manifest
+  return {
+    caseSetVersion: manifest.caseSetVersion,
+    cases: names.map((name) => {
+      const found = manifest.cases.find((entry) => entry.name === name)
+      if (!found) {
+        throw new Error(
+          "Unknown case: " + name + "\nAvailable cases: " +
+            manifest.cases.map((entry) => entry.name).join(", "),
+        )
+      }
+      return found
+    }),
+  }
+}
+
+function printHelp() {
+  const { cases } = loadCases([])
+  const lines = [
+    "Usage: yarn bench:idsfind-indexes [options]",
+    "",
+    "Options:",
+    "  --iterations <n>      Measured iterations per case and index (default: 20)",
+    "  --warmup <n>          Warmup iterations per case and index (default: 3)",
+    "  --seed <n>            Deterministic task-order seed (default: 1)",
+    "  --output <path>       Write machine-readable JSON results",
+    "  --format <table|json> Console output format (default: table)",
+    "  --case <name>         Run only the named case (repeatable)",
+    "  --help                Show this help",
+    "",
+    "Cases:",
+    ...cases.map((entry) => "  - " + entry.name + ": " + entry.description),
+  ]
+  console.log(lines.join("\n"))
+}
+
+function hashFile(path: string) {
+  return createHash("sha256").update(readFileSync(path)).digest("hex")
+}
+
+function readCommand(command: string, args: string[]) {
+  try {
+    return execFileSync(command, args, {
+      cwd: resolve(__dirname, "../../.."),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim()
+  } catch {
+    return undefined
+  }
+}
+
+function createPrng(seed: number) {
+  let state = seed >>> 0
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0
+    let value = state
+    value = Math.imul(value ^ (value >>> 15), value | 1)
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61)
+    return ((value ^ (value >>> 14)) >>> 0) / 0x1_0000_0000
+  }
+}
+
+function shuffle<T>(values: T[], random: () => number) {
+  for (let index = values.length - 1; index > 0; index--) {
+    const swapIndex = Math.floor(random() * (index + 1))
+    const temporary = values[index]
+    values[index] = values[swapIndex]
+    values[swapIndex] = temporary
+  }
+  return values
+}
+
+function makeTasks(caseCount: number, repetitions: number): Task[] {
+  const tasks: Task[] = []
+  for (let repetition = 0; repetition < repetitions; repetition++) {
+    for (let caseIndex = 0; caseIndex < caseCount; caseIndex++) {
+      tasks.push({ caseIndex, targetName: "fts5" })
+      tasks.push({ caseIndex, targetName: "bvec" })
+    }
+  }
+  return tasks
+}
+
+async function createTarget(
+  name: IndexName,
+  dbPath: string,
+  provider: IdsfindCandidateProvider,
+): Promise<Target> {
+  const getDb = createBetterSqlite3ExecutorProvider(dbPath)
+  let lastCandidateMs = Number.NaN
+  const timedProvider: IdsfindCandidateProvider = {
+    async getCandidates(db, idslist) {
+      const startedAt = performance.now()
+      const candidates = await provider.getCandidates(db, idslist)
+      lastCandidateMs = performance.now() - startedAt
+      return candidates
+    },
+  }
+  const idsfind = createIdsfind(getDb, timedProvider)
+  return {
+    name,
+    async getCandidates(ids) {
+      return provider.getCandidates(await getDb(), tokenizeIdsList(ids).forQuery)
+    },
+    async search(ids) {
+      lastCandidateMs = Number.NaN
+      const results = await idsfind(ids)
+      if (!Number.isFinite(lastCandidateMs)) {
+        throw new Error(name + " candidate timing was not recorded")
+      }
+      return { results, candidateMs: lastCandidateMs }
+    },
+  }
+}
+
+function sameSet(left: string[], right: string[]) {
+  if (left.length !== right.length) return false
+  const rightSet = new Set(right)
+  return left.every((value) => rightSet.has(value))
+}
+
+function createEmptySamples(): Samples {
+  return {
+    candidateMs: [],
+    endToEndMs: [],
+    endToEndCandidateMs: [],
+    exactAndFetchMs: [],
+  }
+}
+
+function phase(samplesMs: number[]): { samplesMs: number[]; summary: BenchmarkSummary } {
+  return { samplesMs, summary: summarize(samplesMs) }
+}
+
+function createPayload(
+  caseSetVersion: number,
+  cases: BenchmarkCase[],
+  options: Options,
+  paths: Record<IndexName, string>,
+  counts: Map<string, { candidateCount: number; resultCount: number }>,
+  samples: Map<string, Samples>,
+) {
+  const measurement = (caseName: string, targetName: IndexName) => {
+    const key = caseName + ":" + targetName
+    const values = samples.get(key)
+    const count = counts.get(key)
+    if (!values || !count) throw new Error("Missing measurement for " + key)
+    return {
+      candidateCount: count.candidateCount,
+      candidate: phase(values.candidateMs),
+      endToEnd: phase(values.endToEndMs),
+      endToEndCandidate: phase(values.endToEndCandidateMs),
+      exactAndFetch: phase(values.exactAndFetchMs),
+    }
+  }
+
+  return {
+    formatVersion,
+    caseSetVersion,
+    iterations: options.iterations,
+    warmupIterations: options.warmupIterations,
+    seed: options.seed,
+    environment: collectBenchmarkEnvironment(),
+    revision: {
+      jjCommitId: readCommand("jj", ["log", "-r", "@-", "--no-graph", "-T", "commit_id"]),
+      jjChangeId: readCommand("jj", ["log", "-r", "@-", "--no-graph", "-T", "change_id"]),
+      jjWorkingCopySummary: readCommand("jj", ["diff", "--summary"]),
+    },
+    databases: Object.fromEntries(
+      (["fts5", "bvec"] as const).map((name) => [
+        name,
+        {
+          path: paths[name],
+          bytes: statSync(paths[name]).size,
+          sha256: hashFile(paths[name]),
+        },
+      ]),
+    ),
+    selectedCases: cases.map((entry) => entry.name),
+    results: cases.map((entry) => ({
+      ...entry,
+      resultCount: counts.get(entry.name + ":fts5")?.resultCount ?? 0,
+      sameResults: true,
+      indexes: {
+        fts5: measurement(entry.name, "fts5"),
+        bvec: measurement(entry.name, "bvec"),
+      },
+    })),
+  }
+}
+
+function printTable(result: ReturnType<typeof createPayload>) {
+  const lines = [
+    "idsfind FTS5 vs BV128",
+    "Runtime: " + result.environment.nodeVersion + " " + result.environment.platform +
+      "-" + result.environment.arch,
+    "Revision: " +
+      (result.revision.jjCommitId ?? result.environment.gitRevision ?? "unknown"),
+    "Iterations: " + result.iterations + ", warmup: " + result.warmupIterations +
+      ", seed: " + result.seed,
+    "",
+    "| Case | Index | Candidates | Results | Candidate p50 | End-to-end p50 | Exact/fetch p50 |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+  ]
+  for (const entry of result.results) {
+    for (const target of ["fts5", "bvec"] as const) {
+      const measurement = entry.indexes[target]
+      lines.push(
+        "| " + entry.name + " | " + target + " | " + measurement.candidateCount +
+          " | " + entry.resultCount + " | " +
+          formatMs(measurement.candidate.summary.p50Ms) + " | " +
+          formatMs(measurement.endToEnd.summary.p50Ms) + " | " +
+          formatMs(measurement.exactAndFetch.summary.p50Ms) + " |",
+      )
+    }
+  }
+  process.stdout.write(lines.join("\n") + "\n")
+}
+
+async function main() {
+  const options = parseArgs(process.argv.slice(2))
+  const { caseSetVersion, cases } = loadCases(options.caseNames)
+  const paths: Record<IndexName, string> = {
+    fts5: require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
+    bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
+  }
+  const targets: Record<IndexName, Target> = {
+    fts5: await createTarget("fts5", paths.fts5, ftsIdsfindCandidateProvider),
+    bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
+  }
+  const counts = new Map<string, { candidateCount: number; resultCount: number }>()
+  const samples = new Map<string, Samples>()
+
+  for (const benchmarkCase of cases) {
+    const [ftsCandidates, bvecCandidates, ftsResults, bvecResults] = await Promise.all([
+      targets.fts5.getCandidates(benchmarkCase.ids),
+      targets.bvec.getCandidates(benchmarkCase.ids),
+      targets.fts5.search(benchmarkCase.ids),
+      targets.bvec.search(benchmarkCase.ids),
+    ])
+    if (!sameSet(ftsResults.results, bvecResults.results)) {
+      throw new Error("Result mismatch for " + benchmarkCase.name)
+    }
+    counts.set(benchmarkCase.name + ":fts5", {
+      candidateCount: ftsCandidates.length,
+      resultCount: ftsResults.results.length,
+    })
+    counts.set(benchmarkCase.name + ":bvec", {
+      candidateCount: bvecCandidates.length,
+      resultCount: bvecResults.results.length,
+    })
+    samples.set(benchmarkCase.name + ":fts5", createEmptySamples())
+    samples.set(benchmarkCase.name + ":bvec", createEmptySamples())
+  }
+
+  const random = createPrng(options.seed)
+  for (const task of shuffle(makeTasks(cases.length, options.warmupIterations), random)) {
+    const benchmarkCase = cases[task.caseIndex]
+    const target = targets[task.targetName]
+    await target.getCandidates(benchmarkCase.ids)
+    await target.search(benchmarkCase.ids)
+  }
+
+  for (const task of shuffle(makeTasks(cases.length, options.iterations), random)) {
+    const benchmarkCase = cases[task.caseIndex]
+    const target = targets[task.targetName]
+    const values = samples.get(benchmarkCase.name + ":" + target.name)
+    if (!values) throw new Error("Missing sample accumulator")
+
+    let startedAt = performance.now()
+    await target.getCandidates(benchmarkCase.ids)
+    values.candidateMs.push(performance.now() - startedAt)
+
+    startedAt = performance.now()
+    const search = await target.search(benchmarkCase.ids)
+    const endToEndMs = performance.now() - startedAt
+    values.endToEndMs.push(endToEndMs)
+    values.endToEndCandidateMs.push(search.candidateMs)
+    values.exactAndFetchMs.push(Math.max(0, endToEndMs - search.candidateMs))
+  }
+
+  const result = createPayload(caseSetVersion, cases, options, paths, counts, samples)
+  if (options.outputPath) {
+    const outputPath = resolve(process.cwd(), options.outputPath)
+    mkdirSync(dirname(outputPath), { recursive: true })
+    writeFileSync(outputPath, JSON.stringify(result, null, 2))
+  }
+  if (options.format === "json") {
+    process.stdout.write(JSON.stringify(result, null, 2) + "\n")
+  } else {
+    printTable(result)
+  }
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exitCode = 1
+})
