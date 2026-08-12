@@ -83,6 +83,43 @@ export const idsfindPatternQuery =
   `${idsfindPatternQueryContext}
 select pattern from token_pattern`
 
+const idsfindWholeLiteralContext =
+  `${idsfindPatternQueryContext},
+complete_combinations as (
+  select tokens
+  from combinations
+  where key0 = 0
+    and key1 = 0
+    and level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+)`
+
+export const idsfindWholeLiteralQuery =
+  `${idsfindWholeLiteralContext}
+select distinct idsfind.UCS as UCS
+from complete_combinations
+cross join idsfind indexed by idsfind_IDS_tokens
+where idsfind.IDS_tokens = substr(
+    complete_combinations.tokens,
+    3,
+    length(complete_combinations.tokens) - 4
+  )`
+
+export const idsfindWholeLiteralScanQuery =
+  `${idsfindWholeLiteralContext}
+select distinct idsfind.UCS as UCS
+from complete_combinations
+cross join idsfind not indexed
+where idsfind.IDS_tokens = substr(
+    complete_combinations.tokens,
+    3,
+    length(complete_combinations.tokens) - 4
+  )`
+
 export const idsfindPatternAnalysisQuery =
   `${idsfindPatternQueryContext}
 select

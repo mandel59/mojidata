@@ -9,6 +9,8 @@ export {
   createCachedFtsIdsfindCandidateProvider,
   createIdsfind,
   ftsIdsfindCandidateProvider,
+  wholeLiteralIdsfindCandidateProvider,
+  wholeLiteralScanIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
 } from "./lib/idsfind-sql"
 export {

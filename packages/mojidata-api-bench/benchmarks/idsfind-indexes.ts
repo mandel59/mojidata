@@ -11,6 +11,8 @@ import {
   createIdsfind,
   createStructuralFtsIdsfindCandidateProvider,
   ftsIdsfindCandidateProvider,
+  wholeLiteralIdsfindCandidateProvider,
+  wholeLiteralScanIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
 } from "@mandel59/mojidata-api-core"
 import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokenize"
@@ -66,6 +68,8 @@ type Options = {
   includeStatementCache: boolean
   fts5Path?: string
   fts5Variants: Fts5Variant[]
+  wholeLiteralPath?: string
+  includeWholeLiteralScan: boolean
 }
 
 type Samples = {
@@ -115,6 +119,8 @@ function parseArgs(argv: string[]): Options {
     includeStatementCache: false,
     fts5Path: process.env.MOJIDATA_BENCH_FTS5,
     fts5Variants: [],
+    wholeLiteralPath: undefined,
+    includeWholeLiteralScan: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -200,6 +206,15 @@ function parseArgs(argv: string[]): Options {
         })
         break
       }
+      case "--whole-literal-db":
+        options.wholeLiteralPath = argv[++index]
+        if (!options.wholeLiteralPath) {
+          throw new Error("--whole-literal-db requires a value")
+        }
+        break
+      case "--whole-literal-scan":
+        options.includeWholeLiteralScan = true
+        break
       case "--help":
       case "-h":
         printHelp()
@@ -268,6 +283,9 @@ function printHelp() {
     "  --fts5-db <db>        Override the FTS5 database under test",
     "  --fts5-variant <name>=<db>",
     "                        Add a named FTS5 database target (repeatable)",
+    "  --whole-literal-db <db>",
+    "                        Add whole-literal B-tree routing target",
+    "  --whole-literal-scan Add zero-storage whole-literal scan target",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -596,6 +614,28 @@ async function main() {
       ftsIdsfindCandidateProvider,
     )
     targetNames.push(variant.name)
+  }
+  if (options.wholeLiteralPath) {
+    const wholeLiteralPath = resolve(
+      __dirname,
+      "../../..",
+      options.wholeLiteralPath,
+    )
+    paths["whole-literal"] = wholeLiteralPath
+    targets["whole-literal"] = await createTarget(
+      "whole-literal",
+      wholeLiteralPath,
+      wholeLiteralIdsfindCandidateProvider,
+    )
+    targetNames.push("whole-literal")
+  }
+  if (options.includeWholeLiteralScan) {
+    targets["whole-literal-scan"] = await createTarget(
+      "whole-literal-scan",
+      paths.fts5,
+      wholeLiteralScanIdsfindCandidateProvider,
+    )
+    targetNames.push("whole-literal-scan")
   }
   if (options.includeCachedFts) {
     targets["fts5-cached"] = await createTarget(

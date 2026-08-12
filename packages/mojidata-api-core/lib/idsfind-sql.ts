@@ -7,6 +7,8 @@ import {
   idsfindDirectQuery,
   idsfindPatternQuery,
   idsfindQuery,
+  idsfindWholeLiteralQuery,
+  idsfindWholeLiteralScanQuery,
 } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import type { SqlExecutor } from "./sql-executor"
@@ -21,6 +23,46 @@ export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
       $idslist: JSON.stringify(idslist),
     })
     return rows.flatMap((row) => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
+function isWholeLiteralQuery(idslist: string[][][]) {
+  if (idslist.length !== 1 || idslist[0].length !== 1) return false
+  const tokens = idslist[0][0]
+  if (
+    tokens.length < 3 ||
+    tokens[0] !== "§" ||
+    tokens[tokens.length - 1] !== "§"
+  ) {
+    return false
+  }
+  return tokens.slice(1, -1).every(token =>
+    token !== "？" && !/^[a-zａ-ｚ]$/u.test(token)
+  )
+}
+
+export const wholeLiteralIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist) {
+    if (!isWholeLiteralQuery(idslist)) {
+      return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
+    }
+    const rows = await db.query<{ UCS?: unknown }>(idsfindWholeLiteralQuery, {
+      $idslist: JSON.stringify(idslist),
+    })
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
+export const wholeLiteralScanIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist) {
+    if (!isWholeLiteralQuery(idslist)) {
+      return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
+    }
+    const rows = await db.query<{ UCS?: unknown }>(
+      idsfindWholeLiteralScanQuery,
+      { $idslist: JSON.stringify(idslist) },
+    )
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
   },
 }
 

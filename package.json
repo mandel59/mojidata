@@ -27,6 +27,7 @@
         "mojidata-api:bench:compare": "yarn workspace @mandel59/mojidata-api-bench bench:compare",
         "mojidata-api:bench:build-idsfind-structural": "yarn workspace @mandel59/mojidata-api-bench bench:build-idsfind-structural",
         "mojidata-api:bench:derive-idsfind-page-layout": "yarn workspace @mandel59/mojidata-api-bench bench:derive-idsfind-page-layout",
+        "mojidata-api:bench:derive-idsfind-whole-literal": "yarn workspace @mandel59/mojidata-api-bench bench:derive-idsfind-whole-literal",
         "mojidata-api:bench:idsfind-indexes": "yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes",
         "mojidata-api:bench:local": "yarn workspace @mandel59/mojidata-api-bench bench:local",
         "mojidata-api:bench:remote": "yarn workspace @mandel59/mojidata-api-bench bench:remote",
