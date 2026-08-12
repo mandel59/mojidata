@@ -55,6 +55,8 @@ type Options = {
   manifestPath?: string
   includeHybrid: boolean
   structuralFtsPath?: string
+  includeBvec: boolean
+  embeddedCandidateTiming: boolean
 }
 
 type Samples = {
@@ -98,6 +100,8 @@ function parseArgs(argv: string[]): Options {
     manifestPath: process.env.MOJIDATA_BENCH_MANIFEST,
     includeHybrid: false,
     structuralFtsPath: process.env.MOJIDATA_BENCH_STRUCTURAL_FTS,
+    includeBvec: true,
+    embeddedCandidateTiming: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -146,6 +150,12 @@ function parseArgs(argv: string[]): Options {
           throw new Error("--structural-fts requires a value")
         }
         break
+      case "--no-bvec":
+        options.includeBvec = false
+        break
+      case "--embedded-candidate-timing":
+        options.embeddedCandidateTiming = true
+        break
       case "--help":
       case "-h":
         printHelp()
@@ -157,6 +167,9 @@ function parseArgs(argv: string[]): Options {
 
   if (options.iterations === 0) {
     throw new Error("iterations must be greater than 0")
+  }
+  if (options.includeHybrid && !options.includeBvec) {
+    throw new Error("--include-hybrid requires BV128")
   }
   return options
 }
@@ -203,6 +216,9 @@ function printHelp() {
     "  --manifest <path>     Use an alternate versioned case manifest",
     "  --include-hybrid      Add whole-anchor selector and candidate intersection",
     "  --structural-fts <db> Add F1 root and F2 edge targets from a derived DB",
+    "  --no-bvec             Omit BV128 from this run",
+    "  --embedded-candidate-timing",
+    "                        Derive candidate timing from each end-to-end search",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -443,6 +459,7 @@ function createPayload(
     iterations: options.iterations,
     warmupIterations: options.warmupIterations,
     seed: options.seed,
+    candidateTiming: options.embeddedCandidateTiming ? "embedded" : "standalone-and-embedded",
     environment: collectBenchmarkEnvironment(),
     revision: {
       jjCommitId: readCommand("jj", ["log", "-r", "@-", "--no-graph", "-T", "commit_id"]),
@@ -517,7 +534,8 @@ async function main() {
     fts5: await createTarget("fts5", paths.fts5, ftsIdsfindCandidateProvider),
     bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
   } as Record<TargetName, Target>
-  const targetNames: TargetName[] = ["fts5", "bvec"]
+  const targetNames: TargetName[] = ["fts5"]
+  if (options.includeBvec) targetNames.push("bvec")
   if (options.structuralFtsPath) {
     const structuralPath = resolve(__dirname, "../../..", options.structuralFtsPath)
     paths.structuralFts = structuralPath
@@ -572,7 +590,9 @@ async function main() {
   )) {
     const benchmarkCase = cases[task.caseIndex]
     const target = targets[task.targetName]
-    await target.getCandidates(benchmarkCase.ids)
+    if (!options.embeddedCandidateTiming) {
+      await target.getCandidates(benchmarkCase.ids)
+    }
     await target.search(benchmarkCase.ids)
   }
 
@@ -585,15 +605,20 @@ async function main() {
     const values = samples.get(benchmarkCase.name + ":" + target.name)
     if (!values) throw new Error("Missing sample accumulator")
 
-    let startedAt = performance.now()
-    await target.getCandidates(benchmarkCase.ids)
-    values.candidateMs.push(performance.now() - startedAt)
+    if (!options.embeddedCandidateTiming) {
+      const candidateStartedAt = performance.now()
+      await target.getCandidates(benchmarkCase.ids)
+      values.candidateMs.push(performance.now() - candidateStartedAt)
+    }
 
-    startedAt = performance.now()
+    const startedAt = performance.now()
     const search = await target.search(benchmarkCase.ids)
     const endToEndMs = performance.now() - startedAt
     values.endToEndMs.push(endToEndMs)
     values.endToEndCandidateMs.push(search.candidateMs)
+    if (options.embeddedCandidateTiming) {
+      values.candidateMs.push(search.candidateMs)
+    }
     values.exactAndFetchMs.push(Math.max(0, endToEndMs - search.candidateMs))
   }
 
