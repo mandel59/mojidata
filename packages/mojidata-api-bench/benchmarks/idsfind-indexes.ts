@@ -62,6 +62,7 @@ type Options = {
   manifestPath?: string
   includeHybrid: boolean
   structuralFtsPath?: string
+  equalityFtsPath?: string
   includeBvec: boolean
   embeddedCandidateTiming: boolean
   includeCachedFts: boolean
@@ -113,6 +114,7 @@ function parseArgs(argv: string[]): Options {
     manifestPath: process.env.MOJIDATA_BENCH_MANIFEST,
     includeHybrid: false,
     structuralFtsPath: process.env.MOJIDATA_BENCH_STRUCTURAL_FTS,
+    equalityFtsPath: process.env.MOJIDATA_BENCH_EQUALITY_FTS,
     includeBvec: true,
     embeddedCandidateTiming: false,
     includeCachedFts: false,
@@ -167,6 +169,12 @@ function parseArgs(argv: string[]): Options {
         options.structuralFtsPath = argv[++index]
         if (!options.structuralFtsPath) {
           throw new Error("--structural-fts requires a value")
+        }
+        break
+      case "--equality-fts":
+        options.equalityFtsPath = argv[++index]
+        if (!options.equalityFtsPath) {
+          throw new Error("--equality-fts requires a value")
         }
         break
       case "--no-bvec":
@@ -274,7 +282,8 @@ function printHelp() {
     "  --case <name>         Run only the named case (repeatable)",
     "  --manifest <path>     Use an alternate versioned case manifest",
     "  --include-hybrid      Add whole-anchor selector and candidate intersection",
-    "  --structural-fts <db> Add F1 root and F2 edge targets from a derived DB",
+    "  --structural-fts <db> Add F1 root, F2 edge, and F5 equality targets",
+    "  --equality-fts <db> Add an equality-only structural target",
     "  --no-bvec             Omit BV128 from this run",
     "  --embedded-candidate-timing",
     "                        Derive candidate timing from each end-to-end search",
@@ -356,9 +365,9 @@ async function createTarget(
   const getDb = createBetterSqlite3ExecutorProvider(dbPath, options)
   let lastCandidateMs = Number.NaN
   const timedProvider: IdsfindCandidateProvider = {
-    async getCandidates(db, idslist) {
+    async getCandidates(db, idslist, sourceIdslist) {
       const startedAt = performance.now()
-      const candidates = await provider.getCandidates(db, idslist)
+      const candidates = await provider.getCandidates(db, idslist, sourceIdslist)
       lastCandidateMs = performance.now() - startedAt
       return candidates
     },
@@ -367,7 +376,12 @@ async function createTarget(
   return {
     name,
     async getCandidates(ids) {
-      return provider.getCandidates(await getDb(), tokenizeIdsList(ids).forQuery)
+      const tokenized = tokenizeIdsList(ids)
+      return provider.getCandidates(
+        await getDb(),
+        tokenized.forQuery,
+        tokenized.forAudit,
+      )
     },
     async search(ids) {
       lastCandidateMs = Number.NaN
@@ -405,11 +419,15 @@ async function createIntersectionTarget(
   const bvecProvider = createBvecIdsfindCandidateProvider()
   let lastCandidateMs = Number.NaN
   const provider: IdsfindCandidateProvider = {
-    async getCandidates(_db, idslist) {
+    async getCandidates(_db, idslist, sourceIdslist) {
       const startedAt = performance.now()
       const [fts5Candidates, bvecCandidates] = await Promise.all([
-        ftsIdsfindCandidateProvider.getCandidates(await fts5Db(), idslist),
-        bvecProvider.getCandidates(await bvecDb(), idslist),
+        ftsIdsfindCandidateProvider.getCandidates(
+          await fts5Db(),
+          idslist,
+          sourceIdslist,
+        ),
+        bvecProvider.getCandidates(await bvecDb(), idslist, sourceIdslist),
       ])
       const bvecSet = new Set(bvecCandidates)
       const candidates = fts5Candidates.filter((ucs) => bvecSet.has(ucs))
@@ -421,7 +439,12 @@ async function createIntersectionTarget(
   return {
     name: "intersection",
     async getCandidates(ids) {
-      return provider.getCandidates(await fts5Db(), tokenizeIdsList(ids).forQuery)
+      const tokenized = tokenizeIdsList(ids)
+      return provider.getCandidates(
+        await fts5Db(),
+        tokenized.forQuery,
+        tokenized.forAudit,
+      )
     },
     async search(ids) {
       lastCandidateMs = Number.NaN
@@ -668,7 +691,26 @@ async function main() {
       structuralPath,
       createStructuralFtsIdsfindCandidateProvider(["root", "edge"]),
     )
-    targetNames.push("fts5-f1", "fts5-f2")
+    targets["fts5-f5"] = await createTarget(
+      "fts5-f5",
+      structuralPath,
+      createStructuralFtsIdsfindCandidateProvider([
+        "root",
+        "edge",
+        "equality",
+      ]),
+    )
+    targetNames.push("fts5-f1", "fts5-f2", "fts5-f5")
+  }
+  if (options.equalityFtsPath) {
+    const equalityPath = resolve(__dirname, "../../..", options.equalityFtsPath)
+    paths.equalityFts = equalityPath
+    targets["fts5-equality"] = await createTarget(
+      "fts5-equality",
+      equalityPath,
+      createStructuralFtsIdsfindCandidateProvider(["equality"]),
+    )
+    targetNames.push("fts5-equality")
   }
   if (options.includeHybrid) {
     targets.selector = createWholeAnchorSelector(targets.fts5, targets.bvec)

@@ -14,7 +14,11 @@ import { tokenizeIdsList } from "./idsfind-tokenize"
 import type { SqlExecutor } from "./sql-executor"
 
 export interface IdsfindCandidateProvider {
-  getCandidates(db: SqlExecutor, idslist: string[][][]): Promise<string[]>
+  getCandidates(
+    db: SqlExecutor,
+    idslist: string[][][],
+    sourceIdslist?: TokenList[][],
+  ): Promise<string[]>
 }
 
 export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
@@ -320,7 +324,11 @@ export function createIdsfind(
     }
 
     const out: string[] = []
-    const candidates = await candidateProvider.getCandidates(db, tokenized.forQuery)
+    const candidates = await candidateProvider.getCandidates(
+      db,
+      tokenized.forQuery,
+      tokenized.forAudit,
+    )
     await prefetchIDSTokens([
       ...candidates,
       ...collectAuditLookupUcs(tokenized.forAudit),

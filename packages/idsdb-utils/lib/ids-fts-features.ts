@@ -1,8 +1,8 @@
 import { tokenArgs } from "./ids-operator"
 
-export const idsFtsFeatureVersion = "mojidata-fts-features-v1"
+export const idsFtsFeatureVersion = "mojidata-fts-features-v2"
 
-export type IdsFtsFeatureFamily = "root" | "edge"
+export type IdsFtsFeatureFamily = "root" | "edge" | "equality"
 
 type FeatureOptions = {
     families: readonly IdsFtsFeatureFamily[]
@@ -25,6 +25,17 @@ export function encodeIdsFtsEdgeFeature(
     return `mdf1e${encodeToken(parent)}p${childIndex}c${encodeToken(childRoot)}`
 }
 
+function encodePath(path: readonly number[]) {
+    return path.length === 0 ? "r" : path.join("")
+}
+
+export function encodeIdsFtsEqualityFeature(
+    leftPath: readonly number[],
+    rightPath: readonly number[],
+) {
+    return `mdf2q${encodePath(leftPath)}e${encodePath(rightPath)}`
+}
+
 /**
  * Extract collision-free root and local-edge terms from a prefix IDS forest.
  *
@@ -43,13 +54,24 @@ export function collectIdsFtsFeatures(
         features.add(encodeIdsFtsRootFeature(tokens[0]))
     }
 
-    const visitNode = (index: number): number => {
-        if (index >= tokens.length) return index
+    const nodes: {
+        path: number[]
+        serialization: string
+    }[] = []
+    const visitNode = (
+        index: number,
+        path: number[],
+    ): { next: number; complete: boolean } => {
+        if (index >= tokens.length) return { next: index, complete: false }
         const parent = tokens[index]
         const arity = tokenArgs[parent] ?? 0
         let next = index + 1
+        let complete = true
         for (let childIndex = 0; childIndex < arity; childIndex++) {
-            if (next >= tokens.length) break
+            if (next >= tokens.length) {
+                complete = false
+                break
+            }
             const childRoot = tokens[next]
             if (
                 families.has("edge") &&
@@ -60,16 +82,42 @@ export function collectIdsFtsFeatures(
                     encodeIdsFtsEdgeFeature(parent, childIndex, childRoot),
                 )
             }
-            next = visitNode(next)
+            const child = visitNode(next, [...path, childIndex])
+            next = child.next
+            complete &&= child.complete
         }
-        return next
+        if (complete) {
+            nodes.push({
+                path,
+                serialization: tokens.slice(index, next).join(" "),
+            })
+        }
+        return { next, complete }
     }
 
     let index = 0
     while (index < tokens.length) {
-        const next = visitNode(index)
-        if (next <= index) break
-        index = next
+        const result = visitNode(index, [])
+        if (result.next <= index) break
+        index = result.next
+    }
+
+    if (families.has("equality")) {
+        const pathsBySerialization = new Map<string, number[][]>()
+        for (const node of nodes) {
+            const paths = pathsBySerialization.get(node.serialization) ?? []
+            paths.push(node.path)
+            pathsBySerialization.set(node.serialization, paths)
+        }
+        for (const paths of pathsBySerialization.values()) {
+            for (let left = 0; left < paths.length; left++) {
+                for (let right = left + 1; right < paths.length; right++) {
+                    features.add(
+                        encodeIdsFtsEqualityFeature(paths[left], paths[right]),
+                    )
+                }
+            }
+        }
     }
     return [...features]
 }

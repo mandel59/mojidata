@@ -17,7 +17,7 @@ import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokeniz
 import { createBetterSqlite3Executor } from "../index"
 
 describe("idsfind structural FTS", () => {
-  test("F2 removes a wrong-position edge candidate without changing answers", async () => {
+  test("F2 and F5 remove structural false positives without changing answers", async () => {
     const db = new Database(":memory:")
     db.exec(`
       CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
@@ -37,11 +37,14 @@ describe("idsfind structural FTS", () => {
         families TEXT NOT NULL
       );
     `)
-    db.prepare("INSERT INTO idsfind_structural_meta VALUES (1, ?, 'root,edge')")
+    db.prepare(
+      "INSERT INTO idsfind_structural_meta VALUES (1, ?, 'root,edge,equality')",
+    )
       .run(idsFtsFeatureVersion)
     const rows = [
       ["甲", "⿱ 木 ⿰ 木 木"],
       ["乙", "⿱ ⿰ 木 木 木"],
+      ["丙", "⿱ 木 ⿰ 木 日"],
     ] as const
     const insertIds = db.prepare("INSERT INTO idsfind VALUES (?, ?)")
     const insertFts = db.prepare(
@@ -57,28 +60,49 @@ describe("idsfind structural FTS", () => {
       insertStructural.run(
         rowid,
         collectIdsFtsFeatures(tokens.split(" "), {
-          families: ["root", "edge"],
+          families: ["root", "edge", "equality"],
         }).join(" "),
       )
     })
 
     const executor = createBetterSqlite3Executor(db)
     const query = ["§⿱x⿰xx§"]
-    const tokenized = tokenizeIdsList(query).forQuery
+    const tokenized = tokenizeIdsList(query)
     const f1 = createStructuralFtsIdsfindCandidateProvider(["root"])
     const f2 = createStructuralFtsIdsfindCandidateProvider(["root", "edge"])
+    const f5 = createStructuralFtsIdsfindCandidateProvider([
+      "root",
+      "edge",
+      "equality",
+    ])
 
     assert.deepEqual(
-      await ftsIdsfindCandidateProvider.getCandidates(executor, tokenized),
-      ["甲", "乙"],
+      await ftsIdsfindCandidateProvider.getCandidates(
+        executor,
+        tokenized.forQuery,
+        tokenized.forAudit,
+      ),
+      ["甲", "乙", "丙"],
     )
-    assert.deepEqual(await f1.getCandidates(executor, tokenized), ["甲", "乙"])
-    assert.deepEqual(await f2.getCandidates(executor, tokenized), ["甲"])
+    assert.deepEqual(
+      await f1.getCandidates(executor, tokenized.forQuery, tokenized.forAudit),
+      ["甲", "乙", "丙"],
+    )
+    assert.deepEqual(
+      await f2.getCandidates(executor, tokenized.forQuery, tokenized.forAudit),
+      ["甲", "丙"],
+    )
+    assert.deepEqual(
+      await f5.getCandidates(executor, tokenized.forQuery, tokenized.forAudit),
+      ["甲"],
+    )
 
     const f0Search = createIdsfind(async () => executor)
     const f2Search = createIdsfind(async () => executor, f2)
+    const f5Search = createIdsfind(async () => executor, f5)
     assert.deepEqual(await f0Search(query), ["甲"])
     assert.deepEqual(await f2Search(query), ["甲"])
+    assert.deepEqual(await f5Search(query), ["甲"])
     db.close()
   })
 

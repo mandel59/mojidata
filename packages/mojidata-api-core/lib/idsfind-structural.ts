@@ -1,5 +1,6 @@
 import {
   collectIdsFtsFeatures,
+  encodeIdsFtsEqualityFeature,
   idsFtsFeatureVersion,
   tokenArgs,
   type IdsFtsFeatureFamily,
@@ -26,11 +27,43 @@ function compilePatternFeatures(
   const enabled: IdsFtsFeatureFamily[] = []
   if (anchoredAtRoot && families.has("root")) enabled.push("root")
   if (families.has("edge")) enabled.push("edge")
-  return collectIdsFtsFeatures(tokens, {
+  const features = collectIdsFtsFeatures(tokens, {
     families: enabled,
     // A literal character may expand before exact matching. IDC tokens do not.
     includeToken: isStableStructuralToken,
   })
+  if (!anchoredAtRoot || !families.has("equality")) return features
+
+  const variablePaths = new Map<string, number[][]>()
+  const visitNode = (
+    index: number,
+    path: number[],
+  ): { next: number; complete: boolean } => {
+    if (index >= tokens.length) return { next: index, complete: false }
+    const token = tokens[index]
+    if (/^[a-zａ-ｚ]$/u.test(token)) {
+      const paths = variablePaths.get(token) ?? []
+      paths.push(path)
+      variablePaths.set(token, paths)
+    }
+    const arity = tokenArgs[token] ?? 0
+    let next = index + 1
+    let complete = true
+    for (let childIndex = 0; childIndex < arity; childIndex++) {
+      const child = visitNode(next, [...path, childIndex])
+      next = child.next
+      complete &&= child.complete
+    }
+    return { next, complete }
+  }
+  const parsed = visitNode(0, [])
+  if (!parsed.complete || parsed.next !== tokens.length) return features
+  for (const paths of variablePaths.values()) {
+    for (let index = 1; index < paths.length; index++) {
+      features.push(encodeIdsFtsEqualityFeature(paths[0], paths[index]))
+    }
+  }
+  return [...new Set(features)]
 }
 
 export function compileIdsfindStructuralPattern(
@@ -90,8 +123,11 @@ export function createStructuralFtsIdsfindCandidateProvider(
     validatedDatabases.add(db)
   }
   return {
-    async getCandidates(db, idslist) {
-      const structuralPattern = compileIdsfindStructuralPattern(idslist, families)
+    async getCandidates(db, idslist, sourceIdslist) {
+      const structuralPattern = compileIdsfindStructuralPattern(
+        sourceIdslist ?? idslist,
+        families,
+      )
       if (structuralPattern === undefined) {
         return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
       }

@@ -4,6 +4,7 @@ import { describe, test } from "node:test"
 import {
   collectIdsFtsFeatures,
   encodeIdsFtsEdgeFeature,
+  encodeIdsFtsEqualityFeature,
   encodeIdsFtsRootFeature,
 } from "../index"
 
@@ -46,5 +47,29 @@ describe("IDS FTS structural features", () => {
       encodeIdsFtsRootFeature("⿱"),
       encodeIdsFtsEdgeFeature("⿱", 1, "⿰"),
     ])
+  })
+
+  test("extracts collision-free equal-subtree path pairs", () => {
+    assert.deepEqual(
+      new Set(collectIdsFtsFeatures(
+        ["⿱", "木", "⿰", "木", "木"],
+        { families: ["equality"] },
+      )),
+      new Set([
+        encodeIdsFtsEqualityFeature([0], [1, 0]),
+        encodeIdsFtsEqualityFeature([0], [1, 1]),
+        encodeIdsFtsEqualityFeature([1, 0], [1, 1]),
+      ]),
+    )
+  })
+
+  test("does not emit equality for incomplete subtrees", () => {
+    assert.deepEqual(
+      collectIdsFtsFeatures(
+        ["⿱", "⿰"],
+        { families: ["equality"] },
+      ),
+      [],
+    )
   })
 })

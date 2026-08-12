@@ -21,6 +21,7 @@ export {
 } from "./lib/ids-bvec"
 export {
     collectIdsFtsFeatures,
+    encodeIdsFtsEqualityFeature,
     encodeIdsFtsEdgeFeature,
     encodeIdsFtsRootFeature,
     idsFtsFeatureVersion,

@@ -40,9 +40,13 @@ function parseArgs(argv: string[]): Options {
         const values = argv[++index]?.split(",") ?? []
         if (
           values.length === 0 ||
-          values.some(value => value !== "root" && value !== "edge")
+          values.some(value =>
+            value !== "root" && value !== "edge" && value !== "equality"
+          )
         ) {
-          throw new Error("--features must be a comma-separated subset of root,edge")
+          throw new Error(
+            "--features must be a comma-separated subset of root,edge,equality",
+          )
         }
         families = [...new Set(values)] as IdsFtsFeatureFamily[]
         break
@@ -51,7 +55,7 @@ function parseArgs(argv: string[]): Options {
       case "-h":
         console.log(
           "Usage: yarn bench:build-idsfind-structural --output <variant.db> " +
-            "[--base <idsfind.db>] [--features root,edge]",
+            "[--base <idsfind.db>] [--features root,edge,equality]",
         )
         process.exit(0)
       default:
