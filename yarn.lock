@@ -801,7 +801,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/idsdb-utils@npm:^1.7.0, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
+"@mandel59/idsdb-utils@npm:^1.7.0, @mandel59/idsdb-utils@workspace:^, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb-utils@workspace:packages/idsdb-utils"
   dependencies:
@@ -875,6 +875,7 @@ __metadata:
   dependencies:
     "@mandel59/idsdb-bvec": "workspace:^"
     "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/idsdb-utils": "workspace:^"
     "@mandel59/mojidata": "npm:^1.8.0"
     "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.1"

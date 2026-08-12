@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@mandel59/idsdb-bvec": "workspace:^",
+    "@mandel59/idsdb-utils": "workspace:^",
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^24.10.4",
     "better-sqlite3": "^12.5.0",
