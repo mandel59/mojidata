@@ -23,6 +23,7 @@ import {
 } from "./lib"
 
 type IndexName = "fts5" | "bvec"
+type TargetName = IndexName | "selector" | "intersection"
 
 type BenchmarkCase = {
   name: string
@@ -51,6 +52,7 @@ type Options = {
   format: "table" | "json"
   caseNames: string[]
   manifestPath?: string
+  includeHybrid: boolean
 }
 
 type Samples = {
@@ -61,14 +63,14 @@ type Samples = {
 }
 
 type Target = {
-  name: IndexName
+  name: TargetName
   getCandidates: (ids: string[]) => Promise<string[]>
   search: (ids: string[]) => Promise<{ results: string[]; candidateMs: number }>
 }
 
 type Task = {
   caseIndex: number
-  targetName: IndexName
+  targetName: TargetName
 }
 
 const require = createRequire(__filename)
@@ -92,6 +94,7 @@ function parseArgs(argv: string[]): Options {
     format: process.env.MOJIDATA_BENCH_FORMAT === "json" ? "json" : "table",
     caseNames: [],
     manifestPath: process.env.MOJIDATA_BENCH_MANIFEST,
+    includeHybrid: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -130,6 +133,9 @@ function parseArgs(argv: string[]): Options {
       case "--manifest":
         options.manifestPath = argv[++index]
         if (!options.manifestPath) throw new Error("--manifest requires a value")
+        break
+      case "--include-hybrid":
+        options.includeHybrid = true
         break
       case "--help":
       case "-h":
@@ -186,6 +192,7 @@ function printHelp() {
     "  --format <table|json> Console output format (default: table)",
     "  --case <name>         Run only the named case (repeatable)",
     "  --manifest <path>     Use an alternate versioned case manifest",
+    "  --include-hybrid      Add whole-anchor selector and candidate intersection",
     "  --help                Show this help",
     "",
     "Cases:",
@@ -231,12 +238,17 @@ function shuffle<T>(values: T[], random: () => number) {
   return values
 }
 
-function makeTasks(caseCount: number, repetitions: number): Task[] {
+function makeTasks(
+  caseCount: number,
+  repetitions: number,
+  targetNames: TargetName[],
+): Task[] {
   const tasks: Task[] = []
   for (let repetition = 0; repetition < repetitions; repetition++) {
     for (let caseIndex = 0; caseIndex < caseCount; caseIndex++) {
-      tasks.push({ caseIndex, targetName: "fts5" })
-      tasks.push({ caseIndex, targetName: "bvec" })
+      for (const targetName of targetNames) {
+        tasks.push({ caseIndex, targetName })
+      }
     }
   }
   return tasks
@@ -268,6 +280,60 @@ async function createTarget(
       const results = await idsfind(ids)
       if (!Number.isFinite(lastCandidateMs)) {
         throw new Error(name + " candidate timing was not recorded")
+      }
+      return { results, candidateMs: lastCandidateMs }
+    },
+  }
+}
+
+function createWholeAnchorSelector(fts5: Target, bvec: Target): Target {
+  const select = (ids: string[]) =>
+    ids.length === 1 && ids[0].startsWith("§") && ids[0].endsWith("§")
+      ? bvec
+      : fts5
+  return {
+    name: "selector",
+    getCandidates(ids) {
+      return select(ids).getCandidates(ids)
+    },
+    search(ids) {
+      return select(ids).search(ids)
+    },
+  }
+}
+
+async function createIntersectionTarget(
+  fts5Path: string,
+  bvecPath: string,
+): Promise<Target> {
+  const fts5Db = createBetterSqlite3ExecutorProvider(fts5Path)
+  const bvecDb = createBetterSqlite3ExecutorProvider(bvecPath)
+  const bvecProvider = createBvecIdsfindCandidateProvider()
+  let lastCandidateMs = Number.NaN
+  const provider: IdsfindCandidateProvider = {
+    async getCandidates(_db, idslist) {
+      const startedAt = performance.now()
+      const [fts5Candidates, bvecCandidates] = await Promise.all([
+        ftsIdsfindCandidateProvider.getCandidates(await fts5Db(), idslist),
+        bvecProvider.getCandidates(await bvecDb(), idslist),
+      ])
+      const bvecSet = new Set(bvecCandidates)
+      const candidates = fts5Candidates.filter((ucs) => bvecSet.has(ucs))
+      lastCandidateMs = performance.now() - startedAt
+      return candidates
+    },
+  }
+  const idsfind = createIdsfind(fts5Db, provider)
+  return {
+    name: "intersection",
+    async getCandidates(ids) {
+      return provider.getCandidates(await fts5Db(), tokenizeIdsList(ids).forQuery)
+    },
+    async search(ids) {
+      lastCandidateMs = Number.NaN
+      const results = await idsfind(ids)
+      if (!Number.isFinite(lastCandidateMs)) {
+        throw new Error("intersection candidate timing was not recorded")
       }
       return { results, candidateMs: lastCandidateMs }
     },
@@ -333,10 +399,11 @@ function createPayload(
   cases: BenchmarkCase[],
   options: Options,
   paths: Record<IndexName, string>,
+  targetNames: TargetName[],
   counts: Map<string, { candidateCount: number; resultCount: number }>,
   samples: Map<string, Samples>,
 ) {
-  const measurement = (caseName: string, targetName: IndexName) => {
+  const measurement = (caseName: string, targetName: TargetName) => {
     const key = caseName + ":" + targetName
     const values = samples.get(key)
     const count = counts.get(key)
@@ -387,15 +454,17 @@ function createPayload(
       ...entry,
       resultCount: counts.get(entry.name + ":fts5")?.resultCount ?? 0,
       sameResults: true,
-      indexes: {
-        fts5: measurement(entry.name, "fts5"),
-        bvec: measurement(entry.name, "bvec"),
-      },
+      indexes: Object.fromEntries(
+        targetNames.map((name) => [name, measurement(entry.name, name)]),
+      ) as Record<TargetName, ReturnType<typeof measurement>>,
     })),
   }
 }
 
-function printTable(result: ReturnType<typeof createPayload>) {
+function printTable(
+  result: ReturnType<typeof createPayload>,
+  targetNames: TargetName[],
+) {
   const lines = [
     "idsfind FTS5 vs BV128",
     "Runtime: " + result.environment.nodeVersion + " " + result.environment.platform +
@@ -409,7 +478,7 @@ function printTable(result: ReturnType<typeof createPayload>) {
     "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
   ]
   for (const entry of result.results) {
-    for (const target of ["fts5", "bvec"] as const) {
+    for (const target of targetNames) {
       const measurement = entry.indexes[target]
       lines.push(
         "| " + entry.name + " | " + target + " | " + measurement.candidateCount +
@@ -434,44 +503,58 @@ async function main() {
     fts5: require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
     bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
   }
-  const targets: Record<IndexName, Target> = {
+  const targets = {
     fts5: await createTarget("fts5", paths.fts5, ftsIdsfindCandidateProvider),
     bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
+  } as Record<TargetName, Target>
+  const targetNames: TargetName[] = ["fts5", "bvec"]
+  if (options.includeHybrid) {
+    targets.selector = createWholeAnchorSelector(targets.fts5, targets.bvec)
+    targets.intersection = await createIntersectionTarget(paths.fts5, paths.bvec)
+    targetNames.push("selector", "intersection")
   }
   const counts = new Map<string, { candidateCount: number; resultCount: number }>()
   const samples = new Map<string, Samples>()
 
   for (const benchmarkCase of cases) {
-    const [ftsCandidates, bvecCandidates, ftsResults, bvecResults] = await Promise.all([
-      targets.fts5.getCandidates(benchmarkCase.ids),
-      targets.bvec.getCandidates(benchmarkCase.ids),
-      targets.fts5.search(benchmarkCase.ids),
-      targets.bvec.search(benchmarkCase.ids),
-    ])
-    if (!sameSet(ftsResults.results, bvecResults.results)) {
-      throw new Error("Result mismatch for " + benchmarkCase.name)
+    const observations = await Promise.all(targetNames.map(async (targetName) => ({
+      targetName,
+      candidates: await targets[targetName].getCandidates(benchmarkCase.ids),
+      results: await targets[targetName].search(benchmarkCase.ids),
+    })))
+    const expected = observations[0].results.results
+    for (const observation of observations) {
+      if (!sameSet(expected, observation.results.results)) {
+        throw new Error(
+          "Result mismatch for " + benchmarkCase.name + ":" + observation.targetName,
+        )
+      }
+      counts.set(benchmarkCase.name + ":" + observation.targetName, {
+        candidateCount: observation.candidates.length,
+        resultCount: observation.results.results.length,
+      })
+      samples.set(
+        benchmarkCase.name + ":" + observation.targetName,
+        createEmptySamples(),
+      )
     }
-    counts.set(benchmarkCase.name + ":fts5", {
-      candidateCount: ftsCandidates.length,
-      resultCount: ftsResults.results.length,
-    })
-    counts.set(benchmarkCase.name + ":bvec", {
-      candidateCount: bvecCandidates.length,
-      resultCount: bvecResults.results.length,
-    })
-    samples.set(benchmarkCase.name + ":fts5", createEmptySamples())
-    samples.set(benchmarkCase.name + ":bvec", createEmptySamples())
   }
 
   const random = createPrng(options.seed)
-  for (const task of shuffle(makeTasks(cases.length, options.warmupIterations), random)) {
+  for (const task of shuffle(
+    makeTasks(cases.length, options.warmupIterations, targetNames),
+    random,
+  )) {
     const benchmarkCase = cases[task.caseIndex]
     const target = targets[task.targetName]
     await target.getCandidates(benchmarkCase.ids)
     await target.search(benchmarkCase.ids)
   }
 
-  for (const task of shuffle(makeTasks(cases.length, options.iterations), random)) {
+  for (const task of shuffle(
+    makeTasks(cases.length, options.iterations, targetNames),
+    random,
+  )) {
     const benchmarkCase = cases[task.caseIndex]
     const target = targets[task.targetName]
     const values = samples.get(benchmarkCase.name + ":" + target.name)
@@ -489,7 +572,15 @@ async function main() {
     values.exactAndFetchMs.push(Math.max(0, endToEndMs - search.candidateMs))
   }
 
-  const result = createPayload(manifest, cases, options, paths, counts, samples)
+  const result = createPayload(
+    manifest,
+    cases,
+    options,
+    paths,
+    targetNames,
+    counts,
+    samples,
+  )
   if (options.outputPath) {
     const outputPath = resolve(process.cwd(), options.outputPath)
     mkdirSync(dirname(outputPath), { recursive: true })
@@ -498,7 +589,7 @@ async function main() {
   if (options.format === "json") {
     process.stdout.write(JSON.stringify(result, null, 2) + "\n")
   } else {
-    printTable(result)
+    printTable(result, targetNames)
   }
 }
 

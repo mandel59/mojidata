@@ -42,3 +42,9 @@ yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes \
   --iterations 20 --warmup 3 --seed 1 \
   --output ./tmp/idsfind-index-pilot.json
 ```
+
+Add `--include-hybrid` to measure two preregistered compositions:
+
+- `selector`: use BV128 only for a single whole-anchored query;
+- `intersection`: intersect the two sound candidate sets, then run the
+  shared exact verifier.
