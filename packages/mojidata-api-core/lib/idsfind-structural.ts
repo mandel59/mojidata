@@ -82,7 +82,7 @@ export function compileIdsfindStructuralPattern(
         break
       }
       alternativePatterns.push(
-        "(" + features.map(term => `IDS_features : ${term}`).join(" AND ") + ")",
+        "(" + features.join(" AND ") + ")",
       )
     }
     if (groupHasUnfilteredAlternative || alternativePatterns.length === 0) {

@@ -93,7 +93,9 @@ function main() {
       CREATE VIRTUAL TABLE idsfind_structural_fts USING fts5 (
         IDS_features,
         content='',
-        tokenize='unicode61'
+        tokenize='unicode61',
+        columnsize=0,
+        detail=none
       );
       CREATE TABLE idsfind_structural_meta (
         schema_version INTEGER PRIMARY KEY CHECK (schema_version = 1),
@@ -149,6 +151,7 @@ function main() {
       featureCount,
     )
       db.exec("INSERT INTO idsfind_structural_fts(idsfind_structural_fts) VALUES ('optimize')")
+      db.exec("VACUUM")
     } finally {
       db.close()
     }

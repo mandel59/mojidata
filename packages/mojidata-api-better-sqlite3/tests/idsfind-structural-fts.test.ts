@@ -29,7 +29,9 @@ describe("idsfind structural FTS", () => {
       CREATE VIRTUAL TABLE idsfind_structural_fts USING fts5 (
         IDS_features,
         content='',
-        tokenize='unicode61'
+        tokenize='unicode61',
+        columnsize=0,
+        detail=none
       );
       CREATE TABLE idsfind_structural_meta (
         schema_version INTEGER PRIMARY KEY,
