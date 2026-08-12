@@ -34,7 +34,9 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "tsc"
+    "prepare": "tsc",
+    "test": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
@@ -45,6 +47,7 @@
   "devDependencies": {
     "@types/node": "^24.10.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

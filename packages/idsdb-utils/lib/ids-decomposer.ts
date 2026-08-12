@@ -122,6 +122,34 @@ export type IDSDecomposerOptions = {
     normalizeKdpvRadicalVariants?: boolean
 }
 
+export type IDSDecompositionCycleStep = {
+    char: string
+    source: string
+    expandedChar: string
+    selectedSource: string
+    idsTokens: string
+    dependency: string
+}
+
+export class IDSDecompositionCycleError extends Error {
+    readonly witness: IDSDecompositionCycleStep[]
+    constructor(witness: IDSDecompositionCycleStep[]) {
+        const states = witness.map(step => `${step.char}@${step.source}`)
+        if (witness.length > 0) {
+            const last = witness[witness.length - 1]
+            states.push(`${last.dependency}@${last.source}`)
+        }
+        super(`Cyclic IDS decomposition: ${states.join(" -> ")}`)
+        this.name = "IDSDecompositionCycleError"
+        this.witness = witness
+    }
+}
+
+type ResolvedIDS = {
+    idsTokens: string
+    selectedSource: string
+}
+
 export class IDSDecomposer {
     private db: SqlDatabase
     private lookupIDSStatement: SqlStatement
@@ -244,7 +272,9 @@ export class IDSDecomposer {
                 db,
                 {
                     lookupIDS: db.prepare(
-                        `select distinct IDS_tokens from tempids where UCS = $char and source glob $source`,
+                        `select IDS_tokens, min(source) from tempids
+                         where UCS = $char and source glob $source
+                         group by IDS_tokens`,
                     ),
                     insertFallback: db.prepare(
                         `insert into fallback(UCS, source, fallback) values ($char, $source, $fallback)`,
@@ -253,6 +283,12 @@ export class IDSDecomposer {
                 options,
             )
             if (zvar) decomposer.zvar = zvar
+            try {
+                decomposer.assertAcyclic()
+            } catch (error) {
+                decomposer.close()
+                throw error
+            }
             return decomposer
         } finally {
             mojiDb.close()
@@ -342,19 +378,19 @@ export class IDSDecomposer {
     private expand(token: string) {
         return this.zvar?.get(token) ?? [token]
     }
-    private atomicMemo = new Set()
-    private lookupIDS(char: string, source: string): string[] {
+    private atomicMemo = new Set<string>()
+    private resolveIDS(char: string, source: string): ResolvedIDS[] {
         if (char[0] === "&" ||
             char[0] === "{" ||
             idsOperatorRegExp.test(char)) {
-            return [char]
+            return [{ idsTokens: char, selectedSource: source }]
         }
         const atomicKey = `${char}${source}`
         if (this.atomicMemo.has(atomicKey)) {
-            return [char]
+            return [{ idsTokens: char, selectedSource: source }]
         }
         const alltokens = this.lookupIDSFromDb({ char, source })
-        if (alltokens.length === 1 && alltokens[0] === char) {
+        if (alltokens.length === 1 && alltokens[0].idsTokens === char) {
             this.atomicMemo.add(atomicKey)
             return alltokens
         }
@@ -362,10 +398,13 @@ export class IDSDecomposer {
         const fallback = this.fallbackLookupIDS(char, source)
         if (fallback) return fallback
         this.atomicMemo.add(atomicKey)
-        return [char]
+        return [{ idsTokens: char, selectedSource: source }]
     }
-    private fallbackMemo = new Map()
-    private fallbackLookupIDS(char: string, source: string): string[] | undefined {
+    private lookupIDS(char: string, source: string): string[] {
+        return this.resolveIDS(char, source).map(row => row.idsTokens)
+    }
+    private fallbackMemo = new Map<string, ResolvedIDS[]>()
+    private fallbackLookupIDS(char: string, source: string): ResolvedIDS[] | undefined {
         const fallbackKey = `${char}:${source}`
         if (this.fallbackMemo.has(fallbackKey)) {
             return this.fallbackMemo.get(fallbackKey)
@@ -386,15 +425,97 @@ export class IDSDecomposer {
         }
     }
 
-    private lookupIDSFromDb(params: { char: string, source: string }): string[] {
-        const out: string[] = []
+    private lookupIDSFromDb(params: { char: string, source: string }): ResolvedIDS[] {
+        const out: ResolvedIDS[] = []
         this.lookupIDSStatement.bind({ $char: params.char, $source: params.source })
         while (this.lookupIDSStatement.step()) {
             const row = this.lookupIDSStatement.get()
-            if (typeof row[0] === "string") out.push(row[0])
+            if (typeof row[0] === "string" && typeof row[1] === "string") {
+                out.push({ idsTokens: row[0], selectedSource: row[1] })
+            }
         }
         this.lookupIDSStatement.reset()
         return out
+    }
+    /**
+     * Reject every effective structural cycle before recursive enumeration.
+     *
+     * States retain the requested source because recursive calls do too.
+     * Resolution records the actual row source selected by fallback.
+     */
+    private assertAcyclic() {
+        type State = { char: string, source: string }
+        type Frame = {
+            state: State
+            edges: IDSDecompositionCycleStep[]
+            next: number
+            incoming?: IDSDecompositionCycleStep
+        }
+        const stateKey = ({ char, source }: State) => `${char}\u0000${source}`
+        const edgesFor = ({ char, source }: State) => {
+            const edges: IDSDecompositionCycleStep[] = []
+            for (const expandedChar of this.expand(char)) {
+                for (const row of this.resolveIDS(expandedChar, source)) {
+                    const tokens = row.idsTokens.split(/ /g)
+                    if (tokens.length === 1 && tokens[0] === char) continue
+                    if (tokens[0] === "⊖" || tokens[0] === "㇯") continue
+                    for (const dependency of tokens) {
+                        if (dependency[0] === "&" ||
+                            dependency[0] === "{" ||
+                            dependency === "？" ||
+                            idsOperatorRegExp.test(dependency)) {
+                            continue
+                        }
+                        edges.push({
+                            char,
+                            source,
+                            expandedChar,
+                            selectedSource: row.selectedSource,
+                            idsTokens: row.idsTokens,
+                            dependency,
+                        })
+                    }
+                }
+            }
+            return edges
+        }
+
+        const roots = this.allCharSources()
+        const completed = new Set<string>()
+        const active = new Map<string, number>()
+        for (const root of roots) {
+            if (completed.has(stateKey(root))) continue
+            const stack: Frame[] = [{ state: root, edges: edgesFor(root), next: 0 }]
+            active.set(stateKey(root), 0)
+            while (stack.length > 0) {
+                const frame = stack[stack.length - 1]
+                if (frame.next >= frame.edges.length) {
+                    completed.add(stateKey(frame.state))
+                    active.delete(stateKey(frame.state))
+                    stack.pop()
+                    continue
+                }
+                const edge = frame.edges[frame.next++]
+                const target = { char: edge.dependency, source: edge.source }
+                const targetKey = stateKey(target)
+                const cycleStart = active.get(targetKey)
+                if (cycleStart !== undefined) {
+                    const witness = stack
+                        .slice(cycleStart + 1)
+                        .flatMap(item => item.incoming ? [item.incoming] : [])
+                    witness.push(edge)
+                    throw new IDSDecompositionCycleError(witness)
+                }
+                if (completed.has(targetKey)) continue
+                active.set(targetKey, stack.length)
+                stack.push({
+                    state: target,
+                    edges: edgesFor(target),
+                    next: 0,
+                    incoming: edge,
+                })
+            }
+        }
     }
     private *decompose(token: string, source: string): Generator<string[]> {
         const chars = this.expand(token)
