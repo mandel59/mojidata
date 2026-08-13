@@ -66,6 +66,7 @@ type Options = {
   bvecPath?: string
   includeBvec: boolean
   includeExactOracle: boolean
+  includeEqualitySelector: boolean
   embeddedCandidateTiming: boolean
   includeCachedFts: boolean
   includeStatementCache: boolean
@@ -120,6 +121,7 @@ function parseArgs(argv: string[]): Options {
     bvecPath: process.env.MOJIDATA_BENCH_BVEC,
     includeBvec: true,
     includeExactOracle: false,
+    includeEqualitySelector: false,
     embeddedCandidateTiming: false,
     includeCachedFts: false,
     includeStatementCache: false,
@@ -191,6 +193,9 @@ function parseArgs(argv: string[]): Options {
       case "--exact-oracle":
         options.includeExactOracle = true
         break
+      case "--equality-selector":
+        options.includeEqualitySelector = true
+        break
       case "--embedded-candidate-timing":
         options.embeddedCandidateTiming = true
         break
@@ -249,6 +254,9 @@ function parseArgs(argv: string[]): Options {
   if (options.includeHybrid && !options.includeBvec) {
     throw new Error("--include-hybrid requires BV128")
   }
+  if (options.includeEqualitySelector && !options.equalityFtsPath) {
+    throw new Error("--equality-selector requires --equality-fts")
+  }
   return options
 }
 
@@ -298,6 +306,7 @@ function printHelp() {
     "  --bvec-db <db>        Override the BV128 database under test",
     "  --no-bvec             Omit BV128 from this run",
     "  --exact-oracle        Validate results against a non-timed all-UCS scan",
+    "  --equality-selector   Route explicit-wildcard queries to equality FTS",
     "  --embedded-candidate-timing",
     "                        Derive candidate timing from each end-to-end search",
     "  --cached-fts          Add a target with cached MATCH compilation",
@@ -412,6 +421,25 @@ async function createTarget(
         throw new Error(name + " candidate timing was not recorded")
       }
       return { results, candidateMs: lastCandidateMs }
+    },
+  }
+}
+
+function createWildcardEqualitySelector(
+  fts5: Target,
+  equality: Target,
+): Target {
+  const select = (ids: string[]) =>
+    tokenizeIdsList(ids).forAudit.flat(2).includes("？")
+      ? equality
+      : fts5
+  return {
+    name: "equality-selector",
+    getCandidates(ids) {
+      return select(ids).getCandidates(ids)
+    },
+    search(ids) {
+      return select(ids).search(ids)
     },
   }
 }
@@ -744,6 +772,13 @@ async function main() {
       createStructuralFtsIdsfindCandidateProvider(["equality"]),
     )
     targetNames.push("fts5-equality")
+    if (options.includeEqualitySelector) {
+      targets["equality-selector"] = createWildcardEqualitySelector(
+        targets.fts5,
+        targets["fts5-equality"],
+      )
+      targetNames.push("equality-selector")
+    }
   }
   if (options.includeHybrid) {
     targets.selector = createWholeAnchorSelector(targets.fts5, targets.bvec)
