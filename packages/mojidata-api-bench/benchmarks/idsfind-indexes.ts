@@ -63,7 +63,9 @@ type Options = {
   includeHybrid: boolean
   structuralFtsPath?: string
   equalityFtsPath?: string
+  bvecPath?: string
   includeBvec: boolean
+  includeExactOracle: boolean
   embeddedCandidateTiming: boolean
   includeCachedFts: boolean
   includeStatementCache: boolean
@@ -115,7 +117,9 @@ function parseArgs(argv: string[]): Options {
     includeHybrid: false,
     structuralFtsPath: process.env.MOJIDATA_BENCH_STRUCTURAL_FTS,
     equalityFtsPath: process.env.MOJIDATA_BENCH_EQUALITY_FTS,
+    bvecPath: process.env.MOJIDATA_BENCH_BVEC,
     includeBvec: true,
+    includeExactOracle: false,
     embeddedCandidateTiming: false,
     includeCachedFts: false,
     includeStatementCache: false,
@@ -177,8 +181,15 @@ function parseArgs(argv: string[]): Options {
           throw new Error("--equality-fts requires a value")
         }
         break
+      case "--bvec-db":
+        options.bvecPath = argv[++index]
+        if (!options.bvecPath) throw new Error("--bvec-db requires a value")
+        break
       case "--no-bvec":
         options.includeBvec = false
+        break
+      case "--exact-oracle":
+        options.includeExactOracle = true
         break
       case "--embedded-candidate-timing":
         options.embeddedCandidateTiming = true
@@ -284,7 +295,9 @@ function printHelp() {
     "  --include-hybrid      Add whole-anchor selector and candidate intersection",
     "  --structural-fts <db> Add F1 root, F2 edge, and F5 equality targets",
     "  --equality-fts <db> Add an equality-only structural target",
+    "  --bvec-db <db>        Override the BV128 database under test",
     "  --no-bvec             Omit BV128 from this run",
+    "  --exact-oracle        Validate results against a non-timed all-UCS scan",
     "  --embedded-candidate-timing",
     "                        Derive candidate timing from each end-to-end search",
     "  --cached-fts          Add a target with cached MATCH compilation",
@@ -305,6 +318,15 @@ function printHelp() {
 
 function hashFile(path: string) {
   return createHash("sha256").update(readFileSync(path)).digest("hex")
+}
+
+const allUcsIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db) {
+    const rows = await db.query<{ UCS?: string }>(
+      "SELECT DISTINCT UCS FROM idsfind ORDER BY UCS",
+    )
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
 }
 
 function readCommand(command: string, args: string[]) {
@@ -551,6 +573,9 @@ function createPayload(
     warmupIterations: options.warmupIterations,
     seed: options.seed,
     candidateTiming: options.embeddedCandidateTiming ? "embedded" : "standalone-and-embedded",
+    correctnessOracle: options.includeExactOracle
+      ? { provider: "all-distinct-ucs", timed: false }
+      : undefined,
     environment: collectBenchmarkEnvironment(),
     revision: {
       jjCommitId: readCommand("jj", ["log", "-r", "@-", "--no-graph", "-T", "commit_id"]),
@@ -621,13 +646,22 @@ async function main() {
     fts5: options.fts5Path
       ? resolve(__dirname, "../../..", options.fts5Path)
       : require.resolve("@mandel59/idsdb-fts5/idsfind.db"),
-    bvec: require.resolve("@mandel59/idsdb-bvec/idsfind.db"),
   }
-  const targets = {
+  const targets: Record<TargetName, Target> = {
     fts5: await createTarget("fts5", paths.fts5, ftsIdsfindCandidateProvider),
-    bvec: await createTarget("bvec", paths.bvec, createBvecIdsfindCandidateProvider()),
-  } as Record<TargetName, Target>
+  }
   const targetNames: TargetName[] = ["fts5"]
+  if (options.includeBvec) {
+    paths.bvec = options.bvecPath
+      ? resolve(__dirname, "../../..", options.bvecPath)
+      : require.resolve("@mandel59/idsdb-bvec/idsfind.db")
+    targets.bvec = await createTarget(
+      "bvec",
+      paths.bvec,
+      createBvecIdsfindCandidateProvider(),
+    )
+    targetNames.push("bvec")
+  }
   for (const variant of options.fts5Variants) {
     const variantPath = resolve(__dirname, "../../..", variant.path)
     paths[variant.name] = variantPath
@@ -677,7 +711,6 @@ async function main() {
     )
     targetNames.push("fts5-stmt-cache")
   }
-  if (options.includeBvec) targetNames.push("bvec")
   if (options.structuralFtsPath) {
     const structuralPath = resolve(__dirname, "../../..", options.structuralFtsPath)
     paths.structuralFts = structuralPath
@@ -719,14 +752,23 @@ async function main() {
   }
   const counts = new Map<string, { candidateCount: number; resultCount: number }>()
   const samples = new Map<string, Samples>()
+  const exactOracle = options.includeExactOracle
+    ? createIdsfind(
+      createBetterSqlite3ExecutorProvider(paths.fts5),
+      allUcsIdsfindCandidateProvider,
+    )
+    : undefined
 
   for (const benchmarkCase of cases) {
+    const oracleResults = exactOracle
+      ? await exactOracle(benchmarkCase.ids)
+      : undefined
     const observations = await Promise.all(targetNames.map(async (targetName) => ({
       targetName,
       candidates: await targets[targetName].getCandidates(benchmarkCase.ids),
       results: await targets[targetName].search(benchmarkCase.ids),
     })))
-    const expected = observations[0].results.results
+    const expected = oracleResults ?? observations[0].results.results
     for (const observation of observations) {
       if (!sameSet(expected, observation.results.results)) {
         throw new Error(
