@@ -8,6 +8,7 @@
     "bench:analyze-idsfind-patterns": "node --import tsx ./benchmarks/analyze-idsfind-patterns.ts",
     "bench:compare": "node --import tsx ./benchmarks/compare.ts",
     "bench:build-idsfind-structural": "node --import tsx ./benchmarks/build-idsfind-structural-fts.ts",
+    "bench:derive-idsfind-equality-holdout": "node --import tsx ./benchmarks/derive-idsfind-equality-holdout.ts",
     "bench:derive-idsfind-page-layout": "node --import tsx ./benchmarks/derive-idsfind-page-layout.ts",
     "bench:derive-idsfind-whole-literal": "node --import tsx ./benchmarks/derive-idsfind-whole-literal.ts",
     "bench:idsfind-indexes": "node --import tsx ./benchmarks/idsfind-indexes.ts",
