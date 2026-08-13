@@ -137,6 +137,17 @@ function buildIdsfindBvec(db: Database.Database) {
 
 async function main() {
     const idsfindIndexMode = getIdsfindIndexMode()
+    const sourceFilter = process.env.MOJIDATA_IDSDB_SOURCE || undefined
+    if (sourceFilter && !/^(?:UCS2003|\w)$/u.test(sourceFilter)) {
+        throw new Error("MOJIDATA_IDSDB_SOURCE must be one source token")
+    }
+    const expandZVariantsText = process.env.MOJIDATA_IDSDB_EXPAND_Z_VARIANTS ?? "1"
+    const normalizeRadicalVariantsText = process.env.MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS ?? "1"
+    if (!/^[01]$/.test(expandZVariantsText) || !/^[01]$/.test(normalizeRadicalVariantsText)) {
+        throw new Error("IDSDB normalization flags must be 0 or 1")
+    }
+    const expandZVariants = expandZVariantsText === "1"
+    const normalizeKdpvRadicalVariants = normalizeRadicalVariantsText === "1"
     const pageSizeText = process.env.MOJIDATA_IDSDB_PAGE_SIZE ?? "4096"
     const pageSize = Number(pageSizeText)
     if (
@@ -157,8 +168,10 @@ async function main() {
 
     db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
     const symbols_in_ids = new Set<string>()
-    for (const ids of db.prepare(`SELECT IDS from moji.ids`).pluck().iterate() as Iterable<string>) {
-        ids.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
+    for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
+        const sources: string[] = row.source.match(/UCS2003|\w/g) ?? []
+        if (sourceFilter && !sources.includes(sourceFilter)) continue
+        row.IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
     const idsfindTokenizerClause = idsfindIndexMode === "bvec"
         ? null : getIdsfindTokenizerClause(idsfindIndexMode, symbols_in_ids)
@@ -168,15 +181,31 @@ async function main() {
     db.exec(`drop table if exists "idsfind"`)
     db.exec(`CREATE TABLE "idsfind" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
     db.exec(`CREATE INDEX "idsfind_UCS" ON "idsfind" (UCS)`)
+    db.exec(`CREATE TABLE "idsfind_build_meta" (
+        schema_version INTEGER PRIMARY KEY,
+        source_filter TEXT,
+        expand_z_variants INTEGER NOT NULL,
+        normalize_kdpv_radical_variants INTEGER NOT NULL,
+        page_size INTEGER NOT NULL,
+        index_mode TEXT NOT NULL
+    )`)
+    db.prepare(`INSERT INTO idsfind_build_meta VALUES (1, ?, ?, ?, ?, ?)`).run(
+        sourceFilter ?? null,
+        expandZVariants ? 1 : 0,
+        normalizeKdpvRadicalVariants ? 1 : 0,
+        pageSize,
+        idsfindIndexMode,
+    )
     db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
     const insert_idsfind = db.prepare(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
     const decomposer = await IDSDecomposer.create({
         dbpath: path.join(outDir, "idsdecompose.db"),
-        expandZVariants: true,
-        normalizeKdpvRadicalVariants: true,
+        expandZVariants,
+        normalizeKdpvRadicalVariants,
         idstable: "ids",
         unihanPrefix: "unihan",
+        sourceFilter,
     })
 
     function showProgressForEach<T>(array: T[], proc: (value: T) => void) {
@@ -200,11 +229,11 @@ async function main() {
         source: string;
     }[] = [
         ...decomposer.allCharSources(),
-        ...usource.map(({ U_source_ID, IDS }) => ({
+        ...(sourceFilter && sourceFilter !== "U" ? [] : usource.map(({ U_source_ID, IDS }) => ({
             char: `&${U_source_ID};`,
             IDS,
             source: 'U',
-        })),
+        }))),
     ]
     transactionSync(db, () => {
         const n = allCharSources.length

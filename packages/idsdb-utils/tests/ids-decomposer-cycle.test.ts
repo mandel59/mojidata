@@ -138,6 +138,25 @@ describe("IDS decomposition cycle preflight", () => {
 })
 
 describe("IDS decomposer characterization", () => {
+    test("filters the input snapshot before fallback resolution", async () => {
+        const decomposer = await IDSDecomposer.create({
+            mojidb: fixture([
+                ["甲", "G", "⿰日月"],
+                ["甲", "J", "⿱木火"],
+                ["乙", "J", "⿱甲土"],
+            ]),
+            sourceFilter: "G",
+        })
+        assert.deepEqual(decomposer.allCharSources(), [{ char: "甲", source: "G" }])
+        assert.deepEqual(
+            [...decomposer.decomposeAll("甲", "G")],
+            [["⿰", "日", "月"]],
+        )
+        assert.deepEqual([...decomposer.decomposeAll("乙", "G")], [["乙"]])
+        assert.deepEqual(decomposer.allFallbacks(), [])
+        decomposer.close()
+    })
+
     test("D01: selects the requested source", async () => {
         const decomposer = await IDSDecomposer.create({
             mojidb: fixture([

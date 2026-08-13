@@ -120,6 +120,7 @@ export type IDSDecomposerOptions = {
     dbpath?: string
     expandZVariants?: boolean
     normalizeKdpvRadicalVariants?: boolean
+    sourceFilter?: string
 }
 
 export type IDSDecompositionCycleStep = {
@@ -201,6 +202,7 @@ export class IDSDecomposer {
                     const sources = row.source.match(/UCS2003|\w/g) ?? []
                     const idsTokens = tokenizeIDS(row.IDS).join(" ")
                     for (const source of sources) {
+                        if (options.sourceFilter && source !== options.sourceFilter) continue
                         insertTempids.run([row.UCS, source, idsTokens])
                     }
                 }
