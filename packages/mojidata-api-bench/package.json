@@ -6,6 +6,7 @@
   "scripts": {
     "bench": "node --import tsx ./benchmarks/run.ts",
     "bench:analyze-idsfind-patterns": "node --import tsx ./benchmarks/analyze-idsfind-patterns.ts",
+    "bench:audit-idsfind-idsgrep": "node --import tsx ./benchmarks/audit-idsfind-idsgrep.ts",
     "bench:compare": "node --import tsx ./benchmarks/compare.ts",
     "bench:build-idsfind-structural": "node --import tsx ./benchmarks/build-idsfind-structural-fts.ts",
     "bench:derive-idsfind-equality-holdout": "node --import tsx ./benchmarks/derive-idsfind-equality-holdout.ts",
