@@ -19,7 +19,8 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "bash scripts/prepare"
+    "prepare": "bash scripts/prepare",
+    "build:bvec-derived": "node --import tsx build-bvec-derived.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
