@@ -3,6 +3,7 @@ import { readFileSync, statSync, writeFileSync } from "node:fs"
 import { resolve } from "node:path"
 
 import {
+  createBvecIdsfindCandidateProvider,
   createIdsfind,
   createStructuralFtsIdsfindCandidateProvider,
   ftsIdsfindCandidateProvider,
@@ -16,12 +17,14 @@ const repositoryRoot = resolve(__dirname, "../../..")
 function parseArgs(argv: string[]) {
   let basePath: string | undefined
   let equalityPath: string | undefined
+  let bvecPath: string | undefined
   let manifestPath: string | undefined
   let outputPath: string | undefined
   for (let index = 0; index < argv.length; index++) {
     switch (argv[index]) {
       case "--base": basePath = argv[++index]; break
       case "--equality": equalityPath = argv[++index]; break
+      case "--bvec": bvecPath = argv[++index]; break
       case "--manifest": manifestPath = argv[++index]; break
       case "--output": outputPath = argv[++index]; break
       default: throw new Error(`Unknown argument: ${argv[index]}`)
@@ -29,12 +32,14 @@ function parseArgs(argv: string[]) {
   }
   if (!basePath || !equalityPath || !manifestPath || !outputPath) {
     throw new Error(
-      "Usage: --base <db> --equality <db> --manifest <json> --output <json>",
+      "Usage: --base <db> --equality <db> [--bvec <db>] " +
+        "--manifest <json> --output <json>",
     )
   }
   return {
     basePath: resolve(repositoryRoot, basePath),
     equalityPath: resolve(repositoryRoot, equalityPath),
+    bvecPath: bvecPath && resolve(repositoryRoot, bvecPath),
     manifestPath: resolve(repositoryRoot, manifestPath),
     outputPath: resolve(repositoryRoot, outputPath),
   }
@@ -56,6 +61,23 @@ function recall(candidates: string[], answers: string[]) {
   return answers.filter(value => candidateSet.has(value)).length / answers.length
 }
 
+async function databaseRecord(
+  path: string,
+  metadataQuery: string,
+) {
+  const getDb = createBetterSqlite3ExecutorProvider(path)
+  const db = await getDb()
+  return {
+    path,
+    bytes: statSync(path).size,
+    sha256: hashFile(path),
+    integrity: await db.query<{ integrity_check?: string }>(
+      "PRAGMA integrity_check",
+    ),
+    metadata: await db.query<Record<string, unknown>>(metadataQuery),
+  }
+}
+
 async function main() {
   const options = parseArgs(process.argv.slice(2))
   const manifestBytes = readFileSync(options.manifestPath)
@@ -70,6 +92,9 @@ async function main() {
 
   const baseDb = createBetterSqlite3ExecutorProvider(options.basePath)
   const equalityDb = createBetterSqlite3ExecutorProvider(options.equalityPath)
+  const bvecDb = options.bvecPath
+    ? createBetterSqlite3ExecutorProvider(options.bvecPath)
+    : undefined
   const allUcsProvider: IdsfindCandidateProvider = {
     async getCandidates(db) {
       const rows = await db.query<{ UCS?: string }>(
@@ -80,36 +105,64 @@ async function main() {
   }
   const equalityProvider =
     createStructuralFtsIdsfindCandidateProvider(["equality"])
+  const bvecProvider = options.bvecPath
+    ? createBvecIdsfindCandidateProvider()
+    : undefined
   const exactScan = createIdsfind(baseDb, allUcsProvider)
   const currentFts = createIdsfind(baseDb, ftsIdsfindCandidateProvider)
   const equalityFts = createIdsfind(equalityDb, equalityProvider)
+  const bvecFts = bvecDb && bvecProvider
+    ? createIdsfind(bvecDb, bvecProvider)
+    : undefined
 
   const results = []
   for (const entry of manifest.cases) {
     const tokenized = tokenizeIdsList(entry.ids)
-    const [exact, current, equality, currentCandidates, equalityCandidates] =
-      await Promise.all([
-        exactScan(entry.ids),
-        currentFts(entry.ids),
-        equalityFts(entry.ids),
-        ftsIdsfindCandidateProvider.getCandidates(
-          await baseDb(),
+    const [
+      exact,
+      current,
+      equality,
+      currentCandidates,
+      equalityCandidates,
+      bvec,
+      bvecCandidates,
+    ] = await Promise.all([
+      exactScan(entry.ids),
+      currentFts(entry.ids),
+      equalityFts(entry.ids),
+      ftsIdsfindCandidateProvider.getCandidates(
+        await baseDb(),
+        tokenized.forQuery,
+        tokenized.forAudit,
+      ),
+      equalityProvider.getCandidates(
+        await equalityDb(),
+        tokenized.forQuery,
+        tokenized.forAudit,
+      ),
+      bvecFts ? bvecFts(entry.ids) : Promise.resolve(undefined),
+      bvecDb && bvecProvider
+        ? bvecProvider.getCandidates(
+          await bvecDb(),
           tokenized.forQuery,
           tokenized.forAudit,
-        ),
-        equalityProvider.getCandidates(
-          await equalityDb(),
-          tokenized.forQuery,
-          tokenized.forAudit,
-        ),
-      ])
+        )
+        : Promise.resolve(undefined),
+    ])
     const sameCurrent = sameSet(exact, current)
     const sameEquality = sameSet(exact, equality)
+    const sameBvec = bvec ? sameSet(exact, bvec) : undefined
     const screeningCountMatches = entry.screeningResultCount === exact.length
-    if (!sameCurrent || !sameEquality || !screeningCountMatches) {
+    if (
+      !sameCurrent ||
+      !sameEquality ||
+      sameBvec === false ||
+      !screeningCountMatches
+    ) {
       throw new Error(
         `Validation mismatch for ${entry.name}: exact=${exact.length}, ` +
           `current=${current.length}, equality=${equality.length}, ` +
+          `bvec=${bvec?.length ?? "disabled"}, ` +
           `screening=${entry.screeningResultCount}`,
       )
     }
@@ -127,19 +180,20 @@ async function main() {
         candidateRecall: recall(equalityCandidates, exact),
         sameExactResults: sameEquality,
       },
+      bvec: bvecCandidates && bvec
+        ? {
+          candidateCount: bvecCandidates.length,
+          candidateRecall: recall(bvecCandidates, exact),
+          sameExactResults: sameBvec,
+        }
+        : undefined,
     })
   }
 
   const baseExecutor = await baseDb()
-  const equalityExecutor = await equalityDb()
-  const integrity = await equalityExecutor.query<{ integrity_check?: string }>(
-    "PRAGMA integrity_check",
-  )
-  const metadata = await equalityExecutor.query<Record<string, unknown>>(
-    "SELECT * FROM idsfind_structural_meta WHERE schema_version = 1",
-  )
+  const bvecResults = results.flatMap(entry => entry.bvec ? [entry.bvec] : [])
   const payload = {
-    formatVersion: 1,
+    formatVersion: 2,
     caseSetVersion: manifest.caseSetVersion,
     manifest: {
       path: options.manifestPath,
@@ -152,13 +206,16 @@ async function main() {
         bytes: statSync(options.basePath).size,
         sha256: hashFile(options.basePath),
       },
-      compactEquality: {
-        path: options.equalityPath,
-        bytes: statSync(options.equalityPath).size,
-        sha256: hashFile(options.equalityPath),
-        integrity,
-        metadata,
-      },
+      compactEquality: await databaseRecord(
+        options.equalityPath,
+        "SELECT * FROM idsfind_structural_meta WHERE schema_version = 1",
+      ),
+      bvec: options.bvecPath
+        ? await databaseRecord(
+          options.bvecPath,
+          "SELECT * FROM idsfind_bvec_meta WHERE schema_version = 1",
+        )
+        : undefined,
     },
     populationUcs: (
       await baseExecutor.query<{ count?: number }>(
@@ -174,12 +231,18 @@ async function main() {
       equalityExactMatches: results.filter(
         entry => entry.compactEqualityFts.sameExactResults,
       ).length,
+      bvecExactMatches: bvecResults.length === 0
+        ? undefined
+        : bvecResults.filter(entry => entry.sameExactResults).length,
       currentRecallOne: results.filter(
         entry => entry.currentFts.candidateRecall === 1,
       ).length,
       equalityRecallOne: results.filter(
         entry => entry.compactEqualityFts.candidateRecall === 1,
       ).length,
+      bvecRecallOne: bvecResults.length === 0
+        ? undefined
+        : bvecResults.filter(entry => entry.candidateRecall === 1).length,
       screeningCountMatches: results.filter(
         entry => entry.screeningCountMatches,
       ).length,
