@@ -1,6 +1,9 @@
 import { spawnSync } from "node:child_process"
 
-import { encodeIdsFtsEqualityFeature } from "@mandel59/idsdb-utils"
+import {
+  collectIdsFtsFeatures,
+  encodeIdsFtsEqualityFeature,
+} from "@mandel59/idsdb-utils"
 import { compileIdsfindStructuralPattern } from "@mandel59/mojidata-api-core"
 
 type Shape =
@@ -68,6 +71,15 @@ function serialize(tree: ConcreteNode): string[] {
     : [tree.operator, ...tree.children.flatMap(serialize)]
 }
 
+function wireNodes(tree: ConcreteNode): { token: string; arity: number }[] {
+  return tree.kind === "leaf"
+    ? [{ token: tree.variable, arity: 0 }]
+    : [
+      { token: tree.operator, arity: tree.children.length },
+      ...tree.children.flatMap(wireNodes),
+    ]
+}
+
 function variablePaths(tree: ConcreteNode) {
   const paths = new Map<string, number[][]>()
   const visit = (current: ConcreteNode, path: number[]) => {
@@ -111,15 +123,23 @@ const cases = shapes().flatMap((shape, shapeIndex) =>
       name: `shape-${shapeIndex}-assignment-${assignmentIndex}`,
       tokens: ["§", ...serialize(tree), "§"],
       groups,
+      nodes: wireNodes(tree),
     }
   })
 )
 
-const input = cases.map(item => JSON.stringify({
-  version: 1,
-  command: "compile-equality",
-  variables: item.groups,
-})).join("\n") + "\n"
+const input = cases.flatMap(item => [
+  {
+    version: 1,
+    command: "compile-equality",
+    variables: item.groups,
+  },
+  {
+    version: 1,
+    command: "tree-equality",
+    nodes: item.nodes,
+  },
+]).map(value => JSON.stringify(value)).join("\n") + "\n"
 
 const oracle = spawnSync(oraclePath, ["--jsonl"], {
   input,
@@ -128,17 +148,20 @@ const oracle = spawnSync(oraclePath, ["--jsonl"], {
 })
 if (oracle.error) throw oracle.error
 if (oracle.status !== 0) {
-  throw new Error(`Lean oracle failed (${oracle.status}): ${oracle.stderr}`)
+  throw new Error("Lean oracle failed (" + oracle.status + "): " + oracle.stderr)
 }
 const responses = oracle.stdout.trim().split(/\r?\n/u)
   .map(line => JSON.parse(line) as OracleResponse)
-if (responses.length !== cases.length) {
-  throw new Error(`Expected ${cases.length} oracle responses, got ${responses.length}`)
+if (responses.length !== cases.length * 2) {
+  throw new Error(
+    "Expected " + cases.length * 2 + " oracle responses, got " +
+      responses.length,
+  )
 }
 
 const mismatches: unknown[] = []
 cases.forEach((item, index) => {
-  const response = responses[index]
+  const response = responses[index * 2]
   if (response.error) {
     mismatches.push({ name: item.name, oracleError: response.error })
     return
@@ -155,6 +178,27 @@ cases.forEach((item, index) => {
       tokens: item.tokens,
       leanTerms,
       typescriptTerms,
+    })
+  }
+
+  const treeResponse = responses[index * 2 + 1]
+  if (treeResponse.error) {
+    mismatches.push({ name: item.name, treeOracleError: treeResponse.error })
+    return
+  }
+  const leanTreeTerms = [...new Set(treeResponse.pairs.map(pair =>
+    encodeIdsFtsEqualityFeature(pair.left, pair.right)
+  ))].sort()
+  const typescriptTreeTerms = collectIdsFtsFeatures(
+    item.tokens.slice(1, -1),
+    { families: ["equality"] },
+  ).sort()
+  if (JSON.stringify(leanTreeTerms) !== JSON.stringify(typescriptTreeTerms)) {
+    mismatches.push({
+      name: item.name,
+      tokens: item.tokens,
+      leanTreeTerms,
+      typescriptTreeTerms,
     })
   }
 })
@@ -177,7 +221,8 @@ for (const guard of guardCases) {
 }
 const summary = {
   protocolVersion: 1,
-  generatedCases: cases.length,
+  generatedCompilerCases: cases.length,
+  generatedTreeCases: cases.length,
   shapeCount: shapes().length,
   maxDepth: 2,
   adapterGuardCases: guardCases.length,
