@@ -15,7 +15,8 @@
     "bench:remote": "node --import tsx ./benchmarks/remote.ts",
     "bench:prepare": "yarn run prepare:test-deps && yarn prepare",
     "prepare:test-deps": "yarn --cwd ../.. workspace @mandel59/mojidata run prepare && yarn --cwd ../.. workspace @mandel59/idsdb run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-fts5 run prepare && yarn --cwd ../.. workspace @mandel59/idsdb-bvec run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-core run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-hono run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-runtime run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-sqljs run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-better-sqlite3 run prepare && yarn --cwd ../.. workspace @mandel59/mojidata-api-node-sqlite run prepare",
-    "prepare": "tsc --noEmit"
+    "prepare": "tsc --noEmit",
+    "bench:differential-idsfind-equality": "node --import tsx ./benchmarks/differential-idsfind-equality.ts"
   },
   "dependencies": {
     "@mandel59/idsdb-bvec": "workspace:^",
