@@ -13,6 +13,7 @@
     "bench:derive-idsfind-page-layout": "node --import tsx ./benchmarks/derive-idsfind-page-layout.ts",
     "bench:derive-idsfind-whole-literal": "node --import tsx ./benchmarks/derive-idsfind-whole-literal.ts",
     "bench:idsfind-indexes": "node --import tsx ./benchmarks/idsfind-indexes.ts",
+    "bench:idsgrep-eids": "node --import tsx ./benchmarks/compare-idsgrep-eids.ts",
     "bench:validate-idsfind-equality-holdout": "node --import tsx ./benchmarks/validate-idsfind-equality-holdout.ts",
     "bench:local": "node --import tsx ./benchmarks/local.ts",
     "bench:remote": "node --import tsx ./benchmarks/remote.ts",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@mandel59/idsdb-utils": "workspace:^",
+    "@mandel59/idsflow-eids": "workspace:^",
     "@types/better-sqlite3": "^5.4.1",
     "@types/node": "^24.10.4",
     "better-sqlite3": "^12.5.0",

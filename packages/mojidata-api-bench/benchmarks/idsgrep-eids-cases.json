@@ -1,0 +1,53 @@
+{
+  "caseSetVersion": 1,
+  "cases": [
+    {
+      "name": "fragment-literal-wood",
+      "description": "Broad atomic subtree search",
+      "mojidataQuery": ["木"],
+      "idsgrepQuery": "...木"
+    },
+    {
+      "name": "fragment-exact-fire-earth",
+      "description": "Selective exact binary subtree",
+      "mojidataQuery": ["⿰火土"],
+      "idsgrepQuery": "...⿰火土"
+    },
+    {
+      "name": "fragment-exact-sun-moon",
+      "description": "Exact top-bottom subtree",
+      "mojidataQuery": ["⿱日月"],
+      "idsgrepQuery": "...⿱日月"
+    },
+    {
+      "name": "fragment-wildcard-heart",
+      "description": "Binary subtree with a single-use wildcard",
+      "mojidataQuery": ["⿰？心"],
+      "idsgrepQuery": "...⿰?心"
+    },
+    {
+      "name": "fragment-wood-wildcard",
+      "description": "Top-bottom subtree with a single-use wildcard",
+      "mojidataQuery": ["⿱木？"],
+      "idsgrepQuery": "...⿱木?"
+    },
+    {
+      "name": "fragment-forest-shape",
+      "description": "Nested complete subtree",
+      "mojidataQuery": ["⿱木⿰木木"],
+      "idsgrepQuery": "...⿱木⿰木木"
+    },
+    {
+      "name": "root-exact-fire-earth",
+      "description": "Whole-tree exact binary query",
+      "mojidataQuery": ["§⿰火土§"],
+      "idsgrepQuery": "⿰火土"
+    },
+    {
+      "name": "root-wildcard-heart",
+      "description": "Whole-tree binary query with a wildcard",
+      "mojidataQuery": ["§⿰？心§"],
+      "idsgrepQuery": "⿰?心"
+    }
+  ]
+}

@@ -1223,6 +1223,7 @@ const RAW_RUNTIME_STATE =
           ["@mandel59/idsdb-bvec", "workspace:packages/idsdb-bvec"],\
           ["@mandel59/idsdb-fts5", "workspace:packages/idsdb-fts5"],\
           ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
+          ["@mandel59/idsflow-eids", "workspace:packages/idsflow-eids"],\
           ["@mandel59/mojidata-api-bench", "workspace:packages/mojidata-api-bench"],\
           ["@mandel59/mojidata-api-better-sqlite3", "virtual:ca6edadad433d65c39ebb39027a1d28c743bddfc96e82cefc8a9f411e468c283944545c6edc1e7c5f95e4ea41c705612099495a04e85cc8ea62528e6165b6c5a#workspace:packages/mojidata-api-better-sqlite3"],\
           ["@mandel59/mojidata-api-core", "workspace:packages/mojidata-api-core"],\
