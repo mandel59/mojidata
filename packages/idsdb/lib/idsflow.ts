@@ -27,7 +27,10 @@ type Value = Records | Decompose
 type Mapping = Record<string, unknown>
 
 export type LoadedIdsFlow = {
-    decompose: Omit<Decompose, "kind" | "reports">
+    output: {
+        kind: "records"
+        records: IdsFlowRecord[]
+    } | Omit<Decompose, "reports">
     dataSources: string[]
     eidsReports: Report[]
     recipePath: string
@@ -232,15 +235,18 @@ export function loadIdsFlowRecipe(
     }
 
     const result = evaluate(output)
-    if (result.kind !== "decompose") throw new Error("recipe.output must name a decompose dataset")
+    const outputRecords = result.kind === "records" ? result.records : result.roots
     return {
-        decompose: {
-            roots: result.roots,
-            definitions: result.definitions,
-            expandZVariants: result.expandZVariants,
-            normalizeKdpvRadicalVariants: result.normalizeKdpvRadicalVariants,
-        },
-        dataSources: [...new Set(result.roots.map(row => row.idsDataSource))],
+        output: result.kind === "records"
+            ? { kind: "records", records: result.records }
+            : {
+                kind: "decompose",
+                roots: result.roots,
+                definitions: result.definitions,
+                expandZVariants: result.expandZVariants,
+                normalizeKdpvRadicalVariants: result.normalizeKdpvRadicalVariants,
+            },
+        dataSources: [...new Set(outputRecords.map(row => row.idsDataSource))],
         eidsReports: [...new Map(result.reports.map(report => [report.path, report])).values()],
         recipePath,
         recipeSha256: createHash("sha256").update(text).digest("hex"),

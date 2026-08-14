@@ -126,10 +126,17 @@ async function main() {
     const idsFlow = recipePath
         ? loadIdsFlowRecipe(recipePath, { defaultMojidb: mojidb })
         : undefined
+    const idsFlowDecompose = idsFlow?.output.kind === "decompose"
+        ? idsFlow.output
+        : undefined
+    const idsFlowRecords = idsFlow?.output.kind === "records"
+        ? idsFlow.output.records
+        : idsFlowDecompose?.roots
     if (idsFlow) {
         dataSources = new Set(idsFlow.dataSources)
-        expandZVariants = idsFlow.decompose.expandZVariants
-        normalizeKdpvRadicalVariants = idsFlow.decompose.normalizeKdpvRadicalVariants
+        expandZVariants = idsFlowDecompose?.expandZVariants ?? false
+        normalizeKdpvRadicalVariants =
+            idsFlowDecompose?.normalizeKdpvRadicalVariants ?? false
     }
 
     const dbpath = path.join(outDir, "idsfind.db")
@@ -143,7 +150,7 @@ async function main() {
         IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
     if (idsFlow) {
-        for (const row of idsFlow.decompose.roots) collectSymbols(row.IDS)
+        for (const row of idsFlowRecords ?? []) collectSymbols(row.IDS)
     } else if (dataSources.has("babelstone")) {
         for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
             const sources = parseBabelStoneIdsSourceExpression(row.source)
@@ -207,8 +214,8 @@ async function main() {
     const decomposer = await IDSDecomposer.create({
         dbpath: path.join(outDir, "idsdecompose.db"),
         includeMojidataIds: idsFlow ? false : dataSources.has("babelstone"),
-        additionalIds: idsFlow
-            ? idsFlow.decompose.definitions.map(row => ({
+        additionalIds: idsFlowDecompose
+            ? idsFlowDecompose.definitions.map(row => ({
                 UCS: row.char,
                 IDS: row.IDS,
                 source: row.irgSource ?? "*",
@@ -236,16 +243,21 @@ async function main() {
         }
     }
 
-    const idsFlowRoots: { char: string, IDS?: string, source: string }[] = []
-    if (idsFlow) {
+    const idsFlowRoots: {
+        char: string
+        IDS?: string
+        source: string
+        raw?: boolean
+    }[] = []
+    if (idsFlowDecompose) {
         const rootKey = (char: string, source: string) => JSON.stringify([char, source])
         const definitionKeys = new Set(
-            idsFlow.decompose.definitions.map(row =>
+            idsFlowDecompose.definitions.map(row =>
                 rootKey(row.char, row.irgSource ?? "*")
             ),
         )
         const seenDefinitions = new Set<string>()
-        for (const row of idsFlow.decompose.roots) {
+        for (const row of idsFlowDecompose.roots) {
             const source = row.irgSource ?? "*"
             const key = rootKey(row.char, source)
             if (!definitionKeys.has(key)) {
@@ -255,11 +267,21 @@ async function main() {
                 idsFlowRoots.push({ char: row.char, source })
             }
         }
+    } else if (idsFlow) {
+        for (const row of idsFlowRecords ?? []) {
+            idsFlowRoots.push({
+                char: row.char,
+                IDS: row.IDS,
+                source: row.irgSource ?? "*",
+                raw: true,
+            })
+        }
     }
     const allCharSources: {
         char: string;
         IDS?: string;
         source: string;
+        raw?: boolean;
     }[] = idsFlow ? idsFlowRoots : [
         ...decomposer.allCharSources().filter(({ source }) => source !== "*"),
         ...eids.entries.map(({ UCS, IDS, source }) => ({
@@ -289,8 +311,10 @@ async function main() {
     transactionSync(db, () => {
         const n = allCharSources.length
         console.log("total", n)
-        showProgressForEach(allCharSources, ({ char, IDS, source }) => {
-            const alltokens = IDS
+        showProgressForEach(allCharSources, ({ char, IDS, source, raw }) => {
+            const alltokens = raw
+                ? [tokenizeIDS(IDS!)]
+                : IDS
                 ? decomposer.decomposeTokens(tokenizeIDS(IDS), source)
                 : decomposer.decomposeAll(char, source)
             for (const tokens of alltokens) {

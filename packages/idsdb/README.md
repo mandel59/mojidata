@@ -51,6 +51,23 @@ provide IRG source metadata, an EIDS build cannot be combined with
 The first version has four operations: `read`, `select`, `union`, and
 `decompose`. Relative input paths are resolved from the recipe directory.
 
+An ordinary dataset can be the output. This converts EIDS to IDS without
+recursively replacing its component leaves:
+
+```yaml
+version: 1
+datasets:
+  chise:
+    read:
+      kind: eids
+      path: chise.eids
+      data_source: chise
+output: chise
+```
+
+Use the optional `decompose` operation only when the output should contain
+transitively expanded component trees:
+
 ```yaml
 version: 1
 datasets:

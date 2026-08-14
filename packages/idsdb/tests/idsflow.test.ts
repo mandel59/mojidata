@@ -52,21 +52,23 @@ test("reads, selects, unions, and separates roots from definitions", () => {
             "output: expanded",
         ].join("\n"))
         const loaded = loadIdsFlowRecipe(recipePath, { defaultMojidb: dbPath })
-        assert.deepEqual(loaded.decompose.roots, [
+        assert.equal(loaded.output.kind, "decompose")
+        if (loaded.output.kind !== "decompose") return
+        assert.deepEqual(loaded.output.roots, [
             { char: "\u660E", IDS: "\u2FF0\u65E5\u6708", idsDataSource: "babelstone", irgSource: "G" },
             { char: "&UTC-001;", IDS: "\u2FF1\u65E5\u6708", idsDataSource: "usource", irgSource: "UTC" },
         ])
-        assert.deepEqual(loaded.decompose.definitions, [
+        assert.deepEqual(loaded.output.definitions, [
             { char: "\u660E", IDS: "\u2FF0\u65E5\u6708", idsDataSource: "babelstone", irgSource: "G" },
         ])
-        assert.equal(loaded.decompose.expandZVariants, false)
-        assert.equal(loaded.decompose.normalizeKdpvRadicalVariants, true)
+        assert.equal(loaded.output.expandZVariants, false)
+        assert.equal(loaded.output.normalizeKdpvRadicalVariants, true)
     } finally {
         fs.rmSync(directory, { recursive: true, force: true })
     }
 })
 
-test("reads EIDS relative to the recipe and uses it as definitions by default", () => {
+test("allows converted EIDS to be output without recursive decomposition", () => {
     const { directory, dbPath } = fixture()
     try {
         fs.writeFileSync(path.join(directory, "chise.eids"), "\u3010\u660E\u3011\u2FF0\u65E5\u6708")
@@ -79,13 +81,12 @@ test("reads EIDS relative to the recipe and uses it as definitions by default", 
             "      kind: eids",
             "      path: chise.eids",
             "      data_source: chise",
-            "  expanded:",
-            "    decompose: { input: chise }",
-            "output: expanded",
+            "output: chise",
         ].join("\n"))
         const loaded = loadIdsFlowRecipe(recipePath, { defaultMojidb: dbPath })
-        assert.deepEqual(loaded.decompose.roots, loaded.decompose.definitions)
-        assert.deepEqual(loaded.decompose.roots, [
+        assert.equal(loaded.output.kind, "records")
+        if (loaded.output.kind !== "records") return
+        assert.deepEqual(loaded.output.records, [
             { char: "\u660E", IDS: "\u2FF0\u65E5\u6708", idsDataSource: "chise", irgSource: null },
         ])
         assert.equal(loaded.eidsReports[0].entries, 1)
