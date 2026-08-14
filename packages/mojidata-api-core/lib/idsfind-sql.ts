@@ -11,6 +11,7 @@ import {
   idsfindWholeLiteralScanQuery,
 } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
+import { getIdsQueryPlan } from "./idsfind-semantics"
 import type { SqlExecutor } from "./sql-executor"
 
 export interface IdsfindCandidateProvider {
@@ -285,7 +286,7 @@ export function createIdsfind(
 ) {
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
-    const tokenized = tokenizeIdsList(idslist)
+    const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
     const idsTokensCache = new Map<string, string[]>()
 
     const prefetchIDSTokens = async (ucsValues: Iterable<string>) => {

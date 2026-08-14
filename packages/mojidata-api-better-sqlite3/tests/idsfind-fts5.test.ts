@@ -47,4 +47,82 @@ describe("idsfind query compatibility", () => {
     assert.deepEqual(await idsfind(["§？§"]), [])
     db.close()
   })
+
+  test("uses the database query plan for raw overlaid IDS", async () => {
+    const db = new Database(":memory:")
+    db.exec(`
+      CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
+      CREATE TABLE idsfind_semantics (
+        schema_version INTEGER PRIMARY KEY,
+        query_plan_json TEXT NOT NULL
+      );
+      INSERT INTO idsfind VALUES ('甲', '⿻ 日 丨');
+      INSERT INTO idsfind_semantics VALUES (
+        1,
+        '{"version":1,"transforms":[]}'
+      );
+    `)
+
+    const executor = createBetterSqlite3Executor(db)
+    const idsfind = createIdsfind(async () => executor, {
+      async getCandidates(_db, idslist) {
+        assert.deepEqual(idslist, [[["⿻", "日", "丨"]]])
+        return ["甲"]
+      },
+    })
+
+    assert.deepEqual(await idsfind(["⿻日丨"]), ["甲"])
+    db.close()
+  })
+
+  test("uses the database query plan for decomposed overlaid IDS", async () => {
+    const db = new Database(":memory:")
+    db.exec(`
+      CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
+      CREATE TABLE idsfind_semantics (
+        schema_version INTEGER PRIMARY KEY,
+        query_plan_json TEXT NOT NULL
+      );
+      INSERT INTO idsfind_semantics VALUES (
+        1,
+        '{"version":1,"transforms":[{"op":"expand-overlaid","version":1}]}'
+      );
+    `)
+
+    const executor = createBetterSqlite3Executor(db)
+    const idsfind = createIdsfind(async () => executor, {
+      async getCandidates(_db, idslist) {
+        assert.deepEqual(idslist, [[
+          ["&OL3;", "？", "日", "丨"],
+          ["&OL3;", "？", "丨", "日"],
+        ]])
+        return []
+      },
+    })
+    assert.deepEqual(await idsfind(["⿻日丨"]), [])
+    db.close()
+  })
+
+  test("rejects an unknown database query transform", async () => {
+    const db = new Database(":memory:")
+    db.exec(`
+      CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
+      CREATE TABLE idsfind_semantics (
+        schema_version INTEGER PRIMARY KEY,
+        query_plan_json TEXT NOT NULL
+      );
+      INSERT INTO idsfind_semantics VALUES (
+        1,
+        '{"version":1,"transforms":[{"op":"future-op","version":1}]}'
+      );
+    `)
+
+    const executor = createBetterSqlite3Executor(db)
+    const idsfind = createIdsfind(async () => executor)
+    await assert.rejects(
+      idsfind(["日"]),
+      /not a supported query transform/,
+    )
+    db.close()
+  })
 })

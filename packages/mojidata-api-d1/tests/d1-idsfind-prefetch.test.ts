@@ -27,8 +27,11 @@ class FakeExecutor implements SqlExecutor {
     throw new Error(`Unexpected idsfind SQL: ${sql}`)
   }
 
-  async queryOne<T extends SqlRow>(): Promise<T | null> {
-    throw new Error("queryOne() should not be called in this idsfind test")
+  async queryOne<T extends SqlRow>(sql: string): Promise<T | null> {
+    if (sql.includes("FROM sqlite_master")) {
+      return null
+    }
+    throw new Error(`Unexpected idsfind SQL: ${sql}`)
   }
 }
 

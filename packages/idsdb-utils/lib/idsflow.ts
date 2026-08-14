@@ -1,3 +1,9 @@
+import {
+    decomposedIdsQueryPlan,
+    identityIdsQueryPlan,
+    type IdsQueryPlan,
+} from "./ids-query-plan"
+
 export type IdsFlowRecord = {
     char: string
     IDS: string
@@ -47,6 +53,7 @@ export type EvaluatedIdsFlow = {
         records: IdsFlowRecord[]
     } | Omit<Decompose, "reports">
     dataSources: string[]
+    queryPlan: IdsQueryPlan
     reports: IdsFlowReport[]
 }
 
@@ -222,6 +229,9 @@ export function evaluateIdsFlowRecipe(
                 normalizeKdpvRadicalVariants: result.normalizeKdpvRadicalVariants,
             },
         dataSources: [...new Set(outputRecords.map(row => row.idsDataSource))],
+        queryPlan: result.kind === "records"
+            ? identityIdsQueryPlan
+            : decomposedIdsQueryPlan,
         reports: [...new Map(result.reports.map(report => [report.path, report])).values()],
     }
 }

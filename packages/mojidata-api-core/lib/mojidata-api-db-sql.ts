@@ -2,6 +2,7 @@ import type { MojidataApiDb } from "./mojidata-api-db"
 import { createIdsfind, type IdsfindCandidateProvider } from "./idsfind-sql"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
+import { getIdsQueryPlan } from "./idsfind-semantics"
 import { createLibSearch } from "./libsearch"
 import {
   buildMojidataSelectQuery,
@@ -180,7 +181,7 @@ export function createSqlApiDb({
     idsfind,
     async idsfindDebugQuery(queryBody: string, idslist: string[]) {
       const db = await getIdsfindDb()
-      const tokenized = tokenizeIdsList(idslist)
+      const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
       const query = makeIdsfindQuery(queryBody)
       return await db.query<Record<string, unknown>>(query, {
         $idslist: JSON.stringify(tokenized.forQuery),

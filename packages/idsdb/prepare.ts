@@ -4,6 +4,7 @@ import Database from "better-sqlite3"
 import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import {
+    decomposedIdsQueryPlan,
     idsdbSourceTokens,
     parseBabelStoneIdsSourceExpression,
     tokenizeIDS,
@@ -112,6 +113,7 @@ async function main() {
     const idsFlowRecords = idsFlow?.output.kind === "records"
         ? idsFlow.output.records
         : idsFlowDecompose?.roots
+    const queryPlan = idsFlow?.queryPlan ?? decomposedIdsQueryPlan
     if (idsFlow) {
         dataSources = new Set(idsFlow.dataSources)
         expandZVariants = idsFlowDecompose?.expandZVariants ?? false
@@ -183,6 +185,13 @@ async function main() {
         idsFlow?.recipePath ?? null,
         idsFlow?.recipeSha256 ?? null,
     )
+    db.exec(`CREATE TABLE "idsfind_semantics" (
+        schema_version INTEGER PRIMARY KEY,
+        query_plan_json TEXT NOT NULL
+    )`)
+    db.prepare(`INSERT INTO idsfind_semantics (
+        schema_version, query_plan_json
+    ) VALUES (1, ?)`).run(JSON.stringify(queryPlan))
     db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
     const insert_idsfind = db.prepare(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 

@@ -8,6 +8,14 @@ export {
 } from "./lib/ids-operator"
 export { tokenizeIDS } from "./lib/ids-tokenizer"
 export {
+    applyIdsQueryPlan,
+    decomposedIdsQueryPlan,
+    identityIdsQueryPlan,
+    parseIdsQueryPlan,
+    type IdsQueryPlan,
+    type IdsQueryTransform,
+} from "./lib/ids-query-plan"
+export {
     encodeIdsBvec,
     encodeIdsBvecPattern,
     idsBvecContainsMask,

@@ -122,5 +122,6 @@ export function loadIdsFlowRecipe(
         inputReports: evaluated.reports,
         recipePath,
         recipeSha256: createHash("sha256").update(text).digest("hex"),
+        queryPlan: evaluated.queryPlan,
     }
 }

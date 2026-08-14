@@ -55,6 +55,10 @@ test("selects, unions, and describes explicit decomposition", () => {
     assert.equal(loaded.output.expandZVariants, false)
     assert.equal(loaded.output.normalizeKdpvRadicalVariants, true)
     assert.deepEqual(loaded.dataSources, ["babelstone", "usource"])
+    assert.deepEqual(loaded.queryPlan, {
+        version: 1,
+        transforms: [{ op: "expand-overlaid", version: 1 }],
+    })
 })
 
 test("allows records to remain unexpanded", () => {
@@ -67,6 +71,7 @@ test("allows records to remain unexpanded", () => {
         kind: "records",
         records: inputs.babelstone.records,
     })
+    assert.deepEqual(loaded.queryPlan, { version: 1, transforms: [] })
 })
 
 test("rejects unknown keys and cyclic dataset references", () => {

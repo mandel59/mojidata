@@ -1,0 +1,66 @@
+import { expandOverlaid } from "./ids-operator"
+import type { TokenList } from "./token-list"
+
+export type IdsQueryTransform = {
+    op: "expand-overlaid"
+    version: 1
+}
+
+export type IdsQueryPlan = {
+    version: 1
+    transforms: IdsQueryTransform[]
+}
+
+export const identityIdsQueryPlan: IdsQueryPlan = {
+    version: 1,
+    transforms: [],
+}
+
+export const decomposedIdsQueryPlan: IdsQueryPlan = {
+    version: 1,
+    transforms: [{ op: "expand-overlaid", version: 1 }],
+}
+
+function mapping(value: unknown, at: string): Record<string, unknown> {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(`${at} must be a mapping`)
+    }
+    return value as Record<string, unknown>
+}
+
+function only(value: Record<string, unknown>, allowed: string[], at: string) {
+    const unknown = Object.keys(value).find(key => !allowed.includes(key))
+    if (unknown) throw new Error(`${at} has unknown key: ${unknown}`)
+}
+
+export function parseIdsQueryPlan(value: unknown): IdsQueryPlan {
+    const plan = mapping(value, "query plan")
+    only(plan, ["version", "transforms"], "query plan")
+    if (plan.version !== 1) throw new Error("query plan.version must be 1")
+    if (!Array.isArray(plan.transforms)) {
+        throw new Error("query plan.transforms must be a list")
+    }
+    const transforms = plan.transforms.map((value, index): IdsQueryTransform => {
+        const at = `query plan.transforms[${index}]`
+        const transform = mapping(value, at)
+        only(transform, ["op", "version"], at)
+        if (transform.op !== "expand-overlaid" || transform.version !== 1) {
+            throw new Error(`${at} is not a supported query transform`)
+        }
+        return { op: "expand-overlaid", version: 1 }
+    })
+    return { version: 1, transforms }
+}
+
+export function applyIdsQueryPlan(
+    tokens: TokenList,
+    plan: IdsQueryPlan,
+): TokenList[] {
+    let results = [tokens]
+    for (const transform of plan.transforms) {
+        if (transform.op === "expand-overlaid" && transform.version === 1) {
+            results = results.flatMap(expandOverlaid)
+        }
+    }
+    return results
+}
