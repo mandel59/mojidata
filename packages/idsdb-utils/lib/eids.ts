@@ -1,4 +1,5 @@
-import { tokenArgs, tokenizeIDS } from "@mandel59/idsdb-utils"
+import { tokenArgs } from "./ids-operator"
+import { tokenizeIDS } from "./ids-tokenizer"
 
 export type EidsIdsEntry = {
     UCS: string

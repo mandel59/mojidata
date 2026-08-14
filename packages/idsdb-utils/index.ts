@@ -31,3 +31,17 @@ export {
     idsdbSourceTokens,
     parseBabelStoneIdsSourceExpression,
 } from "./lib/ids-source"
+export {
+    convertEidsDictionary,
+    type EidsConversionResult,
+    type EidsIdsEntry,
+} from "./lib/eids"
+export {
+    evaluateIdsFlowRecipe,
+    type EvaluatedIdsFlow,
+    type IdsFlowReader,
+    type IdsFlowReadResult,
+    type IdsFlowReadSpec,
+    type IdsFlowRecord,
+    type IdsFlowReport,
+} from "./lib/idsflow"

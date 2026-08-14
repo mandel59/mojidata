@@ -30,8 +30,7 @@ for rel in [
     pathlib.Path("idsdb/package.json"),
     pathlib.Path("idsdb/tsconfig.json"),
     pathlib.Path("idsdb/prepare.ts"),
-    pathlib.Path("idsdb/lib/eids.ts"),
-    pathlib.Path("idsdb/lib/idsflow.ts"),
+    pathlib.Path("idsdb/lib/idsflow-adapter.ts"),
 ]:
     add_file(workspace_root / rel)
 

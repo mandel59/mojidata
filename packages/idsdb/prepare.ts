@@ -5,12 +5,12 @@ import Database from "better-sqlite3"
 import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import {
+    convertEidsDictionary,
     idsdbSourceTokens,
     parseBabelStoneIdsSourceExpression,
     tokenizeIDS,
 } from "@mandel59/idsdb-utils"
-import { convertEidsDictionary } from "./lib/eids"
-import { loadIdsFlowRecipe } from "./lib/idsflow"
+import { loadIdsFlowRecipe } from "./lib/idsflow-adapter"
 import { buildIdsfindBvec } from "./lib/idsfind-bvec-db"
 
 type IdsfindIndexMode = "fts4" | "fts5" | "bvec"

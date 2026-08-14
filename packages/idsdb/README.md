@@ -47,71 +47,25 @@ provide IRG source metadata, an EIDS build cannot be combined with
 
 ## IDSFlow recipes
 
-`MOJIDATA_IDSDB_RECIPE` selects a version 1 YAML recipe for IDS conversion.
-The first version has four operations: `read`, `select`, `union`, and
-`decompose`. Relative input paths are resolved from the recipe directory.
-
-An ordinary dataset can be the output. This converts EIDS to IDS without
-recursively replacing its component leaves:
-
-```yaml
-version: 1
-datasets:
-  chise:
-    read:
-      kind: eids
-      path: chise.eids
-      data_source: chise
-output: chise
-```
-
-Use the optional `decompose` operation only when the output should contain
-transitively expanded component trees:
-
-```yaml
-version: 1
-datasets:
-  babelstone:
-    read: { kind: moji-ids }
-  selected:
-    select: { input: babelstone, irg_source: [G, SG] }
-  chise:
-    read:
-      kind: eids
-      path: chise.eids
-      data_source: chise
-  definitions:
-    union: { inputs: [selected, chise] }
-  usource:
-    read: { kind: moji-usource }
-  roots:
-    union: { inputs: [definitions, usource] }
-  expanded:
-    decompose:
-      input: roots
-      using: definitions
-output: expanded
-```
-
-`decompose.using` defaults to `decompose.input`. It is needed above because
-the existing build searches U-Source records as roots without using them as
-recursive component definitions. Decomposition keeps the existing defaults:
-Z-variant expansion and KDPV radical normalization are enabled, undefined
-components remain atomic, and structural cycles are errors. The two
-normalizations can be disabled with `expand_z_variants: false` and
-`normalize_kdpv_radical_variants: false`.
+`MOJIDATA_IDSDB_RECIPE` selects a backend-independent IDSFlow transformation.
+The language and shared recipes belong to `@mandel59/idsdb-utils`; this
+package only supplies the filesystem/`moji.db` reader adapter and materializes
+the evaluated corpus as an IDS database. See the
+[`idsdb-utils` IDSFlow documentation](../idsdb-utils/README.md#idsflow).
 
 ```sh
-MOJIDATA_IDSDB_RECIPE=/absolute/path/to/idsflow.yaml \
+MOJIDATA_IDSDB_RECIPE=/absolute/path/to/idsdb-utils/recipes/default.idsflow.yaml \
 MOJIDATA_IDSDB_OUT_DIR=/absolute/path/to/idsdb-experiment \
 yarn workspace @mandel59/idsdb prepare
 ```
 
+The recipe setting accepts an absolute path or a path relative to the invocation
+directory. Inputs inside a recipe are resolved relative to the recipe file.
+Recipe lookup deliberately does not use Node or Yarn package resolution.
+
 Index, page-size, and output settings remain build settings outside IDSFlow.
 Recipe builds reject the older IDS transformation environment variables to
 avoid combining two transformation descriptions.
-[`recipes/default.idsflow.yaml`](./recipes/default.idsflow.yaml) reproduces
-the existing BabelStone plus U-Source transformation.
 
 ## Source-isolated research builds
 

@@ -3,6 +3,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 STAMP=".idsdb-bvec.input.sha256"
 INDEX_MODE="bvec"
+
+if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  echo "idsdb-bvec prepare: building from IDSFlow recipe"
+  MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" \
+  MOJIDATA_IDSDB_OUT_DIR="$PWD" \
+    yarn --cwd ../idsdb exec node --import tsx prepare.ts
+  exit 0
+fi
+
 CURRENT_HASH="$(MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" python3 ../idsdb/scripts/input-hash.py)"
 if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
   PREV_HASH="$(cat "$STAMP")"

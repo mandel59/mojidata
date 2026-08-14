@@ -29,6 +29,7 @@
     "@types/**/*.d.ts",
     "lib/*.js",
     "lib/*.d.ts",
+    "recipes/*.yaml",
     "CHANGELOG.md",
     "README.md",
     "LICENSE.md"

@@ -4,7 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import test from "node:test"
 import Database from "better-sqlite3"
-import { loadIdsFlowRecipe } from "../lib/idsflow"
+import { loadIdsFlowRecipe } from "../lib/idsflow-adapter"
 
 function fixture() {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), "idsflow-"))
