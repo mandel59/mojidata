@@ -81,6 +81,28 @@ describe("IDS decomposition cycle preflight", () => {
         decomposer.close()
     })
 
+    test("accepts adapter rows without importing the mojidata IDS table", async () => {
+        const decomposer = await IDSDecomposer.create({
+            mojidb: fixture([["甲", "G", "⿰甲日"]]),
+            includeMojidataIds: false,
+            additionalIds: [
+                { UCS: "明", source: "*", IDS: "⿰日月" },
+                { UCS: "語", source: "*", IDS: "⿰言⿱五口" },
+                { UCS: "&AJ1-00001;", source: "*", IDS: "⿱木日" },
+            ],
+        })
+        assert.deepEqual(decomposer.allCharSources(), [
+            { char: "明", source: "*" },
+            { char: "語", source: "*" },
+            { char: "&AJ1-00001;", source: "*" },
+        ])
+        assert.deepEqual([...decomposer.decomposeAll("明", "*")], [["⿰", "日", "月"]])
+        assert.deepEqual([...decomposer.decomposeAll("&AJ1-00001;", "*")], [
+            ["⿱", "木", "日"],
+        ])
+        decomposer.close()
+    })
+
     test("rejects a structural direct self-reference", async () => {
         await expectCycle(
             [["甲", "G", "⿰甲日"]],

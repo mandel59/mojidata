@@ -1,5 +1,6 @@
 import fs from "fs"
 import path from "path"
+import { createHash } from "node:crypto"
 import Database from "better-sqlite3"
 import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
@@ -8,6 +9,7 @@ import {
     parseBabelStoneIdsSourceExpression,
     tokenizeIDS,
 } from "@mandel59/idsdb-utils"
+import { convertEidsDictionary } from "./lib/eids"
 import { buildIdsfindBvec } from "./lib/idsfind-bvec-db"
 
 type IdsfindIndexMode = "fts4" | "fts5" | "bvec"
@@ -54,12 +56,38 @@ function resolvePnpVirtualPath(filePath: string) {
     }
 }
 
+const idsDataSourceNames = ["babelstone", "usource", "eids"] as const
+type IdsDataSourceName = typeof idsDataSourceNames[number]
+
 async function main() {
     const idsfindIndexMode = getIdsfindIndexMode()
     const sourceFilter = process.env.MOJIDATA_IDSDB_SOURCE || undefined
     if (sourceFilter && !idsdbSourceTokens.includes(sourceFilter as typeof idsdbSourceTokens[number])) {
         throw new Error("MOJIDATA_IDSDB_SOURCE must be one source token")
     }
+    const dataSourceText = process.env.MOJIDATA_IDSDB_DATA_SOURCES ?? "babelstone,usource"
+    const dataSources = new Set(dataSourceText.split(",").map(source => source.trim()).filter(Boolean))
+    if (dataSources.size === 0 || [...dataSources].some(source => !idsDataSourceNames.includes(source as IdsDataSourceName))) {
+        throw new Error(`MOJIDATA_IDSDB_DATA_SOURCES must contain only: ${idsDataSourceNames.join(", ")}`)
+    }
+    const eidsInput = process.env.MOJIDATA_IDSDB_EIDS_PATH || undefined
+    if (dataSources.has("eids") && !eidsInput) {
+        throw new Error("MOJIDATA_IDSDB_EIDS_PATH is required when the eids data source is selected")
+    }
+    if (!dataSources.has("eids") && eidsInput) {
+        throw new Error("MOJIDATA_IDSDB_EIDS_PATH requires eids in MOJIDATA_IDSDB_DATA_SOURCES")
+    }
+    if (dataSources.has("eids") && sourceFilter) {
+        throw new Error("EIDS input has no IRG source metadata and cannot be combined with MOJIDATA_IDSDB_SOURCE")
+    }
+    const invocationDirectory = process.env.MOJIDATA_IDSDB_BASE_DIR ?? process.env.INIT_CWD ?? process.cwd()
+    const eidsPath = eidsInput ? path.resolve(invocationDirectory, eidsInput) : undefined
+    const eidsText = eidsPath ? fs.readFileSync(eidsPath, "utf8") : undefined
+    const eids = eidsText ? convertEidsDictionary(eidsText) : {
+        entries: [],
+        skipped: { missingOrUnsupportedHead: 0, unsupportedTree: 0 },
+    }
+    const eidsSha256 = eidsText ? createHash("sha256").update(eidsText).digest("hex") : undefined
     const expandZVariantsText = process.env.MOJIDATA_IDSDB_EXPAND_Z_VARIANTS ?? "1"
     const normalizeRadicalVariantsText = process.env.MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS ?? "1"
     if (!/^[01]$/.test(expandZVariantsText) || !/^[01]$/.test(normalizeRadicalVariantsText)) {
@@ -77,7 +105,8 @@ async function main() {
     ) {
         throw new Error("MOJIDATA_IDSDB_PAGE_SIZE must be a power of two between 512 and 65536")
     }
-    const outDir = process.env.MOJIDATA_IDSDB_OUT_DIR ?? __dirname
+    const outDir = path.resolve(invocationDirectory, process.env.MOJIDATA_IDSDB_OUT_DIR ?? __dirname)
+    fs.mkdirSync(outDir, { recursive: true })
     const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
 
     const dbpath = path.join(outDir, "idsfind.db")
@@ -87,14 +116,23 @@ async function main() {
 
     db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
     const symbols_in_ids = new Set<string>()
-    for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
-        const sources = parseBabelStoneIdsSourceExpression(row.source)
-        if (sourceFilter && !sources.includes(sourceFilter)) continue
-        row.IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
+    const collectSymbols = (IDS: string) => {
+        IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
+    if (dataSources.has("babelstone")) {
+        for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
+            const sources = parseBabelStoneIdsSourceExpression(row.source)
+            if (sourceFilter && !sources.includes(sourceFilter)) continue
+            collectSymbols(row.IDS)
+        }
+    }
+    for (const row of eids.entries) collectSymbols(row.IDS)
+    const usource = dataSources.has("usource")
+        ? db.prepare(`SELECT U_source_ID, IDS FROM moji.usource WHERE IDS is not null`).all() as { U_source_ID: string, IDS: string }[]
+        : []
+    for (const row of usource) collectSymbols(row.IDS)
     const idsfindTokenizerClause = idsfindIndexMode === "bvec"
         ? null : getIdsfindTokenizerClause(idsfindIndexMode, symbols_in_ids)
-    const usource = db.prepare(`SELECT U_source_ID, IDS FROM moji.usource WHERE IDS is not null`).all() as { U_source_ID: string, IDS: string }[]
     db.exec(`DETACH DATABASE moji`)
 
     db.exec(`drop table if exists "idsfind"`)
@@ -103,13 +141,27 @@ async function main() {
     db.exec(`CREATE TABLE "idsfind_build_meta" (
         schema_version INTEGER PRIMARY KEY,
         source_filter TEXT,
+        data_sources TEXT NOT NULL,
+        eids_path TEXT,
+        eids_sha256 TEXT,
+        eids_entries INTEGER NOT NULL,
+        eids_skipped INTEGER NOT NULL,
         expand_z_variants INTEGER NOT NULL,
         normalize_kdpv_radical_variants INTEGER NOT NULL,
         page_size INTEGER NOT NULL,
         index_mode TEXT NOT NULL
     )`)
-    db.prepare(`INSERT INTO idsfind_build_meta VALUES (1, ?, ?, ?, ?, ?)`).run(
+    db.prepare(`INSERT INTO idsfind_build_meta (
+        schema_version, source_filter, data_sources, eids_path, eids_sha256,
+        eids_entries, eids_skipped, expand_z_variants,
+        normalize_kdpv_radical_variants, page_size, index_mode
+    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
         sourceFilter ?? null,
+        [...dataSources].join(","),
+        eidsPath ?? null,
+        eidsSha256 ?? null,
+        eids.entries.length,
+        eids.skipped.missingOrUnsupportedHead + eids.skipped.unsupportedTree,
         expandZVariants ? 1 : 0,
         normalizeKdpvRadicalVariants ? 1 : 0,
         pageSize,
@@ -120,6 +172,8 @@ async function main() {
 
     const decomposer = await IDSDecomposer.create({
         dbpath: path.join(outDir, "idsdecompose.db"),
+        includeMojidataIds: dataSources.has("babelstone"),
+        additionalIds: eids.entries,
         expandZVariants,
         normalizeKdpvRadicalVariants,
         idstable: "ids",
@@ -147,13 +201,24 @@ async function main() {
         IDS?: string;
         source: string;
     }[] = [
-        ...decomposer.allCharSources(),
+        ...decomposer.allCharSources().filter(({ source }) => source !== "*"),
+        ...eids.entries.map(({ UCS, IDS, source }) => ({
+            char: UCS,
+            IDS,
+            source,
+        })),
         ...(sourceFilter && sourceFilter !== "UTC" ? [] : usource.map(({ U_source_ID, IDS }) => ({
             char: `&${U_source_ID};`,
             IDS,
             source: 'UTC',
         }))),
     ]
+    if (eidsText) {
+        console.log(
+            "EIDS converted %d entries; skipped %d unsupported heads and %d unsupported trees",
+            eids.entries.length, eids.skipped.missingOrUnsupportedHead, eids.skipped.unsupportedTree,
+        )
+    }
     transactionSync(db, () => {
         const n = allCharSources.length
         console.log("total", n)

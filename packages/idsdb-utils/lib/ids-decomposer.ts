@@ -114,6 +114,12 @@ function* allCombinations<T>(list: Array<() => Iterable<T>>): Generator<T[]> {
     }
 }
 
+export type IDSDecompositionInput = {
+    UCS: string
+    source: string
+    IDS: string
+}
+
 export type IDSDecomposerOptions = {
     mojidb?: string
     idstable?: string
@@ -122,6 +128,8 @@ export type IDSDecomposerOptions = {
     expandZVariants?: boolean
     normalizeKdpvRadicalVariants?: boolean
     sourceFilter?: string
+    includeMojidataIds?: boolean
+    additionalIds?: Iterable<IDSDecompositionInput>
 }
 
 export type IDSDecompositionCycleStep = {
@@ -192,22 +200,32 @@ export class IDSDecomposer {
                 const insertTempids = db.prepare(
                     `insert into tempids (UCS, source, IDS_tokens) values (?, ?, ?)`,
                 )
-                const selectIds = mojiDb.prepare(
-                    `select UCS, source, IDS from ${idstable}`,
-                )
-                while (selectIds.step()) {
-                    const row = selectIds.getAsObject() as { UCS?: unknown, source?: unknown, IDS?: unknown }
-                    if (typeof row.UCS !== "string") continue
-                    if (typeof row.IDS !== "string") continue
-                    if (typeof row.source !== "string") continue
-                    const sources = parseBabelStoneIdsSourceExpression(row.source)
+                const insertRow = (row: IDSDecompositionInput, sources: Iterable<string>) => {
                     const idsTokens = tokenizeIDS(row.IDS).join(" ")
                     for (const source of sources) {
                         if (options.sourceFilter && source !== options.sourceFilter) continue
                         insertTempids.run([row.UCS, source, idsTokens])
                     }
                 }
-                selectIds.free()
+                if (options.includeMojidataIds ?? true) {
+                    const selectIds = mojiDb.prepare(
+                        `select UCS, source, IDS from ${idstable}`,
+                    )
+                    while (selectIds.step()) {
+                        const row = selectIds.getAsObject() as { UCS?: unknown, source?: unknown, IDS?: unknown }
+                        if (typeof row.UCS !== "string") continue
+                        if (typeof row.IDS !== "string") continue
+                        if (typeof row.source !== "string") continue
+                        insertRow(
+                            { UCS: row.UCS, source: row.source, IDS: row.IDS },
+                            parseBabelStoneIdsSourceExpression(row.source),
+                        )
+                    }
+                    selectIds.free()
+                }
+                for (const row of options.additionalIds ?? []) {
+                    insertRow(row, [row.source])
+                }
                 insertTempids.free()
                 db.run(`commit`)
             } catch (err) {
@@ -383,9 +401,13 @@ export class IDSDecomposer {
     }
     private atomicMemo = new Set<string>()
     private resolveIDS(char: string, source: string): ResolvedIDS[] {
-        if (char[0] === "&" ||
-            char[0] === "{" ||
+        if (char[0] === "{" ||
             idsOperatorRegExp.test(char)) {
+            return [{ idsTokens: char, selectedSource: source }]
+        }
+        if (char[0] === "&") {
+            const defined = this.lookupIDSFromDb({ char, source })
+            if (defined.length > 0) return defined
             return [{ idsTokens: char, selectedSource: source }]
         }
         const atomicKey = `${char}${source}`

@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "prepare": "bash scripts/prepare",
+    "test": "node --import tsx --test ./tests/*.test.ts",
     "build:bvec-derived": "node --import tsx build-bvec-derived.ts"
   },
   "author": "Ryusei Yamaguchi",

@@ -19,11 +19,18 @@ def add_file(path: pathlib.Path):
     h.update(path.read_bytes())
     h.update(b"\n")
 
+def add_external_file(path: pathlib.Path):
+    resolved = path.resolve()
+    add_line(f"EXTERNAL_FILE\t{resolved.as_posix()}")
+    h.update(resolved.read_bytes())
+    h.update(b"\n")
+
 
 for rel in [
     pathlib.Path("idsdb/package.json"),
     pathlib.Path("idsdb/tsconfig.json"),
     pathlib.Path("idsdb/prepare.ts"),
+    pathlib.Path("idsdb/lib/eids.ts"),
 ]:
     add_file(workspace_root / rel)
 
@@ -50,6 +57,17 @@ add_line(f"ENV\tMOJIDATA_IDSDB_INDEX_MODE={os.getenv('MOJIDATA_IDSDB_INDEX_MODE'
 add_line(f"ENV\tMOJIDATA_IDSDB_BVEC_BLOCK_SIZE={os.getenv('MOJIDATA_IDSDB_BVEC_BLOCK_SIZE', '1024')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_PAGE_SIZE={os.getenv('MOJIDATA_IDSDB_PAGE_SIZE', '4096')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_SOURCE={os.getenv('MOJIDATA_IDSDB_SOURCE', '')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_DATA_SOURCES={os.getenv('MOJIDATA_IDSDB_DATA_SOURCES', 'babelstone,usource')}")
+eids_path_text = os.getenv("MOJIDATA_IDSDB_EIDS_PATH", "")
+add_line(f"ENV\tMOJIDATA_IDSDB_EIDS_PATH={eids_path_text}")
+if eids_path_text:
+    invocation_dir = pathlib.Path(os.getenv(
+        "MOJIDATA_IDSDB_BASE_DIR", os.getenv("INIT_CWD", pathlib.Path.cwd())
+    ))
+    eids_path = pathlib.Path(eids_path_text)
+    if not eids_path.is_absolute():
+        eids_path = invocation_dir / eids_path
+    add_external_file(eids_path)
 add_line(f"ENV\tMOJIDATA_IDSDB_EXPAND_Z_VARIANTS={os.getenv('MOJIDATA_IDSDB_EXPAND_Z_VARIANTS', '1')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS={os.getenv('MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS', '1')}")
 

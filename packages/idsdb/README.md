@@ -15,6 +15,36 @@ For backends that support SQLite FTS5, use the separate
 For the current compatibility decision and the recorded FTS4/FTS5 comparison,
 see [docs/idsfind-fts-comparison.md](../../docs/idsfind-fts-comparison.md).
 
+## IDS data sources
+
+`MOJIDATA_IDSDB_DATA_SOURCES` selects IDS data sources independently of the
+IRG source filter. Its default is `babelstone,usource`. Available values are
+`babelstone`, `usource`, and `eids`.
+
+An experimental EIDS-only database can be built from an IDSgrep `.eids` file:
+
+```sh
+MOJIDATA_IDSDB_DATA_SOURCES=eids \
+MOJIDATA_IDSDB_EIDS_PATH=/absolute/path/to/dictionary.eids \
+MOJIDATA_IDSDB_OUT_DIR=/absolute/path/to/idsdb-eids \
+yarn workspace @mandel59/idsdb prepare
+```
+
+The output directory is created automatically and has its own input-hash
+stamp, so different experimental databases can coexist. Relative input and
+output paths are resolved from the workspace root.
+
+The EIDS adapter converts root heads to result identifiers, canonicalizes
+IDSgrep operator aliases such as `[lr]` and `[tb]`, removes structural-node
+heads, and maps nullary named components such as `<CDP-8B7C>;` to Mojidata
+entity tokens such as `&CDP-8B7C;`. EIDS operators that ordinary IDS cannot
+represent are counted and skipped. Conversion counts and an SHA-256 digest of
+the input are stored in `idsfind_build_meta`.
+
+EIDS is an IDS data source, not an IRG source. Because an EIDS file does not
+provide IRG source metadata, an EIDS build cannot be combined with
+`MOJIDATA_IDSDB_SOURCE`.
+
 ## Source-isolated research builds
 
 For a source-isolated research build, set one decomposer source token and a
