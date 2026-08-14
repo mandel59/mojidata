@@ -7,15 +7,19 @@ import { createIdsfind } from "@mandel59/mojidata-api-core/lib/idsfind-sql"
 
 import { createBetterSqlite3Executor } from "../index"
 
-function createCompositeLiteralFixture(queryPlan?: object) {
+type FtsModule = "fts4" | "fts5"
+
+function createCompositeLiteralFixture(
+  queryPlan?: object,
+  ftsModule: FtsModule = "fts5",
+) {
   const db = new Database(":memory:")
+  const ftsDefinition = ftsModule === "fts4"
+    ? `fts4 (IDS_tokens, content='', tokenize=unicode61 "tokenchars=§⿰")`
+    : `fts5 (IDS_tokens, content='', tokenize="unicode61 tokenchars '§⿰'")`
   db.exec(`
     CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL);
-    CREATE VIRTUAL TABLE idsfind_fts USING fts5 (
-      IDS_tokens,
-      content='',
-      tokenize="unicode61 tokenchars '§⿰'"
-    );
+    CREATE VIRTUAL TABLE idsfind_fts USING ${ftsDefinition};
     INSERT INTO idsfind VALUES
       ('X', '⿰ 日 月'),
       ('明', '⿰ 日 月');
@@ -82,43 +86,45 @@ describe("idsfind query compatibility", () => {
     db.close()
   })
 
-  test("binds materialized literal resolution to the database plan", async () => {
-    const raw = createCompositeLiteralFixture({
-      version: 1,
-      transforms: [],
-    })
-    try {
-      assert.deepEqual(await raw.idsfind(["§明§"]), [])
-    } finally {
-      raw.db.close()
-    }
+  for (const ftsModule of ["fts4", "fts5"] as const) {
+    test(`binds materialized literal resolution to the database plan with ${ftsModule}`, async () => {
+      const raw = createCompositeLiteralFixture({
+        version: 1,
+        transforms: [],
+      }, ftsModule)
+      try {
+        assert.deepEqual(await raw.idsfind(["§明§"]), [])
+      } finally {
+        raw.db.close()
+      }
 
-    const decomposed = createCompositeLiteralFixture({
-      version: 1,
-      transforms: [
-        { op: "expand-overlaid", version: 1 },
-        { op: "resolve-materialized-components", version: 1 },
-      ],
-    })
-    try {
-      assert.deepEqual(
-        (await decomposed.idsfind(["§明§"])).toSorted(),
-        ["X", "明"],
-      )
-    } finally {
-      decomposed.db.close()
-    }
+      const decomposed = createCompositeLiteralFixture({
+        version: 1,
+        transforms: [
+          { op: "expand-overlaid", version: 1 },
+          { op: "resolve-materialized-components", version: 1 },
+        ],
+      }, ftsModule)
+      try {
+        assert.deepEqual(
+          (await decomposed.idsfind(["§明§"])).toSorted(),
+          ["X", "明"],
+        )
+      } finally {
+        decomposed.db.close()
+      }
 
-    const legacy = createCompositeLiteralFixture()
-    try {
-      assert.deepEqual(
-        (await legacy.idsfind(["§明§"])).toSorted(),
-        ["X", "明"],
-      )
-    } finally {
-      legacy.db.close()
-    }
-  })
+      const legacy = createCompositeLiteralFixture(undefined, ftsModule)
+      try {
+        assert.deepEqual(
+          (await legacy.idsfind(["§明§"])).toSorted(),
+          ["X", "明"],
+        )
+      } finally {
+        legacy.db.close()
+      }
+    })
+  }
 
   test("uses the database query plan for raw overlaid IDS", async () => {
     const db = new Database(":memory:")
@@ -204,5 +210,48 @@ describe("idsfind query compatibility", () => {
       /not a supported query transform/,
     )
     db.close()
+  })
+
+  test("rejects incomplete semantics manifests", async () => {
+    const cases = [
+      {
+        label: "missing schema 1 row",
+        insert: "",
+        error: /schema 1 has no query plan/,
+      },
+      {
+        label: "unsupported schema version",
+        insert: `INSERT INTO idsfind_semantics VALUES (
+          2, '{"version":1,"transforms":[]}'
+        );`,
+        error: /schema 1 has no query plan/,
+      },
+      {
+        label: "invalid query plan JSON",
+        insert: "INSERT INTO idsfind_semantics VALUES (1, '{');",
+        error: /query plan is not valid JSON/,
+      },
+    ]
+    for (const manifestCase of cases) {
+      const db = new Database(":memory:")
+      try {
+        db.exec(`
+          CREATE TABLE idsfind_semantics (
+            schema_version INTEGER PRIMARY KEY,
+            query_plan_json TEXT NOT NULL
+          );
+          ${manifestCase.insert}
+        `)
+        const executor = createBetterSqlite3Executor(db)
+        const idsfind = createIdsfind(async () => executor)
+        await assert.rejects(
+          idsfind(["日"]),
+          manifestCase.error,
+          manifestCase.label,
+        )
+      } finally {
+        db.close()
+      }
+    }
   })
 })

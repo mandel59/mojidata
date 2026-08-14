@@ -2,10 +2,12 @@ import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
 import { createIdsfind } from "@mandel59/mojidata-api-core/lib/idsfind-sql"
+import { getIdsQueryPlan } from "@mandel59/mojidata-api-core/lib/idsfind-semantics"
 import type { SqlExecutor, SqlParams, SqlRow } from "@mandel59/mojidata-api-core"
 
 class FakeExecutor implements SqlExecutor {
   readonly queries: Array<{ sql: string; params?: SqlParams }> = []
+  semanticsLookups = 0
 
   async query<T extends SqlRow>(sql: string, params?: SqlParams): Promise<T[]> {
     this.queries.push({ sql, params })
@@ -29,6 +31,7 @@ class FakeExecutor implements SqlExecutor {
 
   async queryOne<T extends SqlRow>(sql: string): Promise<T | null> {
     if (sql.includes("FROM sqlite_master")) {
+      this.semanticsLookups++
       return null
     }
     throw new Error(`Unexpected idsfind SQL: ${sql}`)
@@ -54,5 +57,19 @@ describe("createIdsfind D1-oriented prefetching", () => {
       ).length,
       1,
     )
+  })
+
+  test("loads the query plan once per executor", async () => {
+    const executor = new FakeExecutor()
+
+    const [first, concurrent] = await Promise.all([
+      getIdsQueryPlan(executor),
+      getIdsQueryPlan(executor),
+    ])
+    const subsequent = await getIdsQueryPlan(executor)
+
+    assert.strictEqual(first, concurrent)
+    assert.strictEqual(first, subsequent)
+    assert.equal(executor.semanticsLookups, 1)
   })
 })
