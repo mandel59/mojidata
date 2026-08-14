@@ -15,6 +15,7 @@ import {
   wholeLiteralScanIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
 } from "@mandel59/mojidata-api-core"
+import { getIdsQueryPlan } from "@mandel59/mojidata-api-core/lib/idsfind-semantics"
 import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokenize"
 import { createBetterSqlite3ExecutorProvider } from "@mandel59/mojidata-api-better-sqlite3"
 
@@ -396,9 +397,14 @@ async function createTarget(
   const getDb = createBetterSqlite3ExecutorProvider(dbPath, options)
   let lastCandidateMs = Number.NaN
   const timedProvider: IdsfindCandidateProvider = {
-    async getCandidates(db, idslist, sourceIdslist) {
+    async getCandidates(db, idslist, sourceIdslist, policy) {
       const startedAt = performance.now()
-      const candidates = await provider.getCandidates(db, idslist, sourceIdslist)
+      const candidates = await provider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
       lastCandidateMs = performance.now() - startedAt
       return candidates
     },
@@ -407,11 +413,16 @@ async function createTarget(
   return {
     name,
     async getCandidates(ids) {
-      const tokenized = tokenizeIdsList(ids)
+      const db = await getDb()
+      const tokenized = tokenizeIdsList(ids, await getIdsQueryPlan(db))
       return provider.getCandidates(
-        await getDb(),
+        db,
         tokenized.forQuery,
         tokenized.forAudit,
+        {
+          resolveMaterializedComponents:
+            tokenized.resolveMaterializedComponents,
+        },
       )
     },
     async search(ids) {
@@ -469,15 +480,21 @@ async function createIntersectionTarget(
   const bvecProvider = createBvecIdsfindCandidateProvider()
   let lastCandidateMs = Number.NaN
   const provider: IdsfindCandidateProvider = {
-    async getCandidates(_db, idslist, sourceIdslist) {
+    async getCandidates(_db, idslist, sourceIdslist, policy) {
       const startedAt = performance.now()
       const [fts5Candidates, bvecCandidates] = await Promise.all([
         ftsIdsfindCandidateProvider.getCandidates(
           await fts5Db(),
           idslist,
           sourceIdslist,
+          policy,
         ),
-        bvecProvider.getCandidates(await bvecDb(), idslist, sourceIdslist),
+        bvecProvider.getCandidates(
+          await bvecDb(),
+          idslist,
+          sourceIdslist,
+          policy,
+        ),
       ])
       const bvecSet = new Set(bvecCandidates)
       const candidates = fts5Candidates.filter((ucs) => bvecSet.has(ucs))
@@ -489,11 +506,16 @@ async function createIntersectionTarget(
   return {
     name: "intersection",
     async getCandidates(ids) {
-      const tokenized = tokenizeIdsList(ids)
+      const db = await fts5Db()
+      const tokenized = tokenizeIdsList(ids, await getIdsQueryPlan(db))
       return provider.getCandidates(
-        await fts5Db(),
+        db,
         tokenized.forQuery,
         tokenized.forAudit,
+        {
+          resolveMaterializedComponents:
+            tokenized.resolveMaterializedComponents,
+        },
       )
     },
     async search(ids) {
