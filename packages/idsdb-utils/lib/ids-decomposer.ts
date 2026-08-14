@@ -2,6 +2,7 @@ import fs from "node:fs"
 import path from "node:path"
 
 import { nodeLength, normalizeOverlaid, tokenArgs } from "./ids-operator"
+import { parseBabelStoneIdsSourceExpression } from "./ids-source"
 import { tokenizeIDS } from "./ids-tokenizer"
 
 type SqlBindParams = unknown[] | Record<string, unknown> | null | undefined
@@ -55,7 +56,7 @@ const encodeMap: Partial<Record<string, string>> = {
 
 const idsOperatorRegExp = new RegExp(`^(?:${Object.keys(tokenArgs).join("|")})\$`)
 
-const fallbackSourceOrder = ["G", "T", "H", "K", "J", "B", "U", "*"]
+const fallbackSourceOrder = ["G", "T", "H", "K", "J", "UK", "UTC", "*"]
 
 function resolvePnpVirtualPath(filePath: string) {
     if (!path.isAbsolute(filePath)) return filePath
@@ -199,7 +200,7 @@ export class IDSDecomposer {
                     if (typeof row.UCS !== "string") continue
                     if (typeof row.IDS !== "string") continue
                     if (typeof row.source !== "string") continue
-                    const sources = row.source.match(/UCS2003|\w/g) ?? []
+                    const sources = parseBabelStoneIdsSourceExpression(row.source)
                     const idsTokens = tokenizeIDS(row.IDS).join(" ")
                     for (const source of sources) {
                         if (options.sourceFilter && source !== options.sourceFilter) continue

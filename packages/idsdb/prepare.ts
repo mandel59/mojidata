@@ -4,6 +4,8 @@ import Database from "better-sqlite3"
 import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import {
+    idsdbSourceTokens,
+    parseBabelStoneIdsSourceExpression,
     tokenizeIDS,
 } from "@mandel59/idsdb-utils"
 import { buildIdsfindBvec } from "./lib/idsfind-bvec-db"
@@ -55,7 +57,7 @@ function resolvePnpVirtualPath(filePath: string) {
 async function main() {
     const idsfindIndexMode = getIdsfindIndexMode()
     const sourceFilter = process.env.MOJIDATA_IDSDB_SOURCE || undefined
-    if (sourceFilter && !/^(?:UCS2003|\w)$/u.test(sourceFilter)) {
+    if (sourceFilter && !idsdbSourceTokens.includes(sourceFilter as typeof idsdbSourceTokens[number])) {
         throw new Error("MOJIDATA_IDSDB_SOURCE must be one source token")
     }
     const expandZVariantsText = process.env.MOJIDATA_IDSDB_EXPAND_Z_VARIANTS ?? "1"
@@ -86,7 +88,7 @@ async function main() {
     db.prepare(`ATTACH DATABASE ? AS moji`).run(mojidb)
     const symbols_in_ids = new Set<string>()
     for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
-        const sources: string[] = row.source.match(/UCS2003|\w/g) ?? []
+        const sources = parseBabelStoneIdsSourceExpression(row.source)
         if (sourceFilter && !sources.includes(sourceFilter)) continue
         row.IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
@@ -146,10 +148,10 @@ async function main() {
         source: string;
     }[] = [
         ...decomposer.allCharSources(),
-        ...(sourceFilter && sourceFilter !== "U" ? [] : usource.map(({ U_source_ID, IDS }) => ({
+        ...(sourceFilter && sourceFilter !== "UTC" ? [] : usource.map(({ U_source_ID, IDS }) => ({
             char: `&${U_source_ID};`,
             IDS,
-            source: 'U',
+            source: 'UTC',
         }))),
     ]
     transactionSync(db, () => {

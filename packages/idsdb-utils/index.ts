@@ -27,3 +27,7 @@ export {
     idsFtsFeatureVersion,
     type IdsFtsFeatureFamily,
 } from "./lib/ids-fts-features"
+export {
+    idsdbSourceTokens,
+    parseBabelStoneIdsSourceExpression,
+} from "./lib/ids-source"

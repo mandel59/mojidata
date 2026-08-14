@@ -18,8 +18,11 @@ see [docs/idsfind-fts-comparison.md](../../docs/idsfind-fts-comparison.md).
 ## Source-isolated research builds
 
 For a source-isolated research build, set one decomposer source token and a
-separate output directory. The input IDS snapshot, recursive lookup, and
-fallback candidates are all restricted to that source. Build policy is stored
+separate output directory. Source tokens use the Unicode IRG source prefix
+base (for example `G`, `KP`, `SAT`, `SG`, `UK`, or `UTC`), rather than the
+legacy one-letter designations stored from BabelStone IDS.TXT. The input IDS
+snapshot, recursive lookup, and fallback candidates are all restricted to
+that source. Build policy is stored
 in `idsfind_build_meta`.
 
 ```sh
