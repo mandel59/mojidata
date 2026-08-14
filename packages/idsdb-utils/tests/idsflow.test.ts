@@ -57,7 +57,10 @@ test("selects, unions, and describes explicit decomposition", () => {
     assert.deepEqual(loaded.dataSources, ["babelstone", "usource"])
     assert.deepEqual(loaded.queryPlan, {
         version: 1,
-        transforms: [{ op: "expand-overlaid", version: 1 }],
+        transforms: [
+            { op: "expand-overlaid", version: 1 },
+            { op: "resolve-materialized-components", version: 1 },
+        ],
     })
 })
 

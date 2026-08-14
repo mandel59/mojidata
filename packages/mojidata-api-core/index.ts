@@ -12,6 +12,7 @@ export {
   wholeLiteralIdsfindCandidateProvider,
   wholeLiteralScanIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
+  type IdsfindQueryPolicy,
 } from "./lib/idsfind-sql"
 export {
   buildMojidataSelectQuery,

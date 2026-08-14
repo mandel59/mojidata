@@ -1,10 +1,15 @@
 import { expandOverlaid } from "./ids-operator"
 import type { TokenList } from "./token-list"
 
-export type IdsQueryTransform = {
-    op: "expand-overlaid"
-    version: 1
-}
+export type IdsQueryTransform =
+    | {
+        op: "expand-overlaid"
+        version: 1
+    }
+    | {
+        op: "resolve-materialized-components"
+        version: 1
+    }
 
 export type IdsQueryPlan = {
     version: 1
@@ -18,7 +23,18 @@ export const identityIdsQueryPlan: IdsQueryPlan = {
 
 export const decomposedIdsQueryPlan: IdsQueryPlan = {
     version: 1,
-    transforms: [{ op: "expand-overlaid", version: 1 }],
+    transforms: [
+        { op: "expand-overlaid", version: 1 },
+        { op: "resolve-materialized-components", version: 1 },
+    ],
+}
+
+export const legacyIdsQueryPlan: IdsQueryPlan = {
+    version: 1,
+    transforms: [
+        { op: "expand-overlaid", version: 1 },
+        { op: "resolve-materialized-components", version: 1 },
+    ],
 }
 
 function mapping(value: unknown, at: string): Record<string, unknown> {
@@ -44,23 +60,57 @@ export function parseIdsQueryPlan(value: unknown): IdsQueryPlan {
         const at = `query plan.transforms[${index}]`
         const transform = mapping(value, at)
         only(transform, ["op", "version"], at)
-        if (transform.op !== "expand-overlaid" || transform.version !== 1) {
+        if (transform.version !== 1) {
             throw new Error(`${at} is not a supported query transform`)
         }
-        return { op: "expand-overlaid", version: 1 }
+        if (transform.op === "expand-overlaid") {
+            return { op: "expand-overlaid", version: 1 }
+        }
+        if (transform.op === "resolve-materialized-components") {
+            return { op: "resolve-materialized-components", version: 1 }
+        }
+        throw new Error(`${at} is not a supported query transform`)
     })
     return { version: 1, transforms }
 }
 
-export function applyIdsQueryPlan(
-    tokens: TokenList,
+export type CompiledIdsQueryPlan = {
+    transformTokens: (tokens: TokenList) => TokenList[]
+    resolveMaterializedComponents: boolean
+}
+
+export function compileIdsQueryPlan(
     plan: IdsQueryPlan,
-): TokenList[] {
-    let results = [tokens]
+): CompiledIdsQueryPlan {
+    const tokenTransforms: Array<(tokens: TokenList) => TokenList[]> = []
+    let resolveMaterializedComponents = false
     for (const transform of plan.transforms) {
         if (transform.op === "expand-overlaid" && transform.version === 1) {
-            results = results.flatMap(expandOverlaid)
+            if (resolveMaterializedComponents) {
+                throw new Error(
+                    "expand-overlaid must precede resolve-materialized-components",
+                )
+            }
+            tokenTransforms.push(expandOverlaid)
+        } else if (
+            transform.op === "resolve-materialized-components" &&
+            transform.version === 1
+        ) {
+            if (resolveMaterializedComponents) {
+                throw new Error(
+                    "resolve-materialized-components must not be repeated",
+                )
+            }
+            resolveMaterializedComponents = true
         }
     }
-    return results
+    return {
+        transformTokens(tokens) {
+            return tokenTransforms.reduce(
+                (results, transform) => results.flatMap(transform),
+                [tokens],
+            )
+        },
+        resolveMaterializedComponents,
+    }
 }

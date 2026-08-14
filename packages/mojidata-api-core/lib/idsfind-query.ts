@@ -14,8 +14,12 @@ decomposed as (
         tokens.key0,
         tokens.key1,
         tokens.key,
-        ifnull(idsfind.IDS_tokens, tokens.token) as tokens
-    from tokens left join idsfind on idsfind.UCS = tokens.token
+        case when $resolve_materialized_components
+          then ifnull(idsfind.IDS_tokens, tokens.token)
+          else tokens.token
+        end as tokens
+    from tokens left join idsfind
+      on $resolve_materialized_components and idsfind.UCS = tokens.token
 ),
 combinations as (
     select

@@ -123,18 +123,25 @@ export function createStructuralFtsIdsfindCandidateProvider(
     validatedDatabases.add(db)
   }
   return {
-    async getCandidates(db, idslist, sourceIdslist) {
+    async getCandidates(db, idslist, sourceIdslist, policy) {
       const structuralPattern = compileIdsfindStructuralPattern(
         sourceIdslist ?? idslist,
         families,
       )
       if (structuralPattern === undefined) {
-        return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
+        return ftsIdsfindCandidateProvider.getCandidates(
+          db,
+          idslist,
+          sourceIdslist,
+          policy,
+        )
       }
       await validateDatabase(db)
       const rows = await db.query<{ UCS?: string }>(idsfindStructuralQuery, {
         $idslist: JSON.stringify(idslist),
         $structural_pattern: structuralPattern,
+        $resolve_materialized_components:
+          policy?.resolveMaterializedComponents === false ? 0 : 1,
       })
       return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
     },

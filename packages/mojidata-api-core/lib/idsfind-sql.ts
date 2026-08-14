@@ -14,18 +14,35 @@ import { tokenizeIdsList } from "./idsfind-tokenize"
 import { getIdsQueryPlan } from "./idsfind-semantics"
 import type { SqlExecutor } from "./sql-executor"
 
+export interface IdsfindQueryPolicy {
+  resolveMaterializedComponents: boolean
+}
+
+const legacyIdsfindQueryPolicy: IdsfindQueryPolicy = {
+  resolveMaterializedComponents: true,
+}
+
+function queryPolicyParams(policy: IdsfindQueryPolicy | undefined) {
+  return {
+    $resolve_materialized_components:
+      (policy ?? legacyIdsfindQueryPolicy).resolveMaterializedComponents ? 1 : 0,
+  }
+}
+
 export interface IdsfindCandidateProvider {
   getCandidates(
     db: SqlExecutor,
     idslist: string[][][],
     sourceIdslist?: TokenList[][],
+    policy?: IdsfindQueryPolicy,
   ): Promise<string[]>
 }
 
 export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
-  async getCandidates(db, idslist) {
+  async getCandidates(db, idslist, _sourceIdslist, policy) {
     const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
       $idslist: JSON.stringify(idslist),
+      ...queryPolicyParams(policy),
     })
     return rows.flatMap((row) => typeof row.UCS === "string" ? [row.UCS] : [])
   },
@@ -47,25 +64,36 @@ function isWholeLiteralQuery(idslist: string[][][]) {
 }
 
 export const wholeLiteralIdsfindCandidateProvider: IdsfindCandidateProvider = {
-  async getCandidates(db, idslist) {
+  async getCandidates(db, idslist, sourceIdslist, policy) {
     if (!isWholeLiteralQuery(idslist)) {
-      return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
+      return ftsIdsfindCandidateProvider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
     }
     const rows = await db.query<{ UCS?: unknown }>(idsfindWholeLiteralQuery, {
       $idslist: JSON.stringify(idslist),
+      ...queryPolicyParams(policy),
     })
     return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
   },
 }
 
 export const wholeLiteralScanIdsfindCandidateProvider: IdsfindCandidateProvider = {
-  async getCandidates(db, idslist) {
+  async getCandidates(db, idslist, sourceIdslist, policy) {
     if (!isWholeLiteralQuery(idslist)) {
-      return ftsIdsfindCandidateProvider.getCandidates(db, idslist)
+      return ftsIdsfindCandidateProvider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
     }
     const rows = await db.query<{ UCS?: unknown }>(
       idsfindWholeLiteralScanQuery,
-      { $idslist: JSON.stringify(idslist) },
+      { $idslist: JSON.stringify(idslist), ...queryPolicyParams(policy) },
     )
     return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
   },
@@ -78,18 +106,24 @@ export const wholeLiteralScanIdsfindCandidateProvider: IdsfindCandidateProvider 
 export function createCachedFtsIdsfindCandidateProvider(): IdsfindCandidateProvider {
   const cacheByDatabase = new WeakMap<SqlExecutor, Map<string, string>>()
   return {
-    async getCandidates(db, idslist) {
+    async getCandidates(db, idslist, _sourceIdslist, policy) {
       let cache = cacheByDatabase.get(db)
       if (!cache) {
         cache = new Map()
         cacheByDatabase.set(db, cache)
       }
-      const key = JSON.stringify(idslist)
+      const resolveMaterializedComponents =
+        (policy ?? legacyIdsfindQueryPolicy).resolveMaterializedComponents
+      const idslistJson = JSON.stringify(idslist)
+      const key = JSON.stringify([resolveMaterializedComponents, idslist])
       let pattern = cache.get(key)
       if (pattern === undefined) {
         const row = await db.queryOne<{ pattern?: unknown }>(
           idsfindPatternQuery,
-          { $idslist: key },
+          {
+            $idslist: idslistJson,
+            ...queryPolicyParams(policy),
+          },
         )
         if (typeof row?.pattern !== "string") return []
         pattern = row.pattern
@@ -153,6 +187,7 @@ type CompiledPattern = {
 function compileAuditPatterns(
   idslist: TokenList[][],
   getIDSTokens: (ucs: string) => string[],
+  resolveMaterializedComponents: boolean,
 ): CompiledPattern[][] {
   return idslist.map((patterns) =>
     patterns.map((pattern) => ({
@@ -167,7 +202,9 @@ function compileAuditPatterns(
         return {
           kind: "literal",
           value: token,
-          alternatives: getIDSTokens(token).map((ids) => ids.split(" ")),
+          alternatives: resolveMaterializedComponents
+            ? getIDSTokens(token).map((ids) => ids.split(" "))
+            : [],
         }
       }),
     })),
@@ -287,6 +324,9 @@ export function createIdsfind(
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
     const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
+    const policy: IdsfindQueryPolicy = {
+      resolveMaterializedComponents: tokenized.resolveMaterializedComponents,
+    }
     const idsTokensCache = new Map<string, string[]>()
 
     const prefetchIDSTokens = async (ucsValues: Iterable<string>) => {
@@ -329,14 +369,18 @@ export function createIdsfind(
       db,
       tokenized.forQuery,
       tokenized.forAudit,
+      policy,
     )
     await prefetchIDSTokens([
       ...candidates,
-      ...collectAuditLookupUcs(tokenized.forAudit),
+      ...(policy.resolveMaterializedComponents
+        ? collectAuditLookupUcs(tokenized.forAudit)
+        : []),
     ])
     const compiledAudit = compileAuditPatterns(
       tokenized.forAudit,
       getIDSTokensForUcs,
+      policy.resolveMaterializedComponents,
     )
     for (const ucs of candidates) {
       if (postaudit(ucs, compiledAudit, getIDSTokensForUcs)) {

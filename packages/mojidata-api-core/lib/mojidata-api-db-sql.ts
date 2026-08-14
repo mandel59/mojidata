@@ -185,6 +185,8 @@ export function createSqlApiDb({
       const query = makeIdsfindQuery(queryBody)
       return await db.query<Record<string, unknown>>(query, {
         $idslist: JSON.stringify(tokenized.forQuery),
+        $resolve_materialized_components:
+          tokenized.resolveMaterializedComponents ? 1 : 0,
       })
     },
     search,

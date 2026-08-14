@@ -1,5 +1,5 @@
 import {
-  applyIdsQueryPlan,
+  compileIdsQueryPlan,
   decomposedIdsQueryPlan,
   tokenizeIDS,
   type IdsQueryPlan,
@@ -10,9 +10,10 @@ export function tokenizeIdsList(
   idslist: string[],
   queryPlan: IdsQueryPlan = decomposedIdsQueryPlan,
 ) {
+  const compiledPlan = compileIdsQueryPlan(queryPlan)
   const idslistTokenized = idslist
     .map(tokenizeIDS)
-    .map(tokens => applyIdsQueryPlan(tokens, queryPlan)) as TokenList[][]
+    .map(compiledPlan.transformTokens) as TokenList[][]
   /** ids list without variable constraints. variables are replaced into placeholder token ？ */
   const idslistWithoutVC = idslistTokenized.map((x) =>
     x.map((y) => y.map((z) => (/^[a-zａ-ｚ]$/.test(z) ? "？" : z))),
@@ -20,5 +21,6 @@ export function tokenizeIdsList(
   return {
     forQuery: idslistWithoutVC,
     forAudit: idslistTokenized,
+    resolveMaterializedComponents: compiledPlan.resolveMaterializedComponents,
   }
 }

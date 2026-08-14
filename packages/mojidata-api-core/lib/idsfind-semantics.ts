@@ -1,5 +1,5 @@
 import {
-  decomposedIdsQueryPlan,
+  legacyIdsQueryPlan,
   parseIdsQueryPlan,
   type IdsQueryPlan,
 } from "@mandel59/idsdb-utils"
@@ -15,8 +15,8 @@ async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
     WHERE type = 'table' AND name = 'idsfind_semantics'
   `)
   if (table?.name !== "idsfind_semantics") {
-    // Databases built before the semantics manifest used this transform.
-    return decomposedIdsQueryPlan
+    // Databases built before the semantics manifest used both legacy stages.
+    return legacyIdsQueryPlan
   }
   const row = await db.queryOne<{ query_plan_json?: unknown }>(`
     SELECT query_plan_json

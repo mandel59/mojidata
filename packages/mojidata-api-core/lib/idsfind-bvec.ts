@@ -79,9 +79,14 @@ function filterKey(filter: BvecFilter) {
     : `p:${filter.vector.join(",")}`
 }
 
-async function compileMasks(db: SqlExecutor, idslist: string[][][]) {
+async function compileMasks(
+  db: SqlExecutor,
+  idslist: string[][][],
+  resolveMaterializedComponents: boolean,
+) {
   const decompositionCache = new Map<string, Promise<string[][]>>()
   const getAlternatives = (token: string) => {
+    if (!resolveMaterializedComponents) return Promise.resolve([[token]])
     let promise = decompositionCache.get(token)
     if (!promise) {
       promise = db
@@ -179,13 +184,17 @@ async function validateSchema(db: SqlExecutor) {
 export function createBvecIdsfindCandidateProvider(): IdsfindCandidateProvider {
   const validatedRowCounts = new WeakMap<SqlExecutor, number>()
   return {
-    async getCandidates(db, idslist) {
+    async getCandidates(db, idslist, _sourceIdslist, policy) {
       let expectedRowCount = validatedRowCounts.get(db)
       if (expectedRowCount === undefined) {
         expectedRowCount = await validateSchema(db)
         validatedRowCounts.set(db, expectedRowCount)
       }
-      const groups = await compileMasks(db, idslist)
+      const groups = await compileMasks(
+        db,
+        idslist,
+        policy?.resolveMaterializedComponents ?? true,
+      )
       const summaries = await db.query<BlockSummary>(`SELECT
         block_id, first_rowid, row_count, union0, union1, union2, union3
         FROM idsfind_bvec_block ORDER BY block_id`)

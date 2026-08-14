@@ -8,10 +8,12 @@ export {
 } from "./lib/ids-operator"
 export { tokenizeIDS } from "./lib/ids-tokenizer"
 export {
-    applyIdsQueryPlan,
+    compileIdsQueryPlan,
     decomposedIdsQueryPlan,
     identityIdsQueryPlan,
+    legacyIdsQueryPlan,
     parseIdsQueryPlan,
+    type CompiledIdsQueryPlan,
     type IdsQueryPlan,
     type IdsQueryTransform,
 } from "./lib/ids-query-plan"

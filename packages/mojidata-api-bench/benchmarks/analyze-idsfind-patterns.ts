@@ -77,6 +77,7 @@ function main() {
       const tokenized = tokenizeIdsList(entry.ids).forQuery
       const row = analyze.get({
         idslist: JSON.stringify(tokenized),
+        resolve_materialized_components: 1,
       }) as {
         pattern: string
         phrase_count: number
