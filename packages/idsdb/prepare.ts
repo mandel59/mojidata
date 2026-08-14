@@ -10,6 +10,7 @@ import {
     tokenizeIDS,
 } from "@mandel59/idsdb-utils"
 import { convertEidsDictionary } from "./lib/eids"
+import { loadIdsFlowRecipe } from "./lib/idsflow"
 import { buildIdsfindBvec } from "./lib/idsfind-bvec-db"
 
 type IdsfindIndexMode = "fts4" | "fts5" | "bvec"
@@ -61,13 +62,19 @@ type IdsDataSourceName = typeof idsDataSourceNames[number]
 
 async function main() {
     const idsfindIndexMode = getIdsfindIndexMode()
-    const sourceFilter = process.env.MOJIDATA_IDSDB_SOURCE || undefined
+    const invocationDirectory = process.env.MOJIDATA_IDSDB_BASE_DIR ?? process.env.INIT_CWD ?? process.cwd()
+    const recipeInput = process.env.MOJIDATA_IDSDB_RECIPE || undefined
+    const recipePath = recipeInput ? path.resolve(invocationDirectory, recipeInput) : undefined
+    const sourceFilter = recipePath ? undefined : process.env.MOJIDATA_IDSDB_SOURCE || undefined
     if (sourceFilter && !idsdbSourceTokens.includes(sourceFilter as typeof idsdbSourceTokens[number])) {
         throw new Error("MOJIDATA_IDSDB_SOURCE must be one source token")
     }
     const dataSourceText = process.env.MOJIDATA_IDSDB_DATA_SOURCES ?? "babelstone,usource"
-    const dataSources = new Set(dataSourceText.split(",").map(source => source.trim()).filter(Boolean))
-    if (dataSources.size === 0 || [...dataSources].some(source => !idsDataSourceNames.includes(source as IdsDataSourceName))) {
+    let dataSources = new Set(dataSourceText.split(",").map(source => source.trim()).filter(Boolean))
+    if (!recipePath && (
+        dataSources.size === 0 ||
+        [...dataSources].some(source => !idsDataSourceNames.includes(source as IdsDataSourceName))
+    )) {
         throw new Error(`MOJIDATA_IDSDB_DATA_SOURCES must contain only: ${idsDataSourceNames.join(", ")}`)
     }
     const eidsInput = process.env.MOJIDATA_IDSDB_EIDS_PATH || undefined
@@ -80,7 +87,15 @@ async function main() {
     if (dataSources.has("eids") && sourceFilter) {
         throw new Error("EIDS input has no IRG source metadata and cannot be combined with MOJIDATA_IDSDB_SOURCE")
     }
-    const invocationDirectory = process.env.MOJIDATA_IDSDB_BASE_DIR ?? process.env.INIT_CWD ?? process.cwd()
+    if (recipePath && [
+        "MOJIDATA_IDSDB_SOURCE",
+        "MOJIDATA_IDSDB_DATA_SOURCES",
+        "MOJIDATA_IDSDB_EIDS_PATH",
+        "MOJIDATA_IDSDB_EXPAND_Z_VARIANTS",
+        "MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS",
+    ].some(name => process.env[name] !== undefined)) {
+        throw new Error("MOJIDATA_IDSDB_RECIPE cannot be combined with legacy IDS transformation variables")
+    }
     const eidsPath = eidsInput ? path.resolve(invocationDirectory, eidsInput) : undefined
     const eidsText = eidsPath ? fs.readFileSync(eidsPath, "utf8") : undefined
     const eids = eidsText ? convertEidsDictionary(eidsText) : {
@@ -93,8 +108,8 @@ async function main() {
     if (!/^[01]$/.test(expandZVariantsText) || !/^[01]$/.test(normalizeRadicalVariantsText)) {
         throw new Error("IDSDB normalization flags must be 0 or 1")
     }
-    const expandZVariants = expandZVariantsText === "1"
-    const normalizeKdpvRadicalVariants = normalizeRadicalVariantsText === "1"
+    let expandZVariants = expandZVariantsText === "1"
+    let normalizeKdpvRadicalVariants = normalizeRadicalVariantsText === "1"
     const pageSizeText = process.env.MOJIDATA_IDSDB_PAGE_SIZE ?? "4096"
     const pageSize = Number(pageSizeText)
     if (
@@ -108,6 +123,14 @@ async function main() {
     const outDir = path.resolve(invocationDirectory, process.env.MOJIDATA_IDSDB_OUT_DIR ?? __dirname)
     fs.mkdirSync(outDir, { recursive: true })
     const mojidb = resolvePnpVirtualPath(require.resolve("@mandel59/mojidata/dist/moji.db"))
+    const idsFlow = recipePath
+        ? loadIdsFlowRecipe(recipePath, { defaultMojidb: mojidb })
+        : undefined
+    if (idsFlow) {
+        dataSources = new Set(idsFlow.dataSources)
+        expandZVariants = idsFlow.decompose.expandZVariants
+        normalizeKdpvRadicalVariants = idsFlow.decompose.normalizeKdpvRadicalVariants
+    }
 
     const dbpath = path.join(outDir, "idsfind.db")
     fs.rmSync(dbpath, { force: true })
@@ -119,15 +142,17 @@ async function main() {
     const collectSymbols = (IDS: string) => {
         IDS.match(/[\p{Sm}\p{So}\p{Po}]/gu)?.forEach(c => symbols_in_ids.add(c))
     }
-    if (dataSources.has("babelstone")) {
+    if (idsFlow) {
+        for (const row of idsFlow.decompose.roots) collectSymbols(row.IDS)
+    } else if (dataSources.has("babelstone")) {
         for (const row of db.prepare(`SELECT IDS, source from moji.ids`).iterate() as Iterable<{ IDS: string, source: string }>) {
             const sources = parseBabelStoneIdsSourceExpression(row.source)
             if (sourceFilter && !sources.includes(sourceFilter)) continue
             collectSymbols(row.IDS)
         }
     }
-    for (const row of eids.entries) collectSymbols(row.IDS)
-    const usource = dataSources.has("usource")
+    if (!idsFlow) for (const row of eids.entries) collectSymbols(row.IDS)
+    const usource = !idsFlow && dataSources.has("usource")
         ? db.prepare(`SELECT U_source_ID, IDS FROM moji.usource WHERE IDS is not null`).all() as { U_source_ID: string, IDS: string }[]
         : []
     for (const row of usource) collectSymbols(row.IDS)
@@ -149,31 +174,46 @@ async function main() {
         expand_z_variants INTEGER NOT NULL,
         normalize_kdpv_radical_variants INTEGER NOT NULL,
         page_size INTEGER NOT NULL,
-        index_mode TEXT NOT NULL
+        index_mode TEXT NOT NULL,
+        recipe_path TEXT,
+        recipe_sha256 TEXT
     )`)
     db.prepare(`INSERT INTO idsfind_build_meta (
         schema_version, source_filter, data_sources, eids_path, eids_sha256,
         eids_entries, eids_skipped, expand_z_variants,
-        normalize_kdpv_radical_variants, page_size, index_mode
-    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
+        normalize_kdpv_radical_variants, page_size, index_mode,
+        recipe_path, recipe_sha256
+    ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
         sourceFilter ?? null,
         [...dataSources].join(","),
-        eidsPath ?? null,
-        eidsSha256 ?? null,
-        eids.entries.length,
-        eids.skipped.missingOrUnsupportedHead + eids.skipped.unsupportedTree,
+        idsFlow?.eidsReports.length === 1 ? idsFlow.eidsReports[0].path : eidsPath ?? null,
+        idsFlow?.eidsReports.length === 1 ? idsFlow.eidsReports[0].sha256 : eidsSha256 ?? null,
+        idsFlow
+            ? idsFlow.eidsReports.reduce((sum, report) => sum + report.entries, 0)
+            : eids.entries.length,
+        idsFlow
+            ? idsFlow.eidsReports.reduce((sum, report) => sum + report.skipped, 0)
+            : eids.skipped.missingOrUnsupportedHead + eids.skipped.unsupportedTree,
         expandZVariants ? 1 : 0,
         normalizeKdpvRadicalVariants ? 1 : 0,
         pageSize,
         idsfindIndexMode,
+        idsFlow?.recipePath ?? null,
+        idsFlow?.recipeSha256 ?? null,
     )
     db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)
     const insert_idsfind = db.prepare(`INSERT INTO "idsfind_temp" VALUES ($ucs, $tokens)`)
 
     const decomposer = await IDSDecomposer.create({
         dbpath: path.join(outDir, "idsdecompose.db"),
-        includeMojidataIds: dataSources.has("babelstone"),
-        additionalIds: eids.entries,
+        includeMojidataIds: idsFlow ? false : dataSources.has("babelstone"),
+        additionalIds: idsFlow
+            ? idsFlow.decompose.definitions.map(row => ({
+                UCS: row.char,
+                IDS: row.IDS,
+                source: row.irgSource ?? "*",
+            }))
+            : eids.entries,
         expandZVariants,
         normalizeKdpvRadicalVariants,
         idstable: "ids",
@@ -196,11 +236,31 @@ async function main() {
         }
     }
 
+    const idsFlowRoots: { char: string, IDS?: string, source: string }[] = []
+    if (idsFlow) {
+        const rootKey = (char: string, source: string) => JSON.stringify([char, source])
+        const definitionKeys = new Set(
+            idsFlow.decompose.definitions.map(row =>
+                rootKey(row.char, row.irgSource ?? "*")
+            ),
+        )
+        const seenDefinitions = new Set<string>()
+        for (const row of idsFlow.decompose.roots) {
+            const source = row.irgSource ?? "*"
+            const key = rootKey(row.char, source)
+            if (!definitionKeys.has(key)) {
+                idsFlowRoots.push({ char: row.char, IDS: row.IDS, source })
+            } else if (!seenDefinitions.has(key)) {
+                seenDefinitions.add(key)
+                idsFlowRoots.push({ char: row.char, source })
+            }
+        }
+    }
     const allCharSources: {
         char: string;
         IDS?: string;
         source: string;
-    }[] = [
+    }[] = idsFlow ? idsFlowRoots : [
         ...decomposer.allCharSources().filter(({ source }) => source !== "*"),
         ...eids.entries.map(({ UCS, IDS, source }) => ({
             char: UCS,
@@ -213,7 +273,14 @@ async function main() {
             source: 'UTC',
         }))),
     ]
-    if (eidsText) {
+    if (idsFlow) {
+        for (const report of idsFlow.eidsReports) {
+            console.log(
+                "EIDS converted %d entries; skipped %d from %s",
+                report.entries, report.skipped, report.path,
+            )
+        }
+    } else if (eidsText) {
         console.log(
             "EIDS converted %d entries; skipped %d unsupported heads and %d unsupported trees",
             eids.entries.length, eids.skipped.missingOrUnsupportedHead, eids.skipped.unsupportedTree,

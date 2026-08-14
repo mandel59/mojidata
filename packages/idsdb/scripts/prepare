@@ -14,6 +14,13 @@ else
 fi
 export MOJIDATA_IDSDB_OUT_DIR="$OUT_DIR"
 mkdir -p "$OUT_DIR"
+
+if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  echo "idsdb prepare: building from IDSFlow recipe"
+  node --import tsx prepare.ts
+  exit 0
+fi
+
 STAMP="$OUT_DIR/.idsdb.input.sha256"
 FTS_VERSION="${MOJIDATA_IDSDB_FTS_VERSION:-4}"
 

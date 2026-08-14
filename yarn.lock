@@ -826,6 +826,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
+    yaml: "npm:^1.10.2"
   languageName: unknown
   linkType: soft
 

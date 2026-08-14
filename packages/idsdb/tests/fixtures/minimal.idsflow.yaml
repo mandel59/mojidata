@@ -1,0 +1,13 @@
+version: 1
+datasets:
+  input:
+    read:
+      kind: eids
+      path: minimal.eids
+      data_source: fixture
+  expanded:
+    decompose:
+      input: input
+      expand_z_variants: false
+      normalize_kdpv_radical_variants: false
+output: expanded

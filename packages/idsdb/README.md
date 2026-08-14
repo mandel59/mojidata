@@ -45,6 +45,57 @@ EIDS is an IDS data source, not an IRG source. Because an EIDS file does not
 provide IRG source metadata, an EIDS build cannot be combined with
 `MOJIDATA_IDSDB_SOURCE`.
 
+## IDSFlow recipes
+
+`MOJIDATA_IDSDB_RECIPE` selects a version 1 YAML recipe for IDS conversion.
+The first version has four operations: `read`, `select`, `union`, and
+`decompose`. Relative input paths are resolved from the recipe directory.
+
+```yaml
+version: 1
+datasets:
+  babelstone:
+    read: { kind: moji-ids }
+  selected:
+    select: { input: babelstone, irg_source: [G, SG] }
+  chise:
+    read:
+      kind: eids
+      path: chise.eids
+      data_source: chise
+  definitions:
+    union: { inputs: [selected, chise] }
+  usource:
+    read: { kind: moji-usource }
+  roots:
+    union: { inputs: [definitions, usource] }
+  expanded:
+    decompose:
+      input: roots
+      using: definitions
+output: expanded
+```
+
+`decompose.using` defaults to `decompose.input`. It is needed above because
+the existing build searches U-Source records as roots without using them as
+recursive component definitions. Decomposition keeps the existing defaults:
+Z-variant expansion and KDPV radical normalization are enabled, undefined
+components remain atomic, and structural cycles are errors. The two
+normalizations can be disabled with `expand_z_variants: false` and
+`normalize_kdpv_radical_variants: false`.
+
+```sh
+MOJIDATA_IDSDB_RECIPE=/absolute/path/to/idsflow.yaml \
+MOJIDATA_IDSDB_OUT_DIR=/absolute/path/to/idsdb-experiment \
+yarn workspace @mandel59/idsdb prepare
+```
+
+Index, page-size, and output settings remain build settings outside IDSFlow.
+Recipe builds reject the older IDS transformation environment variables to
+avoid combining two transformation descriptions.
+[`recipes/default.idsflow.yaml`](./recipes/default.idsflow.yaml) reproduces
+the existing BabelStone plus U-Source transformation.
+
 ## Source-isolated research builds
 
 For a source-isolated research build, set one decomposer source token and a
