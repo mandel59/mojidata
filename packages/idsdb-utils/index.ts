@@ -32,11 +32,6 @@ export {
     parseBabelStoneIdsSourceExpression,
 } from "./lib/ids-source"
 export {
-    convertEidsDictionary,
-    type EidsConversionResult,
-    type EidsIdsEntry,
-} from "./lib/eids"
-export {
     evaluateIdsFlowRecipe,
     type EvaluatedIdsFlow,
     type IdsFlowReader,
@@ -45,3 +40,10 @@ export {
     type IdsFlowRecord,
     type IdsFlowReport,
 } from "./lib/idsflow"
+export {
+    formatIdsFlowRecordsJsonl,
+    idsFlowRecordsFormat,
+    idsFlowRecordsVersion,
+    parseIdsFlowRecordsJsonl,
+    type ParsedIdsFlowRecords,
+} from "./lib/idsflow-records"

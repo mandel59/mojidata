@@ -4,8 +4,8 @@ import path from "node:path"
 import Database from "better-sqlite3"
 import YAML from "yaml"
 import {
-    convertEidsDictionary,
     evaluateIdsFlowRecipe,
+    parseIdsFlowRecordsJsonl,
     parseBabelStoneIdsSourceExpression,
     type EvaluatedIdsFlow,
     type IdsFlowReadSpec,
@@ -14,7 +14,7 @@ import {
 } from "@mandel59/idsdb-utils"
 
 export type LoadedIdsFlow = Omit<EvaluatedIdsFlow, "reports"> & {
-    eidsReports: IdsFlowReport[]
+    inputReports: IdsFlowReport[]
     recipePath: string
     recipeSha256: string
 }
@@ -96,24 +96,20 @@ export function loadIdsFlowRecipe(
                         : readUsource(dbPath),
                 }
             }
-            if (spec.kind === "eids") {
+            if (spec.kind === "records-jsonl") {
+                if (spec.dataSource !== undefined) {
+                    throw new Error(`${at}.data_source is stored in records-jsonl`)
+                }
                 const filePath = resolveInputPath(base, spec.path, undefined, at)
                 const input = fs.readFileSync(filePath, "utf8")
-                const converted = convertEidsDictionary(input)
-                const dataSource = spec.dataSource ?? "eids"
+                const parsed = parseIdsFlowRecordsJsonl(input)
                 return {
-                    records: converted.entries.map(row => ({
-                        char: row.UCS,
-                        IDS: row.IDS,
-                        idsDataSource: dataSource,
-                        irgSource: null,
-                    })),
+                    records: parsed.records,
                     reports: [{
                         path: filePath,
                         sha256: createHash("sha256").update(input).digest("hex"),
-                        entries: converted.entries.length,
-                        skipped: converted.skipped.missingOrUnsupportedHead +
-                            converted.skipped.unsupportedTree,
+                        entries: parsed.records.length,
+                        skipped: parsed.skipped,
                     }],
                 }
             }
@@ -123,7 +119,7 @@ export function loadIdsFlowRecipe(
     return {
         output: evaluated.output,
         dataSources: evaluated.dataSources,
-        eidsReports: evaluated.reports,
+        inputReports: evaluated.reports,
         recipePath,
         recipeSha256: createHash("sha256").update(text).digest("hex"),
     }

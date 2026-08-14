@@ -31,6 +31,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/idsdb-utils"\
     },\
     {\
+      "name": "@mandel59/idsflow-eids",\
+      "reference": "workspace:packages/idsflow-eids"\
+    },\
+    {\
       "name": "@mandel59/idstool",\
       "reference": "workspace:packages/idstool"\
     },\
@@ -99,6 +103,7 @@ const RAW_RUNTIME_STATE =
     ["@mandel59/idsdb-bvec", ["workspace:packages/idsdb-bvec"]],\
     ["@mandel59/idsdb-fts5", ["workspace:packages/idsdb-fts5"]],\
     ["@mandel59/idsdb-utils", ["workspace:packages/idsdb-utils"]],\
+    ["@mandel59/idsflow-eids", ["workspace:packages/idsflow-eids"]],\
     ["@mandel59/idstool", ["workspace:packages/idstool"]],\
     ["@mandel59/mojidata", ["workspace:packages/mojidata"]],\
     ["@mandel59/mojidata-api", ["workspace:packages/mojidata-api"]],\
@@ -1121,6 +1126,19 @@ const RAW_RUNTIME_STATE =
           ["@types/node", "npm:24.10.4"],\
           ["sql.js", "npm:1.13.0"],\
           ["ts-node", "virtual:df7814ce6017719e7a429bd7f5b57f20aecfa75188ccb4258d5d658150873d1a0016cce412ce65b7e3b1f96a5de22d0e7a145c0ad80f2645371336c9035c251a#npm:10.9.2"],\
+          ["tsx", "npm:4.21.0"],\
+          ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@mandel59/idsflow-eids", [\
+      ["workspace:packages/idsflow-eids", {\
+        "packageLocation": "./packages/idsflow-eids/",\
+        "packageDependencies": [\
+          ["@mandel59/idsdb-utils", "workspace:packages/idsdb-utils"],\
+          ["@mandel59/idsflow-eids", "workspace:packages/idsflow-eids"],\
+          ["@types/node", "npm:24.10.4"],\
           ["tsx", "npm:4.21.0"],\
           ["typescript", "patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"]\
         ],\

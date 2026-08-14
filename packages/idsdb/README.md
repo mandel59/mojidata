@@ -17,33 +17,45 @@ see [docs/idsfind-fts-comparison.md](../../docs/idsfind-fts-comparison.md).
 
 ## IDS data sources
 
-`MOJIDATA_IDSDB_DATA_SOURCES` selects IDS data sources independently of the
-IRG source filter. Its default is `babelstone,usource`. Available values are
-`babelstone`, `usource`, and `eids`.
+`MOJIDATA_IDSDB_DATA_SOURCES` selects legacy IDS data sources independently
+of the IRG source filter. Its default is `babelstone,usource`; the available
+values are `babelstone` and `usource`. Other IDS data sources are supplied
+through an IDSFlow recipe.
 
-An experimental EIDS-only database can be built from an IDSgrep `.eids` file:
+An experimental EIDS database is built in two explicit steps. The optional,
+separately licensed adapter first writes the neutral IDSFlow records format:
 
 ```sh
-MOJIDATA_IDSDB_DATA_SOURCES=eids \
-MOJIDATA_IDSDB_EIDS_PATH=/absolute/path/to/dictionary.eids \
+yarn workspace @mandel59/idsflow-eids exec idsflow-eids \
+  --data-source chise /absolute/path/to/dictionary.eids \
+  > /absolute/path/to/chise.idsflow.jsonl
+
+MOJIDATA_IDSDB_RECIPE=/absolute/path/to/chise.idsflow.yaml \
 MOJIDATA_IDSDB_OUT_DIR=/absolute/path/to/idsdb-eids \
 yarn workspace @mandel59/idsdb prepare
+```
+
+The recipe reads the generated file without loading EIDS adapter code:
+
+```yaml
+version: 1
+datasets:
+  chise:
+    read:
+      kind: records-jsonl
+      path: chise.idsflow.jsonl
+output: chise
 ```
 
 The output directory is created automatically and has its own input-hash
 stamp, so different experimental databases can coexist. Relative input and
 output paths are resolved from the workspace root.
 
-The EIDS adapter converts root heads to result identifiers, canonicalizes
-IDSgrep operator aliases such as `[lr]` and `[tb]`, removes structural-node
-heads, and maps nullary named components such as `<CDP-8B7C>;` to Mojidata
-entity tokens such as `&CDP-8B7C;`. EIDS operators that ordinary IDS cannot
-represent are counted and skipped. Conversion counts and an SHA-256 digest of
-the input are stored in `idsfind_build_meta`.
-
-EIDS is an IDS data source, not an IRG source. Because an EIDS file does not
-provide IRG source metadata, an EIDS build cannot be combined with
-`MOJIDATA_IDSDB_SOURCE`.
+The MIT database builder accepts only the neutral file. It does not import,
+link, or dynamically load the EIDS adapter. EIDS remains an IDS data source,
+not an IRG source. Conversion counts and the neutral input digest are stored
+in `idsfind_build_meta`. The source EIDS data may have licensing terms
+independent of both packages and must be reviewed separately.
 
 ## IDSFlow recipes
 

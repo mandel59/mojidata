@@ -1,11 +1,9 @@
 import fs from "fs"
 import path from "path"
-import { createHash } from "node:crypto"
 import Database from "better-sqlite3"
 import { transactionSync } from "@mandel59/idsdb-utils/node"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import {
-    convertEidsDictionary,
     idsdbSourceTokens,
     parseBabelStoneIdsSourceExpression,
     tokenizeIDS,
@@ -57,7 +55,7 @@ function resolvePnpVirtualPath(filePath: string) {
     }
 }
 
-const idsDataSourceNames = ["babelstone", "usource", "eids"] as const
+const idsDataSourceNames = ["babelstone", "usource"] as const
 type IdsDataSourceName = typeof idsDataSourceNames[number]
 
 async function main() {
@@ -77,32 +75,14 @@ async function main() {
     )) {
         throw new Error(`MOJIDATA_IDSDB_DATA_SOURCES must contain only: ${idsDataSourceNames.join(", ")}`)
     }
-    const eidsInput = process.env.MOJIDATA_IDSDB_EIDS_PATH || undefined
-    if (dataSources.has("eids") && !eidsInput) {
-        throw new Error("MOJIDATA_IDSDB_EIDS_PATH is required when the eids data source is selected")
-    }
-    if (!dataSources.has("eids") && eidsInput) {
-        throw new Error("MOJIDATA_IDSDB_EIDS_PATH requires eids in MOJIDATA_IDSDB_DATA_SOURCES")
-    }
-    if (dataSources.has("eids") && sourceFilter) {
-        throw new Error("EIDS input has no IRG source metadata and cannot be combined with MOJIDATA_IDSDB_SOURCE")
-    }
     if (recipePath && [
         "MOJIDATA_IDSDB_SOURCE",
         "MOJIDATA_IDSDB_DATA_SOURCES",
-        "MOJIDATA_IDSDB_EIDS_PATH",
         "MOJIDATA_IDSDB_EXPAND_Z_VARIANTS",
         "MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS",
     ].some(name => process.env[name] !== undefined)) {
         throw new Error("MOJIDATA_IDSDB_RECIPE cannot be combined with legacy IDS transformation variables")
     }
-    const eidsPath = eidsInput ? path.resolve(invocationDirectory, eidsInput) : undefined
-    const eidsText = eidsPath ? fs.readFileSync(eidsPath, "utf8") : undefined
-    const eids = eidsText ? convertEidsDictionary(eidsText) : {
-        entries: [],
-        skipped: { missingOrUnsupportedHead: 0, unsupportedTree: 0 },
-    }
-    const eidsSha256 = eidsText ? createHash("sha256").update(eidsText).digest("hex") : undefined
     const expandZVariantsText = process.env.MOJIDATA_IDSDB_EXPAND_Z_VARIANTS ?? "1"
     const normalizeRadicalVariantsText = process.env.MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS ?? "1"
     if (!/^[01]$/.test(expandZVariantsText) || !/^[01]$/.test(normalizeRadicalVariantsText)) {
@@ -158,7 +138,6 @@ async function main() {
             collectSymbols(row.IDS)
         }
     }
-    if (!idsFlow) for (const row of eids.entries) collectSymbols(row.IDS)
     const usource = !idsFlow && dataSources.has("usource")
         ? db.prepare(`SELECT U_source_ID, IDS FROM moji.usource WHERE IDS is not null`).all() as { U_source_ID: string, IDS: string }[]
         : []
@@ -174,10 +153,10 @@ async function main() {
         schema_version INTEGER PRIMARY KEY,
         source_filter TEXT,
         data_sources TEXT NOT NULL,
-        eids_path TEXT,
-        eids_sha256 TEXT,
-        eids_entries INTEGER NOT NULL,
-        eids_skipped INTEGER NOT NULL,
+        input_path TEXT,
+        input_sha256 TEXT,
+        input_entries INTEGER NOT NULL,
+        input_skipped INTEGER NOT NULL,
         expand_z_variants INTEGER NOT NULL,
         normalize_kdpv_radical_variants INTEGER NOT NULL,
         page_size INTEGER NOT NULL,
@@ -186,21 +165,17 @@ async function main() {
         recipe_sha256 TEXT
     )`)
     db.prepare(`INSERT INTO idsfind_build_meta (
-        schema_version, source_filter, data_sources, eids_path, eids_sha256,
-        eids_entries, eids_skipped, expand_z_variants,
+        schema_version, source_filter, data_sources, input_path, input_sha256,
+        input_entries, input_skipped, expand_z_variants,
         normalize_kdpv_radical_variants, page_size, index_mode,
         recipe_path, recipe_sha256
     ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run(
         sourceFilter ?? null,
         [...dataSources].join(","),
-        idsFlow?.eidsReports.length === 1 ? idsFlow.eidsReports[0].path : eidsPath ?? null,
-        idsFlow?.eidsReports.length === 1 ? idsFlow.eidsReports[0].sha256 : eidsSha256 ?? null,
-        idsFlow
-            ? idsFlow.eidsReports.reduce((sum, report) => sum + report.entries, 0)
-            : eids.entries.length,
-        idsFlow
-            ? idsFlow.eidsReports.reduce((sum, report) => sum + report.skipped, 0)
-            : eids.skipped.missingOrUnsupportedHead + eids.skipped.unsupportedTree,
+        idsFlow?.inputReports.length === 1 ? idsFlow.inputReports[0].path : null,
+        idsFlow?.inputReports.length === 1 ? idsFlow.inputReports[0].sha256 : null,
+        idsFlow?.inputReports.reduce((sum, report) => sum + report.entries, 0) ?? 0,
+        idsFlow?.inputReports.reduce((sum, report) => sum + report.skipped, 0) ?? 0,
         expandZVariants ? 1 : 0,
         normalizeKdpvRadicalVariants ? 1 : 0,
         pageSize,
@@ -220,7 +195,7 @@ async function main() {
                 IDS: row.IDS,
                 source: row.irgSource ?? "*",
             }))
-            : eids.entries,
+            : [],
         expandZVariants,
         normalizeKdpvRadicalVariants,
         idstable: "ids",
@@ -284,11 +259,6 @@ async function main() {
         raw?: boolean;
     }[] = idsFlow ? idsFlowRoots : [
         ...decomposer.allCharSources().filter(({ source }) => source !== "*"),
-        ...eids.entries.map(({ UCS, IDS, source }) => ({
-            char: UCS,
-            IDS,
-            source,
-        })),
         ...(sourceFilter && sourceFilter !== "UTC" ? [] : usource.map(({ U_source_ID, IDS }) => ({
             char: `&${U_source_ID};`,
             IDS,
@@ -296,17 +266,12 @@ async function main() {
         }))),
     ]
     if (idsFlow) {
-        for (const report of idsFlow.eidsReports) {
+        for (const report of idsFlow.inputReports) {
             console.log(
-                "EIDS converted %d entries; skipped %d from %s",
+                "IDSFlow input %d entries; upstream skipped %d from %s",
                 report.entries, report.skipped, report.path,
             )
         }
-    } else if (eidsText) {
-        console.log(
-            "EIDS converted %d entries; skipped %d unsupported heads and %d unsupported trees",
-            eids.entries.length, eids.skipped.missingOrUnsupportedHead, eids.skipped.unsupportedTree,
-        )
     }
     transactionSync(db, () => {
         const n = allCharSources.length

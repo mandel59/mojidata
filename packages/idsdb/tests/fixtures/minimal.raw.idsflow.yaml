@@ -2,7 +2,6 @@ version: 1
 datasets:
   input:
     read:
-      kind: eids
-      path: minimal.eids
-      data_source: fixture
+      kind: records-jsonl
+      path: minimal.idsflow.jsonl
 output: input

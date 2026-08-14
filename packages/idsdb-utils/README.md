@@ -26,11 +26,17 @@ version: 1
 datasets:
   chise:
     read:
-      kind: eids
-      path: chise.eids
-      data_source: chise
+      kind: records-jsonl
+      path: chise.idsflow.jsonl
 output: chise
 ```
+
+`idsflow-records` JSONL is the versioned interchange format between external
+converters and IDSFlow hosts. Its header declares the format and version; each
+following line carries `char`, `IDS`, `ids_data_source`, and `irg_source`.
+The MIT core neither knows nor loads a particular converter. The optional
+`@mandel59/idsflow-eids` package converts IDSgrep EIDS in a separate process;
+its license is intentionally left undecided.
 
 Recursive expansion is explicit and may use a different definition dataset:
 

@@ -830,6 +830,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mandel59/idsflow-eids@workspace:packages/idsflow-eids":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/idsflow-eids@workspace:packages/idsflow-eids"
+  dependencies:
+    "@mandel59/idsdb-utils": "npm:^1.7.0"
+    "@types/node": "npm:^24.10.4"
+    tsx: "npm:^4.21.0"
+    typescript: "npm:^5.9.3"
+  bin:
+    idsflow-eids: bin/idsflow-eids.js
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/idstool@workspace:packages/idstool":
   version: 0.0.0-use.local
   resolution: "@mandel59/idstool@workspace:packages/idstool"

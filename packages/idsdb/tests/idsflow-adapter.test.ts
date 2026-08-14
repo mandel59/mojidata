@@ -4,6 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import test from "node:test"
 import Database from "better-sqlite3"
+import { formatIdsFlowRecordsJsonl } from "@mandel59/idsdb-utils"
 import { loadIdsFlowRecipe } from "../lib/idsflow-adapter"
 
 function fixture() {
@@ -68,19 +69,23 @@ test("reads, selects, unions, and separates roots from definitions", () => {
     }
 })
 
-test("allows converted EIDS to be output without recursive decomposition", () => {
+test("allows neutral records to be output without recursive decomposition", () => {
     const { directory, dbPath } = fixture()
     try {
-        fs.writeFileSync(path.join(directory, "chise.eids"), "\u3010\u660E\u3011\u2FF0\u65E5\u6708")
+        fs.writeFileSync(path.join(directory, "chise.idsflow.jsonl"), formatIdsFlowRecordsJsonl([{
+            char: "明",
+            IDS: "⿰日月",
+            idsDataSource: "chise",
+            irgSource: null,
+        }]))
         const recipePath = path.join(directory, "idsflow.yaml")
         fs.writeFileSync(recipePath, [
             "version: 1",
             "datasets:",
             "  chise:",
             "    read:",
-            "      kind: eids",
-            "      path: chise.eids",
-            "      data_source: chise",
+            "      kind: records-jsonl",
+            "      path: chise.idsflow.jsonl",
             "output: chise",
         ].join("\n"))
         const loaded = loadIdsFlowRecipe(recipePath, { defaultMojidb: dbPath })
@@ -89,7 +94,7 @@ test("allows converted EIDS to be output without recursive decomposition", () =>
         assert.deepEqual(loaded.output.records, [
             { char: "\u660E", IDS: "\u2FF0\u65E5\u6708", idsDataSource: "chise", irgSource: null },
         ])
-        assert.equal(loaded.eidsReports[0].entries, 1)
+        assert.equal(loaded.inputReports[0].entries, 1)
     } finally {
         fs.rmSync(directory, { recursive: true, force: true })
     }

@@ -1,5 +1,8 @@
-import { tokenArgs } from "./ids-operator"
-import { tokenizeIDS } from "./ids-tokenizer"
+import {
+    formatIdsFlowRecordsJsonl,
+    tokenArgs,
+    tokenizeIDS,
+} from "@mandel59/idsdb-utils"
 
 export type EidsIdsEntry = {
     UCS: string
@@ -229,4 +232,28 @@ export function convertEidsDictionary(input: string): EidsConversionResult {
         result.entries.push({ UCS, source: "*", IDS })
     }
     return result
+}
+
+export function convertEidsToIdsFlowJsonl(input: string, dataSource: string): {
+    output: string
+    entries: number
+    skipped: number
+} {
+    if (dataSource.length === 0) throw new Error("dataSource must not be empty")
+    const converted = convertEidsDictionary(input)
+    const skipped = converted.skipped.missingOrUnsupportedHead +
+        converted.skipped.unsupportedTree
+    return {
+        output: formatIdsFlowRecordsJsonl(
+            converted.entries.map(row => ({
+                char: row.UCS,
+                IDS: row.IDS,
+                idsDataSource: dataSource,
+                irgSource: null,
+            })),
+            { skipped },
+        ),
+        entries: converted.entries.length,
+        skipped,
+    }
 }
