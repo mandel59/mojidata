@@ -171,10 +171,12 @@ async function main() {
   const cwd = path.dirname(configPath)
   const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
   let targetDatabases
+  let targetEnv = env
 
   if (releaseManifestPath) {
     const manifest = readReleaseManifest(releaseManifestPath, env)
     targetDatabases = manifest.releaseDatabases
+    targetEnv = manifest.env ?? undefined
     if (bindings.length === 0 && Array.isArray(manifest.selectedBindings)) {
       bindings.push(...manifest.selectedBindings)
     }
@@ -215,6 +217,9 @@ async function main() {
         "--file",
         sqlPath,
         "--yes",
+        "--config",
+        configPath,
+        ...(targetEnv ? ["--env", targetEnv] : []),
       ],
       cwd,
     )

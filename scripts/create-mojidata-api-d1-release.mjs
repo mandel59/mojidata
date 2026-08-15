@@ -20,6 +20,14 @@ const defaultConfigPath = path.join(
   "wrangler.jsonc",
 )
 const controlPlaneCwd = rootDir
+const controlPlaneDir = fs.mkdtempSync(
+  path.join(os.tmpdir(), "mojidata-d1-control-plane-"),
+)
+const controlPlaneConfigPath = path.join(controlPlaneDir, "wrangler.jsonc")
+fs.writeFileSync(controlPlaneConfigPath, "{}\n")
+process.on("exit", () => {
+  fs.rmSync(controlPlaneDir, { recursive: true, force: true })
+})
 
 function printUsage() {
   console.log(`Usage: node ./scripts/create-mojidata-api-d1-release.mjs [--config path] [--env production] [--release 20260503-unihan-ref] [--manifest /tmp/mojidata-api-d1-release.json] [--location wnam] [--binding MOJIDATA_DB]
@@ -117,10 +125,20 @@ function getConfigTarget(config, env) {
 }
 
 function runWrangler(args, cwd = controlPlaneCwd) {
-  const result = spawnSync(npxCommand.command, [...npxCommand.args, "wrangler", ...args], {
-    cwd,
-    encoding: "utf8",
-  })
+  const result = spawnSync(
+    npxCommand.command,
+    [
+      ...npxCommand.args,
+      "wrangler",
+      ...args,
+      "--config",
+      controlPlaneConfigPath,
+    ],
+    {
+      cwd,
+      encoding: "utf8",
+    },
+  )
   if (result.status !== 0) {
     const output = [result.stdout, result.stderr].filter(Boolean).join("\n")
     throw new Error(`wrangler ${args.join(" ")} failed\n${output}`)
@@ -174,8 +192,8 @@ function getDatabaseIdFromInfo(databaseName) {
   }
 }
 
-function createDatabase({ binding, databaseName, location }) {
-  const args = ["d1", "create", databaseName, "--binding", binding]
+function createDatabase({ databaseName, location }) {
+  const args = ["d1", "create", databaseName]
   if (location) args.push("--location", location)
   const stdout = runWrangler(args)
   const databaseId = findFirstUuid(stdout)
@@ -264,7 +282,6 @@ async function main() {
     let action = "reused"
     if (!databaseId) {
       databaseId = createDatabase({
-        binding: entry.binding,
         databaseName,
         location,
       })
