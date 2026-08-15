@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.9.0
+
+### Minor Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`6581b2d`](https://github.com/mandel59/mojidata/commit/6581b2d4b78db8c520f4a66cf3873e53f7a8475c) Thanks [@mandel59](https://github.com/mandel59)! - Apply the Unicode 18.0 IDS delta after the Unicode 17.0 IDS patch when building the character database.
+
+### Patch Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`1917b8b`](https://github.com/mandel59/mojidata/commit/1917b8bb56a852af275d0fe2c2ba6dd1356b8a73) Thanks [@mandel59](https://github.com/mandel59)! - Update the bundled Unicode License v3 notice to the 2026 copyright year.
+
 ## 1.8.1
 
 ### Patch Changes
