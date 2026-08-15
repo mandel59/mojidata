@@ -26,7 +26,8 @@
     "bench:differential-idsflow-resolution": "node --import tsx ./benchmarks/differential-idsflow-resolution.ts",
     "bench:differential-idsflow-exact-audit": "node --import tsx ./benchmarks/differential-idsflow-exact-audit.ts",
     "bench:differential-idsflow-fts-candidates": "node --import tsx ./benchmarks/differential-idsflow-fts-candidates.ts",
-    "bench:differential-idsflow-decomposed-search": "node --import tsx ./benchmarks/differential-idsflow-decomposed-search.ts"
+    "bench:differential-idsflow-decomposed-search": "node --import tsx ./benchmarks/differential-idsflow-decomposed-search.ts",
+    "bench:differential-idsflow-query-groups": "node --import tsx ./benchmarks/differential-idsflow-query-groups.ts"
   },
   "dependencies": {
     "@mandel59/idsdb-bvec": "workspace:^",
