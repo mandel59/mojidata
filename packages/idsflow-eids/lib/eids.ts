@@ -18,6 +18,11 @@ export type EidsConversionResult = {
     }
 }
 
+export type EidsStructuralHeadProjection = {
+    output: string
+    removed: number
+}
+
 type EidsNode = {
     head?: string
     functor: string
@@ -211,6 +216,69 @@ function convertNode(node: EidsNode): string | undefined {
     if (arity !== undefined) return undefined
     const tokens = tokenizeIDS(node.functor)
     return tokens.length === 1 && tokens[0] === node.functor ? node.functor : undefined
+}
+
+function escapeBracketed(value: string, close: string): string {
+    return Array.from(value, character =>
+        character === "\\" || character === close
+            ? `\\${character}`
+            : character
+    ).join("")
+}
+
+function escapePlainCharacter(value: string): string {
+    if (
+        value === "\\" ||
+        /^\s$/u.test(value) ||
+        headBrackets.some(({ open }) => open === value) ||
+        functorBrackets.some(({ open }) => open === value)
+    ) {
+        return `\\x{${value.codePointAt(0)!.toString(16)}}`
+    }
+    return value
+}
+
+function serializeFunctor(node: EidsNode): string {
+    if (
+        Array.from(node.functor).length === 1 &&
+        (tokenArgs[node.functor] ?? plainFunctorArities[node.functor] ?? 0) ===
+            node.children.length
+    ) {
+        return escapePlainCharacter(node.functor)
+    }
+    const bracket = functorBrackets.find(({ arity }) =>
+        arity === node.children.length
+    )
+    if (!bracket) {
+        throw new Error(`unsupported EIDS arity: ${node.children.length}`)
+    }
+    return bracket.open + escapeBracketed(node.functor, bracket.close) +
+        bracket.close
+}
+
+function serializeHeadlessNode(
+    node: EidsNode,
+    countRemoved: () => void,
+): string {
+    const keepHead = node.children.length === 0 && node.functor === ";"
+    if (node.head && !keepHead) countRemoved()
+    const head = keepHead && node.head
+        ? `【${escapeBracketed(node.head, "】")}】`
+        : ""
+    return head + serializeFunctor(node) +
+        node.children.map(child =>
+            serializeHeadlessNode(child, countRemoved)
+        ).join("")
+}
+
+export function dropEidsStructuralHeads(
+    input: string,
+): EidsStructuralHeadProjection {
+    let removed = 0
+    const output = new EidsParser(input).parseAll().map(node =>
+        serializeHeadlessNode(node, () => removed++)
+    ).join("\n")
+    return { output: output.length === 0 ? "" : `${output}\n`, removed }
 }
 
 export function convertEidsDictionary(input: string): EidsConversionResult {

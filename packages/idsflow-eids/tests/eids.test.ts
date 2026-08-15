@@ -5,7 +5,11 @@ import path from "node:path"
 import test from "node:test"
 import { parseIdsFlowRecordsJsonl } from "@mandel59/idsdb-utils"
 import { run } from "../bin/idsflow-eids"
-import { convertEidsDictionary, convertEidsToIdsFlowJsonl } from "../lib/eids"
+import {
+    convertEidsDictionary,
+    convertEidsToIdsFlowJsonl,
+    dropEidsStructuralHeads,
+} from "../lib/eids"
 
 test("converts IDSgrep EIDS dictionary trees to IDS rows", () => {
     const converted = convertEidsDictionary(`
@@ -36,6 +40,20 @@ test("keeps escaped EIDS heads and leaves", () => {
     assert.deepEqual(convertEidsDictionary("<CDP\\x2D8B7C>[lr]木\\X65E5").entries, [
         { UCS: "&CDP-8B7C;", source: "*", IDS: "⿰木日" },
     ])
+})
+
+test("drops structural heads but keeps leaf identities", () => {
+    const projected = dropEidsStructuralHeads(
+        "【森】⿱木<林>⿰木木\n【明】⿰<日>;月",
+    )
+    assert.equal(projected.output, "⿱木⿰木木\n⿰【日】;月\n")
+    assert.equal(projected.removed, 3)
+})
+
+test("round-trips escaped functors while dropping heads", () => {
+    const projected = dropEidsStructuralHeads("【entry】[custom]木日")
+    assert.equal(projected.output, "[custom]木日\n")
+    assert.equal(projected.removed, 1)
 })
 
 test("counts EIDS-only operators that ordinary IDS cannot represent", () => {
