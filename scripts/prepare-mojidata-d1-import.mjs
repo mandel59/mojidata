@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process"
+import { createHash } from "node:crypto"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
@@ -8,13 +9,26 @@ const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
 
 function printUsage() {
   console.log(`Usage: node ./scripts/prepare-mojidata-d1-import.mjs [--output-dir /tmp/mojidata-d1-import]
+       [--mojidata-db /path/to/moji.db --idsfind-db /path/to/idsfind.db]
 
 Builds the SQLite assets if needed and writes sanitized SQL dumps that can be
-imported into Cloudflare D1.`)
+imported into Cloudflare D1. Pass both database paths to use already-built,
+externally verified artifacts without rebuilding workspace packages.`)
 }
 
-function parseArgs(argv) {
+function readOptionValue(argv, index) {
+  const flag = argv[index]
+  const value = argv[index + 1]
+  if (!value || value.startsWith("--")) {
+    throw new Error(`${flag} requires a value`)
+  }
+  return value
+}
+
+export function parseArgs(argv) {
   let outputDir = path.join(os.tmpdir(), "mojidata-d1-import")
+  let mojidataDb
+  let idsfindDb
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
     if (arg === "--") {
@@ -25,13 +39,30 @@ function parseArgs(argv) {
       process.exit(0)
     }
     if (arg === "--output-dir") {
-      outputDir = argv[index + 1]
+      outputDir = readOptionValue(argv, index)
+      index += 1
+      continue
+    }
+    if (arg === "--mojidata-db") {
+      mojidataDb = readOptionValue(argv, index)
+      index += 1
+      continue
+    }
+    if (arg === "--idsfind-db") {
+      idsfindDb = readOptionValue(argv, index)
       index += 1
       continue
     }
     throw new Error(`Unknown argument: ${arg}`)
   }
-  return { outputDir: path.resolve(outputDir) }
+  if (Boolean(mojidataDb) !== Boolean(idsfindDb)) {
+    throw new Error("--mojidata-db and --idsfind-db must be provided together")
+  }
+  return {
+    outputDir: path.resolve(outputDir),
+    mojidataDb: mojidataDb ? path.resolve(mojidataDb) : undefined,
+    idsfindDb: idsfindDb ? path.resolve(idsfindDb) : undefined,
+  }
 }
 
 function run(command, args, cwd = rootDir) {
@@ -524,23 +555,31 @@ function writeManifest(outputDir, entries) {
   )
 }
 
-function main() {
-  const { outputDir } = parseArgs(process.argv.slice(2))
+function fileSha256(filePath) {
+  return createHash("sha256").update(fs.readFileSync(filePath)).digest("hex")
+}
 
-  preparePackage(path.join(rootDir, "packages/mojidata"))
-  preparePackage(path.join(rootDir, "packages/idsdb-fts5"))
+function main() {
+  const { outputDir, mojidataDb, idsfindDb } = parseArgs(process.argv.slice(2))
+
+  if (!mojidataDb) {
+    preparePackage(path.join(rootDir, "packages/mojidata"))
+    preparePackage(path.join(rootDir, "packages/idsdb-fts5"))
+  }
 
   fs.mkdirSync(outputDir, { recursive: true })
 
   const dumpTargets = [
     {
       name: "mojidata",
-      sourceDbPath: path.join(rootDir, "packages/mojidata/dist/moji.db"),
+      sourceDbPath:
+        mojidataDb ?? path.join(rootDir, "packages/mojidata/dist/moji.db"),
       outputPath: path.join(outputDir, "mojidata.sql"),
     },
     {
       name: "idsdb-fts5",
-      sourceDbPath: path.join(rootDir, "packages/idsdb-fts5/idsfind.db"),
+      sourceDbPath:
+        idsfindDb ?? path.join(rootDir, "packages/idsdb-fts5/idsfind.db"),
       outputPath: path.join(outputDir, "idsdb-fts5.sql"),
     },
   ]
@@ -552,11 +591,19 @@ function main() {
 
   writeManifest(
     outputDir,
-    dumpTargets.map(({ name, sourceDbPath, outputPath }) => ({
-      name,
-      sourceDbPath,
-      outputPath,
-    })),
+    dumpTargets.map(({ name, sourceDbPath, outputPath }) => {
+      const sourceStat = fs.statSync(sourceDbPath)
+      const outputStat = fs.statSync(outputPath)
+      return {
+        name,
+        sourceDbPath,
+        sourceByteLength: sourceStat.size,
+        sourceSha256: fileSha256(sourceDbPath),
+        outputPath,
+        outputByteLength: outputStat.size,
+        outputSha256: fileSha256(outputPath),
+      }
+    }),
   )
 
   console.log(`Wrote D1 import dumps to ${outputDir}`)

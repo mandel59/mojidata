@@ -10,9 +10,38 @@ import {
   buildUnihanMaterializationStatementsFromRelations,
   buildUnihanVariantMaterializationStatementsFromRelations,
   isIdsfindDbPath,
+  parseArgs,
 } from "./prepare-mojidata-d1-import.mjs"
 
 const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
+
+describe("parseArgs", () => {
+  test("accepts a pair of externally built database artifacts", () => {
+    const args = parseArgs([
+      "--output-dir",
+      "d1-output",
+      "--mojidata-db",
+      "artifacts/moji.db",
+      "--idsfind-db",
+      "artifacts/idsfind.db",
+    ])
+
+    assert.equal(args.outputDir, path.resolve("d1-output"))
+    assert.equal(args.mojidataDb, path.resolve("artifacts/moji.db"))
+    assert.equal(args.idsfindDb, path.resolve("artifacts/idsfind.db"))
+  })
+
+  test("rejects an incomplete external artifact pair", () => {
+    assert.throws(
+      () => parseArgs(["--mojidata-db", "artifacts/moji.db"]),
+      /must be provided together/,
+    )
+  })
+
+  test("rejects an option without a value", () => {
+    assert.throws(() => parseArgs(["--idsfind-db"]), /requires a value/)
+  })
+})
 
 describe("isIdsfindDbPath", () => {
   test("matches packaged and release-artifact FTS5 database names", () => {

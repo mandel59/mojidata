@@ -150,6 +150,18 @@ importing into the active bindings.
    corepack yarn mojidata-api:d1:prepare-import --output-dir /tmp/mojidata-d1-import
    ```
 
+   To prepare a release from database artifacts that were built and verified in
+   an isolated release environment, pass both source databases explicitly. This
+   skips workspace package rebuilding and records the source and dump byte
+   lengths and SHA-256 digests in `manifest.json`:
+
+   ```sh
+   corepack yarn mojidata-api:d1:prepare-import -- \
+     --output-dir /tmp/mojidata-d1-import \
+     --mojidata-db /release/moji.db \
+     --idsfind-db /release/idsfind-fts5.db
+   ```
+
 2. Create a release D1 pair without changing the active Worker config:
 
    ```sh
