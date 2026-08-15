@@ -5,6 +5,7 @@ import {
     compileIdsQueryPlan,
     decomposedIdsQueryPlan,
     getRegisteredIdsQueryPlan,
+    getRegisteredIdsQuerySemantics,
     identityIdsQueryPlan,
     legacyIdsQueryPlan,
     parseIdsQueryPlan,
@@ -32,6 +33,72 @@ test("compiles syntax and resolution stages", () => {
         ],
     )
     assert.equal(decomposed.resolveMaterializedComponents, true)
+})
+
+test("describes evidence per claim without promoting a whole profile", () => {
+    const records = getRegisteredIdsQuerySemantics("idsflow-records@1")
+    assert.equal(records.plan, identityIdsQueryPlan)
+    assert.deepEqual(
+        records.evidence.map(({ claim, subject, grade }) => ({
+            claim,
+            subject,
+            grade,
+        })),
+        [
+            {
+                claim: "abstract-match-preservation",
+                subject: "identity@1",
+                grade: "verified",
+            },
+            {
+                claim: "production-search-correspondence",
+                subject: "idsflow-records@1",
+                grade: "validated",
+            },
+        ],
+    )
+
+    const decompose = getRegisteredIdsQuerySemantics("idsflow-decompose@1")
+    assert.equal(decompose.plan, decomposedIdsQueryPlan)
+    assert.deepEqual(
+        decompose.evidence.map(({ claim, subject, grade }) => ({
+            claim,
+            subject,
+            grade,
+        })),
+        [
+            {
+                claim: "abstract-match-preservation",
+                subject: "expand-overlaid@1",
+                grade: "verified",
+            },
+            {
+                claim: "abstract-match-preservation",
+                subject: "resolve-materialized-components@1",
+                grade: "verified",
+            },
+            {
+                claim: "abstract-match-preservation",
+                subject: "idsflow-decompose@1",
+                grade: "verified",
+            },
+            {
+                claim: "production-search-correspondence",
+                subject: "idsflow-decompose@1",
+                grade: "validated",
+            },
+        ],
+    )
+    assert.deepEqual(
+        decompose.evidence.flatMap(({ references }) => references)
+            .filter(({ kind }) => kind === "lean-theorem")
+            .map(({ locator }) => locator),
+        [
+            "IdsSearchVerify.expandOverlaid_preserves",
+            "IdsSearchVerify.resolvePatternAlternativeLists_preserves",
+            "IdsSearchVerify.decomposedRecipe_abstract_preserves",
+        ],
+    )
 })
 
 test("maps only registered semantics profiles to query plans", () => {

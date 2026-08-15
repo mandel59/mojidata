@@ -45,6 +45,26 @@ export const idsQuerySemanticsProfiles = {
 export type IdsQuerySemanticsProfile =
     typeof idsQuerySemanticsProfiles[keyof typeof idsQuerySemanticsProfiles]
 
+export type IdsQuerySemanticsEvidenceGrade = "validated" | "verified"
+
+export type IdsQuerySemanticsEvidenceReference = {
+    kind: "differential" | "lean-theorem"
+    locator: string
+}
+
+export type IdsQuerySemanticsEvidenceClaim = {
+    claim: "abstract-match-preservation" | "production-search-correspondence"
+    subject: string
+    scope: string
+    grade: IdsQuerySemanticsEvidenceGrade
+    references: readonly IdsQuerySemanticsEvidenceReference[]
+}
+
+export type RegisteredIdsQuerySemantics = {
+    plan: IdsQueryPlan
+    evidence: readonly IdsQuerySemanticsEvidenceClaim[]
+}
+
 export type IdsQuerySemantics =
     | {
         mode: "registered"
@@ -55,16 +75,104 @@ export type IdsQuerySemantics =
         queryPlan: IdsQueryPlan
     }
 
+const registeredIdsQuerySemantics: Record<
+    IdsQuerySemanticsProfile,
+    RegisteredIdsQuerySemantics
+> = {
+    [idsQuerySemanticsProfiles.records]: {
+        plan: identityIdsQueryPlan,
+        evidence: [
+            {
+                claim: "abstract-match-preservation",
+                subject: "identity@1",
+                scope: "complete-rooted-tree@1",
+                grade: "verified",
+                references: [{
+                    kind: "lean-theorem",
+                    locator: "IdsSearchVerify.Preserves.identity",
+                }],
+            },
+            {
+                claim: "production-search-correspondence",
+                subject: idsQuerySemanticsProfiles.records,
+                scope: "bounded-production-fixtures@1",
+                grade: "validated",
+                references: [{
+                    kind: "differential",
+                    locator: "packages/mojidata-api-bench/benchmarks/differential-idsflow-query-plan.ts",
+                }],
+            },
+        ],
+    },
+    [idsQuerySemanticsProfiles.decompose]: {
+        plan: decomposedIdsQueryPlan,
+        evidence: [
+            {
+                claim: "abstract-match-preservation",
+                subject: "expand-overlaid@1",
+                scope: "complete-rooted-tree@1",
+                grade: "verified",
+                references: [{
+                    kind: "lean-theorem",
+                    locator: "IdsSearchVerify.expandOverlaid_preserves",
+                }],
+            },
+            {
+                claim: "abstract-match-preservation",
+                subject: "resolve-materialized-components@1",
+                scope: "complete-rooted-tree@1",
+                grade: "verified",
+                references: [{
+                    kind: "lean-theorem",
+                    locator: "IdsSearchVerify.resolvePatternAlternativeLists_preserves",
+                }],
+            },
+            {
+                claim: "abstract-match-preservation",
+                subject: idsQuerySemanticsProfiles.decompose,
+                scope: "complete-rooted-tree@1",
+                grade: "verified",
+                references: [{
+                    kind: "lean-theorem",
+                    locator: "IdsSearchVerify.decomposedRecipe_abstract_preserves",
+                }],
+            },
+            {
+                claim: "production-search-correspondence",
+                subject: idsQuerySemanticsProfiles.decompose,
+                scope: "bounded-production-fixtures@1",
+                grade: "validated",
+                references: [
+                    {
+                        kind: "differential",
+                        locator: "packages/mojidata-api-bench/benchmarks/differential-idsflow-decomposed-search.ts",
+                    },
+                    {
+                        kind: "differential",
+                        locator: "packages/mojidata-api-bench/benchmarks/differential-idsflow-query-groups.ts",
+                    },
+                ],
+            },
+        ],
+    },
+}
+
+export function getRegisteredIdsQuerySemantics(
+    profile: unknown,
+): RegisteredIdsQuerySemantics {
+    if (
+        profile === idsQuerySemanticsProfiles.records ||
+        profile === idsQuerySemanticsProfiles.decompose
+    ) {
+        return registeredIdsQuerySemantics[profile]
+    }
+    throw new Error(`unsupported IDS query semantics profile: ${String(profile)}`)
+}
+
 export function getRegisteredIdsQueryPlan(
     profile: unknown,
 ): IdsQueryPlan {
-    if (profile === idsQuerySemanticsProfiles.records) {
-        return identityIdsQueryPlan
-    }
-    if (profile === idsQuerySemanticsProfiles.decompose) {
-        return decomposedIdsQueryPlan
-    }
-    throw new Error(`unsupported IDS query semantics profile: ${String(profile)}`)
+    return getRegisteredIdsQuerySemantics(profile).plan
 }
 
 function mapping(value: unknown, at: string): Record<string, unknown> {
