@@ -1,5 +1,5 @@
 import {
-  nodeLength,
+  tokenArgs,
   type TokenList,
 } from "@mandel59/idsdb-utils"
 
@@ -42,45 +42,102 @@ function collectAuditLookupUcs(idslist: TokenList[][]) {
   return [...tokens]
 }
 
-async function idsmatch(
-  tokens: string[],
-  pattern: TokenList,
-  getIDSTokens: (ucs: string) => Promise<string[]>,
-) {
-  const matchFrom = async (i: number) => {
+type CompiledPatternToken =
+  | { kind: "anchor" }
+  | { kind: "wildcard" }
+  | { kind: "variable"; name: string }
+  | { kind: "literal"; value: string; alternatives: string[][] }
+
+type CompiledPattern = {
+  tokens: CompiledPatternToken[]
+  multiplicity: number
+  anchoredAtRoot: boolean
+}
+
+function compileAuditPatterns(
+  idslist: TokenList[][],
+  getIDSTokens: (ucs: string) => string[],
+): CompiledPattern[][] {
+  return idslist.map((patterns) =>
+    patterns.map((pattern) => ({
+      multiplicity: pattern.multiplicity,
+      anchoredAtRoot: pattern[0] === "§",
+      tokens: pattern.map((token): CompiledPatternToken => {
+        if (token === "§") return { kind: "anchor" }
+        if (token === "？") return { kind: "wildcard" }
+        if (isPatternVariableToken(token)) {
+          return { kind: "variable", name: token }
+        }
+        return {
+          kind: "literal",
+          value: token,
+          alternatives: getIDSTokens(token).map((ids) => ids.split(" ")),
+        }
+      }),
+    })),
+  )
+}
+
+function idsmatch(tokens: string[], pattern: CompiledPattern) {
+  const nodeLengths = new Map<number, number | undefined>()
+  const getNodeLength = (start: number) => {
+    if (nodeLengths.has(start)) return nodeLengths.get(start)
+    if (start < 0 || start >= tokens.length) {
+      nodeLengths.set(start, undefined)
+      return undefined
+    }
+    let offset = start
+    let remaining = 1
+    while (remaining > 0) {
+      if (offset >= tokens.length) {
+        nodeLengths.set(start, undefined)
+        return undefined
+      }
+      const token = tokens[offset++]
+      remaining += (tokenArgs[token] ?? 0) - 1
+    }
+    const length = offset - start
+    nodeLengths.set(start, length)
+    return length
+  }
+  const alternativeMatches = (start: number, alternative: string[]) =>
+    alternative.every((token, offset) => tokens[start + offset] === token)
+
+  const matchFrom = (i: number) => {
     const vars = new Map<string, string[]>()
     let k = i
-    loop: for (let j = 0; j < pattern.length; j++) {
-      if (pattern[j] === "§") {
+    loop: for (const token of pattern.tokens) {
+      if (token.kind === "anchor") {
         if (k === 0 || k === tokens.length) {
           continue loop
         }
-      } else if (pattern[j] === "？") {
-        k += nodeLength(tokens, k)
+        return false
+      } else if (token.kind === "wildcard") {
+        const length = getNodeLength(k)
+        if (length === undefined) return false
+        k += length
         continue loop
-      } else if (/^[a-zａ-ｚ]$/.test(pattern[j])) {
-        const varname = pattern[j]
-        const l = nodeLength(tokens, k)
-        const slice = vars.get(varname)
+      } else if (token.kind === "variable") {
+        const length = getNodeLength(k)
+        if (length === undefined) return false
+        const slice = vars.get(token.name)
         if (slice) {
           if (!slice.every((t, offset) => t === tokens[k + offset])) {
             return false
           }
         } else {
-          vars.set(varname, tokens.slice(k, k + l))
+          vars.set(token.name, tokens.slice(k, k + length))
         }
-        k += l
+        k += length
         continue loop
       }
-      const ts = await getIDSTokens(pattern[j])
-      if (ts.length === 0 && pattern[j] === tokens[k]) {
+      if (token.alternatives.length === 0 && token.value === tokens[k]) {
         k++
         continue loop
       }
-      for (const t of ts) {
-        const l = t.split(" ").length
-        if (tokens.slice(k, k + l).join(" ") === t) {
-          k += l
+      for (const alternative of token.alternatives) {
+        if (alternativeMatches(k, alternative)) {
+          k += alternative.length
           continue loop
         }
       }
@@ -92,43 +149,37 @@ async function idsmatch(
     return true
   }
   let count = 0
-  for (let i = 0; i < tokens.length; i++) {
-    if (await matchFrom(i)) {
+  const end = pattern.anchoredAtRoot ? Math.min(1, tokens.length) : tokens.length
+  for (let i = 0; i < end; i++) {
+    if (matchFrom(i)) {
       count++
     }
   }
   return count
 }
 
-async function postaudit(
+function postaudit(
   result: string,
-  idslist: TokenList[][],
-  getIDSTokensForUcs: (ucs: string) => Promise<string[]>,
+  idslist: CompiledPattern[][],
+  getIDSTokensForUcs: (ucs: string) => string[],
 ) {
-  for (const IDS_tokens of await getIDSTokensForUcs(result)) {
+  for (const IDS_tokens of getIDSTokensForUcs(result)) {
     const tokens = IDS_tokens.split(" ")
-    if (
-      await (async () => {
-        for (const patterns of idslist) {
-          let matched = false
-          for (const pattern of patterns) {
-            if (
-              (await idsmatch(tokens, pattern, getIDSTokensForUcs)) >=
-              pattern.multiplicity
-            ) {
-              matched = true
-              break
-            }
-          }
-          if (!matched) {
-            return false
-          }
+    let allGroupsMatched = true
+    for (const patterns of idslist) {
+      let matched = false
+      for (const pattern of patterns) {
+        if (idsmatch(tokens, pattern) >= pattern.multiplicity) {
+          matched = true
+          break
         }
-        return true
-      })()
-    ) {
-      return true
+      }
+      if (!matched) {
+        allGroupsMatched = false
+        break
+      }
     }
+    if (allGroupsMatched) return true
   }
   return false
 }
@@ -137,7 +188,7 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
     const tokenized = tokenizeIdsList(idslist)
-    const idsTokensCache = new Map<string, Promise<string[]>>()
+    const idsTokensCache = new Map<string, string[]>()
 
     const prefetchIDSTokens = async (ucsValues: Iterable<string>) => {
       const pending = [...new Set(ucsValues)].filter((ucs) => !idsTokensCache.has(ucs))
@@ -161,27 +212,17 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
           list.push(row.IDS_tokens)
         }
         for (const [ucs, tokens] of prefetched) {
-          idsTokensCache.set(ucs, Promise.resolve(tokens))
+          idsTokensCache.set(ucs, tokens)
         }
       }
     }
 
-    const getIDSTokensForUcs = async (ucs: string) => {
-      let rowsPromise = idsTokensCache.get(ucs)
-      if (!rowsPromise) {
-        rowsPromise = db
-          .query<{ IDS_tokens?: string }>(
-            `SELECT IDS_tokens FROM idsfind WHERE UCS = $ucs`,
-            { $ucs: ucs },
-          )
-          .then((rows) =>
-            rows.flatMap((row) =>
-              typeof row.IDS_tokens === "string" ? [row.IDS_tokens] : [],
-            ),
-          )
-        idsTokensCache.set(ucs, rowsPromise)
+    const getIDSTokensForUcs = (ucs: string) => {
+      const tokens = idsTokensCache.get(ucs)
+      if (!tokens) {
+        throw new Error(`IDS tokens were not prefetched for ${ucs}`)
       }
-      return await rowsPromise
+      return tokens
     }
 
     const out: string[] = []
@@ -192,10 +233,14 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
       ...rows.flatMap((row) => (typeof row.UCS === "string" ? [row.UCS] : [])),
       ...collectAuditLookupUcs(tokenized.forAudit),
     ])
+    const compiledAudit = compileAuditPatterns(
+      tokenized.forAudit,
+      getIDSTokensForUcs,
+    )
     for (const row of rows) {
       const ucs = row.UCS
       if (typeof ucs !== "string") continue
-      if (await postaudit(ucs, tokenized.forAudit, getIDSTokensForUcs)) {
+      if (postaudit(ucs, compiledAudit, getIDSTokensForUcs)) {
         out.push(ucs)
       }
     }
