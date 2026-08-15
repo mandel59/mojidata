@@ -22,7 +22,8 @@
     "prepare": "tsc --noEmit",
     "bench:differential-idsfind-equality": "node --import tsx ./benchmarks/differential-idsfind-equality.ts",
     "bench:differential-idsflow-query-plan": "node --import tsx ./benchmarks/differential-idsflow-query-plan.ts",
-    "bench:differential-idsflow-overlay": "node --import tsx ./benchmarks/differential-idsflow-overlay.ts"
+    "bench:differential-idsflow-overlay": "node --import tsx ./benchmarks/differential-idsflow-overlay.ts",
+    "bench:differential-idsflow-resolution": "node --import tsx ./benchmarks/differential-idsflow-resolution.ts"
   },
   "dependencies": {
     "@mandel59/idsdb-bvec": "workspace:^",
