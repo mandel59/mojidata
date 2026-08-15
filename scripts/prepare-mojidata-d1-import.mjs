@@ -494,7 +494,9 @@ function buildIdsdbFts5ImportSql(sourceDbPath) {
 }
 
 export function isIdsfindDbPath(sourceDbPath) {
-  return sourceDbPath.split(/[\\/]/).at(-1) === "idsfind.db"
+  return ["idsfind.db", "idsfind-fts5.db"].includes(
+    sourceDbPath.split(/[\\/]/).at(-1),
+  )
 }
 
 function writeDumpFile(sourceDbPath, outputPath) {

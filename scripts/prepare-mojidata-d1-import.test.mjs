@@ -15,9 +15,10 @@ import {
 const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
 
 describe("isIdsfindDbPath", () => {
-  test("matches idsfind.db with POSIX or Windows path separators", () => {
+  test("matches packaged and release-artifact FTS5 database names", () => {
     assert.equal(isIdsfindDbPath("/tmp/mojidata/idsfind.db"), true)
     assert.equal(isIdsfindDbPath("C:\\tmp\\mojidata\\idsfind.db"), true)
+    assert.equal(isIdsfindDbPath("C:\\tmp\\release\\idsfind-fts5.db"), true)
     assert.equal(isIdsfindDbPath("C:\\tmp\\mojidata\\moji.db"), false)
     assert.equal(isIdsfindDbPath("/tmp/mojidata/idsfind.db.bak"), false)
   })
