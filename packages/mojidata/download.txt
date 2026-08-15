@@ -19,11 +19,11 @@ MJIH00201-xlsx.zip d4fbeb012d1519a5fd7256084587e7163fe4f89b1a9b789145cbbe1a548b9
 
 ## Unicode Character Database <https://unicode.org/ucd/>
 ## License: Unicode-3.0
-CJKRadicals.txt 826f83be25cd18fb8a5015a514704504e1982e840ea14d058bf583e1cc620c83 https://www.unicode.org/Public/17.0.0/ucd/CJKRadicals.txt
-StandardizedVariants.txt f55100b2fb11d3d75a37b8c1ab752192dbd1c4b12328c5ec6b38e3807c0ca597 https://www.unicode.org/Public/17.0.0/ucd/StandardizedVariants.txt
-EquivalentUnifiedIdeograph.txt 38619c05a17e771554000fe604afee92e10eb49e0616ecf0c87af3c1eb0f4320 https://www.unicode.org/Public/17.0.0/ucd/EquivalentUnifiedIdeograph.txt
-USourceData.txt 0caa31c713a0ea0eaaa75d7afd0bca05d7448df4df22c384ffc30a0d9c7953e4 https://www.unicode.org/Public/17.0.0/ucd/USourceData.txt
-Unihan.zip f7a48b2b545acfaa77b2d607ae28747404ce02baefee16396c5d2d7a8ef34b5e https://www.unicode.org/Public/17.0.0/ucd/Unihan.zip
+CJKRadicals.txt 689e2e5852699e7115823dc0b6d3e615eb767c7f477b615678f4f989d1f06105 https://www.unicode.org/Public/18.0.0/ucd/CJKRadicals.txt
+StandardizedVariants.txt e19a5731a04e227a3dae3c778124b057236611dffa9a91726137b0488cad01da https://www.unicode.org/Public/18.0.0/ucd/StandardizedVariants.txt
+EquivalentUnifiedIdeograph.txt c86c80f6a0d1d47c9a5aadfbf1c26f1a732d662d9ccb0ed2d397919ecc47bf72 https://www.unicode.org/Public/18.0.0/ucd/EquivalentUnifiedIdeograph.txt
+USourceData.txt a1051337f9c2fa73ec4c8273ecdaa38433a01e2011863c641a1804f900ce94d0 https://www.unicode.org/Public/18.0.0/ucd/USourceData.txt
+Unihan.zip 14185c2d7c738ae317807b0b895c92757a0a1797bb84e406b1982daec081627d https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip
 
 ## Ideographic Variation Database <https://unicode.org/ivd/>
 ## License: Unicode-3.0
@@ -36,6 +36,7 @@ IDS.TXT cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1 https:/
 ## Mojidata IDS <https://github.com/mandel59/mojidata-ids>
 ## License: MIT-0
 ids-unicode-17.0.txt 73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3bd9d8 https://raw.githubusercontent.com/mandel59/mojidata-ids/d282fc42965b363d37cef23c71d442fcaa29243d/ids/unicode-17.0.txt
+ids-unicode-18.0.txt dc37491ccd43c99db08d7334c33bfd4673e3e3212f644f9495469ad57740e7e0 https://raw.githubusercontent.com/mandel59/mojidata-ids/4c76c507fe9995c46d2653cce511d5e869e40b57/ids/draft/unicode-18.0.txt
 
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
 ## Public domain

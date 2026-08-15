@@ -19,8 +19,12 @@ if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
 fi
 
 echo "idsdb-fts5 prepare (fts${FTS_VERSION}): inputs changed (or first build), rebuilding"
+OUT_DIR="$PWD"
+if command -v cygpath >/dev/null 2>&1; then
+  OUT_DIR="$(cygpath -w "$PWD")"
+fi
 MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
-MOJIDATA_IDSDB_OUT_DIR="$PWD" \
+MOJIDATA_IDSDB_OUT_DIR="$OUT_DIR" \
   yarn --cwd ../idsdb exec node --import tsx prepare.ts
 FINAL_HASH="$(
   MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \

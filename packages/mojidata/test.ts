@@ -22,6 +22,24 @@ test('includes indexes for D1 full-field lookup predicates', t => {
     t.true(indexes.has('mjih_phonetic_MJ文字図形名'))
 })
 
+test('applies the Unicode 18 IDS delta', t => {
+    const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
+    const ids = db.prepare(`
+        SELECT source, IDS FROM ids WHERE UCS = ? ORDER BY source
+    `)
+
+    t.deepEqual(ids.all('\u{2B81E}'), [
+        { source: 'G', IDS: '⿰日欠' },
+    ])
+    t.deepEqual(ids.all('\u{2EA07}'), [
+        { source: 'JS', IDS: '⿰⿸厂㇯{18}一頁' },
+        { source: 'TP', IDS: '⿰⿸厂巳頁' },
+    ])
+    t.deepEqual(ids.all('\u{312E7}'), [
+        { source: 'G', IDS: '⿰麦差' },
+    ])
+})
+
 test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
     const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
     const legacy = db.prepare(`
@@ -33,14 +51,14 @@ test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
                 AND NOT value glob printf('*U+%04X[0-9A-F]*', unicode(:ref)))
         )
         AND property NOT IN ('kJapanese', 'kSMSZD2003Readings', 'kFanqie')
-        ORDER BY UCS
+        ORDER BY UCS, property, value
         LIMIT 100
     `)
     const indexed = db.prepare(`
         SELECT printf('U+%04X', unicode(UCS)) AS code, UCS, property, value
         FROM unihan_value_ref
         WHERE unicode(:ref) > 0xFF AND ref = :ref
-        ORDER BY UCS
+        ORDER BY UCS, property, value
         LIMIT 100
     `)
 

@@ -92,8 +92,8 @@ describe('createSqlApiDb', () => {
   test('getMojidataVariantRels serializes args and filters malformed rows', async () => {
     const mojidata = createRecordingExecutor({
       query: async () => [
-        { c1: '漢', c2: '漢', f: 1, r: 'kSemanticVariant' },
-        { c1: '漢', c2: 'bad', r: 'missing-flag' },
+        { c1: '漢', c2: '漢', r: 'kSemanticVariant' },
+        { c1: '漢', c2: 'bad' },
       ],
     })
     const idsfind = createRecordingExecutor()
@@ -107,10 +107,56 @@ describe('createSqlApiDb', () => {
     assert.deepEqual(result, [
       { c1: '漢', c2: '漢', f: 1, r: 'kSemanticVariant' },
     ])
-    assert.deepEqual(mojidata.queryCalls[0]?.params, {
-      '@args': JSON.stringify(['漢', '漢']),
+    assert.equal(mojidata.queryCalls.length, 3)
+    for (const call of mojidata.queryCalls) {
+      assert.deepEqual(call.params, { '@args': JSON.stringify(['漢', '漢']) })
+      assert.doesNotMatch(call.sql, /WITH RECURSIVE/)
+      assert.match(call.sql, /rels \(c1, c2, r\) AS MATERIALIZED/)
+      assert.doesNotMatch(call.sql, /FROM kdpv\b/)
+    }
+    const sql = mojidata.queryCalls.map((call) => call.sql).join('\n')
+    assert.match(sql, /FROM "kdpv_cjkvi\/duplicate"/)
+    assert.match(sql, /FROM "kdpv_cjkvi\/non-cognate"/)
+    assert.match(sql, /FROM "kdpv_jisx0212\/variant"/)
+    assert.match(sql, /FROM "kdpv_jisx0213\/variant"/)
+  })
+
+  test('getMojidataVariantRels expands strong edges and stops at weak edges', async () => {
+    const mojidata = createRecordingExecutor({
+      query: async (_sql, params) => {
+        const frontier = JSON.parse(String(params?.['@args'])) as string[]
+        if (frontier.includes('A')) return [
+          { c1: 'A', c2: 'B', r: 'strong-ab' },
+          { c1: 'A', c2: 'X', r: 'cjkvi/non-cognate' },
+        ]
+        if (frontier.includes('B')) return [
+          { c1: 'A', c2: 'B', r: 'strong-ab' },
+          { c1: 'B', c2: 'C', r: 'strong-bc' },
+        ]
+        if (frontier.includes('C')) return [
+          { c1: 'B', c2: 'C', r: 'strong-bc' },
+          { c1: 'C', c2: 'Y', r: 'kStrange_I' },
+        ]
+        assert.fail(`unexpected frontier: ${frontier.join(',')}`)
+      },
     })
-    assert.match(mojidata.queryCalls[0]?.sql ?? '', /WITH RECURSIVE/)
+    const db = createSqlApiDb({
+      getMojidataDb: async () => mojidata.executor,
+      getIdsfindDb: async () => createRecordingExecutor().executor,
+    })
+
+    const result = await db.getMojidataVariantRels(['A'])
+
+    assert.deepEqual(result, [
+      { c1: 'A', c2: 'B', f: 1, r: 'strong-ab' },
+      { c1: 'A', c2: 'X', f: 0, r: 'cjkvi/non-cognate' },
+      { c1: 'B', c2: 'C', f: 1, r: 'strong-bc' },
+      { c1: 'C', c2: 'Y', f: 0, r: 'kStrange_I' },
+    ])
+    assert.deepEqual(
+      mojidata.queryCalls.map((call) => JSON.parse(String(call.params?.['@args']))),
+      [['A'], ['A'], ['A'], ['B'], ['B'], ['B'], ['C'], ['C'], ['C']],
+    )
   })
 
   test('idsfindDebugQuery uses tokenized idslist in the idsfind executor', async () => {

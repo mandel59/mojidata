@@ -1,18 +1,34 @@
 import { execFileSync } from "node:child_process"
+import { createHash } from "node:crypto"
 import fs from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import { pathToFileURL } from "node:url"
 const rootDir = path.resolve(import.meta.dirname, "..")
+const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
 
 function printUsage() {
   console.log(`Usage: node ./scripts/prepare-mojidata-d1-import.mjs [--output-dir /tmp/mojidata-d1-import]
+       [--mojidata-db /path/to/moji.db --idsfind-db /path/to/idsfind.db]
 
 Builds the SQLite assets if needed and writes sanitized SQL dumps that can be
-imported into Cloudflare D1.`)
+imported into Cloudflare D1. Pass both database paths to use already-built,
+externally verified artifacts without rebuilding workspace packages.`)
 }
 
-function parseArgs(argv) {
+function readOptionValue(argv, index) {
+  const flag = argv[index]
+  const value = argv[index + 1]
+  if (!value || value.startsWith("--")) {
+    throw new Error(`${flag} requires a value`)
+  }
+  return value
+}
+
+export function parseArgs(argv) {
   let outputDir = path.join(os.tmpdir(), "mojidata-d1-import")
+  let mojidataDb
+  let idsfindDb
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index]
     if (arg === "--") {
@@ -23,13 +39,30 @@ function parseArgs(argv) {
       process.exit(0)
     }
     if (arg === "--output-dir") {
-      outputDir = argv[index + 1]
+      outputDir = readOptionValue(argv, index)
+      index += 1
+      continue
+    }
+    if (arg === "--mojidata-db") {
+      mojidataDb = readOptionValue(argv, index)
+      index += 1
+      continue
+    }
+    if (arg === "--idsfind-db") {
+      idsfindDb = readOptionValue(argv, index)
       index += 1
       continue
     }
     throw new Error(`Unknown argument: ${arg}`)
   }
-  return { outputDir: path.resolve(outputDir) }
+  if (Boolean(mojidataDb) !== Boolean(idsfindDb)) {
+    throw new Error("--mojidata-db and --idsfind-db must be provided together")
+  }
+  return {
+    outputDir: path.resolve(outputDir),
+    mojidataDb: mojidataDb ? path.resolve(mojidataDb) : undefined,
+    idsfindDb: idsfindDb ? path.resolve(idsfindDb) : undefined,
+  }
 }
 
 function run(command, args, cwd = rootDir) {
@@ -44,7 +77,7 @@ function preparePackage(packageDir) {
 }
 
 function dumpSqliteDatabase(dbPath) {
-  return execFileSync("sqlite3", [dbPath, ".dump"], {
+  return execFileSync(sqlite3Command, [dbPath, ".dump"], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -52,7 +85,7 @@ function dumpSqliteDatabase(dbPath) {
 }
 
 function querySqlite(dbPath, sql) {
-  return execFileSync("sqlite3", [dbPath, sql], {
+  return execFileSync(sqlite3Command, [dbPath, sql], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -61,7 +94,7 @@ function querySqlite(dbPath, sql) {
 
 function dumpTableAsInsertStatements(dbPath, tableName) {
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [dbPath, "-cmd", `.mode insert ${tableName}`, `SELECT * FROM "${tableName}";`],
     {
       cwd: rootDir,
@@ -71,12 +104,13 @@ function dumpTableAsInsertStatements(dbPath, tableName) {
   )
 }
 
-function listTables(dbPath, globPattern) {
+function listSqliteRelations(dbPath, globPattern, types) {
+  const typeList = types.map(encodeSqliteStringLiteral).join(", ")
   return execFileSync(
-    "sqlite3",
+    sqlite3Command,
     [
       dbPath,
-      `SELECT name FROM sqlite_schema WHERE type = 'table' AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
+      `SELECT name FROM sqlite_schema WHERE type IN (${typeList}) AND name GLOB ${encodeSqliteStringLiteral(globPattern)} ORDER BY name`,
     ],
     {
       cwd: rootDir,
@@ -86,6 +120,14 @@ function listTables(dbPath, globPattern) {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
+}
+
+function listTables(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table"])
+}
+
+function listTablesAndViews(dbPath, globPattern) {
+  return listSqliteRelations(dbPath, globPattern, ["table", "view"])
 }
 
 function decodeSqliteUnistrLiteral(value) {
@@ -110,9 +152,8 @@ function replaceUnsupportedFunctionsForD1(text) {
   )
 }
 
-function buildUnihanMaterializationStatements(sourceDbPath) {
-  const propertyTables = listTables(sourceDbPath, "unihan_k*")
-  if (propertyTables.length === 0) {
+export function buildUnihanMaterializationStatementsFromRelations(relations) {
+  if (relations.length === 0) {
     return ""
   }
 
@@ -127,7 +168,7 @@ function buildUnihanMaterializationStatements(sourceDbPath) {
     `CREATE INDEX "unihan_property_value" ON "unihan" ("property", "value");`,
   ]
 
-  for (const tableName of propertyTables) {
+  for (const tableName of relations) {
     const property = tableName.slice("unihan_".length)
     lines.push(
       `INSERT INTO "unihan" ("UCS", "property", "value") ` +
@@ -246,8 +287,8 @@ function buildMjsmMaterializationStatements(sourceDbPath) {
   return `${lines.join("\n")}\n`
 }
 
-function buildUnihanVariantMaterializationStatements(sourceDbPath) {
-  const tables = new Set(listTables(sourceDbPath, "unihan_k*"))
+export function buildUnihanVariantMaterializationStatementsFromRelations(relations) {
+  const tables = new Set(relations)
   const sources = [
     ["kCompatibilityVariant", `SELECT UCS, value FROM "unihan_kCompatibilityVariant"`],
     ["kSemanticVariant", `SELECT UCS, value FROM "unihan_kSemanticVariant"`],
@@ -297,9 +338,13 @@ function buildUnihanVariantMaterializationStatements(sourceDbPath) {
       `SELECT`,
       `  "UCS",`,
       `  "property",`,
-      `  (`,
-      `    SELECT char(sum((unicode(json_extract('"\\\\u01' || e.value || '"', '$')) & 0xFF) << (8 * (2 - e.key))))`,
-      `    FROM json_each(json_array(substr(value_hex, 1, 2), substr(value_hex, 3, 2), substr(value_hex, 5, 2))) AS e`,
+      `  char(`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 1, 1)) - 1) * 1048576 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 2, 1)) - 1) * 65536 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 3, 1)) - 1) * 4096 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 4, 1)) - 1) * 256 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 5, 1)) - 1) * 16 +`,
+      `    (instr('0123456789ABCDEF', substr(value_hex, 6, 1)) - 1)`,
       `  ) AS "value",`,
       `  "additional_data"`,
       `FROM t;`,
@@ -307,6 +352,18 @@ function buildUnihanVariantMaterializationStatements(sourceDbPath) {
   }
 
   return `${lines.join("\n")}\n`
+}
+
+export function buildUnihanMaterializationStatements(sourceDbPath) {
+  return buildUnihanMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
+}
+
+function buildUnihanVariantMaterializationStatements(sourceDbPath) {
+  return buildUnihanVariantMaterializationStatementsFromRelations(
+    listTablesAndViews(sourceDbPath, "unihan_k*"),
+  )
 }
 
 function buildUnihanSourceMaterializationStatements(sourceDbPath) {
@@ -467,11 +524,17 @@ function buildIdsdbFts5ImportSql(sourceDbPath) {
   ].join("\n")
 }
 
+export function isIdsfindDbPath(sourceDbPath) {
+  return ["idsfind.db", "idsfind-fts5.db"].includes(
+    sourceDbPath.split(/[\\/]/).at(-1),
+  )
+}
+
 function writeDumpFile(sourceDbPath, outputPath) {
   if (!fs.existsSync(sourceDbPath)) {
     throw new Error(`Missing SQLite database file: ${sourceDbPath}`)
   }
-  const sanitized = sourceDbPath.endsWith("/idsfind.db")
+  const sanitized = isIdsfindDbPath(sourceDbPath)
     ? buildIdsdbFts5ImportSql(sourceDbPath)
     : sanitizeDumpForD1(dumpSqliteDatabase(sourceDbPath), { sourceDbPath })
   fs.writeFileSync(outputPath, sanitized)
@@ -492,23 +555,31 @@ function writeManifest(outputDir, entries) {
   )
 }
 
-function main() {
-  const { outputDir } = parseArgs(process.argv.slice(2))
+function fileSha256(filePath) {
+  return createHash("sha256").update(fs.readFileSync(filePath)).digest("hex")
+}
 
-  preparePackage(path.join(rootDir, "packages/mojidata"))
-  preparePackage(path.join(rootDir, "packages/idsdb-fts5"))
+function main() {
+  const { outputDir, mojidataDb, idsfindDb } = parseArgs(process.argv.slice(2))
+
+  if (!mojidataDb) {
+    preparePackage(path.join(rootDir, "packages/mojidata"))
+    preparePackage(path.join(rootDir, "packages/idsdb-fts5"))
+  }
 
   fs.mkdirSync(outputDir, { recursive: true })
 
   const dumpTargets = [
     {
       name: "mojidata",
-      sourceDbPath: path.join(rootDir, "packages/mojidata/dist/moji.db"),
+      sourceDbPath:
+        mojidataDb ?? path.join(rootDir, "packages/mojidata/dist/moji.db"),
       outputPath: path.join(outputDir, "mojidata.sql"),
     },
     {
       name: "idsdb-fts5",
-      sourceDbPath: path.join(rootDir, "packages/idsdb-fts5/idsfind.db"),
+      sourceDbPath:
+        idsfindDb ?? path.join(rootDir, "packages/idsdb-fts5/idsfind.db"),
       outputPath: path.join(outputDir, "idsdb-fts5.sql"),
     },
   ]
@@ -520,14 +591,24 @@ function main() {
 
   writeManifest(
     outputDir,
-    dumpTargets.map(({ name, sourceDbPath, outputPath }) => ({
-      name,
-      sourceDbPath,
-      outputPath,
-    })),
+    dumpTargets.map(({ name, sourceDbPath, outputPath }) => {
+      const sourceStat = fs.statSync(sourceDbPath)
+      const outputStat = fs.statSync(outputPath)
+      return {
+        name,
+        sourceDbPath,
+        sourceByteLength: sourceStat.size,
+        sourceSha256: fileSha256(sourceDbPath),
+        outputPath,
+        outputByteLength: outputStat.size,
+        outputSha256: fileSha256(outputPath),
+      }
+    }),
   )
 
   console.log(`Wrote D1 import dumps to ${outputDir}`)
 }
 
-main()
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main()
+}

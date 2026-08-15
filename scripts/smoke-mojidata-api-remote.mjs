@@ -97,6 +97,20 @@ const cases = [
     },
   },
   {
+    name: "mojidata-variants",
+    pathname: "/api/v1/mojidata-variants",
+    query: { char: ["漢", "漢"] },
+    assert(json) {
+      assert.deepEqual(json.query, { char: ["漢", "漢"] })
+      assert.ok(Array.isArray(json.results))
+      assert.ok(json.results.some((row) =>
+        row.c1 === "漢" &&
+        row.c2 === "漢" &&
+        row.f === 1 &&
+        row.r === "kCompatibilityVariant"))
+    },
+  },
+  {
     name: "idsfind",
     pathname: "/api/v1/idsfind",
     query: { ids: "⿰亻言", limit: 20 },
