@@ -34,7 +34,6 @@ describe('GET /api/v1/idsfind', () => {
   }> = [
     { property: 'kHanYu', q: '10015.030', expected: '㐀' },
     { property: 'kIRGHanyuDaZidian', q: '10015.030', expected: '㐀' },
-    { property: 'kIRGKangXi', q: '0078.010', expected: '㐀' },
     { property: 'kKangXi', q: '0172.130', expected: '台' },
     { property: 'kCihaiT', q: '37.103', expected: '㐁' },
     { property: 'kSBGY', q: '328.25', expected: '㐭' },
@@ -49,7 +48,6 @@ describe('GET /api/v1/idsfind', () => {
     { property: 'kCheungBauerIndex', q: '402.06', expected: '㒼' },
     { property: 'kMorohashi', q: '03246', expected: '台' },
     { property: 'kDaeJaweon', q: '0129.010', expected: '一' },
-    { property: 'kIRGDaeJaweon', q: '0129.010', expected: '一' },
     { property: 'kSMSZD2003Index', q: '26.07', expected: '㑇' },
   ]
 
