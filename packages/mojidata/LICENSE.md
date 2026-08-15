@@ -54,7 +54,7 @@ for the human readable summary: https://creativecommons.org/licenses/by-sa/2.1/j
 
 ## Unicode Data Files
 
-Copyright © 1991-2024 Unicode, Inc. All rights reserved.
+Copyright © 1991-2026 Unicode, Inc. All rights reserved.
 
 Unicode Data Files are available under the Unicode License v3 (Unicode-3.0).  
 See [licenses/unicode.txt](licenses/unicode.txt)
