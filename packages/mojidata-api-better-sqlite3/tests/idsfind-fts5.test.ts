@@ -45,6 +45,25 @@ function createCompositeLiteralFixture(
   }
 }
 
+function createProfileFixture(
+  semanticsProfile: string,
+  recipeSha256: string | null,
+  ftsModule: FtsModule,
+) {
+  const fixture = createCompositeLiteralFixture(undefined, ftsModule)
+  fixture.db.exec(`
+    CREATE TABLE idsfind_semantics (
+      schema_version INTEGER PRIMARY KEY,
+      semantics_profile TEXT NOT NULL,
+      recipe_sha256 TEXT
+    );
+  `)
+  fixture.db.prepare(
+    "INSERT INTO idsfind_semantics VALUES (2, ?, ?)",
+  ).run(semanticsProfile, recipeSha256)
+  return fixture
+}
+
 describe("idsfind query compatibility", () => {
   test("supports the rowid-based idsfind query against FTS5", async () => {
     const db = new Database(":memory:")
@@ -122,6 +141,33 @@ describe("idsfind query compatibility", () => {
         )
       } finally {
         legacy.db.close()
+      }
+    })
+
+    test(`uses registered schema 2 semantics profiles with ${ftsModule}`, async () => {
+      const raw = createProfileFixture(
+        "idsflow-records@1",
+        "0".repeat(64),
+        ftsModule,
+      )
+      try {
+        assert.deepEqual(await raw.idsfind(["§明§"]), [])
+      } finally {
+        raw.db.close()
+      }
+
+      const decomposed = createProfileFixture(
+        "idsflow-decompose@1",
+        "1".repeat(64),
+        ftsModule,
+      )
+      try {
+        assert.deepEqual(
+          (await decomposed.idsfind(["§明§"])).toSorted(),
+          ["X", "明"],
+        )
+      } finally {
+        decomposed.db.close()
       }
     })
   }
@@ -212,19 +258,75 @@ describe("idsfind query compatibility", () => {
     db.close()
   })
 
+  test("rejects unknown schema 2 semantics profiles and invalid recipe identities", async () => {
+    for (const manifestCase of [
+      {
+        profile: "future-profile@1",
+        recipeSha256: "0".repeat(64),
+        error: /unsupported IDS query semantics profile/,
+      },
+      {
+        profile: "idsflow-records@1",
+        recipeSha256: "not-a-sha256",
+        error: /invalid recipe identity/,
+      },
+    ]) {
+      const fixture = createProfileFixture(
+        manifestCase.profile,
+        manifestCase.recipeSha256,
+        "fts5",
+      )
+      try {
+        await assert.rejects(
+          fixture.idsfind(["日"]),
+          manifestCase.error,
+        )
+      } finally {
+        fixture.db.close()
+      }
+    }
+
+    const missingIdentity = new Database(":memory:")
+    try {
+      missingIdentity.exec(`
+        CREATE TABLE idsfind_semantics (
+          schema_version INTEGER PRIMARY KEY,
+          semantics_profile TEXT NOT NULL
+        );
+        INSERT INTO idsfind_semantics VALUES (2, 'idsflow-records@1');
+      `)
+      const idsfind = createIdsfind(async () =>
+        createBetterSqlite3Executor(missingIdentity)
+      )
+      await assert.rejects(
+        idsfind(["日"]),
+        /has no recipe identity field/,
+      )
+    } finally {
+      missingIdentity.close()
+    }
+  })
+
   test("rejects incomplete semantics manifests", async () => {
     const cases = [
       {
         label: "missing schema 1 row",
         insert: "",
-        error: /schema 1 has no query plan/,
+        error: /has no manifest row/,
       },
       {
         label: "unsupported schema version",
         insert: `INSERT INTO idsfind_semantics VALUES (
+          3, '{"version":1,"transforms":[]}'
+        );`,
+        error: /unsupported idsfind_semantics schema version: 3/,
+      },
+      {
+        label: "schema 2 row in an old table shape",
+        insert: `INSERT INTO idsfind_semantics VALUES (
           2, '{"version":1,"transforms":[]}'
         );`,
-        error: /schema 1 has no query plan/,
+        error: /schema 2 has no semantics profile/,
       },
       {
         label: "invalid query plan JSON",

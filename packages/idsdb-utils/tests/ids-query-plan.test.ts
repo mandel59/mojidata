@@ -4,6 +4,7 @@ import test from "node:test"
 import {
     compileIdsQueryPlan,
     decomposedIdsQueryPlan,
+    getRegisteredIdsQueryPlan,
     identityIdsQueryPlan,
     legacyIdsQueryPlan,
     parseIdsQueryPlan,
@@ -31,6 +32,21 @@ test("compiles syntax and resolution stages", () => {
         ],
     )
     assert.equal(decomposed.resolveMaterializedComponents, true)
+})
+
+test("maps only registered semantics profiles to query plans", () => {
+    assert.equal(
+        getRegisteredIdsQueryPlan("idsflow-records@1"),
+        identityIdsQueryPlan,
+    )
+    assert.equal(
+        getRegisteredIdsQueryPlan("idsflow-decompose@1"),
+        decomposedIdsQueryPlan,
+    )
+    assert.throws(
+        () => getRegisteredIdsQueryPlan("future-profile@1"),
+        /unsupported IDS query semantics profile/,
+    )
 })
 
 test("keeps the legacy database plan explicit", () => {

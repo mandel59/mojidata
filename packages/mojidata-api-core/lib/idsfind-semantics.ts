@@ -1,4 +1,5 @@
 import {
+  getRegisteredIdsQueryPlan,
   legacyIdsQueryPlan,
   parseIdsQueryPlan,
   type IdsQueryPlan,
@@ -18,12 +19,39 @@ async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
     // Databases built before the semantics manifest used both legacy stages.
     return legacyIdsQueryPlan
   }
-  const row = await db.queryOne<{ query_plan_json?: unknown }>(`
-    SELECT query_plan_json
+  const row = await db.queryOne<Record<string, unknown>>(`
+    SELECT *
     FROM idsfind_semantics
-    WHERE schema_version = 1
+    ORDER BY schema_version DESC
+    LIMIT 1
   `)
-  if (typeof row?.query_plan_json !== "string") {
+  if (!row) {
+    throw new Error("idsfind_semantics has no manifest row")
+  }
+  if (row.schema_version === 2) {
+    if (typeof row.semantics_profile !== "string") {
+      throw new Error("idsfind_semantics schema 2 has no semantics profile")
+    }
+    if (!Object.prototype.hasOwnProperty.call(row, "recipe_sha256")) {
+      throw new Error("idsfind_semantics schema 2 has no recipe identity field")
+    }
+    if (
+      row.recipe_sha256 !== null &&
+      (
+        typeof row.recipe_sha256 !== "string" ||
+        !/^[0-9a-f]{64}$/u.test(row.recipe_sha256)
+      )
+    ) {
+      throw new Error("idsfind_semantics schema 2 has invalid recipe identity")
+    }
+    return getRegisteredIdsQueryPlan(row.semantics_profile)
+  }
+  if (row.schema_version !== 1) {
+    throw new Error(
+      `unsupported idsfind_semantics schema version: ${String(row.schema_version)}`,
+    )
+  }
+  if (typeof row.query_plan_json !== "string") {
     throw new Error("idsfind_semantics schema 1 has no query plan")
   }
   let value: unknown

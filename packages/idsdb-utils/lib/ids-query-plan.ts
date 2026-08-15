@@ -37,6 +37,26 @@ export const legacyIdsQueryPlan: IdsQueryPlan = {
     ],
 }
 
+export const idsQuerySemanticsProfiles = {
+    records: "idsflow-records@1",
+    decompose: "idsflow-decompose@1",
+} as const
+
+export type IdsQuerySemanticsProfile =
+    typeof idsQuerySemanticsProfiles[keyof typeof idsQuerySemanticsProfiles]
+
+export function getRegisteredIdsQueryPlan(
+    profile: unknown,
+): IdsQueryPlan {
+    if (profile === idsQuerySemanticsProfiles.records) {
+        return identityIdsQueryPlan
+    }
+    if (profile === idsQuerySemanticsProfiles.decompose) {
+        return decomposedIdsQueryPlan
+    }
+    throw new Error(`unsupported IDS query semantics profile: ${String(profile)}`)
+}
+
 function mapping(value: unknown, at: string): Record<string, unknown> {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
         throw new Error(`${at} must be a mapping`)

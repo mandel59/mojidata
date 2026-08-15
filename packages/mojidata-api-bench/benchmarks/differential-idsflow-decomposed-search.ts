@@ -133,14 +133,13 @@ async function actualMatch(testCase: TestCase, ftsModule: FtsModule): Promise<bo
       CREATE VIRTUAL TABLE idsfind_fts USING ${ftsDefinition};
       CREATE TABLE idsfind_semantics (
         schema_version INTEGER PRIMARY KEY,
-        query_plan_json TEXT NOT NULL
+        semantics_profile TEXT NOT NULL,
+        recipe_sha256 TEXT
       );
       INSERT INTO idsfind_semantics VALUES (
-        1,
-        '{"version":1,"transforms":[
-          {"op":"expand-overlaid","version":1},
-          {"op":"resolve-materialized-components","version":1}
-        ]}'
+        2,
+        'idsflow-decompose@1',
+        '0000000000000000000000000000000000000000000000000000000000000000'
       );
     `)
     const insertIds = db.prepare(

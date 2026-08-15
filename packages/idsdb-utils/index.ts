@@ -11,10 +11,13 @@ export {
     compileIdsQueryPlan,
     decomposedIdsQueryPlan,
     identityIdsQueryPlan,
+    getRegisteredIdsQueryPlan,
+    idsQuerySemanticsProfiles,
     legacyIdsQueryPlan,
     parseIdsQueryPlan,
     type CompiledIdsQueryPlan,
     type IdsQueryPlan,
+    type IdsQuerySemanticsProfile,
     type IdsQueryTransform,
 } from "./lib/ids-query-plan"
 export {
