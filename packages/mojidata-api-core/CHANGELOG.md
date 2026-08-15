@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.9.3
+
+### Patch Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`d272a29`](https://github.com/mandel59/mojidata/commit/d272a29bad0038622b704d5f045664957ea5a77a) Thanks [@mandel59](https://github.com/mandel59)! - Split variant-relation expansion into D1-safe query batches while preserving transitive search semantics.
+
 ## 1.9.2
 
 ### Patch Changes
