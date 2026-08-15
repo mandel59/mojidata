@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.9.2
+
+### Patch Changes
+
+- [#54](https://github.com/mandel59/mojidata/pull/54) [`6c643c7`](https://github.com/mandel59/mojidata/commit/6c643c70a069bb6aae087b1998ad9d31676e89b9) Thanks [@mandel59](https://github.com/mandel59)! - Compile IDS exact-match audit patterns before scanning candidates and avoid
+  asynchronous work inside the matcher hot loop.
+
 ## 1.9.1
 
 ### Patch Changes
