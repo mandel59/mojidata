@@ -13,6 +13,7 @@ export {
   wholeLiteralScanIdsfindCandidateProvider,
   type CreateIdsfindOptions,
   type IdsfindCandidateProvider,
+  type IdsfindPhaseTiming,
   type IdsfindQueryPolicy,
 } from "./lib/idsfind-sql"
 export {

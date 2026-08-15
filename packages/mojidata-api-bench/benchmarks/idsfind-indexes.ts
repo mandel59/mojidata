@@ -14,6 +14,7 @@ import {
   wholeLiteralIdsfindCandidateProvider,
   wholeLiteralScanIdsfindCandidateProvider,
   type IdsfindCandidateProvider,
+  type IdsfindPhaseTiming,
 } from "@mandel59/mojidata-api-core"
 import { getIdsQueryPlan } from "@mandel59/mojidata-api-core/lib/idsfind-semantics"
 import { tokenizeIdsList } from "@mandel59/mojidata-api-core/lib/idsfind-tokenize"
@@ -78,7 +79,10 @@ type Options = {
 }
 
 type Samples = {
+  compileMs: number[]
   candidateMs: number[]
+  exactAuditMs: number[]
+  totalMs: number[]
   endToEndMs: number[]
   endToEndCandidateMs: number[]
   exactAndFetchMs: number[]
@@ -87,7 +91,11 @@ type Samples = {
 type Target = {
   name: TargetName
   getCandidates: (ids: string[]) => Promise<string[]>
-  search: (ids: string[]) => Promise<{ results: string[]; candidateMs: number }>
+  search: (ids: string[]) => Promise<{
+    results: string[]
+    candidateMs: number
+    timing: IdsfindPhaseTiming
+  }>
 }
 
 type Task = {
@@ -96,7 +104,7 @@ type Task = {
 }
 
 const require = createRequire(__filename)
-const formatVersion = 1
+const formatVersion = 2
 
 function parseIntegerOption(value: string | undefined, fallback: number, name: string) {
   if (value === undefined) return fallback
@@ -396,6 +404,7 @@ async function createTarget(
 ): Promise<Target> {
   const getDb = createBetterSqlite3ExecutorProvider(dbPath, options)
   let lastCandidateMs = Number.NaN
+  let lastTiming: IdsfindPhaseTiming | undefined
   const timedProvider: IdsfindCandidateProvider = {
     async getCandidates(db, idslist, sourceIdslist, policy) {
       const startedAt = performance.now()
@@ -409,7 +418,11 @@ async function createTarget(
       return candidates
     },
   }
-  const idsfind = createIdsfind(getDb, timedProvider)
+  const idsfind = createIdsfind(getDb, timedProvider, {
+    onTiming(timing) {
+      lastTiming = timing
+    },
+  })
   return {
     name,
     async getCandidates(ids) {
@@ -427,11 +440,12 @@ async function createTarget(
     },
     async search(ids) {
       lastCandidateMs = Number.NaN
+      lastTiming = undefined
       const results = await idsfind(ids)
-      if (!Number.isFinite(lastCandidateMs)) {
+      if (!Number.isFinite(lastCandidateMs) || !lastTiming) {
         throw new Error(name + " candidate timing was not recorded")
       }
-      return { results, candidateMs: lastCandidateMs }
+      return { results, candidateMs: lastCandidateMs, timing: lastTiming }
     },
   }
 }
@@ -479,6 +493,7 @@ async function createIntersectionTarget(
   const bvecDb = createBetterSqlite3ExecutorProvider(bvecPath)
   const bvecProvider = createBvecIdsfindCandidateProvider()
   let lastCandidateMs = Number.NaN
+  let lastTiming: IdsfindPhaseTiming | undefined
   const provider: IdsfindCandidateProvider = {
     async getCandidates(_db, idslist, sourceIdslist, policy) {
       const startedAt = performance.now()
@@ -502,7 +517,11 @@ async function createIntersectionTarget(
       return candidates
     },
   }
-  const idsfind = createIdsfind(fts5Db, provider)
+  const idsfind = createIdsfind(fts5Db, provider, {
+    onTiming(timing) {
+      lastTiming = timing
+    },
+  })
   return {
     name: "intersection",
     async getCandidates(ids) {
@@ -520,11 +539,12 @@ async function createIntersectionTarget(
     },
     async search(ids) {
       lastCandidateMs = Number.NaN
+      lastTiming = undefined
       const results = await idsfind(ids)
-      if (!Number.isFinite(lastCandidateMs)) {
+      if (!Number.isFinite(lastCandidateMs) || !lastTiming) {
         throw new Error("intersection candidate timing was not recorded")
       }
-      return { results, candidateMs: lastCandidateMs }
+      return { results, candidateMs: lastCandidateMs, timing: lastTiming }
     },
   }
 }
@@ -537,7 +557,10 @@ function sameSet(left: string[], right: string[]) {
 
 function createEmptySamples(): Samples {
   return {
+    compileMs: [],
     candidateMs: [],
+    exactAuditMs: [],
+    totalMs: [],
     endToEndMs: [],
     endToEndCandidateMs: [],
     exactAndFetchMs: [],
@@ -601,7 +624,10 @@ function createPayload(
       seedFrom(options.seed, key + ":" + name)
     return {
       candidateCount: count.candidateCount,
+      compile: phase(values.compileMs, phaseSeed("compile")),
       candidate: phase(values.candidateMs, phaseSeed("candidate")),
+      exactAudit: phase(values.exactAuditMs, phaseSeed("exactAudit")),
+      total: phase(values.totalMs, phaseSeed("total")),
       endToEnd: phase(values.endToEndMs, phaseSeed("endToEnd")),
       endToEndCandidate: phase(
         values.endToEndCandidateMs,
@@ -667,8 +693,8 @@ function printTable(
     "Iterations: " + result.iterations + ", warmup: " + result.warmupIterations +
       ", seed: " + result.seed,
     "",
-    "| Case | Index | Candidates | Results | Candidate p50 | End-to-end p50 | Exact/fetch p50 |",
-    "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+    "| Case | Index | Candidates | Results | Compile p50 | Candidate p50 | Exact audit p50 | Total p50 |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
   ]
   for (const entry of result.results) {
     for (const target of targetNames) {
@@ -676,9 +702,10 @@ function printTable(
       lines.push(
         "| " + entry.name + " | " + target + " | " + measurement.candidateCount +
           " | " + entry.resultCount + " | " +
+          formatMs(measurement.compile.summary.p50Ms) + " | " +
           formatMs(measurement.candidate.summary.p50Ms) + " | " +
-          formatMs(measurement.endToEnd.summary.p50Ms) + " | " +
-          formatMs(measurement.exactAndFetch.summary.p50Ms) + " |",
+          formatMs(measurement.exactAudit.summary.p50Ms) + " | " +
+          formatMs(measurement.total.summary.p50Ms) + " |",
       )
     }
   }
@@ -875,6 +902,9 @@ async function main() {
     const search = await target.search(benchmarkCase.ids)
     const endToEndMs = performance.now() - startedAt
     values.endToEndMs.push(endToEndMs)
+    values.compileMs.push(search.timing.compileMs)
+    values.exactAuditMs.push(search.timing.exactAuditMs)
+    values.totalMs.push(search.timing.totalMs)
     values.endToEndCandidateMs.push(search.candidateMs)
     if (options.embeddedCandidateTiming) {
       values.candidateMs.push(search.candidateMs)

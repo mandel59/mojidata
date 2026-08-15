@@ -320,6 +320,14 @@ function postaudit(
 export interface CreateIdsfindOptions {
   allowExperimentalQueryPlan?: boolean
   requireRegisteredQuerySemantics?: boolean
+  onTiming?: (timing: IdsfindPhaseTiming) => void
+}
+
+export interface IdsfindPhaseTiming {
+  compileMs: number
+  candidateMs: number
+  exactAuditMs: number
+  totalMs: number
 }
 
 export function createIdsfind(
@@ -328,11 +336,13 @@ export function createIdsfind(
   options: CreateIdsfindOptions = {},
 ) {
   return async (idslist: string[]): Promise<string[]> => {
+    const totalStartedAt = options.onTiming ? performance.now() : undefined
     const db = await getDb()
     const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db, {
       allowExperimental: options.allowExperimentalQueryPlan,
       requireRegisteredSchema3: options.requireRegisteredQuerySemantics,
     }))
+    const compileFinishedAt = options.onTiming ? performance.now() : undefined
     const policy: IdsfindQueryPolicy = {
       resolveMaterializedComponents: tokenized.resolveMaterializedComponents,
     }
@@ -374,12 +384,14 @@ export function createIdsfind(
     }
 
     const out: string[] = []
+    const candidateStartedAt = options.onTiming ? performance.now() : undefined
     const candidates = await candidateProvider.getCandidates(
       db,
       tokenized.forQuery,
       tokenized.forAudit,
       policy,
     )
+    const candidateFinishedAt = options.onTiming ? performance.now() : undefined
     await prefetchIDSTokens([
       ...candidates,
       ...(policy.resolveMaterializedComponents
@@ -395,6 +407,21 @@ export function createIdsfind(
       if (postaudit(ucs, compiledAudit, getIDSTokensForUcs)) {
         out.push(ucs)
       }
+    }
+    if (
+      options.onTiming &&
+      totalStartedAt !== undefined &&
+      compileFinishedAt !== undefined &&
+      candidateStartedAt !== undefined &&
+      candidateFinishedAt !== undefined
+    ) {
+      const totalFinishedAt = performance.now()
+      options.onTiming({
+        compileMs: compileFinishedAt - totalStartedAt,
+        candidateMs: candidateFinishedAt - candidateStartedAt,
+        exactAuditMs: totalFinishedAt - candidateFinishedAt,
+        totalMs: totalFinishedAt - totalStartedAt,
+      })
     }
     return out
   }
