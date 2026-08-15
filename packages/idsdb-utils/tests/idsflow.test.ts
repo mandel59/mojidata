@@ -62,7 +62,10 @@ test("selects, unions, and describes explicit decomposition", () => {
             { op: "resolve-materialized-components", version: 1 },
         ],
     })
-    assert.equal(loaded.querySemanticsProfile, "idsflow-decompose@1")
+    assert.deepEqual(loaded.querySemantics, {
+        mode: "registered",
+        profile: "idsflow-decompose@1",
+    })
 })
 
 test("allows records to remain unexpanded", () => {
@@ -76,7 +79,10 @@ test("allows records to remain unexpanded", () => {
         records: inputs.babelstone.records,
     })
     assert.deepEqual(loaded.queryPlan, { version: 1, transforms: [] })
-    assert.equal(loaded.querySemanticsProfile, "idsflow-records@1")
+    assert.deepEqual(loaded.querySemantics, {
+        mode: "registered",
+        profile: "idsflow-records@1",
+    })
 })
 
 test("rejects unknown keys and cyclic dataset references", () => {

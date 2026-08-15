@@ -64,7 +64,10 @@ test("reads, selects, unions, and separates roots from definitions", () => {
         ])
         assert.equal(loaded.output.expandZVariants, false)
         assert.equal(loaded.output.normalizeKdpvRadicalVariants, true)
-        assert.equal(loaded.querySemanticsProfile, "idsflow-decompose@1")
+        assert.deepEqual(loaded.querySemantics, {
+            mode: "registered",
+            profile: "idsflow-decompose@1",
+        })
         assert.match(loaded.recipeSha256, /^[0-9a-f]{64}$/)
     } finally {
         fs.rmSync(directory, { recursive: true, force: true })
@@ -97,7 +100,10 @@ test("allows neutral records to be output without recursive decomposition", () =
             { char: "\u660E", IDS: "\u2FF0\u65E5\u6708", idsDataSource: "chise", irgSource: null },
         ])
         assert.equal(loaded.inputReports[0].entries, 1)
-        assert.equal(loaded.querySemanticsProfile, "idsflow-records@1")
+        assert.deepEqual(loaded.querySemantics, {
+            mode: "registered",
+            profile: "idsflow-records@1",
+        })
     } finally {
         fs.rmSync(directory, { recursive: true, force: true })
     }

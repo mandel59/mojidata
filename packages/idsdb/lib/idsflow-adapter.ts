@@ -123,6 +123,6 @@ export function loadIdsFlowRecipe(
         recipePath,
         recipeSha256: createHash("sha256").update(text).digest("hex"),
         queryPlan: evaluated.queryPlan,
-        querySemanticsProfile: evaluated.querySemanticsProfile,
+        querySemantics: evaluated.querySemantics,
     }
 }

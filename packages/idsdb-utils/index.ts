@@ -17,6 +17,7 @@ export {
     parseIdsQueryPlan,
     type CompiledIdsQueryPlan,
     type IdsQueryPlan,
+    type IdsQuerySemantics,
     type IdsQuerySemanticsProfile,
     type IdsQueryTransform,
 } from "./lib/ids-query-plan"

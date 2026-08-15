@@ -11,6 +11,7 @@ import {
 } from "@mandel59/idsdb-utils"
 import { loadIdsFlowRecipe } from "./lib/idsflow-adapter"
 import { buildIdsfindBvec } from "./lib/idsfind-bvec-db"
+import { writeIdsfindSemanticsManifest } from "./lib/idsfind-semantics-manifest"
 
 type IdsfindIndexMode = "fts4" | "fts5" | "bvec"
 
@@ -113,8 +114,10 @@ async function main() {
     const idsFlowRecords = idsFlow?.output.kind === "records"
         ? idsFlow.output.records
         : idsFlowDecompose?.roots
-    const querySemanticsProfile = idsFlow?.querySemanticsProfile
-        ?? idsQuerySemanticsProfiles.decompose
+    const querySemantics = idsFlow?.querySemantics ?? {
+        mode: "registered" as const,
+        profile: idsQuerySemanticsProfiles.decompose,
+    }
     if (idsFlow) {
         dataSources = new Set(idsFlow.dataSources)
         expandZVariants = idsFlowDecompose?.expandZVariants ?? false
@@ -186,15 +189,9 @@ async function main() {
         idsFlow?.recipePath ?? null,
         idsFlow?.recipeSha256 ?? null,
     )
-    db.exec(`CREATE TABLE "idsfind_semantics" (
-        schema_version INTEGER PRIMARY KEY,
-        semantics_profile TEXT NOT NULL,
-        recipe_sha256 TEXT
-    )`)
-    db.prepare(`INSERT INTO idsfind_semantics (
-        schema_version, semantics_profile, recipe_sha256
-    ) VALUES (2, ?, ?)`).run(
-        querySemanticsProfile,
+    writeIdsfindSemanticsManifest(
+        db,
+        querySemantics,
         idsFlow?.recipeSha256 ?? null,
     )
     db.exec(`CREATE TEMPORARY TABLE "idsfind_temp" (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)`)

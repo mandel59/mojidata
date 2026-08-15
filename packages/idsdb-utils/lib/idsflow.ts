@@ -3,7 +3,7 @@ import {
     identityIdsQueryPlan,
     idsQuerySemanticsProfiles,
     type IdsQueryPlan,
-    type IdsQuerySemanticsProfile,
+    type IdsQuerySemantics,
 } from "./ids-query-plan"
 
 export type IdsFlowRecord = {
@@ -56,7 +56,7 @@ export type EvaluatedIdsFlow = {
     } | Omit<Decompose, "reports">
     dataSources: string[]
     queryPlan: IdsQueryPlan
-    querySemanticsProfile: IdsQuerySemanticsProfile
+    querySemantics: IdsQuerySemantics
     reports: IdsFlowReport[]
 }
 
@@ -235,9 +235,12 @@ export function evaluateIdsFlowRecipe(
         queryPlan: result.kind === "records"
             ? identityIdsQueryPlan
             : decomposedIdsQueryPlan,
-        querySemanticsProfile: result.kind === "records"
-            ? idsQuerySemanticsProfiles.records
-            : idsQuerySemanticsProfiles.decompose,
+        querySemantics: {
+            mode: "registered",
+            profile: result.kind === "records"
+                ? idsQuerySemanticsProfiles.records
+                : idsQuerySemanticsProfiles.decompose,
+        },
         reports: [...new Map(result.reports.map(report => [report.path, report])).values()],
     }
 }

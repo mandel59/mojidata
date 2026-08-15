@@ -320,10 +320,13 @@ function postaudit(
 export function createIdsfind(
   getDb: () => Promise<SqlExecutor>,
   candidateProvider: IdsfindCandidateProvider = ftsIdsfindCandidateProvider,
+  options: { allowExperimentalQueryPlan?: boolean } = {},
 ) {
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
-    const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
+    const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db, {
+      allowExperimental: options.allowExperimentalQueryPlan,
+    }))
     const policy: IdsfindQueryPolicy = {
       resolveMaterializedComponents: tokenized.resolveMaterializedComponents,
     }

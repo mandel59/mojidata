@@ -45,6 +45,16 @@ export const idsQuerySemanticsProfiles = {
 export type IdsQuerySemanticsProfile =
     typeof idsQuerySemanticsProfiles[keyof typeof idsQuerySemanticsProfiles]
 
+export type IdsQuerySemantics =
+    | {
+        mode: "registered"
+        profile: IdsQuerySemanticsProfile
+    }
+    | {
+        mode: "experimental"
+        queryPlan: IdsQueryPlan
+    }
+
 export function getRegisteredIdsQueryPlan(
     profile: unknown,
 ): IdsQueryPlan {

@@ -41,8 +41,38 @@ function createCompositeLiteralFixture(
   const executor = createBetterSqlite3Executor(db)
   return {
     db,
+    executor,
     idsfind: createIdsfind(async () => executor),
   }
+}
+
+function createSchema3Fixture(
+  mode: string,
+  profile: string | null,
+  queryPlan: object | string | null,
+  recipeSha256: string | null = "0".repeat(64),
+) {
+  const fixture = createCompositeLiteralFixture()
+  fixture.db.exec(`
+    CREATE TABLE idsfind_semantics (
+      schema_version INTEGER PRIMARY KEY,
+      semantics_mode TEXT NOT NULL,
+      semantics_profile TEXT,
+      query_plan_json TEXT,
+      recipe_sha256 TEXT
+    );
+  `)
+  fixture.db.prepare(
+    "INSERT INTO idsfind_semantics VALUES (3, ?, ?, ?, ?)",
+  ).run(
+    mode,
+    profile,
+    typeof queryPlan === "string"
+      ? queryPlan
+      : queryPlan === null ? null : JSON.stringify(queryPlan),
+    recipeSha256,
+  )
+  return fixture
 }
 
 function createProfileFixture(
@@ -120,7 +150,6 @@ describe("idsfind query compatibility", () => {
       const decomposed = createCompositeLiteralFixture({
         version: 1,
         transforms: [
-          { op: "expand-overlaid", version: 1 },
           { op: "resolve-materialized-components", version: 1 },
         ],
       }, ftsModule)
@@ -307,6 +336,78 @@ describe("idsfind query compatibility", () => {
     }
   })
 
+  test("requires explicit opt-in for experimental schema 3 query plans", async () => {
+    const fixture = createSchema3Fixture(
+      "experimental",
+      null,
+      {
+        version: 1,
+        transforms: [
+          { op: "expand-overlaid", version: 1 },
+          { op: "resolve-materialized-components", version: 1 },
+        ],
+      },
+    )
+    try {
+      await assert.rejects(
+        fixture.idsfind(["§明§"]),
+        /require explicit runtime opt-in/,
+      )
+      const experimentalIdsfind = createIdsfind(
+        async () => fixture.executor,
+        undefined,
+        { allowExperimentalQueryPlan: true },
+      )
+      assert.deepEqual(
+        (await experimentalIdsfind(["§明§"])).toSorted(),
+        ["X", "明"],
+      )
+    } finally {
+      fixture.db.close()
+    }
+  })
+
+  test("rejects invalid schema 3 tagged semantics", async () => {
+    const cases = [
+      {
+        fixture: createSchema3Fixture("future", null, null),
+        error: /unsupported IDS query semantics mode/,
+      },
+      {
+        fixture: createSchema3Fixture(
+          "registered",
+          "idsflow-records@1",
+          { version: 1, transforms: [] },
+        ),
+        error: /must not embed a query plan/,
+      },
+      {
+        fixture: createSchema3Fixture(
+          "experimental",
+          "idsflow-records@1",
+          { version: 1, transforms: [] },
+        ),
+        error: /must not use a profile/,
+      },
+      {
+        fixture: createSchema3Fixture("experimental", null, "{"),
+        error: /query plan is not valid JSON/,
+      },
+    ]
+    for (const manifestCase of cases) {
+      try {
+        const idsfind = createIdsfind(
+          async () => manifestCase.fixture.executor,
+          undefined,
+          { allowExperimentalQueryPlan: true },
+        )
+        await assert.rejects(idsfind(["日"]), manifestCase.error)
+      } finally {
+        manifestCase.fixture.db.close()
+      }
+    }
+  })
+
   test("rejects incomplete semantics manifests", async () => {
     const cases = [
       {
@@ -317,9 +418,9 @@ describe("idsfind query compatibility", () => {
       {
         label: "unsupported schema version",
         insert: `INSERT INTO idsfind_semantics VALUES (
-          3, '{"version":1,"transforms":[]}'
+          4, '{"version":1,"transforms":[]}'
         );`,
-        error: /unsupported idsfind_semantics schema version: 3/,
+        error: /unsupported idsfind_semantics schema version: 4/,
       },
       {
         label: "schema 2 row in an old table shape",

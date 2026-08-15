@@ -7,9 +7,17 @@ import {
 
 import type { SqlExecutor } from "./sql-executor"
 
-const queryPlanByDatabase = new WeakMap<SqlExecutor, Promise<IdsQueryPlan>>()
+export interface IdsQueryPlanLoadPolicy {
+  allowExperimental?: boolean
+}
 
-async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
+const queryPlanByDatabase =
+  new WeakMap<SqlExecutor, Map<boolean, Promise<IdsQueryPlan>>>()
+
+async function loadIdsQueryPlan(
+  db: SqlExecutor,
+  policy: IdsQueryPlanLoadPolicy,
+): Promise<IdsQueryPlan> {
   const table = await db.queryOne<{ name?: unknown }>(`
     SELECT name
     FROM sqlite_master
@@ -28,6 +36,38 @@ async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
   if (!row) {
     throw new Error("idsfind_semantics has no manifest row")
   }
+  if (row.schema_version === 3) {
+    if (!Object.prototype.hasOwnProperty.call(row, "recipe_sha256")) {
+      throw new Error("idsfind_semantics schema 3 has no recipe identity field")
+    }
+    validateRecipeIdentity(row.recipe_sha256, 3)
+    if (row.semantics_mode === "registered") {
+      if (typeof row.semantics_profile !== "string") {
+        throw new Error("idsfind_semantics schema 3 has no semantics profile")
+      }
+      if (row.query_plan_json !== null) {
+        throw new Error("registered IDS query semantics must not embed a query plan")
+      }
+      return getRegisteredIdsQueryPlan(row.semantics_profile)
+    }
+    if (row.semantics_mode === "experimental") {
+      if (!policy.allowExperimental) {
+        throw new Error(
+          "experimental IDS query semantics require explicit runtime opt-in",
+        )
+      }
+      if (row.semantics_profile !== null) {
+        throw new Error("experimental IDS query semantics must not use a profile")
+      }
+      if (typeof row.query_plan_json !== "string") {
+        throw new Error("experimental IDS query semantics have no query plan")
+      }
+      return parseQueryPlanJson(row.query_plan_json)
+    }
+    throw new Error(
+      `unsupported IDS query semantics mode: ${String(row.semantics_mode)}`,
+    )
+  }
   if (row.schema_version === 2) {
     if (typeof row.semantics_profile !== "string") {
       throw new Error("idsfind_semantics schema 2 has no semantics profile")
@@ -35,15 +75,7 @@ async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
     if (!Object.prototype.hasOwnProperty.call(row, "recipe_sha256")) {
       throw new Error("idsfind_semantics schema 2 has no recipe identity field")
     }
-    if (
-      row.recipe_sha256 !== null &&
-      (
-        typeof row.recipe_sha256 !== "string" ||
-        !/^[0-9a-f]{64}$/u.test(row.recipe_sha256)
-      )
-    ) {
-      throw new Error("idsfind_semantics schema 2 has invalid recipe identity")
-    }
+    validateRecipeIdentity(row.recipe_sha256, 2)
     return getRegisteredIdsQueryPlan(row.semantics_profile)
   }
   if (row.schema_version !== 1) {
@@ -54,20 +86,47 @@ async function loadIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
   if (typeof row.query_plan_json !== "string") {
     throw new Error("idsfind_semantics schema 1 has no query plan")
   }
+  return parseQueryPlanJson(row.query_plan_json)
+}
+
+function validateRecipeIdentity(value: unknown, schemaVersion: number) {
+  if (
+    value !== null &&
+    (
+      typeof value !== "string" ||
+      !/^[0-9a-f]{64}$/u.test(value)
+    )
+  ) {
+    throw new Error(
+      `idsfind_semantics schema ${schemaVersion} has invalid recipe identity`,
+    )
+  }
+}
+
+function parseQueryPlanJson(text: string): IdsQueryPlan {
   let value: unknown
   try {
-    value = JSON.parse(row.query_plan_json)
+    value = JSON.parse(text)
   } catch {
     throw new Error("idsfind_semantics query plan is not valid JSON")
   }
   return parseIdsQueryPlan(value)
 }
 
-export function getIdsQueryPlan(db: SqlExecutor): Promise<IdsQueryPlan> {
-  let plan = queryPlanByDatabase.get(db)
+export function getIdsQueryPlan(
+  db: SqlExecutor,
+  policy: IdsQueryPlanLoadPolicy = {},
+): Promise<IdsQueryPlan> {
+  let plans = queryPlanByDatabase.get(db)
+  if (!plans) {
+    plans = new Map()
+    queryPlanByDatabase.set(db, plans)
+  }
+  const allowExperimental = policy.allowExperimental === true
+  let plan = plans.get(allowExperimental)
   if (!plan) {
-    plan = loadIdsQueryPlan(db)
-    queryPlanByDatabase.set(db, plan)
+    plan = loadIdsQueryPlan(db, { allowExperimental })
+    plans.set(allowExperimental, plan)
   }
   return plan
 }
