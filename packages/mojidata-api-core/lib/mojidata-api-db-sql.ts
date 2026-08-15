@@ -1,5 +1,9 @@
 import type { MojidataApiDb } from "./mojidata-api-db"
-import { createIdsfind, type IdsfindCandidateProvider } from "./idsfind-sql"
+import {
+  createIdsfind,
+  type CreateIdsfindOptions,
+  type IdsfindCandidateProvider,
+} from "./idsfind-sql"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
 import { getIdsQueryPlan } from "./idsfind-semantics"
@@ -101,13 +105,19 @@ export function createSqlApiDb({
   getMojidataDb,
   getIdsfindDb,
   idsfindCandidateProvider,
+  idsfindOptions,
 }: {
   getMojidataDb: DbProvider
   getIdsfindDb: DbProvider
   idsfindCandidateProvider?: IdsfindCandidateProvider
+  idsfindOptions?: CreateIdsfindOptions
 }): MojidataApiDb {
   const { search, filterChars } = createLibSearch(getMojidataDb)
-  const idsfind = createIdsfind(getIdsfindDb, idsfindCandidateProvider)
+  const idsfind = createIdsfind(
+    getIdsfindDb,
+    idsfindCandidateProvider,
+    idsfindOptions,
+  )
   const shouldIncludeComputedField = (selection: string[], field: string) =>
     selection.length === 0 || selection.includes(field)
 

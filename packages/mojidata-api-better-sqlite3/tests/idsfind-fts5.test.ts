@@ -367,6 +367,102 @@ describe("idsfind query compatibility", () => {
     }
   })
 
+  test("can require a schema 3 registered semantics manifest", async () => {
+    const legacy = createCompositeLiteralFixture()
+    try {
+      assert.deepEqual(
+        (await legacy.idsfind(["§明§"])).toSorted(),
+        ["X", "明"],
+      )
+      const strictIdsfind = createIdsfind(
+        async () => legacy.executor,
+        undefined,
+        { requireRegisteredQuerySemantics: true },
+      )
+      await assert.rejects(
+        strictIdsfind(["§明§"]),
+        /strict IDS query semantics require a schema 3 registered manifest/,
+      )
+    } finally {
+      legacy.db.close()
+    }
+
+    const schema1 = createCompositeLiteralFixture({
+      version: 1,
+      transforms: [],
+    })
+    try {
+      const strictIdsfind = createIdsfind(
+        async () => schema1.executor,
+        undefined,
+        { requireRegisteredQuerySemantics: true },
+      )
+      await assert.rejects(
+        strictIdsfind(["§明§"]),
+        /strict IDS query semantics require a schema 3 registered manifest/,
+      )
+    } finally {
+      schema1.db.close()
+    }
+
+    const schema2 = createProfileFixture(
+      "idsflow-records@1",
+      "0".repeat(64),
+      "fts5",
+    )
+    try {
+      const strictIdsfind = createIdsfind(
+        async () => schema2.executor,
+        undefined,
+        { requireRegisteredQuerySemantics: true },
+      )
+      await assert.rejects(
+        strictIdsfind(["§明§"]),
+        /strict IDS query semantics require a schema 3 registered manifest/,
+      )
+    } finally {
+      schema2.db.close()
+    }
+
+    const registered = createSchema3Fixture(
+      "registered",
+      "idsflow-records@1",
+      null,
+    )
+    try {
+      const strictIdsfind = createIdsfind(
+        async () => registered.executor,
+        undefined,
+        { requireRegisteredQuerySemantics: true },
+      )
+      assert.deepEqual(await strictIdsfind(["§明§"]), [])
+    } finally {
+      registered.db.close()
+    }
+
+    const experimental = createSchema3Fixture(
+      "experimental",
+      null,
+      { version: 1, transforms: [] },
+    )
+    try {
+      const strictIdsfind = createIdsfind(
+        async () => experimental.executor,
+        undefined,
+        {
+          allowExperimentalQueryPlan: true,
+          requireRegisteredQuerySemantics: true,
+        },
+      )
+      await assert.rejects(
+        strictIdsfind(["§明§"]),
+        /strict IDS query semantics require a registered manifest/,
+      )
+    } finally {
+      experimental.db.close()
+    }
+  })
+
   test("rejects invalid schema 3 tagged semantics", async () => {
     const cases = [
       {

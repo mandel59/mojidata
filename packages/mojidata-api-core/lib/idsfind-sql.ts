@@ -317,15 +317,21 @@ function postaudit(
   return false
 }
 
+export interface CreateIdsfindOptions {
+  allowExperimentalQueryPlan?: boolean
+  requireRegisteredQuerySemantics?: boolean
+}
+
 export function createIdsfind(
   getDb: () => Promise<SqlExecutor>,
   candidateProvider: IdsfindCandidateProvider = ftsIdsfindCandidateProvider,
-  options: { allowExperimentalQueryPlan?: boolean } = {},
+  options: CreateIdsfindOptions = {},
 ) {
   return async (idslist: string[]): Promise<string[]> => {
     const db = await getDb()
     const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db, {
       allowExperimental: options.allowExperimentalQueryPlan,
+      requireRegisteredSchema3: options.requireRegisteredQuerySemantics,
     }))
     const policy: IdsfindQueryPolicy = {
       resolveMaterializedComponents: tokenized.resolveMaterializedComponents,

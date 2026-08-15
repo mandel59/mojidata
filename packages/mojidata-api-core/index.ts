@@ -11,6 +11,7 @@ export {
   ftsIdsfindCandidateProvider,
   wholeLiteralIdsfindCandidateProvider,
   wholeLiteralScanIdsfindCandidateProvider,
+  type CreateIdsfindOptions,
   type IdsfindCandidateProvider,
   type IdsfindQueryPolicy,
 } from "./lib/idsfind-sql"

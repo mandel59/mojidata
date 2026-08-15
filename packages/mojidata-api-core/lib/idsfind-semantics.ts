@@ -9,10 +9,11 @@ import type { SqlExecutor } from "./sql-executor"
 
 export interface IdsQueryPlanLoadPolicy {
   allowExperimental?: boolean
+  requireRegisteredSchema3?: boolean
 }
 
 const queryPlanByDatabase =
-  new WeakMap<SqlExecutor, Map<boolean, Promise<IdsQueryPlan>>>()
+  new WeakMap<SqlExecutor, Map<string, Promise<IdsQueryPlan>>>()
 
 async function loadIdsQueryPlan(
   db: SqlExecutor,
@@ -24,6 +25,11 @@ async function loadIdsQueryPlan(
     WHERE type = 'table' AND name = 'idsfind_semantics'
   `)
   if (table?.name !== "idsfind_semantics") {
+    if (policy.requireRegisteredSchema3) {
+      throw new Error(
+        "strict IDS query semantics require a schema 3 registered manifest",
+      )
+    }
     // Databases built before the semantics manifest used both legacy stages.
     return legacyIdsQueryPlan
   }
@@ -35,6 +41,11 @@ async function loadIdsQueryPlan(
   `)
   if (!row) {
     throw new Error("idsfind_semantics has no manifest row")
+  }
+  if (policy.requireRegisteredSchema3 && row.schema_version !== 3) {
+    throw new Error(
+      "strict IDS query semantics require a schema 3 registered manifest",
+    )
   }
   if (row.schema_version === 3) {
     if (!Object.prototype.hasOwnProperty.call(row, "recipe_sha256")) {
@@ -51,6 +62,11 @@ async function loadIdsQueryPlan(
       return getRegisteredIdsQueryPlan(row.semantics_profile)
     }
     if (row.semantics_mode === "experimental") {
+      if (policy.requireRegisteredSchema3) {
+        throw new Error(
+          "strict IDS query semantics require a registered manifest",
+        )
+      }
       if (!policy.allowExperimental) {
         throw new Error(
           "experimental IDS query semantics require explicit runtime opt-in",
@@ -123,10 +139,15 @@ export function getIdsQueryPlan(
     queryPlanByDatabase.set(db, plans)
   }
   const allowExperimental = policy.allowExperimental === true
-  let plan = plans.get(allowExperimental)
+  const requireRegisteredSchema3 = policy.requireRegisteredSchema3 === true
+  const cacheKey = `${allowExperimental}:${requireRegisteredSchema3}`
+  let plan = plans.get(cacheKey)
   if (!plan) {
-    plan = loadIdsQueryPlan(db, { allowExperimental })
-    plans.set(allowExperimental, plan)
+    plan = loadIdsQueryPlan(db, {
+      allowExperimental,
+      requireRegisteredSchema3,
+    })
+    plans.set(cacheKey, plan)
   }
   return plan
 }
