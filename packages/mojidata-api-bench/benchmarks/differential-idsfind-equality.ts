@@ -1,7 +1,9 @@
 import { spawnSync } from "node:child_process"
 
 import {
+  canonicalizeIdsTreePaths,
   collectIdsFtsFeatures,
+  compareIdsTreePaths,
   encodeIdsFtsEqualityFeature,
 } from "@mandel59/idsdb-utils"
 import { compileIdsfindStructuralPattern } from "@mandel59/mojidata-api-core"
@@ -95,10 +97,10 @@ function variablePaths(tree: ConcreteNode) {
   return [...paths].map(([name, values]) => ({ name, paths: values }))
 }
 
-function assignments(count: number) {
+function assignments(count: number, alphabet: readonly [string, string]) {
   return Array.from({ length: 2 ** count }, (_, value) =>
     Array.from({ length: count }, (__, index) =>
-      (value & (1 << index)) === 0 ? "x" : "y"
+      (value & (1 << index)) === 0 ? alphabet[0] : alphabet[1]
     )
   )
 }
@@ -108,6 +110,34 @@ function equalityTerms(pattern: string | undefined) {
     .sort()
 }
 
+function pairContractViolations(
+  pairs: { left: number[]; right: number[] }[],
+) {
+  const seen = new Set<string>()
+  const violations: string[] = []
+  for (const pair of pairs) {
+    const key = JSON.stringify([pair.left, pair.right])
+    if (seen.has(key)) violations.push(`duplicate:${key}`)
+    seen.add(key)
+    if (JSON.stringify(pair.left) === JSON.stringify(pair.right)) {
+      violations.push(`self:${key}`)
+    }
+    if (compareIdsTreePaths(pair.left, pair.right) >= 0) {
+      violations.push(`orientation:${key}`)
+    }
+  }
+  return violations
+}
+
+const canonicalizationGuards = [
+  { input: [[1], [0], [1]], expected: [[0], [1]] },
+  {
+    input: [[0, 1], [], [0], [0, 0], [0]],
+    expected: [[], [0], [0, 0], [0, 1]],
+  },
+  { input: [[], []], expected: [[]] },
+]
+
 const oraclePath = process.argv[2] ?? process.env.LEAN_EQUALITY_ORACLE
 if (!oraclePath) {
   throw new Error(
@@ -115,17 +145,23 @@ if (!oraclePath) {
   )
 }
 
+const variableAlphabets = [
+  ["x", "y"],
+  ["ｘ", "ｙ"],
+] as const
 const cases = shapes().flatMap((shape, shapeIndex) =>
-  assignments(leafCount(shape)).map((variables, assignmentIndex) => {
-    const tree = instantiate(shape, variables)
-    const groups = variablePaths(tree)
-    return {
-      name: `shape-${shapeIndex}-assignment-${assignmentIndex}`,
-      tokens: ["§", ...serialize(tree), "§"],
-      groups,
-      nodes: wireNodes(tree),
-    }
-  })
+  variableAlphabets.flatMap((alphabet, alphabetIndex) =>
+    assignments(leafCount(shape), alphabet).map((variables, assignmentIndex) => {
+      const tree = instantiate(shape, variables)
+      const groups = variablePaths(tree)
+      return {
+        name: `shape-${shapeIndex}-alphabet-${alphabetIndex}-assignment-${assignmentIndex}`,
+        tokens: ["§", ...serialize(tree), "§"],
+        groups,
+        nodes: wireNodes(tree),
+      }
+    })
+  )
 )
 
 const input = cases.flatMap(item => [
@@ -160,11 +196,36 @@ if (responses.length !== cases.length * 2) {
 }
 
 const mismatches: unknown[] = []
+canonicalizationGuards.forEach((guard, index) => {
+  const actual = canonicalizeIdsTreePaths(guard.input)
+  if (JSON.stringify(actual) !== JSON.stringify(guard.expected)) {
+    mismatches.push({
+      name: `canonicalization-guard-${index}`,
+      expected: guard.expected,
+      actual,
+    })
+  }
+})
 cases.forEach((item, index) => {
+  for (const group of item.groups) {
+    const canonicalPaths = canonicalizeIdsTreePaths(group.paths)
+    if (JSON.stringify(canonicalPaths) !== JSON.stringify(group.paths)) {
+      mismatches.push({
+        name: item.name,
+        variable: group.name,
+        generatedPaths: group.paths,
+        canonicalPaths,
+      })
+    }
+  }
   const response = responses[index * 2]
   if (response.error) {
     mismatches.push({ name: item.name, oracleError: response.error })
     return
+  }
+  const queryContractViolations = pairContractViolations(response.pairs)
+  if (queryContractViolations.length > 0) {
+    mismatches.push({ name: item.name, queryContractViolations })
   }
   const leanTerms = [...new Set(response.pairs.map(pair =>
     encodeIdsFtsEqualityFeature(pair.left, pair.right)
@@ -185,6 +246,10 @@ cases.forEach((item, index) => {
   if (treeResponse.error) {
     mismatches.push({ name: item.name, treeOracleError: treeResponse.error })
     return
+  }
+  const treeContractViolations = pairContractViolations(treeResponse.pairs)
+  if (treeContractViolations.length > 0) {
+    mismatches.push({ name: item.name, treeContractViolations })
   }
   const leanTreeTerms = [...new Set(treeResponse.pairs.map(pair =>
     encodeIdsFtsEqualityFeature(pair.left, pair.right)
@@ -226,7 +291,15 @@ const summary = {
   shapeCount: shapes().length,
   maxDepth: 2,
   adapterGuardCases: guardCases.length,
-  variableAlphabet: ["x", "y"],
+  canonicalizationGuardCases: canonicalizationGuards.length,
+  variableAlphabets,
+  storageContract: {
+    distinctPaths: true,
+    preorderOrientation: true,
+    noSelfPairs: true,
+    checkedQueryCases: cases.length,
+    checkedTreeCases: cases.length,
+  },
   mismatches: mismatches.length,
 }
 console.log(JSON.stringify(summary, null, 2))

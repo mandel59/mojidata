@@ -1,4 +1,5 @@
 import {
+  canonicalizeIdsTreePaths,
   collectIdsFtsFeatures,
   encodeIdsFtsEqualityFeature,
   idsFtsFeatureVersion,
@@ -59,8 +60,12 @@ function compilePatternFeatures(
   const parsed = visitNode(0, [])
   if (!parsed.complete || parsed.next !== tokens.length) return features
   for (const paths of variablePaths.values()) {
-    for (let index = 1; index < paths.length; index++) {
-      features.push(encodeIdsFtsEqualityFeature(paths[0], paths[index]))
+    const canonicalPaths = canonicalizeIdsTreePaths(paths)
+    for (let index = 1; index < canonicalPaths.length; index++) {
+      features.push(encodeIdsFtsEqualityFeature(
+        canonicalPaths[0],
+        canonicalPaths[index],
+      ))
     }
   }
   return [...new Set(features)]

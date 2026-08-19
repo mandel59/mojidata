@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
 import {
+  canonicalizeIdsTreePaths,
   collectIdsFtsFeatures,
   encodeIdsFtsEdgeFeature,
   encodeIdsFtsEqualityFeature,
@@ -47,6 +48,15 @@ describe("IDS FTS structural features", () => {
       encodeIdsFtsRootFeature("⿱"),
       encodeIdsFtsEdgeFeature("⿱", 1, "⿰"),
     ])
+  })
+
+  test("canonicalizes equality paths in distinct preorder", () => {
+    assert.deepEqual(
+      canonicalizeIdsTreePaths([
+        [1], [0, 1], [], [0], [1], [0, 0], [0],
+      ]),
+      [[], [0], [0, 0], [0, 1], [1]],
+    )
   })
 
   test("extracts collision-free equal-subtree path pairs", () => {

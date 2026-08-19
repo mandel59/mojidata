@@ -39,7 +39,9 @@ export {
     type IdsBvecPattern,
 } from "./lib/ids-bvec"
 export {
+    canonicalizeIdsTreePaths,
     collectIdsFtsFeatures,
+    compareIdsTreePaths,
     encodeIdsFtsEqualityFeature,
     encodeIdsFtsEdgeFeature,
     encodeIdsFtsRootFeature,

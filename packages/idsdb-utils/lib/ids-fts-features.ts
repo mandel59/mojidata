@@ -37,6 +37,34 @@ export function encodeIdsFtsEqualityFeature(
 }
 
 /**
+ * Compare IDS tree paths in the preorder used by equality feature storage.
+ */
+export function compareIdsTreePaths(
+    left: readonly number[],
+    right: readonly number[],
+) {
+    const commonLength = Math.min(left.length, right.length)
+    for (let index = 0; index < commonLength; index++) {
+        if (left[index] !== right[index]) return left[index] - right[index]
+    }
+    return left.length - right.length
+}
+
+/**
+ * Return distinct IDS tree paths in the canonical storage orientation.
+ */
+export function canonicalizeIdsTreePaths(
+    paths: readonly (readonly number[])[],
+) {
+    const unique = new Map<string, number[]>()
+    for (const path of paths) {
+        const key = path.join(",")
+        if (!unique.has(key)) unique.set(key, [...path])
+    }
+    return [...unique.values()].sort(compareIdsTreePaths)
+}
+
+/**
  * Extract collision-free root and local-edge terms from a prefix IDS forest.
  *
  * Incomplete final nodes are accepted. Only relationships whose child root is
@@ -110,10 +138,18 @@ export function collectIdsFtsFeatures(
             pathsBySerialization.set(node.serialization, paths)
         }
         for (const paths of pathsBySerialization.values()) {
-            for (let left = 0; left < paths.length; left++) {
-                for (let right = left + 1; right < paths.length; right++) {
+            const canonicalPaths = canonicalizeIdsTreePaths(paths)
+            for (let left = 0; left < canonicalPaths.length; left++) {
+                for (
+                    let right = left + 1;
+                    right < canonicalPaths.length;
+                    right++
+                ) {
                     features.add(
-                        encodeIdsFtsEqualityFeature(paths[left], paths[right]),
+                        encodeIdsFtsEqualityFeature(
+                            canonicalPaths[left],
+                            canonicalPaths[right],
+                        ),
                     )
                 }
             }
