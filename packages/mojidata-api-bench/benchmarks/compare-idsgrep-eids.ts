@@ -35,6 +35,7 @@ type Options = {
   manifestPath: string
   workDirectory: string
   mojidataCliPath: string
+  mojidataRustCliPath?: string
   outputPath?: string
   iterations: number
   warmup: number
@@ -91,6 +92,9 @@ function parseArgs(argv: string[]): Options {
     mojidataCliPath: values.get("--mojidata-cli")
       ? resolve(values.get("--mojidata-cli") as string)
       : resolve(__dirname, "mojidata-query.cjs"),
+    mojidataRustCliPath: values.get("--mojidata-rust-cli")
+      ? resolve(values.get("--mojidata-rust-cli") as string)
+      : undefined,
     manifestPath: values.get("--manifest")
       ? resolve(values.get("--manifest") as string)
       : resolve(__dirname, "idsgrep-eids-cases.json"),
@@ -249,6 +253,40 @@ function createMojidataFreshProcessTarget(
   }
 }
 
+function runMojidataRustFreshProcess(
+  options: Options,
+  item: BenchmarkCase,
+  captureOutput: boolean,
+) {
+  if (!options.mojidataRustCliPath) {
+    throw new Error("--mojidata-rust-cli is required for the Rust target")
+  }
+  return execFileSync(options.mojidataRustCliPath, [
+    "--db", options.fts5Path,
+    "--query-json", JSON.stringify(item.mojidataQuery),
+  ], captureOutput
+    ? { encoding: "utf8", maxBuffer: 128 * 1024 * 1024 }
+    : { stdio: ["ignore", "ignore", "pipe"] })
+}
+
+function createMojidataRustFreshProcessTarget(options: Options): Target {
+  const name = "mojidata-rust-fts5-fresh-process"
+  return {
+    name,
+    async search(item) {
+      const output = runMojidataRustFreshProcess(options, item, true)
+      const parsed = JSON.parse(output as string) as unknown
+      if (!Array.isArray(parsed) || parsed.some(value => typeof value !== "string")) {
+        throw new Error(`${name} did not emit a string array`)
+      }
+      return sortedSet(parsed as string[])
+    },
+    async timedSearch(item) {
+      runMojidataRustFreshProcess(options, item, false)
+    },
+  }
+}
+
 function runIdsGrep(options: Options, item: BenchmarkCase, ignoreIndex: boolean) {
   const args = [
     "--color=never",
@@ -377,6 +415,9 @@ async function main() {
       options.bvecPath,
       "bvec",
     ),
+    ...(options.mojidataRustCliPath
+      ? [createMojidataRustFreshProcessTarget(options)]
+      : []),
   ]
   const oracle = createIdsTarget(
     "mojidata-exact-scan",
@@ -501,6 +542,11 @@ async function main() {
         bytes: statSync(options.mojidataCliPath).size,
         executable: process.execPath,
       },
+      mojidataRustCli: options.mojidataRustCliPath ? {
+        path: options.mojidataRustCliPath,
+        sha256: hashFile(options.mojidataRustCliPath),
+        bytes: statSync(options.mojidataRustCliPath).size,
+      } : null,
     },
     method: {
       iterations: options.iterations,
@@ -514,8 +560,18 @@ async function main() {
       idsgrepTimingIncludesProcessStartup: true,
       mojidataFreshProcessTimingIncludes:
         "Node startup, PnP module loading, database open, candidate generation, exact verification, and result materialization",
+      mojidataRustFreshProcessTimingIncludes: options.mojidataRustCliPath
+        ? "native process startup, database open, candidate generation, exact verification, and result materialization"
+        : null,
       persistentTargets: ["mojidata-fts4", "mojidata-fts5", "mojidata-bvec"],
-      freshProcessTargets: ["idsgrep-indexed", "idsgrep-scan", "mojidata-fts5-fresh-process", "mojidata-bvec-fresh-process"],
+      freshProcessTargets: [
+        "idsgrep-indexed",
+        "idsgrep-scan",
+        "mojidata-fts5-fresh-process",
+        "mojidata-bvec-fresh-process",
+        ...(options.mojidataRustCliPath
+          ? ["mojidata-rust-fts5-fresh-process"] : []),
+      ],
       rawMeasurements: "seeded execution order with zero-based source repetition",
       outputDuringTiming: "discarded after each engine materialized its result",
     },
