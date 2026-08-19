@@ -1,0 +1,984 @@
+{
+  "caseSetVersion": 2,
+  "protocol": {
+    "timingBlind": true,
+    "seed": 20260819,
+    "corpus": {
+      "entries": 156721,
+      "sha256": "0b892cf76fecc03c94ae8f86418faf2427edbe16e95639602a1bf8e57daadbeb"
+    },
+    "baseSemantics": {
+      "schema_version": 3,
+      "semantics_mode": "registered",
+      "semantics_profile": "idsflow-records@1"
+    },
+    "exclusions": [
+      {
+        "path": "/home/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/idsgrep-eids-cases.json",
+        "sha256": "c8f9a9e545fe50b727cb9352cdbb2087bed6bcc355fee70bcc640593c7bf90e7"
+      },
+      {
+        "path": "/home/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/idsgrep-eids-diagnostic-cases.json",
+        "sha256": "56d43af38c3a0a6f86a6f710cf8165bb65adb4f4a76f8da40fbeab847438a6f7"
+      }
+    ],
+    "deduplication": "family plus canonical query tree; result counts use distinct UCS",
+    "selectivityThresholds": {
+      "selective": "1 <= distinct UCS resultCount <= 10",
+      "medium": "11 <= distinct UCS resultCount <= 100",
+      "broad": "101 <= distinct UCS resultCount",
+      "noHit": "resultCount = 0"
+    },
+    "quotas": {
+      "positivePerFamily": 12,
+      "requestedPositivePerFamilyStratum": 4,
+      "noHitPerFamily": 3
+    },
+    "shortageRule": "record deficient cells, then fill within the same family by seeded hash order before timing",
+    "shortages": {
+      "root-exact": {
+        "medium": 4,
+        "broad": 4
+      }
+    },
+    "rejectedNonComparableTrees": 47442,
+    "candidateInventory": {
+      "fragment-exact": {
+        "selective": 89168,
+        "medium": 1640,
+        "broad": 338
+      },
+      "fragment-one-wildcard": {
+        "selective": 31550,
+        "medium": 3014,
+        "broad": 833
+      },
+      "root-exact": {
+        "selective": 83036,
+        "medium": 0,
+        "broad": 0
+      },
+      "root-one-wildcard": {
+        "selective": 28475,
+        "medium": 2343,
+        "broad": 211
+      }
+    },
+    "selectedInventory": {
+      "byFamily": {
+        "fragment-exact": 15,
+        "fragment-one-wildcard": 15,
+        "root-exact": 15,
+        "root-one-wildcard": 15
+      },
+      "byStratum": {
+        "selective": 24,
+        "medium": 12,
+        "broad": 12,
+        "no-hit": 12
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "fragment-exact-selective-01",
+      "description": "fragment-exact; timing-blind exact count 1",
+      "family": "fragment-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿰氵⿱⿱丿大井"
+      ],
+      "idsgrepQuery": "...⿰氵⿱⿱丿大井",
+      "derivation": {
+        "originUcs": "㴁",
+        "originIdsTokens": "⿰ 氵 ⿱ ⿱ 丿 大 井"
+      }
+    },
+    {
+      "name": "fragment-exact-selective-02",
+      "description": "fragment-exact; timing-blind exact count 1",
+      "family": "fragment-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿰魚⿱宀谷"
+      ],
+      "idsgrepQuery": "...⿰魚⿱宀谷",
+      "derivation": {
+        "originUcs": "鰫",
+        "originIdsTokens": "⿰ 魚 ⿱ 宀 谷"
+      }
+    },
+    {
+      "name": "fragment-exact-selective-03",
+      "description": "fragment-exact; timing-blind exact count 1",
+      "family": "fragment-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿺⻎⿱竹豕"
+      ],
+      "idsgrepQuery": "...⿺⻎⿱竹豕",
+      "derivation": {
+        "originUcs": "𨗹",
+        "originIdsTokens": "⿺ ⻎ ⿱ 竹 豕"
+      }
+    },
+    {
+      "name": "fragment-exact-selective-04",
+      "description": "fragment-exact; timing-blind exact count 4",
+      "family": "fragment-exact",
+      "stratum": "selective",
+      "expectedResultCount": 4,
+      "mojidataQuery": [
+        "⿰糸⿰亻寸"
+      ],
+      "idsgrepQuery": "...⿰糸⿰亻寸",
+      "derivation": {
+        "originUcs": "&C2-3835;",
+        "originIdsTokens": "⿰ 糸 ⿰ 亻 寸"
+      }
+    },
+    {
+      "name": "fragment-exact-medium-05",
+      "description": "fragment-exact; timing-blind exact count 16",
+      "family": "fragment-exact",
+      "stratum": "medium",
+      "expectedResultCount": 16,
+      "mojidataQuery": [
+        "⿰丩攵"
+      ],
+      "idsgrepQuery": "...⿰丩攵",
+      "derivation": {
+        "originUcs": "&C2-3249;",
+        "originIdsTokens": "⿱ ⺿ ⿰ 丩 攵"
+      }
+    },
+    {
+      "name": "fragment-exact-medium-06",
+      "description": "fragment-exact; timing-blind exact count 11",
+      "family": "fragment-exact",
+      "stratum": "medium",
+      "expectedResultCount": 11,
+      "mojidataQuery": [
+        "⿰⿱耂日見"
+      ],
+      "idsgrepQuery": "...⿰⿱耂日見",
+      "derivation": {
+        "originUcs": "&CB03626;",
+        "originIdsTokens": "⿰ 口 ⿰ ⿱ 耂 日 見"
+      }
+    },
+    {
+      "name": "fragment-exact-medium-07",
+      "description": "fragment-exact; timing-blind exact count 35",
+      "family": "fragment-exact",
+      "stratum": "medium",
+      "expectedResultCount": 35,
+      "mojidataQuery": [
+        "⿱亡⿴儿丨"
+      ],
+      "idsgrepQuery": "...⿱亡⿴儿丨",
+      "derivation": {
+        "originUcs": "&HZK04-E4CC;",
+        "originIdsTokens": "⿰ 日 ⿱ 艹 ⿱ 亡 ⿴ 儿 丨"
+      }
+    },
+    {
+      "name": "fragment-exact-medium-08",
+      "description": "fragment-exact; timing-blind exact count 38",
+      "family": "fragment-exact",
+      "stratum": "medium",
+      "expectedResultCount": 38,
+      "mojidataQuery": [
+        "⿱夂⿱一生"
+      ],
+      "idsgrepQuery": "...⿱夂⿱一生",
+      "derivation": {
+        "originUcs": "&AJ1-05942;",
+        "originIdsTokens": "⿱ ⿱ 宀 八 ⿰ ⻖ ⿱ 夂 ⿱ 一 生"
+      }
+    },
+    {
+      "name": "fragment-exact-broad-09",
+      "description": "fragment-exact; timing-blind exact count 154",
+      "family": "fragment-exact",
+      "stratum": "broad",
+      "expectedResultCount": 154,
+      "mojidataQuery": [
+        "⿱⿰丶丿弔"
+      ],
+      "idsgrepQuery": "...⿱⿰丶丿弔",
+      "derivation": {
+        "originUcs": "&C1-547A;",
+        "originIdsTokens": "⿰ 女 ⿹ 丿 ⿱ ⿰ 丶 丿 弔"
+      }
+    },
+    {
+      "name": "fragment-exact-broad-10",
+      "description": "fragment-exact; timing-blind exact count 327",
+      "family": "fragment-exact",
+      "stratum": "broad",
+      "expectedResultCount": 327,
+      "mojidataQuery": [
+        "⿰三⿰丨丨"
+      ],
+      "idsgrepQuery": "...⿰三⿰丨丨",
+      "derivation": {
+        "originUcs": "&AJ1-06001;",
+        "originIdsTokens": "⿱ 竹 ⿱ ⿰ 三 ⿰ 丨 丨 冉"
+      }
+    },
+    {
+      "name": "fragment-exact-broad-11",
+      "description": "fragment-exact; timing-blind exact count 147",
+      "family": "fragment-exact",
+      "stratum": "broad",
+      "expectedResultCount": 147,
+      "mojidataQuery": [
+        "⿱口貝"
+      ],
+      "idsgrepQuery": "...⿱口貝",
+      "derivation": {
+        "originUcs": "&C2-4B62;",
+        "originIdsTokens": "⿰ 火 ⿱ 口 貝"
+      }
+    },
+    {
+      "name": "fragment-exact-broad-12",
+      "description": "fragment-exact; timing-blind exact count 286",
+      "family": "fragment-exact",
+      "stratum": "broad",
+      "expectedResultCount": 286,
+      "mojidataQuery": [
+        "⿱曰⿹勹⿺𠃊人"
+      ],
+      "idsgrepQuery": "...⿱曰⿹勹⿺𠃊人",
+      "derivation": {
+        "originUcs": "&AJ1-05339;",
+        "originIdsTokens": "⿰ ⿱ 曰 ⿹ 勹 ⿺ 𠃊 人 欠"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-selective-13",
+      "description": "fragment-one-wildcard; timing-blind exact count 6",
+      "family": "fragment-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 6,
+      "mojidataQuery": [
+        "⿰串？"
+      ],
+      "idsgrepQuery": "...⿰串?",
+      "derivation": {
+        "originUcs": "&I-HZK01-AA72;",
+        "originIdsTokens": "⿰ 串 串"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-selective-14",
+      "description": "fragment-one-wildcard; timing-blind exact count 1",
+      "family": "fragment-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿳？大中"
+      ],
+      "idsgrepQuery": "...⿳?大中",
+      "derivation": {
+        "originUcs": "𪽓",
+        "originIdsTokens": "⿳ 田 大 中"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-selective-15",
+      "description": "fragment-one-wildcard; timing-blind exact count 1",
+      "family": "fragment-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿺？⿰㐆⿱几又"
+      ],
+      "idsgrepQuery": "...⿺?⿰㐆⿱几又",
+      "derivation": {
+        "originUcs": "𫐺",
+        "originIdsTokens": "⿺ 辶 ⿰ 㐆 ⿱ 几 又"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-selective-16",
+      "description": "fragment-one-wildcard; timing-blind exact count 1",
+      "family": "fragment-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "⿲⺼馬？"
+      ],
+      "idsgrepQuery": "...⿲⺼馬?",
+      "derivation": {
+        "originUcs": "𩦻",
+        "originIdsTokens": "⿳ ⿺ 𠃊 人 口 ⿲ ⺼ 馬 ⿹ ⺄ ⿻ 二 丨"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-medium-17",
+      "description": "fragment-one-wildcard; timing-blind exact count 30",
+      "family": "fragment-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 30,
+      "mojidataQuery": [
+        "⿱？⿻土⿰人人"
+      ],
+      "idsgrepQuery": "...⿱?⿻土⿰人人",
+      "derivation": {
+        "originUcs": "&C2-3639;",
+        "originIdsTokens": "⿱ 木 ⿻ 土 ⿰ 人 人"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-medium-18",
+      "description": "fragment-one-wildcard; timing-blind exact count 30",
+      "family": "fragment-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 30,
+      "mojidataQuery": [
+        "⿱⿴囗大？"
+      ],
+      "idsgrepQuery": "...⿱⿴囗大?",
+      "derivation": {
+        "originUcs": "&C3-476E;",
+        "originIdsTokens": "⿰ 火 ⿱ ⿴ 囗 大 心"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-medium-19",
+      "description": "fragment-one-wildcard; timing-blind exact count 27",
+      "family": "fragment-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 27,
+      "mojidataQuery": [
+        "⿰？⿱串心"
+      ],
+      "idsgrepQuery": "...⿰?⿱串心",
+      "derivation": {
+        "originUcs": "&HZK03-DBEA;",
+        "originIdsTokens": "⿰ 女 ⿱ 串 心"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-medium-20",
+      "description": "fragment-one-wildcard; timing-blind exact count 22",
+      "family": "fragment-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 22,
+      "mojidataQuery": [
+        "⿳⻃大？"
+      ],
+      "idsgrepQuery": "...⿳⻃大?",
+      "derivation": {
+        "originUcs": "&C1-6F4F;",
+        "originIdsTokens": "⿺ ⻎ ⿳ ⻃ 大 巳"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-broad-21",
+      "description": "fragment-one-wildcard; timing-blind exact count 226",
+      "family": "fragment-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 226,
+      "mojidataQuery": [
+        "⿻⿻巾⿰爻爻？"
+      ],
+      "idsgrepQuery": "...⿻⿻巾⿰爻爻?",
+      "derivation": {
+        "originUcs": "&AJ1-03295;",
+        "originIdsTokens": "⿰ ⺭ ⿱ 一 ⿻ ⿻ 巾 ⿰ 爻 爻 八"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-broad-22",
+      "description": "fragment-one-wildcard; timing-blind exact count 116",
+      "family": "fragment-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 116,
+      "mojidataQuery": [
+        "⿹？二"
+      ],
+      "idsgrepQuery": "...⿹?二",
+      "derivation": {
+        "originUcs": "&AJ1-08472;",
+        "originIdsTokens": "⿰ 日 ⿹ 勹 二"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-broad-23",
+      "description": "fragment-one-wildcard; timing-blind exact count 248",
+      "family": "fragment-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 248,
+      "mojidataQuery": [
+        "⿹？⿱口一"
+      ],
+      "idsgrepQuery": "...⿹?⿱口一",
+      "derivation": {
+        "originUcs": "&C2-4A3F;",
+        "originIdsTokens": "⿰ ⿱ 𠂇 月 ⿹ 戈 ⿱ 口 一"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-broad-24",
+      "description": "fragment-one-wildcard; timing-blind exact count 277",
+      "family": "fragment-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 277,
+      "mojidataQuery": [
+        "⿱？贝"
+      ],
+      "idsgrepQuery": "...⿱?贝",
+      "derivation": {
+        "originUcs": "&HZK05-A5B1;",
+        "originIdsTokens": "⿰ ⺡ ⿱ 龶 贝"
+      }
+    },
+    {
+      "name": "root-exact-selective-25",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰⿱禾米⿹勹口§"
+      ],
+      "idsgrepQuery": "⿰⿱禾米⿹勹口",
+      "derivation": {
+        "originUcs": "𥢀",
+        "originIdsTokens": "⿰ ⿱ 禾 米 ⿹ 勹 口"
+      }
+    },
+    {
+      "name": "root-exact-selective-26",
+      "description": "root-exact; timing-blind exact count 3",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 3,
+      "mojidataQuery": [
+        "§⿱⿱丿大口§"
+      ],
+      "idsgrepQuery": "⿱⿱丿大口",
+      "derivation": {
+        "originUcs": "&I-C3-2522;",
+        "originIdsTokens": "⿱ ⿱ 丿 大 口"
+      }
+    },
+    {
+      "name": "root-exact-selective-27",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰目⿸鹿灬§"
+      ],
+      "idsgrepQuery": "⿰目⿸鹿灬",
+      "derivation": {
+        "originUcs": "𥌜",
+        "originIdsTokens": "⿰ 目 ⿸ 鹿 灬"
+      }
+    },
+    {
+      "name": "root-exact-selective-28",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰金⿱口⿰口口§"
+      ],
+      "idsgrepQuery": "⿰金⿱口⿰口口",
+      "derivation": {
+        "originUcs": "𨩗",
+        "originIdsTokens": "⿰ 金 ⿱ 口 ⿰ 口 口"
+      }
+    },
+    {
+      "name": "root-exact-selective-29",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿺鬼斤§"
+      ],
+      "idsgrepQuery": "⿺鬼斤",
+      "derivation": {
+        "originUcs": "鬿",
+        "originIdsTokens": "⿺ 鬼 斤"
+      }
+    },
+    {
+      "name": "root-exact-selective-30",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰魚⿱山風§"
+      ],
+      "idsgrepQuery": "⿰魚⿱山風",
+      "derivation": {
+        "originUcs": "𫙹",
+        "originIdsTokens": "⿰ 魚 ⿱ 山 風"
+      }
+    },
+    {
+      "name": "root-exact-selective-31",
+      "description": "root-exact; timing-blind exact count 3",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 3,
+      "mojidataQuery": [
+        "§⿰木片§"
+      ],
+      "idsgrepQuery": "⿰木片",
+      "derivation": {
+        "originUcs": "&HZK03-EF41;",
+        "originIdsTokens": "⿰ 木 片"
+      }
+    },
+    {
+      "name": "root-exact-selective-32",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰⻂弗§"
+      ],
+      "idsgrepQuery": "⿰⻂弗",
+      "derivation": {
+        "originUcs": "&HZK08-D5A9;",
+        "originIdsTokens": "⿰ ⻂ 弗"
+      }
+    },
+    {
+      "name": "root-exact-selective-33",
+      "description": "root-exact; timing-blind exact count 2",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 2,
+      "mojidataQuery": [
+        "§⿱羽⿵⿳亠口冂口§"
+      ],
+      "idsgrepQuery": "⿱羽⿵⿳亠口冂口",
+      "derivation": {
+        "originUcs": "&C2-5950;",
+        "originIdsTokens": "⿱ 羽 ⿵ ⿳ 亠 口 冂 口"
+      }
+    },
+    {
+      "name": "root-exact-selective-34",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿱雨⿱山⿱宀示§"
+      ],
+      "idsgrepQuery": "⿱雨⿱山⿱宀示",
+      "derivation": {
+        "originUcs": "𩅃",
+        "originIdsTokens": "⿱ 雨 ⿱ 山 ⿱ 宀 示"
+      }
+    },
+    {
+      "name": "root-exact-selective-35",
+      "description": "root-exact; timing-blind exact count 1",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰⺅⿰⿱亠父力§"
+      ],
+      "idsgrepQuery": "⿰⺅⿰⿱亠父力",
+      "derivation": {
+        "originUcs": "&I-C3-2F4D;",
+        "originIdsTokens": "⿰ ⺅ ⿰ ⿱ 亠 父 力"
+      }
+    },
+    {
+      "name": "root-exact-selective-36",
+      "description": "root-exact; timing-blind exact count 2",
+      "family": "root-exact",
+      "stratum": "selective",
+      "expectedResultCount": 2,
+      "mojidataQuery": [
+        "§⿰革⿱⿱十冖糸§"
+      ],
+      "idsgrepQuery": "⿰革⿱⿱十冖糸",
+      "derivation": {
+        "originUcs": "&I-CB01360;",
+        "originIdsTokens": "⿰ 革 ⿱ ⿱ 十 冖 糸"
+      }
+    },
+    {
+      "name": "root-one-wildcard-selective-37",
+      "description": "root-one-wildcard; timing-blind exact count 1",
+      "family": "root-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿰？⿱爫糸§"
+      ],
+      "idsgrepQuery": "⿰?⿱爫糸",
+      "derivation": {
+        "originUcs": "𫱘",
+        "originIdsTokens": "⿰ 女 ⿱ 爫 糸"
+      }
+    },
+    {
+      "name": "root-one-wildcard-selective-38",
+      "description": "root-one-wildcard; timing-blind exact count 2",
+      "family": "root-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 2,
+      "mojidataQuery": [
+        "§⿵？⿱艹心§"
+      ],
+      "idsgrepQuery": "⿵?⿱艹心",
+      "derivation": {
+        "originUcs": "&HZK11-D469;",
+        "originIdsTokens": "⿵ 門 ⿱ 艹 心"
+      }
+    },
+    {
+      "name": "root-one-wildcard-selective-39",
+      "description": "root-one-wildcard; timing-blind exact count 4",
+      "family": "root-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 4,
+      "mojidataQuery": [
+        "§⿺？⿱十⿵冂⿱⿰丶丿干§"
+      ],
+      "idsgrepQuery": "⿺?⿱十⿵冂⿱⿰丶丿干",
+      "derivation": {
+        "originUcs": "&I-J90-6E28;",
+        "originIdsTokens": "⿺ ⻍ ⿱ 十 ⿵ 冂 ⿱ ⿰ 丶 丿 干"
+      }
+    },
+    {
+      "name": "root-one-wildcard-selective-40",
+      "description": "root-one-wildcard; timing-blind exact count 1",
+      "family": "root-one-wildcard",
+      "stratum": "selective",
+      "expectedResultCount": 1,
+      "mojidataQuery": [
+        "§⿱⿰⿱⿰丶丿⿱一廾馬？§"
+      ],
+      "idsgrepQuery": "⿱⿰⿱⿰丶丿⿱一廾馬?",
+      "derivation": {
+        "originUcs": "𰟷",
+        "originIdsTokens": "⿱ ⿰ ⿱ ⿰ 丶 丿 ⿱ 一 廾 馬 火"
+      }
+    },
+    {
+      "name": "root-one-wildcard-medium-41",
+      "description": "root-one-wildcard; timing-blind exact count 13",
+      "family": "root-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 13,
+      "mojidataQuery": [
+        "§⿰⿱⿱一口田？§"
+      ],
+      "idsgrepQuery": "⿰⿱⿱一口田?",
+      "derivation": {
+        "originUcs": "&HZK04-D8C9;",
+        "originIdsTokens": "⿰ ⿱ ⿱ 一 口 田 攴"
+      }
+    },
+    {
+      "name": "root-one-wildcard-medium-42",
+      "description": "root-one-wildcard; timing-blind exact count 11",
+      "family": "root-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 11,
+      "mojidataQuery": [
+        "§⿰？⿱⿰𤣩王⿱𠆢⿱丶𠃍§"
+      ],
+      "idsgrepQuery": "⿰?⿱⿰𤣩王⿱𠆢⿱丶𠃍",
+      "derivation": {
+        "originUcs": "&HZK02-DE4F;",
+        "originIdsTokens": "⿰ 口 ⿱ ⿰ 𤣩 王 ⿱ 𠆢 ⿱ 丶 𠃍"
+      }
+    },
+    {
+      "name": "root-one-wildcard-medium-43",
+      "description": "root-one-wildcard; timing-blind exact count 23",
+      "family": "root-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 23,
+      "mojidataQuery": [
+        "§⿰？⿰⿱一廾刂§"
+      ],
+      "idsgrepQuery": "⿰?⿰⿱一廾刂",
+      "derivation": {
+        "originUcs": "&HZK03-A4AC;",
+        "originIdsTokens": "⿰ 彳 ⿰ ⿱ 一 廾 刂"
+      }
+    },
+    {
+      "name": "root-one-wildcard-medium-44",
+      "description": "root-one-wildcard; timing-blind exact count 48",
+      "family": "root-one-wildcard",
+      "stratum": "medium",
+      "expectedResultCount": 48,
+      "mojidataQuery": [
+        "§⿰？⿱艹⿱⿰口口隹§"
+      ],
+      "idsgrepQuery": "⿰?⿱艹⿱⿰口口隹",
+      "derivation": {
+        "originUcs": "&C3-5E29;",
+        "originIdsTokens": "⿰ 女 ⿱ 艹 ⿱ ⿰ 口 口 隹"
+      }
+    },
+    {
+      "name": "root-one-wildcard-broad-45",
+      "description": "root-one-wildcard; timing-blind exact count 221",
+      "family": "root-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 221,
+      "mojidataQuery": [
+        "§⿰？戈§"
+      ],
+      "idsgrepQuery": "⿰?戈",
+      "derivation": {
+        "originUcs": "&AJ1-01620;",
+        "originIdsTokens": "⿰ ⿸ 虍 业 戈"
+      }
+    },
+    {
+      "name": "root-one-wildcard-broad-46",
+      "description": "root-one-wildcard; timing-blind exact count 115",
+      "family": "root-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 115,
+      "mojidataQuery": [
+        "§⿰耒？§"
+      ],
+      "idsgrepQuery": "⿰耒?",
+      "derivation": {
+        "originUcs": "&AJ1-02014;",
+        "originIdsTokens": "⿰ 耒 井"
+      }
+    },
+    {
+      "name": "root-one-wildcard-broad-47",
+      "description": "root-one-wildcard; timing-blind exact count 108",
+      "family": "root-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 108,
+      "mojidataQuery": [
+        "§⿰音？§"
+      ],
+      "idsgrepQuery": "⿰音?",
+      "derivation": {
+        "originUcs": "&AJ1-07178;",
+        "originIdsTokens": "⿰ 音 ⿹ 勹 冫"
+      }
+    },
+    {
+      "name": "root-one-wildcard-broad-48",
+      "description": "root-one-wildcard; timing-blind exact count 917",
+      "family": "root-one-wildcard",
+      "stratum": "broad",
+      "expectedResultCount": 917,
+      "mojidataQuery": [
+        "§⿰日？§"
+      ],
+      "idsgrepQuery": "⿰日?",
+      "derivation": {
+        "originUcs": "&AJ1-08472;",
+        "originIdsTokens": "⿰ 日 ⿹ 勹 二"
+      }
+    },
+    {
+      "name": "fragment-exact-no-hit-49",
+      "description": "fragment-exact; timing-blind exact count 0",
+      "family": "fragment-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿰􏿽⿱⿱丿大井"
+      ],
+      "idsgrepQuery": "...⿰􏿽⿱⿱丿大井",
+      "derivation": {
+        "originUcs": "㴁",
+        "originIdsTokens": "⿰ 氵 ⿱ ⿱ 丿 大 井"
+      }
+    },
+    {
+      "name": "fragment-exact-no-hit-50",
+      "description": "fragment-exact; timing-blind exact count 0",
+      "family": "fragment-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿺􏿼⿱竹豕"
+      ],
+      "idsgrepQuery": "...⿺􏿼⿱竹豕",
+      "derivation": {
+        "originUcs": "𨗹",
+        "originIdsTokens": "⿺ ⻎ ⿱ 竹 豕"
+      }
+    },
+    {
+      "name": "fragment-exact-no-hit-51",
+      "description": "fragment-exact; timing-blind exact count 0",
+      "family": "fragment-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿱⿰􏿻丿弔"
+      ],
+      "idsgrepQuery": "...⿱⿰􏿻丿弔",
+      "derivation": {
+        "originUcs": "&C1-547A;",
+        "originIdsTokens": "⿰ 女 ⿹ 丿 ⿱ ⿰ 丶 丿 弔"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-no-hit-52",
+      "description": "fragment-one-wildcard; timing-blind exact count 0",
+      "family": "fragment-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿹？⿱􏿺一"
+      ],
+      "idsgrepQuery": "...⿹?⿱􏿺一",
+      "derivation": {
+        "originUcs": "&C2-4A3F;",
+        "originIdsTokens": "⿰ ⿱ 𠂇 月 ⿹ 戈 ⿱ 口 一"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-no-hit-53",
+      "description": "fragment-one-wildcard; timing-blind exact count 0",
+      "family": "fragment-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿳？􏿹中"
+      ],
+      "idsgrepQuery": "...⿳?􏿹中",
+      "derivation": {
+        "originUcs": "𪽓",
+        "originIdsTokens": "⿳ 田 大 中"
+      }
+    },
+    {
+      "name": "fragment-one-wildcard-no-hit-54",
+      "description": "fragment-one-wildcard; timing-blind exact count 0",
+      "family": "fragment-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "⿱⿴􏿸大？"
+      ],
+      "idsgrepQuery": "...⿱⿴􏿸大?",
+      "derivation": {
+        "originUcs": "&C3-476E;",
+        "originIdsTokens": "⿰ 火 ⿱ ⿴ 囗 大 心"
+      }
+    },
+    {
+      "name": "root-exact-no-hit-55",
+      "description": "root-exact; timing-blind exact count 0",
+      "family": "root-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿺􏿷斤§"
+      ],
+      "idsgrepQuery": "⿺􏿷斤",
+      "derivation": {
+        "originUcs": "鬿",
+        "originIdsTokens": "⿺ 鬼 斤"
+      }
+    },
+    {
+      "name": "root-exact-no-hit-56",
+      "description": "root-exact; timing-blind exact count 0",
+      "family": "root-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿰􏿶⿸鹿灬§"
+      ],
+      "idsgrepQuery": "⿰􏿶⿸鹿灬",
+      "derivation": {
+        "originUcs": "𥌜",
+        "originIdsTokens": "⿰ 目 ⿸ 鹿 灬"
+      }
+    },
+    {
+      "name": "root-exact-no-hit-57",
+      "description": "root-exact; timing-blind exact count 0",
+      "family": "root-exact",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿰􏿵片§"
+      ],
+      "idsgrepQuery": "⿰􏿵片",
+      "derivation": {
+        "originUcs": "&HZK03-EF41;",
+        "originIdsTokens": "⿰ 木 片"
+      }
+    },
+    {
+      "name": "root-one-wildcard-no-hit-58",
+      "description": "root-one-wildcard; timing-blind exact count 0",
+      "family": "root-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿰􏿴？§"
+      ],
+      "idsgrepQuery": "⿰􏿴?",
+      "derivation": {
+        "originUcs": "&AJ1-07178;",
+        "originIdsTokens": "⿰ 音 ⿹ 勹 冫"
+      }
+    },
+    {
+      "name": "root-one-wildcard-no-hit-59",
+      "description": "root-one-wildcard; timing-blind exact count 0",
+      "family": "root-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿰？􏿳§"
+      ],
+      "idsgrepQuery": "⿰?􏿳",
+      "derivation": {
+        "originUcs": "&AJ1-01620;",
+        "originIdsTokens": "⿰ ⿸ 虍 业 戈"
+      }
+    },
+    {
+      "name": "root-one-wildcard-no-hit-60",
+      "description": "root-one-wildcard; timing-blind exact count 0",
+      "family": "root-one-wildcard",
+      "stratum": "no-hit",
+      "expectedResultCount": 0,
+      "mojidataQuery": [
+        "§⿰⿱⿱􏿲口田？§"
+      ],
+      "idsgrepQuery": "⿰⿱⿱􏿲口田?",
+      "derivation": {
+        "originUcs": "&HZK04-D8C9;",
+        "originIdsTokens": "⿰ ⿱ ⿱ 一 口 田 攴"
+      }
+    }
+  ]
+}

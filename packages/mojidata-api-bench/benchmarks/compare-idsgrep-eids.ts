@@ -23,6 +23,7 @@ type BenchmarkCase = {
   description: string
   mojidataQuery: string[]
   idsgrepQuery: string
+  expectedResultCount?: number
 }
 
 type Options = {
@@ -331,6 +332,12 @@ async function main() {
       ),
     ) as Record<string, string[]>
     const expected = results[oracle.name]
+    if (
+      item.expectedResultCount !== undefined &&
+      expected.length !== item.expectedResultCount
+    ) {
+      throw new Error(`${item.name}: frozen count ${item.expectedResultCount} does not match exact oracle ${expected.length}`)
+    }
     correctness.push({
       name: item.name,
       idsgrepStatistics: idsGrepStatistics(options, item),
