@@ -34,6 +34,7 @@ type Options = {
   bvecPath: string
   manifestPath: string
   workDirectory: string
+  mojidataCliPath: string
   outputPath?: string
   iterations: number
   warmup: number
@@ -87,6 +88,9 @@ function parseArgs(argv: string[]): Options {
     fts5Path: required("--fts5"),
     bvecPath: required("--bvec"),
     workDirectory: required("--work-dir"),
+    mojidataCliPath: values.get("--mojidata-cli")
+      ? resolve(values.get("--mojidata-cli") as string)
+      : resolve(__dirname, "mojidata-query.cjs"),
     manifestPath: values.get("--manifest")
       ? resolve(values.get("--manifest") as string)
       : resolve(__dirname, "idsgrep-eids-cases.json"),
@@ -196,6 +200,51 @@ function createIdsTarget(
     },
     async timedSearch(item) {
       await search(item.mojidataQuery)
+    },
+  }
+}
+
+function runMojidataFreshProcess(
+  options: Options,
+  dbPath: string,
+  provider: "fts" | "bvec",
+  item: BenchmarkCase,
+  captureOutput: boolean,
+) {
+  return execFileSync(process.execPath, [
+    options.mojidataCliPath,
+    "--db", dbPath,
+    "--provider", provider,
+    "--query-json", JSON.stringify(item.mojidataQuery),
+  ], captureOutput
+    ? { encoding: "utf8", maxBuffer: 128 * 1024 * 1024 }
+    : { stdio: ["ignore", "ignore", "pipe"] })
+}
+
+function createMojidataFreshProcessTarget(
+  name: string,
+  options: Options,
+  dbPath: string,
+  provider: "fts" | "bvec",
+): Target {
+  return {
+    name,
+    async search(item) {
+      const output = runMojidataFreshProcess(
+        options,
+        dbPath,
+        provider,
+        item,
+        true,
+      )
+      const parsed = JSON.parse(output as string) as unknown
+      if (!Array.isArray(parsed) || parsed.some(value => typeof value !== "string")) {
+        throw new Error(`${name} did not emit a string array`)
+      }
+      return sortedSet(parsed as string[])
+    },
+    async timedSearch(item) {
+      runMojidataFreshProcess(options, dbPath, provider, item, false)
     },
   }
 }
@@ -316,6 +365,18 @@ async function main() {
     createIdsTarget("mojidata-fts4", options.fts4Path, ftsIdsfindCandidateProvider),
     createIdsTarget("mojidata-fts5", options.fts5Path, ftsIdsfindCandidateProvider),
     createIdsTarget("mojidata-bvec", options.bvecPath, createBvecIdsfindCandidateProvider()),
+    createMojidataFreshProcessTarget(
+      "mojidata-fts5-fresh-process",
+      options,
+      options.fts5Path,
+      "fts",
+    ),
+    createMojidataFreshProcessTarget(
+      "mojidata-bvec-fresh-process",
+      options,
+      options.bvecPath,
+      "bvec",
+    ),
   ]
   const oracle = createIdsTarget(
     "mojidata-exact-scan",
@@ -366,23 +427,32 @@ async function main() {
   }
 
   const samples = new Map<string, number[]>()
+  const measurements = []
   const tasks = []
   for (let repetition = 0; repetition < options.iterations; repetition++) {
     for (const item of manifest.cases) {
-      for (const target of targets) tasks.push({ item, target })
+      for (const target of targets) tasks.push({ repetition, item, target })
     }
   }
-  for (const { item, target } of shuffled(tasks, options.seed)) {
+  for (const { repetition, item, target } of shuffled(tasks, options.seed)) {
     const startedAt = performance.now()
     await target.timedSearch(item)
     const key = `${item.name}:${target.name}`
     const values = samples.get(key) ?? []
-    values.push(performance.now() - startedAt)
+    const elapsedMs = performance.now() - startedAt
+    values.push(elapsedMs)
     samples.set(key, values)
+    measurements.push({
+      sequence: measurements.length,
+      repetition,
+      case: item.name,
+      target: target.name,
+      elapsedMs,
+    })
   }
 
   const payload = {
-    formatVersion: 2,
+    formatVersion: 3,
     generatedAt: new Date().toISOString(),
     inputs: {
       sourceEids: {
@@ -425,6 +495,12 @@ async function main() {
         sha256: createHash("sha256").update(manifestBytes).digest("hex"),
         caseSetVersion: manifest.caseSetVersion,
       },
+      mojidataCli: {
+        path: options.mojidataCliPath,
+        sha256: hashFile(options.mojidataCliPath),
+        bytes: statSync(options.mojidataCliPath).size,
+        executable: process.execPath,
+      },
     },
     method: {
       iterations: options.iterations,
@@ -436,6 +512,11 @@ async function main() {
       correctnessOracle:
         "Mojidata exact verifier with every stored root as a candidate",
       idsgrepTimingIncludesProcessStartup: true,
+      mojidataFreshProcessTimingIncludes:
+        "Node startup, PnP module loading, database open, candidate generation, exact verification, and result materialization",
+      persistentTargets: ["mojidata-fts4", "mojidata-fts5", "mojidata-bvec"],
+      freshProcessTargets: ["idsgrep-indexed", "idsgrep-scan", "mojidata-fts5-fresh-process", "mojidata-bvec-fresh-process"],
+      rawMeasurements: "seeded execution order with zero-based source repetition",
       outputDuringTiming: "discarded after each engine materialized its result",
     },
     environment: {
@@ -445,7 +526,9 @@ async function main() {
       arch: os.arch(),
       cpus: os.cpus().length,
       cpuModel: os.cpus()[0]?.model,
+      nodeOptions: process.env.NODE_OPTIONS ?? null,
     },
+    measurements,
     cases: manifest.cases,
     correctness,
     performance: manifest.cases.map(item => ({
