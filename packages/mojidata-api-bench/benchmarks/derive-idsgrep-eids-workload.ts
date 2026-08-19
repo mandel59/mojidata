@@ -155,11 +155,15 @@ function isComparableTree(node: Node): boolean {
 }
 
 function wildcardTrees(node: Node) {
-  return node.children.map((_, wildcardIndex) =>
-    node.token + node.children.map((child, index) =>
+  return node.children.flatMap((_, wildcardIndex) => {
+    const comparable = node.children.every((child, index) =>
+      index === wildcardIndex || isComparableTree(child)
+    )
+    if (!comparable) return []
+    return [node.token + node.children.map((child, index) =>
       index === wildcardIndex ? "？" : child.serialization
-    ).join("")
-  )
+    ).join("")]
+  })
 }
 
 function queries(family: Family, tree: string) {
@@ -320,12 +324,11 @@ async function main() {
         if (isComparableTree(node)) corpusLeafTokens.add(node.token)
         continue
       }
-      if (!isComparableTree(node)) continue
-      add("fragment-exact", node.serialization, row)
+      if (isComparableTree(node)) add("fragment-exact", node.serialization, row)
       wildcardTrees(node).forEach(tree => add("fragment-one-wildcard", tree, row))
     }
-    if (root.children.length > 0 && isComparableTree(root)) {
-      add("root-exact", root.serialization, row)
+    if (root.children.length > 0) {
+      if (isComparableTree(root)) add("root-exact", root.serialization, row)
       wildcardTrees(root).forEach(tree => add("root-one-wildcard", tree, row))
     }
   }
