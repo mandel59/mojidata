@@ -36,6 +36,7 @@ type Options = {
   outputPath?: string
   iterations: number
   warmup: number
+  seed: number
 }
 
 type Target = {
@@ -63,6 +64,7 @@ function parseCount(value: string | undefined, fallback: number, name: string) {
 }
 
 function parseArgs(argv: string[]): Options {
+  if (argv[0] === "--") argv = argv.slice(1)
   const values = new Map<string, string>()
   for (let index = 0; index < argv.length; index += 2) {
     const name = argv[index]
@@ -92,6 +94,7 @@ function parseArgs(argv: string[]): Options {
       : undefined,
     iterations: parseCount(values.get("--iterations"), 30, "iterations"),
     warmup: parseCount(values.get("--warmup"), 5, "warmup"),
+    seed: parseCount(values.get("--seed"), 1, "seed"),
   }
 }
 
@@ -362,7 +365,7 @@ async function main() {
       for (const target of targets) tasks.push({ item, target })
     }
   }
-  for (const { item, target } of shuffled(tasks)) {
+  for (const { item, target } of shuffled(tasks, options.seed)) {
     const startedAt = performance.now()
     await target.timedSearch(item)
     const key = `${item.name}:${target.name}`
@@ -419,6 +422,7 @@ async function main() {
     method: {
       iterations: options.iterations,
       warmup: options.warmup,
+      seed: options.seed,
       idsgrepIndexedUsesSiblingBvec: true,
       idsgrepAndMojidataCorpusContract:
         "accepted ordinary IDS entries from the recorded parity EIDS projection",
