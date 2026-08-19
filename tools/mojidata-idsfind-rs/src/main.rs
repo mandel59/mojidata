@@ -6,14 +6,16 @@ use std::error::Error;
 use std::io::{self, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::time::Instant;
 
 use query::Query;
-use search::{CandidateSource, candidate_database, search_database};
+use search::{CandidateSource, candidate_database, diagnose_database, search_database};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum OutputKind {
     Results,
     Candidates,
+    Diagnostics,
 }
 
 impl FromStr for OutputKind {
@@ -23,6 +25,7 @@ impl FromStr for OutputKind {
         match value {
             "results" => Ok(Self::Results),
             "candidates" => Ok(Self::Candidates),
+            "diagnostics" => Ok(Self::Diagnostics),
             _ => Err(invalid_input(format!("unsupported output kind: {value}"))),
         }
     }
@@ -72,16 +75,48 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Result<Options, Box<dyn
 
 fn run() -> Result<(), Box<dyn Error>> {
     let options = parse_args(env::args().skip(1))?;
-    let output = match options.output_kind {
+    let stdout = io::stdout();
+    let mut stdout = stdout.lock();
+    match options.output_kind {
         OutputKind::Results => {
-            search_database(&options.db_path, &options.query, options.candidate_source)?.results
+            let outcome =
+                search_database(&options.db_path, &options.query, options.candidate_source)?;
+            serde_json::to_writer(&mut stdout, &outcome.results)?;
         }
         OutputKind::Candidates => {
-            candidate_database(&options.db_path, &options.query, options.candidate_source)?
+            let candidates =
+                candidate_database(&options.db_path, &options.query, options.candidate_source)?;
+            serde_json::to_writer(&mut stdout, &candidates)?;
+        }
+        OutputKind::Diagnostics => {
+            let outcome =
+                diagnose_database(&options.db_path, &options.query, options.candidate_source)?;
+            let started = Instant::now();
+            let serialized_results = serde_json::to_vec(&outcome.results)?;
+            let result_serialization_ms = started.elapsed().as_secs_f64() * 1_000.0;
+            let diagnostic = serde_json::json!({
+                "candidateCount": outcome.candidate_count,
+                "resultCount": outcome.results.len(),
+                "serializedResultBytes": serialized_results.len(),
+                "phasesMs": {
+                    "sqliteOpen": outcome.sqlite_open_ms,
+                    "manifest": outcome.manifest_ms,
+                    "candidate": outcome.candidate_ms,
+                    "prefetch": outcome.prefetch_ms,
+                    "exact": outcome.exact_ms,
+                    "resultSerialization": result_serialization_ms,
+                },
+                "externalResidualIncludes": [
+                    "process startup",
+                    "argument and query compilation",
+                    "diagnostic serialization",
+                    "process exit"
+                ]
+            });
+            serde_json::to_writer(&mut stdout, &diagnostic)?;
         }
     };
-    serde_json::to_writer(io::stdout().lock(), &output)?;
-    writeln!(io::stdout().lock())?;
+    writeln!(stdout)?;
     Ok(())
 }
 
@@ -133,6 +168,20 @@ mod tests {
         ]))
         .unwrap();
         assert_eq!(options.output_kind, OutputKind::Candidates);
+    }
+
+    #[test]
+    fn parses_phase_diagnostic_output() {
+        let options = parse_args(args(&[
+            "--db",
+            "idsfind.db",
+            "--query-json",
+            "[\"⿰火土\"]",
+            "--output-kind",
+            "diagnostics",
+        ]))
+        .unwrap();
+        assert_eq!(options.output_kind, OutputKind::Diagnostics);
     }
 
     #[test]

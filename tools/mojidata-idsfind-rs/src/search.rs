@@ -4,6 +4,7 @@ use std::error::Error;
 use std::io;
 use std::path::Path;
 use std::str::FromStr;
+use std::time::Instant;
 
 use rusqlite::{Connection, OpenFlags, OptionalExtension, params_from_iter};
 
@@ -38,6 +39,20 @@ pub struct SearchOutcome {
     pub candidate_count: usize,
 }
 
+pub struct DiagnosticOutcome {
+    pub results: Vec<String>,
+    pub candidate_count: usize,
+    pub sqlite_open_ms: f64,
+    pub manifest_ms: f64,
+    pub candidate_ms: f64,
+    pub prefetch_ms: f64,
+    pub exact_ms: f64,
+}
+
+fn elapsed_ms(started: Instant) -> f64 {
+    started.elapsed().as_secs_f64() * 1_000.0
+}
+
 pub fn search_database(
     path: &Path,
     query: &Query,
@@ -63,6 +78,54 @@ pub fn candidate_database(
     let mut candidates = load_candidates(&connection, query, candidate_source)?;
     sort_unique(&mut candidates);
     Ok(candidates)
+}
+
+pub fn diagnose_database(
+    path: &Path,
+    query: &Query,
+    candidate_source: CandidateSource,
+) -> Result<DiagnosticOutcome, Box<dyn Error>> {
+    let started = Instant::now();
+    let connection = Connection::open_with_flags(
+        path,
+        OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX,
+    )?;
+    let sqlite_open_ms = elapsed_ms(started);
+
+    let started = Instant::now();
+    validate_semantics(&connection)?;
+    let manifest_ms = elapsed_ms(started);
+
+    let started = Instant::now();
+    let candidates = load_candidates(&connection, query, candidate_source)?;
+    let candidate_ms = elapsed_ms(started);
+    let candidate_count = candidates.len();
+
+    let started = Instant::now();
+    let decompositions = load_decompositions(&connection, &candidates)?;
+    let prefetch_ms = elapsed_ms(started);
+
+    let started = Instant::now();
+    let mut results = candidates
+        .into_iter()
+        .filter(|ucs| {
+            decompositions
+                .get(ucs)
+                .is_some_and(|trees| trees.iter().any(|tree| query.matches(tree)))
+        })
+        .collect::<Vec<_>>();
+    sort_unique(&mut results);
+    let exact_ms = elapsed_ms(started);
+
+    Ok(DiagnosticOutcome {
+        results,
+        candidate_count,
+        sqlite_open_ms,
+        manifest_ms,
+        candidate_ms,
+        prefetch_ms,
+        exact_ms,
+    })
 }
 
 fn validate_semantics(connection: &Connection) -> Result<(), Box<dyn Error>> {

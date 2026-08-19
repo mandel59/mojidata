@@ -53,5 +53,13 @@ tools/mojidata-idsfind-rs/target/release/mojidata-idsfind \
   --output-kind candidates
 ```
 
+`--output-kind diagnostics` runs the same filter-and-verify path but emits
+counts and phase durations for SQLite open, manifest validation, candidate
+generation, decomposition prefetch, exact verification, and serialization of
+the complete result array. Measure process wall time outside the executable;
+the difference includes process startup, argument/query compilation,
+diagnostic serialization, and exit. This mode is excluded from principal
+timing, so the default result path performs no phase timing.
+
 Successful output is a sorted unique JSON string array on stdout; diagnostics
-use stderr and invalid input exits nonzero.
+use a JSON object on stdout, errors use stderr, and invalid input exits nonzero.
