@@ -167,7 +167,6 @@ function summarizeRepetitions<T extends TimeMeasurement>(repetitions: T[]) {
 function main() {
   const options = parseArgs(process.argv.slice(2))
   const repositoryRoot = resolve(__dirname, "../../..")
-  const preparePath = resolve(repositoryRoot, "packages/idsdb/prepare.ts")
   mkdirSync(options.workDirectory, { recursive: true })
 
   const buildResults = {} as Record<"fts5" | "bvec", ReturnType<typeof summarizeRepetitions>>
@@ -180,7 +179,11 @@ function main() {
       }
       mkdirSync(outputDirectory)
       const timePath = resolve(outputDirectory, "time.txt")
-      runTimed(process.execPath, ["--import", "tsx", preparePath], timePath, {
+      runTimed("yarn", [
+        "workspace",
+        "@mandel59/idsdb",
+        "prepare",
+      ], timePath, {
         cwd: repositoryRoot,
         env: {
           MOJIDATA_IDSDB_BASE_DIR: repositoryRoot,
@@ -229,7 +232,7 @@ function main() {
       repetitions: options.repetitions,
       summaryStatistic: "median",
       timer: "/usr/bin/time -v",
-      buildScope: "full build from fixed projected records recipe; EIDS projection is excluded",
+      buildScope: "full yarn workspace @mandel59/idsdb prepare from fixed projected records recipe; EIDS projection is excluded",
       rssUnit: "KiB as reported by GNU time",
       idsGrepSizeScope: "complete -G output (.bvec), which is an index-only sidecar",
     },
