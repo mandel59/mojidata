@@ -5,14 +5,34 @@ use std::env;
 use std::error::Error;
 use std::io::{self, Write};
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use query::Query;
-use search::{CandidateSource, search_database};
+use search::{CandidateSource, candidate_database, search_database};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum OutputKind {
+    Results,
+    Candidates,
+}
+
+impl FromStr for OutputKind {
+    type Err = Box<dyn Error>;
+
+    fn from_str(value: &str) -> Result<Self, Self::Err> {
+        match value {
+            "results" => Ok(Self::Results),
+            "candidates" => Ok(Self::Candidates),
+            _ => Err(invalid_input(format!("unsupported output kind: {value}"))),
+        }
+    }
+}
 
 struct Options {
     db_path: PathBuf,
     query: Query,
     candidate_source: CandidateSource,
+    output_kind: OutputKind,
 }
 
 fn invalid_input(message: impl Into<String>) -> Box<dyn Error> {
@@ -24,6 +44,7 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Result<Options, Box<dyn
     let mut db_path = None;
     let mut query_json = None;
     let mut candidate_source = CandidateSource::Fts5;
+    let mut output_kind = OutputKind::Results;
     while let Some(name) = args.next() {
         let value = args
             .next()
@@ -32,6 +53,7 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Result<Options, Box<dyn
             "--db" => db_path = Some(PathBuf::from(value)),
             "--query-json" => query_json = Some(value),
             "--candidate-source" => candidate_source = value.parse()?,
+            "--output-kind" => output_kind = value.parse()?,
             _ => return Err(invalid_input(format!("unsupported argument: {name}"))),
         }
     }
@@ -44,13 +66,21 @@ fn parse_args(args: impl IntoIterator<Item = String>) -> Result<Options, Box<dyn
         db_path,
         query,
         candidate_source,
+        output_kind,
     })
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
     let options = parse_args(env::args().skip(1))?;
-    let outcome = search_database(&options.db_path, &options.query, options.candidate_source)?;
-    serde_json::to_writer(io::stdout().lock(), &outcome.results)?;
+    let output = match options.output_kind {
+        OutputKind::Results => {
+            search_database(&options.db_path, &options.query, options.candidate_source)?.results
+        }
+        OutputKind::Candidates => {
+            candidate_database(&options.db_path, &options.query, options.candidate_source)?
+        }
+    };
+    serde_json::to_writer(io::stdout().lock(), &output)?;
     writeln!(io::stdout().lock())?;
     Ok(())
 }
@@ -83,11 +113,26 @@ mod tests {
         .unwrap();
         assert_eq!(options.db_path, PathBuf::from("idsfind.db"));
         assert_eq!(options.candidate_source, CandidateSource::All);
+        assert_eq!(options.output_kind, OutputKind::Results);
         assert!(
             options
                 .query
                 .matches(&["⿰".into(), "火".into(), "土".into()])
         );
+    }
+
+    #[test]
+    fn parses_candidate_diagnostic_output() {
+        let options = parse_args(args(&[
+            "--db",
+            "idsfind.db",
+            "--query-json",
+            "[\"⿰火土\"]",
+            "--output-kind",
+            "candidates",
+        ]))
+        .unwrap();
+        assert_eq!(options.output_kind, OutputKind::Candidates);
     }
 
     #[test]

@@ -50,6 +50,21 @@ pub fn search_database(
     search_connection(&connection, query, candidate_source)
 }
 
+pub fn candidate_database(
+    path: &Path,
+    query: &Query,
+    candidate_source: CandidateSource,
+) -> Result<Vec<String>, Box<dyn Error>> {
+    let connection = Connection::open_with_flags(
+        path,
+        OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX,
+    )?;
+    validate_semantics(&connection)?;
+    let mut candidates = load_candidates(&connection, query, candidate_source)?;
+    sort_unique(&mut candidates);
+    Ok(candidates)
+}
+
 fn validate_semantics(connection: &Connection) -> Result<(), Box<dyn Error>> {
     let row = connection
         .query_row(
@@ -153,6 +168,11 @@ fn utf16_cmp(left: &str, right: &str) -> Ordering {
     }
 }
 
+fn sort_unique(values: &mut Vec<String>) {
+    values.sort_by(|left, right| utf16_cmp(left, right));
+    values.dedup();
+}
+
 pub fn search_connection(
     connection: &Connection,
     query: &Query,
@@ -170,8 +190,7 @@ pub fn search_connection(
                 .is_some_and(|trees| trees.iter().any(|tree| query.matches(tree)))
         })
         .collect::<Vec<_>>();
-    results.sort_by(|left, right| utf16_cmp(left, right));
-    results.dedup();
+    sort_unique(&mut results);
     Ok(SearchOutcome {
         results,
         candidate_count,
@@ -225,6 +244,20 @@ mod tests {
             assert_eq!(fts5.results, exact.results, "query {text}");
             assert!(fts5.candidate_count <= exact.candidate_count);
         }
+    }
+
+    #[test]
+    fn candidate_diagnostic_returns_sorted_unique_fts5_roots() {
+        let connection = fixture();
+        validate_semantics(&connection).unwrap();
+        let mut candidates = load_candidates(
+            &connection,
+            &Query::parse("⿰火土").unwrap(),
+            CandidateSource::Fts5,
+        )
+        .unwrap();
+        sort_unique(&mut candidates);
+        assert_eq!(candidates, ["A"]);
     }
 
     #[test]

@@ -42,5 +42,16 @@ tools/mojidata-idsfind-rs/target/release/mojidata-idsfind \
 
 The default candidate source is `fts5`. `--candidate-source all` is a
 correctness-only all-root oracle mode and must not be used as a performance
-peer. Successful output is a sorted unique JSON string array on stdout;
-diagnostics use stderr and invalid input exits nonzero.
+peer. `--output-kind candidates` emits the sorted unique candidate roots before
+exact verification. It exists only for candidate-set differential diagnostics
+and must not be timed as a search target:
+
+```console
+tools/mojidata-idsfind-rs/target/release/mojidata-idsfind \
+  --db /path/to/idsfind.db \
+  --query-json '["⿰火土"]' \
+  --output-kind candidates
+```
+
+Successful output is a sorted unique JSON string array on stdout; diagnostics
+use stderr and invalid input exits nonzero.

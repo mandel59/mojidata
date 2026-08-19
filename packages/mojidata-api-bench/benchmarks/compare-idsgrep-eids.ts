@@ -208,6 +208,33 @@ function createIdsTarget(
   }
 }
 
+function createFtsCandidateDiagnostic(dbPath: string) {
+  let latestCandidates: string[] | undefined
+  const capturingProvider: IdsfindCandidateProvider = {
+    async getCandidates(db, idslist, sourceIdslist, policy) {
+      latestCandidates = await ftsIdsfindCandidateProvider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
+      return latestCandidates
+    },
+  }
+  const search = createIdsfind(
+    createBetterSqlite3ExecutorProvider(dbPath),
+    capturingProvider,
+  )
+  return async (item: BenchmarkCase) => {
+    latestCandidates = undefined
+    await search(item.mojidataQuery)
+    if (!latestCandidates) {
+      throw new Error(`${item.name}: FTS candidate provider was not called`)
+    }
+    return sortedSet(latestCandidates)
+  }
+}
+
 function runMojidataFreshProcess(
   options: Options,
   dbPath: string,
@@ -285,6 +312,22 @@ function createMojidataRustFreshProcessTarget(options: Options): Target {
       runMojidataRustFreshProcess(options, item, false)
     },
   }
+}
+
+function runMojidataRustCandidates(options: Options, item: BenchmarkCase) {
+  if (!options.mojidataRustCliPath) {
+    throw new Error("--mojidata-rust-cli is required for candidate diagnostics")
+  }
+  const output = execFileSync(options.mojidataRustCliPath, [
+    "--db", options.fts5Path,
+    "--query-json", JSON.stringify(item.mojidataQuery),
+    "--output-kind", "candidates",
+  ], { encoding: "utf8", maxBuffer: 128 * 1024 * 1024 })
+  const parsed = JSON.parse(output) as unknown
+  if (!Array.isArray(parsed) || parsed.some(value => typeof value !== "string")) {
+    throw new Error("Rust candidate diagnostic did not emit a string array")
+  }
+  return sortedSet(parsed as string[])
 }
 
 function runIdsGrep(options: Options, item: BenchmarkCase, ignoreIndex: boolean) {
@@ -425,6 +468,9 @@ async function main() {
     exactScanCandidateProvider,
   )
   const correctnessTargets = [oracle, ...targets]
+  const nodeFtsCandidates = options.mojidataRustCliPath
+    ? createFtsCandidateDiagnostic(options.fts5Path)
+    : undefined
 
   const correctness = []
   for (const item of manifest.cases) {
@@ -440,9 +486,27 @@ async function main() {
     ) {
       throw new Error(`${item.name}: frozen count ${item.expectedResultCount} does not match exact oracle ${expected.length}`)
     }
+    const candidateComparison = nodeFtsCandidates
+      ? await (async () => {
+        const node = await nodeFtsCandidates(item)
+        const rust = runMojidataRustCandidates(options, item)
+        const missing = difference(node, rust)
+        const extra = difference(rust, node)
+        return {
+          equal: missing.length === 0 && extra.length === 0,
+          nodeCount: node.length,
+          rustCount: rust.length,
+          missingCount: missing.length,
+          extraCount: extra.length,
+          missingExamples: missing.slice(0, 10),
+          extraExamples: extra.slice(0, 10),
+        }
+      })()
+      : null
     correctness.push({
       name: item.name,
       idsgrepStatistics: idsGrepStatistics(options, item),
+      candidateComparison,
       resultCounts: Object.fromEntries(
         correctnessTargets.map(target => [target.name, results[target.name].length]),
       ),
@@ -562,6 +626,9 @@ async function main() {
         "Node startup, PnP module loading, database open, candidate generation, exact verification, and result materialization",
       mojidataRustFreshProcessTimingIncludes: options.mojidataRustCliPath
         ? "native process startup, database open, candidate generation, exact verification, and result materialization"
+        : null,
+      rustNodeFtsCandidateDifferential: options.mojidataRustCliPath
+        ? "correctness-only comparison before exact verification; missing means a Node FTS candidate absent from Rust, extra means a Rust candidate absent from Node; excluded from timing"
         : null,
       persistentTargets: ["mojidata-fts4", "mojidata-fts5", "mojidata-bvec"],
       freshProcessTargets: [
