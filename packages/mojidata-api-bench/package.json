@@ -15,6 +15,7 @@
     "bench:derive-idsfind-whole-literal": "node --import tsx ./benchmarks/derive-idsfind-whole-literal.ts",
     "bench:idsfind-indexes": "node --import tsx ./benchmarks/idsfind-indexes.ts",
     "bench:idsgrep-eids": "node --import tsx ./benchmarks/compare-idsgrep-eids.ts",
+    "bench:measure-idsgrep-eids-costs": "node --import tsx ./benchmarks/measure-idsgrep-eids-costs.ts",
     "bench:compare-eids-heads": "node --import tsx ./benchmarks/compare-eids-heads.ts",
     "bench:validate-idsfind-equality-holdout": "node --import tsx ./benchmarks/validate-idsfind-equality-holdout.ts",
     "bench:local": "node --import tsx ./benchmarks/local.ts",
