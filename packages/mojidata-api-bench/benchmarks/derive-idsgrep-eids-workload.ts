@@ -309,20 +309,22 @@ async function main() {
     }
     const tokens = row.IDS_tokens.split(" ")
     const parsed = parseNode(tokens, 0)
-    if (!parsed || parsed[1] !== tokens.length || !isComparableTree(parsed[0])) {
+    if (!parsed || parsed[1] !== tokens.length) {
       rejectedTrees++
       continue
     }
     const root = parsed[0]
+    if (!isComparableTree(root)) rejectedTrees++
     for (const node of collectNodes(root)) {
       if (node.children.length === 0) {
-        corpusLeafTokens.add(node.token)
+        if (isComparableTree(node)) corpusLeafTokens.add(node.token)
         continue
       }
+      if (!isComparableTree(node)) continue
       add("fragment-exact", node.serialization, row)
       wildcardTrees(node).forEach(tree => add("fragment-one-wildcard", tree, row))
     }
-    if (root.children.length > 0) {
+    if (root.children.length > 0 && isComparableTree(root)) {
       add("root-exact", root.serialization, row)
       wildcardTrees(root).forEach(tree => add("root-one-wildcard", tree, row))
     }
