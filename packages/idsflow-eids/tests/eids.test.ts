@@ -9,6 +9,7 @@ import {
     convertEidsDictionary,
     convertEidsToIdsFlowJsonl,
     dropEidsStructuralHeads,
+    projectEidsParityCorpus,
 } from "../lib/eids"
 
 test("converts IDSgrep EIDS dictionary trees to IDS rows", () => {
@@ -54,6 +55,27 @@ test("round-trips escaped functors while dropping heads", () => {
     const projected = dropEidsStructuralHeads("【entry】[custom]木日")
     assert.equal(projected.output, "[custom]木日\n")
     assert.equal(projected.removed, 1)
+})
+
+test("projects a shared EIDS parity corpus", () => {
+    const source = [
+        "〖EIDS dictionary header and license〗;",
+        "【森】⿱木<林>⿰木木",
+        "【明】[lr]<sun>;月",
+        "【bad】[and]日月",
+    ].join("\n")
+    const projected = projectEidsParityCorpus(source)
+    assert.equal(projected.output, "【森】⿱木⿰木木\n【明】⿰【sun】;月\n")
+    assert.equal(projected.entries, 2)
+    assert.deepEqual(projected.skipped, {
+        missingOrUnsupportedHead: 1,
+        unsupportedTree: 1,
+    })
+    assert.equal(projected.removedStructuralHeads, 1)
+    assert.deepEqual(
+        convertEidsDictionary(projected.output).entries,
+        convertEidsDictionary(source).entries,
+    )
 })
 
 test("counts EIDS-only operators that ordinary IDS cannot represent", () => {

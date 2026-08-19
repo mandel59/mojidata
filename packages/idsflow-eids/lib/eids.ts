@@ -23,6 +23,13 @@ export type EidsStructuralHeadProjection = {
     removed: number
 }
 
+export type EidsParityProjection = {
+    output: string
+    entries: number
+    skipped: EidsConversionResult["skipped"]
+    removedStructuralHeads: number
+}
+
 type EidsNode = {
     head?: string
     functor: string
@@ -271,6 +278,23 @@ function serializeHeadlessNode(
         ).join("")
 }
 
+function serializeParityNode(
+    node: EidsNode,
+    isRoot: boolean,
+    countRemoved: () => void,
+): string {
+    const keepHead = isRoot ||
+        (node.children.length === 0 && node.functor === ";")
+    if (node.head && !keepHead) countRemoved()
+    const head = keepHead && node.head
+        ? "【" + escapeBracketed(node.head, "】") + "】"
+        : ""
+    return head + serializeFunctor(node) +
+        node.children.map(child =>
+            serializeParityNode(child, false, countRemoved)
+        ).join("")
+}
+
 export function dropEidsStructuralHeads(
     input: string,
 ): EidsStructuralHeadProjection {
@@ -279,6 +303,36 @@ export function dropEidsStructuralHeads(
         serializeHeadlessNode(node, () => removed++)
     ).join("\n")
     return { output: output.length === 0 ? "" : `${output}\n`, removed }
+}
+
+export function projectEidsParityCorpus(input: string): EidsParityProjection {
+    const skipped: EidsConversionResult["skipped"] = {
+        missingOrUnsupportedHead: 0,
+        unsupportedTree: 0,
+    }
+    let removedStructuralHeads = 0
+    const output: string[] = []
+    for (const node of new EidsParser(input).parseAll()) {
+        if (!node.head || !headToken(node.head)) {
+            skipped.missingOrUnsupportedHead++
+            continue
+        }
+        if (!convertNode(node)) {
+            skipped.unsupportedTree++
+            continue
+        }
+        output.push(serializeParityNode(
+            node,
+            true,
+            () => removedStructuralHeads++,
+        ))
+    }
+    return {
+        output: output.length === 0 ? "" : output.join("\n") + "\n",
+        entries: output.length,
+        skipped,
+        removedStructuralHeads,
+    }
 }
 
 export function convertEidsDictionary(input: string): EidsConversionResult {
