@@ -1,6 +1,12 @@
 # IDSgrep and Mojidata search over the same EIDS corpus
 
-## Result
+## Historical result (superseded)
+
+The measurements below were produced by an earlier runner that searched the
+headed source EIDS with IDSgrep while Mojidata searched ordinary IDS converted
+from that source. They are retained as historical provenance, but they are not
+confirmatory architecture evidence. A new run is required with the parity
+projection and corpus fingerprint gate described in Reproduction.
 
 On the eight queries in
 `packages/mojidata-api-bench/benchmarks/idsgrep-eids-cases.json`, IDSgrep
@@ -166,8 +172,23 @@ yarn workspace @mandel59/mojidata-api-bench bench:idsgrep-eids -- \
   --bvec /path/to/bvec/idsfind.db \
   --iterations 30 \
   --warmup 5 \
-  --output /path/to/result.json
+  --output /path/to/result.json --work-dir /path/to/work/idsgrep-eids-parity
 ```
+
+The runner additionally requires a work directory argument. It derives
+parity.eids there, preserving each accepted entry head and supported leaf
+identity while removing non-root structural heads. It excludes the same
+ordinary-IDS-inexpressible entries as the EIDS adapter and builds IDSgrep's
+sibling index from that projected file. Therefore IDSgrep no longer searches
+the headed source representation while Mojidata searches a different
+projected representation.
+
+Before any query runs, the runner checks that every distinct UCS and IDS pair
+stored in each FTS4, FTS5, and BV128 database exactly matches the projected
+EIDS corpus and that each database uses the registered identity
+idsflow-records semantics. Correctness is evaluated against the Mojidata exact
+verifier with every stored root supplied as a candidate; IDSgrep indexed
+output is no longer used as the expected result.
 
 The final raw result JSON had SHA-256
 `2bd0b9ce8b4b40f6cf7c2f934dc33e49f075216d0c21758643c113ec62bb45d3`.

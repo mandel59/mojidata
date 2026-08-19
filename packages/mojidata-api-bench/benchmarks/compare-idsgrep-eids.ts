@@ -1,9 +1,10 @@
 import { execFileSync } from "node:child_process"
 import { createHash } from "node:crypto"
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs"
 import os from "node:os"
 import { resolve } from "node:path"
 import { performance } from "node:perf_hooks"
+import Database from "better-sqlite3"
 
 import {
   createBvecIdsfindCandidateProvider,
@@ -12,7 +13,10 @@ import {
   type IdsfindCandidateProvider,
 } from "@mandel59/mojidata-api-core"
 import { createBetterSqlite3ExecutorProvider } from "@mandel59/mojidata-api-better-sqlite3"
-import { convertEidsDictionary } from "@mandel59/idsflow-eids"
+import {
+  convertEidsDictionary,
+  projectEidsParityCorpus,
+} from "@mandel59/idsflow-eids"
 
 type BenchmarkCase = {
   name: string
@@ -28,6 +32,7 @@ type Options = {
   fts5Path: string
   bvecPath: string
   manifestPath: string
+  workDirectory: string
   outputPath?: string
   iterations: number
   warmup: number
@@ -37,6 +42,15 @@ type Target = {
   name: string
   search: (item: BenchmarkCase) => Promise<string[]>
   timedSearch: (item: BenchmarkCase) => Promise<void>
+}
+
+const exactScanCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db) {
+    const rows = await db.query<{ UCS?: unknown }>(
+      "SELECT DISTINCT UCS FROM idsfind",
+    )
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
 }
 
 function parseCount(value: string | undefined, fallback: number, name: string) {
@@ -69,6 +83,7 @@ function parseArgs(argv: string[]): Options {
     fts4Path: required("--fts4"),
     fts5Path: required("--fts5"),
     bvecPath: required("--bvec"),
+    workDirectory: required("--work-dir"),
     manifestPath: values.get("--manifest")
       ? resolve(values.get("--manifest") as string)
       : resolve(__dirname, "idsgrep-eids-cases.json"),
@@ -91,6 +106,63 @@ function sortedSet(values: Iterable<string>) {
 function difference(left: readonly string[], right: readonly string[]) {
   const rightSet = new Set(right)
   return left.filter(value => !rightSet.has(value))
+}
+
+type CorpusEntry = {
+  UCS: string
+  IDS: string
+}
+
+function summarizeCorpus(entries: Iterable<CorpusEntry>) {
+  const records = sortedSet(
+    Array.from(entries, entry => JSON.stringify([entry.UCS, entry.IDS])),
+  )
+  return {
+    entries: records.length,
+    sha256: createHash("sha256").update(records.join("\n") + "\n").digest("hex"),
+  }
+}
+
+function summarizeDatabaseCorpus(path: string) {
+  const db = new Database(path, { readonly: true, fileMustExist: true })
+  try {
+    const semantics = db.prepare(
+      "SELECT schema_version, semantics_mode, semantics_profile " +
+      "FROM idsfind_semantics",
+    ).get() as {
+      schema_version?: unknown
+      semantics_mode?: unknown
+      semantics_profile?: unknown
+    } | undefined
+    if (
+      semantics?.schema_version !== 3 ||
+      semantics.semantics_mode !== "registered" ||
+      semantics.semantics_profile !== "idsflow-records@1"
+    ) {
+      throw new Error(
+        "database must use registered idsflow-records@1 semantics: " +
+        path + " " + JSON.stringify(semantics),
+      )
+    }
+    return summarizeCorpus(db.prepare(
+      "SELECT UCS, replace(IDS_tokens, ' ', '') AS IDS FROM idsfind",
+    ).iterate() as Iterable<CorpusEntry>)
+  } finally {
+    db.close()
+  }
+}
+
+function requireMatchingCorpus(
+  expected: ReturnType<typeof summarizeCorpus>,
+  actual: ReturnType<typeof summarizeCorpus>,
+  name: string,
+) {
+  if (actual.entries !== expected.entries || actual.sha256 !== expected.sha256) {
+    throw new Error(
+      name + " database corpus does not match the projected EIDS corpus: " +
+      JSON.stringify({ expected, actual }),
+    )
+  }
 }
 
 function percentile(sorted: readonly number[], fraction: number) {
@@ -205,12 +277,35 @@ function shuffled<T>(values: T[], seed = 1) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2))
+  const sourceEidsPath = options.eidsPath
+  const sourceEids = readFileSync(sourceEidsPath, "utf8")
+  const parityProjection = projectEidsParityCorpus(sourceEids)
+  mkdirSync(options.workDirectory, { recursive: true })
+  options.eidsPath = resolve(options.workDirectory, "parity.eids")
+  writeFileSync(options.eidsPath, parityProjection.output)
+  const idsgrepIndexPath = options.eidsPath.replace(/\.eids$/u, ".bvec")
+  writeFileSync(
+    idsgrepIndexPath,
+    execFileSync(options.idsgrepPath, ["-G", options.eidsPath], {
+      maxBuffer: 128 * 1024 * 1024,
+    }),
+  )
   const manifestBytes = readFileSync(options.manifestPath)
   const manifest = JSON.parse(manifestBytes.toString("utf8")) as {
     caseSetVersion: number
     cases: BenchmarkCase[]
   }
-  const idsgrepIndexPath = options.eidsPath.replace(/\.eids$/u, ".bvec")
+  const expectedCorpus = summarizeCorpus(
+    convertEidsDictionary(parityProjection.output).entries,
+  )
+  const databaseCorpora = {
+    fts4: summarizeDatabaseCorpus(options.fts4Path),
+    fts5: summarizeDatabaseCorpus(options.fts5Path),
+    bvec: summarizeDatabaseCorpus(options.bvecPath),
+  }
+  for (const [name, corpus] of Object.entries(databaseCorpora)) {
+    requireMatchingCorpus(expectedCorpus, corpus, name)
+  }
   const targets: Target[] = [
     createIdsGrepTarget("idsgrep-indexed", options, false),
     createIdsGrepTarget("idsgrep-scan", options, true),
@@ -218,20 +313,28 @@ async function main() {
     createIdsTarget("mojidata-fts5", options.fts5Path, ftsIdsfindCandidateProvider),
     createIdsTarget("mojidata-bvec", options.bvecPath, createBvecIdsfindCandidateProvider()),
   ]
+  const oracle = createIdsTarget(
+    "mojidata-exact-scan",
+    options.fts5Path,
+    exactScanCandidateProvider,
+  )
+  const correctnessTargets = [oracle, ...targets]
 
   const correctness = []
   for (const item of manifest.cases) {
     const results = Object.fromEntries(
-      await Promise.all(targets.map(async target => [target.name, await target.search(item)])),
+      await Promise.all(
+        correctnessTargets.map(async target => [target.name, await target.search(item)]),
+      ),
     ) as Record<string, string[]>
-    const expected = results["idsgrep-indexed"]
+    const expected = results[oracle.name]
     correctness.push({
       name: item.name,
       idsgrepStatistics: idsGrepStatistics(options, item),
       resultCounts: Object.fromEntries(
-        targets.map(target => [target.name, results[target.name].length]),
+        correctnessTargets.map(target => [target.name, results[target.name].length]),
       ),
-      comparisons: Object.fromEntries(targets.slice(1).map(target => {
+      comparisons: Object.fromEntries(targets.map(target => {
         const actual = results[target.name]
         const missing = difference(expected, actual)
         const extra = difference(actual, expected)
@@ -269,9 +372,14 @@ async function main() {
   }
 
   const payload = {
-    formatVersion: 1,
+    formatVersion: 2,
     generatedAt: new Date().toISOString(),
     inputs: {
+      sourceEids: {
+        path: sourceEidsPath,
+        sha256: hashFile(sourceEidsPath),
+        bytes: statSync(sourceEidsPath).size,
+      },
       idsgrep: {
         path: options.idsgrepPath,
         version: execFileSync(options.idsgrepPath, ["-V"], { encoding: "utf8" })
@@ -282,6 +390,9 @@ async function main() {
         path: options.eidsPath,
         sha256: hashFile(options.eidsPath),
         bytes: statSync(options.eidsPath).size,
+        entries: parityProjection.entries,
+        skippedFromSource: parityProjection.skipped,
+        removedStructuralHeads: parityProjection.removedStructuralHeads,
       },
       idsgrepIndex: existsSync(idsgrepIndexPath) ? {
         path: idsgrepIndexPath,
@@ -296,7 +407,9 @@ async function main() {
         path,
         sha256: hashFile(path),
         bytes: statSync(path).size,
+        corpus: databaseCorpora[name as keyof typeof databaseCorpora],
       }])),
+      expectedCorpus,
       manifest: {
         path: options.manifestPath,
         sha256: createHash("sha256").update(manifestBytes).digest("hex"),
@@ -307,6 +420,10 @@ async function main() {
       iterations: options.iterations,
       warmup: options.warmup,
       idsgrepIndexedUsesSiblingBvec: true,
+      idsgrepAndMojidataCorpusContract:
+        "accepted ordinary IDS entries from the recorded parity EIDS projection",
+      correctnessOracle:
+        "Mojidata exact verifier with every stored root as a candidate",
       idsgrepTimingIncludesProcessStartup: true,
       outputDuringTiming: "discarded after each engine materialized its result",
     },
