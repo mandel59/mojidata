@@ -151,6 +151,10 @@ const registeredIdsQuerySemantics: Record<
                         kind: "differential",
                         locator: "packages/mojidata-api-bench/benchmarks/differential-idsflow-query-groups.ts",
                     },
+                    {
+                        kind: "differential",
+                        locator: "packages/mojidata-api-bench/benchmarks/evaluate-idsflow-s2-preservation.ts",
+                    },
                 ],
             },
         ],

@@ -32,7 +32,8 @@
     "bench:differential-idsflow-decomposed-search": "node --import tsx ./benchmarks/differential-idsflow-decomposed-search.ts",
     "bench:differential-idsflow-query-groups": "node --import tsx ./benchmarks/differential-idsflow-query-groups.ts",
     "bench:evaluate-idsflow-mismatch-matrix": "node --import tsx ./benchmarks/evaluate-idsflow-mismatch-matrix.ts",
-    "bench:evaluate-idsflow-s2-preservation": "node --import tsx ./benchmarks/evaluate-idsflow-s2-preservation.ts"
+    "bench:evaluate-idsflow-s2-preservation": "node --import tsx ./benchmarks/evaluate-idsflow-s2-preservation.ts",
+    "bench:evaluate-idsflow-s3-enforcement": "node --import tsx ./benchmarks/evaluate-idsflow-s3-enforcement.ts"
   },
   "dependencies": {
     "@mandel59/idsdb-bvec": "workspace:^",
