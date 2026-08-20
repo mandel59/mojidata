@@ -11,5 +11,6 @@ export {
   createD1Db,
   createD1DbFromEnv,
   createD1FetchHandler,
+  type CreateD1DbOptions,
   type MojidataApiD1Env,
 } from "./lib/d1-runtime"

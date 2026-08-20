@@ -1,9 +1,18 @@
-import type { MojidataApiDb } from "@mandel59/mojidata-api-core"
+import type {
+  CreateIdsfindOptions,
+  MojidataApiDb,
+} from "@mandel59/mojidata-api-core"
+
+export type WorkerIdsfindOptions = Pick<
+  CreateIdsfindOptions,
+  "allowExperimentalQueryPlan" | "requireRegisteredQuerySemantics"
+>
 
 export type WorkerInit = {
   sqlWasmUrl: string
   mojidataDbUrl: string
   idsfindDbUrl: string
+  idsfindOptions?: WorkerIdsfindOptions
   sqliteWasm?: {
     wasmUrl?: string
     wasmBinary?: ArrayBuffer | Uint8Array

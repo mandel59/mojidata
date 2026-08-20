@@ -1,4 +1,9 @@
-import { createSqlApiDb, type MojidataApiDb, type SqlExecutor } from "@mandel59/mojidata-api-core"
+import {
+  createSqlApiDb,
+  type CreateIdsfindOptions,
+  type MojidataApiDb,
+  type SqlExecutor,
+} from "@mandel59/mojidata-api-core"
 import type { Database } from "@sqlite.org/sqlite-wasm"
 
 import {
@@ -30,14 +35,18 @@ export function createSqliteWasmExecutorProvider(openDatabase: DatabaseOpener) {
   }
 }
 
+export type CreateSqliteWasmDbOptions = {
+  getMojidataDb: () => Promise<SqlExecutor>
+  getIdsfindDb: () => Promise<SqlExecutor>
+  idsfindOptions?: CreateIdsfindOptions
+}
+
 export function createSqliteWasmDb({
   getMojidataDb,
   getIdsfindDb,
-}: {
-  getMojidataDb: () => Promise<SqlExecutor>
-  getIdsfindDb: () => Promise<SqlExecutor>
-}): MojidataApiDb {
-  return createSqlApiDb({ getMojidataDb, getIdsfindDb })
+  idsfindOptions,
+}: CreateSqliteWasmDbOptions): MojidataApiDb {
+  return createSqlApiDb({ getMojidataDb, getIdsfindDb, idsfindOptions })
 }
 
 export function openOpfsSAHPoolDatabase(
@@ -54,6 +63,7 @@ export type CreateSqliteWasmDbFromOpfsSAHPoolOptions = {
   poolUtil: SqliteWasmSAHPoolUtil
   mojidata: OpfsSAHPoolMaterializeOptions
   idsfind: OpfsSAHPoolMaterializeOptions
+  idsfindOptions?: CreateIdsfindOptions
 }
 
 export class SqliteWasmIdsfindSchemaError extends Error {
@@ -95,6 +105,7 @@ export async function createSqliteWasmDbFromOpfsSAHPool({
   poolUtil,
   mojidata,
   idsfind,
+  idsfindOptions,
 }: CreateSqliteWasmDbFromOpfsSAHPoolOptions): Promise<MojidataApiDb> {
   return createSqliteWasmDb({
     getMojidataDb: createSqliteWasmMojidataDbProvider(async () => {
@@ -105,5 +116,6 @@ export async function createSqliteWasmDbFromOpfsSAHPool({
       await ensureOpfsSAHPoolDatabase(poolUtil, idsfind)
       return openOpfsSAHPoolDatabase(poolUtil, idsfind.name)
     }),
+    idsfindOptions,
   })
 }

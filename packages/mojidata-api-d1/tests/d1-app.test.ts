@@ -141,10 +141,20 @@ function createFakeIdsfindDb() {
   return new FakeD1Database((sql, values, mode) => {
     const normalizedSql = sql.replaceAll(/\s+/g, " ").trim()
 
+    if (
+      normalizedSql ===
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'idsfind_semantics'"
+    ) {
+      assert.equal(mode, "first")
+      assert.deepEqual(values, [])
+      return null
+    }
+
     if (sql.includes("from idsfind_fts")) {
       assert.equal(mode, "run")
-      assert.equal(values.length, 1)
+      assert.equal(values.length, 2)
       assert.equal(typeof values[0], "string")
+      assert.equal(values[1], 1)
       return [{ UCS: "信" }]
     }
 

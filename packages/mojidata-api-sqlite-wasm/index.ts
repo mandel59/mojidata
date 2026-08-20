@@ -6,6 +6,7 @@ export {
   createSqliteWasmMojidataDbProvider,
   openOpfsSAHPoolDatabase,
   assertSqliteWasmIdsfindFts5Schema,
+  type CreateSqliteWasmDbOptions,
   type CreateSqliteWasmDbFromOpfsSAHPoolOptions,
   type SqliteWasmIdsfindSchemaDatabase,
 } from "./lib/sqlite-wasm-runtime.js"
