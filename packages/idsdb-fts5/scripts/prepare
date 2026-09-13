@@ -6,6 +6,7 @@ STAMP=".idsdb-fts5.input.sha256"
 FTS_VERSION="5"
 
 if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  rm -f "$STAMP"
   echo "idsdb-fts5 prepare: building from IDSFlow recipe"
   MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
   MOJIDATA_IDSDB_OUT_DIR="$PWD" \
@@ -26,6 +27,7 @@ if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
   fi
 fi
 
+rm -f "$STAMP"
 echo "idsdb-fts5 prepare (fts${FTS_VERSION}): inputs changed (or first build), rebuilding"
 OUT_DIR="$PWD"
 if command -v cygpath >/dev/null 2>&1; then

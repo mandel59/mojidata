@@ -251,7 +251,10 @@ export function createSqlApiDb({
     idsfind,
     async idsfindDebugQuery(queryBody: string, idslist: string[]) {
       const db = await getIdsfindDb()
-      const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
+      const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db, {
+        allowExperimental: idsfindOptions?.allowExperimentalQueryPlan,
+        requireRegisteredSchema3: idsfindOptions?.requireRegisteredQuerySemantics,
+      }))
       const query = makeIdsfindQuery(queryBody)
       return await db.query<Record<string, unknown>>(query, {
         $idslist: JSON.stringify(tokenized.forQuery),

@@ -5,6 +5,7 @@ STAMP=".idsdb-bvec.input.sha256"
 INDEX_MODE="bvec"
 
 if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  rm -f "$STAMP"
   echo "idsdb-bvec prepare: building from IDSFlow recipe"
   MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" \
   MOJIDATA_IDSDB_OUT_DIR="$PWD" \
@@ -20,6 +21,7 @@ if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
     exit 0
   fi
 fi
+rm -f "$STAMP"
 echo "idsdb-bvec prepare: inputs changed (or first build), rebuilding"
 MOJIDATA_IDSDB_INDEX_MODE="$INDEX_MODE" MOJIDATA_IDSDB_OUT_DIR="$PWD" \
   yarn --cwd ../idsdb exec node --import tsx prepare.ts

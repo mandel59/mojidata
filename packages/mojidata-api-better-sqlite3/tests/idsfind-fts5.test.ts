@@ -4,6 +4,7 @@ import { describe, test } from "node:test"
 import Database from "better-sqlite3"
 
 import { createIdsfind } from "@mandel59/mojidata-api-core/lib/idsfind-sql"
+import { createSqlApiDb } from "@mandel59/mojidata-api-core"
 
 import { createBetterSqlite3Executor } from "../index"
 
@@ -95,6 +96,37 @@ function createProfileFixture(
 }
 
 describe("idsfind query compatibility", () => {
+  test("debug queries use the same semantics policy as normal search", async () => {
+    const legacy = createCompositeLiteralFixture()
+    const experimental = createSchema3Fixture("experimental", null, {
+      version: 1,
+      transforms: [],
+    })
+    try {
+      const strict = createSqlApiDb({
+        getMojidataDb: async () => legacy.executor,
+        getIdsfindDb: async () => legacy.executor,
+        idsfindOptions: { requireRegisteredQuerySemantics: true },
+      })
+      await assert.rejects(
+        strict.idsfindDebugQuery("select UCS from results", ["日"]),
+        /strict IDS query semantics require a schema 3 registered manifest/,
+      )
+      const optedIn = createSqlApiDb({
+        getMojidataDb: async () => experimental.executor,
+        getIdsfindDb: async () => experimental.executor,
+        idsfindOptions: { allowExperimentalQueryPlan: true },
+      })
+      assert.deepEqual(
+        await optedIn.idsfindDebugQuery("select UCS from results order by UCS", ["日"]),
+        [{ UCS: "X" }, { UCS: "明" }],
+      )
+    } finally {
+      legacy.db.close()
+      experimental.db.close()
+    }
+  })
+
   test("supports the rowid-based idsfind query against FTS5", async () => {
     const db = new Database(":memory:")
     db.exec(`

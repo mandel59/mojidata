@@ -23,9 +23,11 @@ for rel in [
     pathlib.Path("idsdb/package.json"),
     pathlib.Path("idsdb/tsconfig.json"),
     pathlib.Path("idsdb/prepare.ts"),
-    pathlib.Path("idsdb/lib/idsflow-adapter.ts"),
 ]:
     add_file(workspace_root / rel)
+
+for p in sorted((root / "lib").glob("*.ts")):
+    add_file(p)
 
 idsdb_utils_root = workspace_root / "idsdb-utils"
 for rel in [

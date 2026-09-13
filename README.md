@@ -27,8 +27,21 @@ yarn && yarn build
 - `yarn ci:pack:affected`: run publish dry-runs only for affected publishable packages
 - `yarn ci:test`: run the repository test suite used in CI
 - `yarn ci:test:affected`: run only affected package tests for a pull request base SHA
+- `yarn test:ids-research`: run IDS utility, builder, and optional EIDS adapter tests and type-check the benchmark tooling (after building workspace dependencies)
 
 `react-mojidata-api` browser integration tests are not part of the default CI path. The standard CI flow uses the in-process/unit test paths.
+
+The default IDS search remains FTS4 for sql.js and FTS5 for native SQLite.
+Bloom-vector and structural candidate providers are opt-in and retain exact
+verification. Newly built IDS databases include a versioned query-semantics
+manifest; runtimes continue to accept older databases by default. Enable
+`requireRegisteredQuerySemantics` only after qualifying the replacement databases
+for every deployed binding. See [the core API](packages/mojidata-api-core) and
+[IDSDB build options](packages/idsdb) for details.
+
+The private `idsflow-eids` adapter and experimental Rust harness are research
+tools. They are not part of the default API runtime or a replacement for the
+Mojidata CLI.
 
 The `Validate` workflow uses the affected-package path for pull requests and the full path for direct pushes to `develop`.
 Direct pushes to `main` are validated by the `Release` workflow before it creates or updates a release pull request or publishes packages.
