@@ -18,7 +18,8 @@
     "lib/*.d.ts",
     "bin/*.js",
     "bin/*.d.ts",
-    "README.md"
+    "README.md",
+    "LICENSE.md"
   ],
   "scripts": {
     "prepare": "tsc",
@@ -26,7 +27,7 @@
     "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "@mandel59/idsdb-utils": "^1.7.0"
   },
