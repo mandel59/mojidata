@@ -485,8 +485,7 @@ export class IDSDecomposer {
                     if (tokens.length === 1 && tokens[0] === char) continue
                     if (tokens[0] === "⊖" || tokens[0] === "㇯") continue
                     for (const dependency of tokens) {
-                        if (dependency[0] === "&" ||
-                            dependency[0] === "{" ||
+                        if (dependency[0] === "{" ||
                             dependency === "？" ||
                             idsOperatorRegExp.test(dependency)) {
                             continue

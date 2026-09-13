@@ -110,6 +110,36 @@ describe("IDS decomposition cycle preflight", () => {
         )
     })
 
+    test("rejects cycles through defined named components", async () => {
+        await expectCycle(
+            [
+                ["甲", "G", "⿰&AJ1-00001;日"],
+                ["&AJ1-00001;", "G", "⿱甲月"],
+            ],
+            "甲@G -> &AJ1-00001;@G -> 甲@G",
+        )
+        await expectCycle(
+            [["&AJ1-00001;", "G", "⿰&AJ1-00001;日"]],
+            "&AJ1-00001;@G -> &AJ1-00001;@G",
+        )
+    })
+
+    test("keeps undefined and self-defined named components terminal", async () => {
+        const decomposer = await IDSDecomposer.create({
+            mojidb: fixture([
+                ["甲", "G", "⿰&AJ1-00001;&AJ1-00002;"],
+                ["&AJ1-00002;", "G", "&AJ1-00002;"],
+            ]),
+        })
+        try {
+            assert.deepEqual([...decomposer.decomposeAll("甲", "G")], [
+                ["⿰", "&AJ1-00001;", "&AJ1-00002;"],
+            ])
+        } finally {
+            decomposer.close()
+        }
+    })
+
     test("rejects an indirect cycle", async () => {
         await expectCycle(
             [

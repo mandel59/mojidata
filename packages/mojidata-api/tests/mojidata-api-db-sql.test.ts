@@ -175,6 +175,7 @@ describe('createSqlApiDb', () => {
     assert.equal(idsfind.queryCalls.length, 1)
     assert.deepEqual(idsfind.queryCalls[0]?.params, {
       $idslist: JSON.stringify(tokenizeIdsList(['⿰亻言']).forQuery),
+      $resolve_materialized_components: 1,
     })
   })
 
