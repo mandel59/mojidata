@@ -5,6 +5,14 @@ cd "$(dirname "$0")/.."
 STAMP=".idsdb-fts5.input.sha256"
 FTS_VERSION="5"
 
+if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  echo "idsdb-fts5 prepare: building from IDSFlow recipe"
+  MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
+  MOJIDATA_IDSDB_OUT_DIR="$PWD" \
+    yarn --cwd ../idsdb exec node --import tsx prepare.ts
+  exit 0
+fi
+
 CURRENT_HASH="$(
   MOJIDATA_IDSDB_FTS_VERSION="$FTS_VERSION" \
     python3 ../idsdb/scripts/input-hash.py

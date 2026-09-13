@@ -1,0 +1,38 @@
+{
+  "name": "@mandel59/idsflow-eids",
+  "version": "1.7.0",
+  "private": true,
+  "description": "EIDS adapter for IDSFlow",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/idsflow-eids"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "bin": "bin/idsflow-eids.js",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib/*.js",
+    "lib/*.d.ts",
+    "bin/*.js",
+    "bin/*.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "prepare": "tsc",
+    "test": "yarn prepare && node --import tsx --test ./tests/*.test.ts",
+    "test:ci": "yarn prepare && node --import tsx --test ./tests/*.test.ts"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@mandel59/idsdb-utils": "^1.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

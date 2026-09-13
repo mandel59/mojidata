@@ -19,7 +19,9 @@
     "LICENSE.md"
   ],
   "scripts": {
-    "prepare": "bash scripts/prepare"
+    "prepare": "bash scripts/prepare",
+    "test": "node --import tsx --test ./tests/*.test.ts",
+    "build:bvec-derived": "node --import tsx build-bvec-derived.ts"
   },
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
@@ -31,6 +33,7 @@
     "better-sqlite3": "^12.5.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "yaml": "^1.10.2"
   }
 }

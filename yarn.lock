@@ -789,13 +789,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mandel59/idsdb-bvec@workspace:^, @mandel59/idsdb-bvec@workspace:packages/idsdb-bvec":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/idsdb-bvec@workspace:packages/idsdb-bvec"
+  languageName: unknown
+  linkType: soft
+
 "@mandel59/idsdb-fts5@npm:^1.9.0, @mandel59/idsdb-fts5@workspace:packages/idsdb-fts5":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb-fts5@workspace:packages/idsdb-fts5"
   languageName: unknown
   linkType: soft
 
-"@mandel59/idsdb-utils@npm:^1.7.0, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
+"@mandel59/idsdb-utils@npm:^1.7.0, @mandel59/idsdb-utils@workspace:^, @mandel59/idsdb-utils@workspace:packages/idsdb-utils":
   version: 0.0.0-use.local
   resolution: "@mandel59/idsdb-utils@workspace:packages/idsdb-utils"
   dependencies:
@@ -803,6 +809,7 @@ __metadata:
     "@types/node": "npm:^24.10.4"
     sql.js: "npm:^1.13.0"
     ts-node: "npm:^10.9.2"
+    tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
   languageName: unknown
   linkType: soft
@@ -819,6 +826,20 @@ __metadata:
     ts-node: "npm:^10.9.2"
     tsx: "npm:^4.21.0"
     typescript: "npm:^5.9.3"
+    yaml: "npm:^1.10.2"
+  languageName: unknown
+  linkType: soft
+
+"@mandel59/idsflow-eids@workspace:^, @mandel59/idsflow-eids@workspace:packages/idsflow-eids":
+  version: 0.0.0-use.local
+  resolution: "@mandel59/idsflow-eids@workspace:packages/idsflow-eids"
+  dependencies:
+    "@mandel59/idsdb-utils": "npm:^1.7.0"
+    "@types/node": "npm:^24.10.4"
+    tsx: "npm:^4.21.0"
+    typescript: "npm:^5.9.3"
+  bin:
+    idsflow-eids: bin/idsflow-eids.js
   languageName: unknown
   linkType: soft
 
@@ -850,9 +871,15 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-bench@workspace:packages/mojidata-api-bench"
   dependencies:
+    "@mandel59/idsdb-bvec": "workspace:^"
+    "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/idsdb-utils": "workspace:^"
+    "@mandel59/idsflow-eids": "workspace:^"
     "@mandel59/mojidata-api-better-sqlite3": "npm:^1.9.0"
+    "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@mandel59/mojidata-api-node-sqlite": "npm:^1.9.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.8.1"
+    "@types/better-sqlite3": "npm:^5.4.1"
     "@types/node": "npm:^24.10.4"
     better-sqlite3: "npm:^12.5.0"
     tsx: "npm:^4.21.0"
@@ -864,7 +891,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-better-sqlite3@workspace:packages/mojidata-api-better-sqlite3"
   dependencies:
+    "@mandel59/idsdb-bvec": "workspace:^"
     "@mandel59/idsdb-fts5": "npm:^1.9.0"
+    "@mandel59/idsdb-utils": "workspace:^"
     "@mandel59/mojidata": "npm:^1.8.0"
     "@mandel59/mojidata-api-core": "npm:^1.9.0"
     "@mandel59/mojidata-api-hono": "npm:^1.8.1"

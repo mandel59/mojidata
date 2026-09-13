@@ -28,11 +28,14 @@ export function createBetterSqlite3MojidataDbProvider(path: string) {
   }
 }
 
-export function createBetterSqlite3ExecutorProvider(path: string) {
+export function createBetterSqlite3ExecutorProvider(
+  path: string,
+  options: { cacheStatements?: boolean } = {},
+) {
   let executorPromise: Promise<SqlExecutor> | undefined
   return function getExecutor(): Promise<SqlExecutor> {
     executorPromise ??= Promise.resolve(
-      createBetterSqlite3Executor(openDatabaseFromFile(path)),
+      createBetterSqlite3Executor(openDatabaseFromFile(path), options),
     )
     return executorPromise
   }

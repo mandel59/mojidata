@@ -1,0 +1,25 @@
+{
+  "name": "@mandel59/idsdb-bvec",
+  "version": "0.1.0",
+  "description": "Bloom-vector idsfind database package for mojidata backends",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandel59/mojidata.git",
+    "directory": "packages/idsdb-bvec"
+  },
+  "exports": {
+    "./idsfind.db": "./idsfind.db"
+  },
+  "files": [
+    "idsfind.db",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "scripts": {
+    "prepare": "bash scripts/prepare",
+    "prepack": "yarn prepare"
+  },
+  "author": "Ryusei Yamaguchi",
+  "license": "MIT"
+}

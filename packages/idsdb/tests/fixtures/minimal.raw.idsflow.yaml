@@ -1,0 +1,7 @@
+version: 1
+datasets:
+  input:
+    read:
+      kind: records-jsonl
+      path: minimal.idsflow.jsonl
+output: input

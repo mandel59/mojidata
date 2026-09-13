@@ -1,7 +1,12 @@
 import type { MojidataApiDb } from "./mojidata-api-db"
-import { createIdsfind } from "./idsfind-sql"
+import {
+  createIdsfind,
+  type CreateIdsfindOptions,
+  type IdsfindCandidateProvider,
+} from "./idsfind-sql"
 import { makeIdsfindQuery } from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
+import { getIdsQueryPlan } from "./idsfind-semantics"
 import { createLibSearch } from "./libsearch"
 import {
   buildMojidataSelectQuery,
@@ -106,12 +111,20 @@ function isStrongVariantRelation(relation: string) {
 export function createSqlApiDb({
   getMojidataDb,
   getIdsfindDb,
+  idsfindCandidateProvider,
+  idsfindOptions,
 }: {
   getMojidataDb: DbProvider
   getIdsfindDb: DbProvider
+  idsfindCandidateProvider?: IdsfindCandidateProvider
+  idsfindOptions?: CreateIdsfindOptions
 }): MojidataApiDb {
   const { search, filterChars } = createLibSearch(getMojidataDb)
-  const idsfind = createIdsfind(getIdsfindDb)
+  const idsfind = createIdsfind(
+    getIdsfindDb,
+    idsfindCandidateProvider,
+    idsfindOptions,
+  )
   const shouldIncludeComputedField = (selection: string[], field: string) =>
     selection.length === 0 || selection.includes(field)
 
@@ -238,10 +251,12 @@ export function createSqlApiDb({
     idsfind,
     async idsfindDebugQuery(queryBody: string, idslist: string[]) {
       const db = await getIdsfindDb()
-      const tokenized = tokenizeIdsList(idslist)
+      const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db))
       const query = makeIdsfindQuery(queryBody)
       return await db.query<Record<string, unknown>>(query, {
         $idslist: JSON.stringify(tokenized.forQuery),
+        $resolve_materialized_components:
+          tokenized.resolveMaterializedComponents ? 1 : 0,
       })
     },
     search,

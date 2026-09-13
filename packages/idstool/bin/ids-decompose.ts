@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { tokenizeIDS, applyOperators } from "@mandel59/idsdb-utils"
+import { tokenizeIDS, applyOperators, idsdbSourceTokens } from "@mandel59/idsdb-utils"
 import { IDSDecomposer } from "@mandel59/idsdb-utils/node"
 import { argparse } from "../lib/argparse"
 
@@ -24,9 +24,7 @@ async function main() {
 
     const queryMode = Boolean(options.get("-q") || options.get("--query"))
 
-    const allSources = "BGHJKMPSTUVXZUCS2003"
-
-    const sources = (options.get("--source") === "*" ? allSources : options.get("--source") || allSources).match(/UCS2003|\w/g) ?? []
+    const sources = options.get("--source") === "*" || !options.get("--source") ? idsdbSourceTokens : options.get("--source")!.split(",")
     const showSource = Boolean(options.get("--show-source"))
 
     for (const arg of argv) {

@@ -17,4 +17,34 @@ yarn mojidata-api:bench --backend better-sqlite3 --output ./tmp/better-sqlite3.j
 yarn mojidata-api:bench --backend node:sqlite --output ./tmp/node-sqlite.json
 yarn mojidata-api:bench:compare ./tmp/sqljs.json ./tmp/better-sqlite3.json
 node ./benchmarks/compare-idsfind-fts.mjs --output ./tmp/idsfind-fts.json
+yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes --output ./tmp/idsfind-indexes.json
 ```
+
+The IDS index runner compares FTS5 and BV128 against the same exact verifier.
+It records raw candidate, end-to-end, in-search candidate, and residual
+exact/fetch samples together with the seed, repository revision, database
+sizes, and SHA-256 digests. The case/index execution order is deterministically
+randomized:
+
+```sh
+yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes \
+  --iterations 20 --warmup 3 --seed 1 \
+  --output ./tmp/idsfind-indexes.json
+```
+
+Use `--manifest` to run a frozen alternate workload. Output records the
+manifest SHA-256 and a deterministic 2,000-resample bootstrap 95% interval for
+each phase median:
+
+```sh
+yarn workspace @mandel59/mojidata-api-bench bench:idsfind-indexes \
+  --manifest benchmarks/idsfind-index-pilot-cases.json \
+  --iterations 20 --warmup 3 --seed 1 \
+  --output ./tmp/idsfind-index-pilot.json
+```
+
+Add `--include-hybrid` to measure two preregistered compositions:
+
+- `selector`: use BV128 only for a single whole-anchored query;
+- `intersection`: intersect the two sound candidate sets, then run the
+  shared exact verifier.

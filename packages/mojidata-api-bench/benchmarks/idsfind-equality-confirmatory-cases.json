@@ -1,0 +1,25 @@
+{
+  "caseSetVersion": 1,
+  "stratification": {
+    "screeningDatabaseUcs": 105646,
+    "metric": "exact result count divided by distinct UCS count",
+    "selective": "[0, 0.001)",
+    "medium": "[0.001, 0.05)",
+    "broad": "[0.05, 1]",
+    "design": "Whole-anchored repeated-variable shapes not timed with the equality index before freeze"
+  },
+  "cases": [
+    {"name":"eq01-binary-left-right","description":"Equal children under left-right","ids":["§⿰xx§"],"stratum":"medium","family":"equality-binary"},
+    {"name":"eq02-binary-top-bottom","description":"Equal children under top-bottom","ids":["§⿱xx§"],"stratum":"medium","family":"equality-binary"},
+    {"name":"eq03-ternary-left-middle-right","description":"Three equal horizontal children","ids":["§⿲xxx§"],"stratum":"selective","family":"equality-ternary"},
+    {"name":"eq04-ternary-top-middle-bottom","description":"Three equal vertical children","ids":["§⿳xxx§"],"stratum":"selective","family":"equality-ternary"},
+    {"name":"eq05-enclosure","description":"Equal enclosure and enclosed subtree","ids":["§⿴xx§"],"stratum":"selective","family":"equality-binary"},
+    {"name":"eq06-overlay","description":"Equal overlaid children","ids":["§⿻xx§"],"stratum":"selective","family":"equality-binary"},
+    {"name":"eq07-nested-right","description":"Root left child equals both nested right children","ids":["§⿰x⿱xx§"],"stratum":"selective","family":"equality-nested"},
+    {"name":"eq08-nested-left","description":"Both nested left children equal root right child","ids":["§⿰⿱xxx§"],"stratum":"selective","family":"equality-nested"},
+    {"name":"eq09-nested-top","description":"Both nested top children equal root bottom child","ids":["§⿱⿰xxx§"],"stratum":"selective","family":"equality-nested"},
+    {"name":"eq10-ternary-adjacent-pair","description":"First two horizontal children equal","ids":["§⿲xxy§"],"stratum":"selective","family":"equality-partial"},
+    {"name":"eq11-ternary-separated-pair","description":"First and third vertical children equal","ids":["§⿳xyx§"],"stratum":"selective","family":"equality-partial"},
+    {"name":"eq12-fourfold-nested","description":"Root top child equals three nested bottom children","ids":["§⿱x⿲xxx§"],"stratum":"selective","family":"equality-nested"}
+  ]
+}

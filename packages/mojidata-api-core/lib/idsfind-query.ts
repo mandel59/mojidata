@@ -1,4 +1,4 @@
-export const idsfindQueryContext = `
+export const idsfindPatternQueryContext = `
 with tokens as (
     select
         idslist.key as key0,
@@ -14,8 +14,12 @@ decomposed as (
         tokens.key0,
         tokens.key1,
         tokens.key,
-        ifnull(idsfind.IDS_tokens, tokens.token) as tokens
-    from tokens left join idsfind on idsfind.UCS = tokens.token
+        case when $resolve_materialized_components
+          then ifnull(idsfind.IDS_tokens, tokens.token)
+          else tokens.token
+        end as tokens
+    from tokens left join idsfind
+      on $resolve_materialized_components and idsfind.UCS = tokens.token
 ),
 combinations as (
     select
@@ -59,7 +63,11 @@ token_pattern as (
         from patterns
         group by key0
     )
-),
+)
+`
+
+export const idsfindQueryContext = `
+${idsfindPatternQueryContext},
 results as (
     select distinct idsfind.UCS AS UCS
     from idsfind_fts
@@ -74,3 +82,95 @@ export function makeIdsfindQuery(queryBody: string) {
 }
 
 export const idsfindQuery = makeIdsfindQuery(`select UCS from results`)
+
+export const idsfindPatternQuery =
+  `${idsfindPatternQueryContext}
+select pattern from token_pattern`
+
+const idsfindWholeLiteralContext =
+  `${idsfindPatternQueryContext},
+complete_combinations as (
+  select tokens
+  from combinations
+  where key0 = 0
+    and key1 = 0
+    and level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+)`
+
+export const idsfindWholeLiteralQuery =
+  `${idsfindWholeLiteralContext}
+select distinct idsfind.UCS as UCS
+from complete_combinations
+cross join idsfind indexed by idsfind_IDS_tokens
+where idsfind.IDS_tokens = substr(
+    complete_combinations.tokens,
+    3,
+    length(complete_combinations.tokens) - 4
+  )`
+
+export const idsfindWholeLiteralScanQuery =
+  `${idsfindWholeLiteralContext}
+select distinct idsfind.UCS as UCS
+from complete_combinations
+cross join idsfind not indexed
+where idsfind.IDS_tokens = substr(
+    complete_combinations.tokens,
+    3,
+    length(complete_combinations.tokens) - 4
+  )`
+
+export const idsfindPatternAnalysisQuery =
+  `${idsfindPatternQueryContext}
+select
+  pattern,
+  (
+    select count(*)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as phrase_count,
+  (
+    select min(length(tokens) - length(replace(tokens, ' ', '')) + 1)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as min_phrase_tokens,
+  (
+    select max(length(tokens) - length(replace(tokens, ' ', '')) + 1)
+    from combinations
+    where level = (
+      select max(decomposed.key)
+      from decomposed
+      where decomposed.key0 = combinations.key0
+        and decomposed.key1 = combinations.key1
+    )
+  ) as max_phrase_tokens
+from token_pattern`
+
+export const idsfindDirectQuery = `
+select distinct idsfind.UCS AS UCS
+from idsfind_fts
+join idsfind on idsfind.rowid = idsfind_fts.rowid
+where idsfind_fts match $pattern
+`
+
+export const idsfindStructuralQuery = makeIdsfindQuery(`
+select distinct results.UCS as UCS
+from results
+join idsfind on idsfind.UCS = results.UCS
+join idsfind_structural_fts on idsfind_structural_fts.rowid = idsfind.rowid
+where idsfind_structural_fts match $structural_pattern
+`)

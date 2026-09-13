@@ -7,3 +7,64 @@ export {
     tokenArgs,
 } from "./lib/ids-operator"
 export { tokenizeIDS } from "./lib/ids-tokenizer"
+export {
+    compileIdsQueryPlan,
+    decomposedIdsQueryPlan,
+    identityIdsQueryPlan,
+    getRegisteredIdsQueryPlan,
+    getRegisteredIdsQuerySemantics,
+    idsQuerySemanticsProfiles,
+    legacyIdsQueryPlan,
+    parseIdsQueryPlan,
+    type CompiledIdsQueryPlan,
+    type IdsQueryPlan,
+    type IdsQuerySemantics,
+    type IdsQuerySemanticsEvidenceClaim,
+    type IdsQuerySemanticsEvidenceGrade,
+    type IdsQuerySemanticsEvidenceReference,
+    type IdsQuerySemanticsProfile,
+    type IdsQueryTransform,
+    type RegisteredIdsQuerySemantics,
+} from "./lib/ids-query-plan"
+export {
+    encodeIdsBvec,
+    encodeIdsBvecPattern,
+    idsBvecContainsMask,
+    idsBvecFeatureVersion,
+    idsBvecRecordBytes,
+    idsBvecTokenMask,
+    idsBvecUnion,
+    idsBvecWordCount,
+    type IdsBvec,
+    type IdsBvecPattern,
+} from "./lib/ids-bvec"
+export {
+    canonicalizeIdsTreePaths,
+    collectIdsFtsFeatures,
+    compareIdsTreePaths,
+    encodeIdsFtsEqualityFeature,
+    encodeIdsFtsEdgeFeature,
+    encodeIdsFtsRootFeature,
+    idsFtsFeatureVersion,
+    type IdsFtsFeatureFamily,
+} from "./lib/ids-fts-features"
+export {
+    idsdbSourceTokens,
+    parseBabelStoneIdsSourceExpression,
+} from "./lib/ids-source"
+export {
+    evaluateIdsFlowRecipe,
+    type EvaluatedIdsFlow,
+    type IdsFlowReader,
+    type IdsFlowReadResult,
+    type IdsFlowReadSpec,
+    type IdsFlowRecord,
+    type IdsFlowReport,
+} from "./lib/idsflow"
+export {
+    formatIdsFlowRecordsJsonl,
+    idsFlowRecordsFormat,
+    idsFlowRecordsVersion,
+    parseIdsFlowRecordsJsonl,
+    type ParsedIdsFlowRecords,
+} from "./lib/idsflow-records"

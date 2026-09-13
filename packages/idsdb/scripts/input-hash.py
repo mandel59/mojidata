@@ -19,11 +19,11 @@ def add_file(path: pathlib.Path):
     h.update(path.read_bytes())
     h.update(b"\n")
 
-
 for rel in [
     pathlib.Path("idsdb/package.json"),
     pathlib.Path("idsdb/tsconfig.json"),
     pathlib.Path("idsdb/prepare.ts"),
+    pathlib.Path("idsdb/lib/idsflow-adapter.ts"),
 ]:
     add_file(workspace_root / rel)
 
@@ -46,5 +46,12 @@ for p in sorted((idsdb_utils_root / "lib").glob("*")):
 
 add_file(workspace_root / "mojidata" / "dist" / "moji.db")
 add_line(f"ENV\tMOJIDATA_IDSDB_FTS_VERSION={os.getenv('MOJIDATA_IDSDB_FTS_VERSION', '4')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_INDEX_MODE={os.getenv('MOJIDATA_IDSDB_INDEX_MODE', '')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_BVEC_BLOCK_SIZE={os.getenv('MOJIDATA_IDSDB_BVEC_BLOCK_SIZE', '1024')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_PAGE_SIZE={os.getenv('MOJIDATA_IDSDB_PAGE_SIZE', '4096')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_SOURCE={os.getenv('MOJIDATA_IDSDB_SOURCE', '')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_DATA_SOURCES={os.getenv('MOJIDATA_IDSDB_DATA_SOURCES', 'babelstone,usource')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_EXPAND_Z_VARIANTS={os.getenv('MOJIDATA_IDSDB_EXPAND_Z_VARIANTS', '1')}")
+add_line(f"ENV\tMOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS={os.getenv('MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS', '1')}")
 
 print(h.hexdigest())

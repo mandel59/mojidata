@@ -1,0 +1,943 @@
+{
+  "caseSetVersion": 2,
+  "stratification": {
+    "screeningDatabaseUcs": 67598,
+    "metric": "exact result count divided by distinct UCS count",
+    "selective": "[0, 0.001)",
+    "medium": "[0.001, 0.05)",
+    "broad": "[0.05, 1]",
+    "design": "Corpus-derived whole-anchored repeated-variable holdout; equality-index candidates and timings were not used for generation or selection"
+  },
+  "generation": {
+    "generator": "derive-idsfind-equality-holdout.ts",
+    "seed": 20260813,
+    "basePath": "/home/mandel59/ws/mojidata/tmp/idsdb-g-paper/idsfind.db",
+    "baseSha256": "8605a75fd6c49e3122b96f2577d2eaa028b703173fb4333c1d3836f536708a2e",
+    "exclusionPaths": [
+      "/home/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/idsfind-index-cases.json",
+      "/home/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/idsfind-index-pilot-cases.json",
+      "/home/mandel59/ws/mojidata/packages/mojidata-api-bench/benchmarks/idsfind-equality-confirmatory-cases.json"
+    ],
+    "excludedQueryCount": 50,
+    "screenPerFamily": 300,
+    "requestedPositiveCount": 48,
+    "requestedNegativeCount": 12,
+    "candidateCounts": {
+      "exactContext": 147620,
+      "minimalSkeleton": 64332,
+      "rootPerturbed": 211444
+    },
+    "screenedCount": 895,
+    "screeningErrors": 0,
+    "positiveOriginMismatches": 0,
+    "rejectedIncompleteOrForest": 0,
+    "stratumShortages": {
+      "medium": 15,
+      "broad": 16
+    },
+    "selectedPositiveCount": 48,
+    "selectedNegativeCount": 12
+  },
+  "cases": [
+    {
+      "name": "gh01",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱⿱x⿰丨⿱{50}{50}&OL3;&ol-十-1;一丨⿱⿱x⿴囗⿱一一&OL3;&ol-木-1;&OL3;&ol-十-1;一丨人§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𨻄",
+        "originIdsTokens": "⿰ ⿱ ⿱ ㇒ ⿰ 丨 ⿱ {50} {50} &OL3; &ol-十-1; 一 丨 ⿱ ⿱ ㇒ ⿴ 囗 ⿱ 一 一 &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人",
+        "repeatedSerialization": "㇒"
+      }
+    },
+    {
+      "name": "gh02",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿵⿰&OL3;&ol-𠁣-1;&s-𠁣-一;x&OL3;&ol-𠃛-1;&s-𠃛-一;x⿴囗x⿹{47}&OL3;&ol-火-1;&s-火-㇒;㇒§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "鷼",
+        "originIdsTokens": "⿰ ⿵ ⿰ &OL3; &ol-𠁣-1; &s-𠁣-一; 一 &OL3; &ol-𠃛-1; &s-𠃛-一; 一 ⿴ 囗 一 ⿹ {47} &OL3; &ol-火-1; &s-火-㇒; ㇒",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh03",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱⿰xx⿱㇒⿴囗一⿹{47}&OL3;&ol-火-1;&s-火-㇒;㇒§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𪄶",
+        "originIdsTokens": "⿰ ⿱ ⿰ ⿹ 乙 ⿱ 丶 ㇀ ⿹ 乙 ⿱ 丶 ㇀ ⿱ ㇒ ⿴ 囗 一 ⿹ {47} &OL3; &ol-火-1; &s-火-㇒; ㇒",
+        "repeatedSerialization": "⿹ 乙 ⿱ 丶 ㇀"
+      }
+    },
+    {
+      "name": "gh04",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱&OL3;&ol-本-1;&OL3;&ol-木-1;&OL3;&ol-十-1;一丨人一⿰xx§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "翉",
+        "originIdsTokens": "⿰ &OL3; &ol-本-1; &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 一 ⿰ ⿹ 乙 ⿱ 丶 ㇀ ⿹ 乙 ⿱ 丶 ㇀",
+        "repeatedSerialization": "⿹ 乙 ⿱ 丶 ㇀"
+      }
+    },
+    {
+      "name": "gh05",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱？&OL3;？⿱x⿱&OL3;？x？x？⿸⿸⿱x？⿱⿱xx？？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "䥎",
+        "originIdsTokens": "⿰ ⿱ 人 &OL3; &ol-金-1; ⿱ 一 ⿱ &OL3; &ol-十-1; 一 丨 一 ⿰ 丶 ㇒ ⿸ ⿸ ⿱ 一 丿 ⿱ ⿱ 一 一 {25} ⺝",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh06",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰？⿳？？⿰⿹？⿱x？⿹？⿱x？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𨆚",
+        "originIdsTokens": "⿰ ⿱ 口 ⿽ ⿱ ⺊ 一 丨 ⿳ &OL3; &ol-大-1; 一 人 ⿱ 一 口 ⿰ ⿹ 乙 ⿱ 丶 ㇀ ⿹ 乙 ⿱ 丶 ㇀",
+        "repeatedSerialization": "丶"
+      }
+    },
+    {
+      "name": "gh07",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿹？&OL3;？？x⿹？x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𩡲",
+        "originIdsTokens": "⿰ ⿹ {51} &OL3; &ol-火-1; &s-火-㇒; ㇒ ⿹ ⿹ 乙 丿 ㇒",
+        "repeatedSerialization": "㇒"
+      }
+    },
+    {
+      "name": "gh08",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿵⿰&OL3;&ol-𠁣-1;&s-𠁣-一;一⿰𰀄亅⿰⿱⿰x&OL3;&ol-屮-1;凵丨x⿱⿰㇒乙人§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "闕",
+        "originIdsTokens": "⿵ ⿰ &OL3; &ol-𠁣-1; &s-𠁣-一; 一 ⿰ 𰀄 亅 ⿰ ⿱ ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨 䶹 ⿱ ⿰ ㇒ 乙 人",
+        "repeatedSerialization": "䶹"
+      }
+    },
+    {
+      "name": "gh09",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱幺x⿱⿲⿱幺x⿳⿱丶一⿱一一口⿱幺x⿰㇒&OL3;&ol-心-1;乙⿰丶丶§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "纞",
+        "originIdsTokens": "⿰ ⿱ 幺 ⿲ ㇒ 亅 丶 ⿱ ⿲ ⿱ 幺 ⿲ ㇒ 亅 丶 ⿳ ⿱ 丶 一 ⿱ 一 一 口 ⿱ 幺 ⿲ ㇒ 亅 丶 ⿰ ㇒ &OL3; &ol-心-1; 乙 ⿰ 丶 丶",
+        "repeatedSerialization": "⿲ ㇒ 亅 丶"
+      }
+    },
+    {
+      "name": "gh10",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿹{51}火⿳⿱&OL3;&ol-卄-1;一⿰丨丨一⿴⿰{45}⿺乙x口&OL3;&ol-火-1;&s-火-㇒;x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "驠",
+        "originIdsTokens": "⿰ ⿹ {51} 火 ⿳ ⿱ &OL3; &ol-卄-1; 一 ⿰ 丨 丨 一 ⿴ ⿰ {45} ⿺ 乙 ㇒ 口 &OL3; &ol-火-1; &s-火-㇒; ㇒",
+        "repeatedSerialization": "㇒"
+      }
+    },
+    {
+      "name": "gh11",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿵&OL3;&ol-内-1;冂xx⿱𠂉母§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "脢",
+        "originIdsTokens": "⿰ ⿵ &OL3; &ol-内-1; 冂 人 人 ⿱ 𠂉 母",
+        "repeatedSerialization": "人"
+      }
+    },
+    {
+      "name": "gh12",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱⿱丶x𧘇⿱⿰⿷匚⿳丨{50}丨又⿱⿱丶x⿰䶹&OL3;&ol-屮-1;凵丨§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𧞀",
+        "originIdsTokens": "⿰ ⿱ ⿱ 丶 一 𧘇 ⿱ ⿰ ⿷ 匚 ⿳ 丨 {50} 丨 又 ⿱ ⿱ 丶 一 ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh13",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿴⿰&OL3;？？&OL3;？&OL3;x？？？&OL3;？？&OL3;？&OL3;x？？？&OL3;？？&OL3;？&OL3;x？？？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𥼬",
+        "originIdsTokens": "⿱ ⿰ &OL3; &ol-米-1; ⿰ 丶 ㇒ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 &OL3; &ol-米-1; ⿰ 丶 ㇒ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 &OL3; &ol-米-1; ⿰ 丶 ㇒ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人",
+        "repeatedSerialization": "&ol-十-1;"
+      }
+    },
+    {
+      "name": "gh14",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱&OL3;？&OL3;？x？？⿶⿰⿰⿱？⿱x？？⿰？⿱⿱？x？⿴？⿱xx§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𪔇",
+        "originIdsTokens": "⿱ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿶ ⿰ ⿰ ⿱ 乙 ⿱ 一 丿 丨 ⿰ 丿 ⿱ ⿱ 丨 一 乙 ⿴ 囗 ⿱ 一 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh15",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱⿱x口⿵冂⿱⿰丶㇒⿱x丨⿳⿱丶x⿺&OL3;&ol-求-1;x⿰㇇𰛅丶𧘇§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𩱝",
+        "originIdsTokens": "⿰ ⿱ ⿱ 一 口 ⿵ 冂 ⿱ ⿰ 丶 ㇒ ⿱ 一 丨 ⿳ ⿱ 丶 一 ⿺ &OL3; &ol-求-1; 一 ⿰ ㇇ 𰛅 丶 𧘇",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh16",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱幺⿲㇒亅丶⿱&OL3;&ol-𦥔-1;⿴{112}⿰xx丨又§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𦃈",
+        "originIdsTokens": "⿰ ⿱ 幺 ⿲ ㇒ 亅 丶 ⿱ &OL3; &ol-𦥔-1; ⿴ {112} ⿰ 一 一 丨 又",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh17",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿹{51}火⿱⿰xx⿱⿴囗⿱一一⿰丿㇏§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𩧄",
+        "originIdsTokens": "⿰ ⿹ {51} 火 ⿱ ⿰ ⿸ ⿱ ㇒ 丿 ⿱ 一 丨 ⿸ ⿱ ㇒ 丿 ⿱ 一 丨 ⿱ ⿴ 囗 ⿱ 一 一 ⿰ 丿 ㇏",
+        "repeatedSerialization": "⿸ ⿱ ㇒ 丿 ⿱ 一 丨"
+      }
+    },
+    {
+      "name": "gh18",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿰㇇𰛅⿵⿰&OL3;&ol-𠁣-1;&s-𠁣-一;x⿰𰀄亅&OL3;&ol-柬-1;&OL3;&ol-木-1;&OL3;&ol-十-1;x丨人⿴囗⿰丶㇒§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "瀾",
+        "originIdsTokens": "⿰ ⿰ ㇇ 𰛅 ⿵ ⿰ &OL3; &ol-𠁣-1; &s-𠁣-一; 一 ⿰ 𰀄 亅 &OL3; &ol-柬-1; &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿴ 囗 ⿰ 丶 ㇒",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh19",
+      "description": "root-perturbed corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱？⿱⿱⿴？x⿴？x⿴？x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-root-perturbed",
+      "screeningResultCount": 0,
+      "derivation": {
+        "originUcs": "𫯘",
+        "originIdsTokens": "⿰ ⿱ {94} ⿰ 丿 ㇏ ⿱ ⿱ ⿴ 𠂊 丶 ⿴ 𠂊 丶 ⿴ 𠂊 丶",
+        "repeatedSerialization": "丶"
+      }
+    },
+    {
+      "name": "gh20",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱⿱&OL3;&ol-十-1;一丨一&OL3;&ol-赤-1;⿰x亅⿰x㇏⿱夂⺀§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𧹝",
+        "originIdsTokens": "⿰ ⿱ ⿱ &OL3; &ol-十-1; 一 丨 一 &OL3; &ol-赤-1; ⿰ 丿 亅 ⿰ 丿 ㇏ ⿱ 夂 ⺀",
+        "repeatedSerialization": "丿"
+      }
+    },
+    {
+      "name": "gh21",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿳⿱x一口⿱⿱x一𱒃⿸&OL3;&ol-𠂇-1;一丿乙§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𡰗",
+        "originIdsTokens": "⿰ ⿳ ⿱ 丶 一 口 ⿱ ⿱ 丶 一 𱒃 ⿸ &OL3; &ol-𠂇-1; 一 丿 乙",
+        "repeatedSerialization": "丶"
+      }
+    },
+    {
+      "name": "gh22",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱&OL3;&ol-十-1;x丨x⿱⿲⿱幺⿲㇒亅丶⿳⿱丶x⿱xx口⿱幺⿲㇒亅丶⿱{50}㇉§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "壪",
+        "originIdsTokens": "⿰ ⿱ &OL3; &ol-十-1; 一 丨 一 ⿱ ⿲ ⿱ 幺 ⿲ ㇒ 亅 丶 ⿳ ⿱ 丶 一 ⿱ 一 一 口 ⿱ 幺 ⿲ ㇒ 亅 丶 ⿱ {50} ㇉",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh23",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱⿱丶x幺⿴囗&OL3;&ol-十-1;x丨§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "畜",
+        "originIdsTokens": "⿱ ⿱ ⿱ 丶 一 幺 ⿴ 囗 &OL3; &ol-十-1; 一 丨",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh24",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿱&OL3;&ol-耂-1;⿱&OL3;&ol-十-1;一丨一㇒⿺乙㇒⿰⿹乙x⿹乙x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "䎝",
+        "originIdsTokens": "⿱ ⿱ &OL3; &ol-耂-1; ⿱ &OL3; &ol-十-1; 一 丨 一 ㇒ ⿺ 乙 ㇒ ⿰ ⿹ 乙 ⿱ 丶 ㇀ ⿹ 乙 ⿱ 丶 ㇀",
+        "repeatedSerialization": "⿱ 丶 ㇀"
+      }
+    },
+    {
+      "name": "gh25",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰&OL3;&ol-來-1;&OL3;&ol-木-1;&OL3;&ol-十-1;一丨人⿰人人⿰人⿰⿱⿱一⿰x丶⿱&OL3;&ol-十-1;一丨一⿹x丿§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𰃄",
+        "originIdsTokens": "⿰ &OL3; &ol-來-1; &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿰ 人 人 ⿰ 人 ⿰ ⿱ ⿱ 一 ⿰ 乙 丶 ⿱ &OL3; &ol-十-1; 一 丨 一 ⿹ 乙 丿",
+        "repeatedSerialization": "乙"
+      }
+    },
+    {
+      "name": "gh26",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰口⿺⿱⿳㇒㇒㇒⿽⿱⺊一x⿱⿱&OL3;&ol-十-1;一x一⿱⿰䶹&OL3;&ol-屮-1;凵x𰀁§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "噠",
+        "originIdsTokens": "⿰ 口 ⿺ ⿱ ⿳ ㇒ ㇒ ㇒ ⿽ ⿱ ⺊ 一 丨 ⿱ ⿱ &OL3; &ol-十-1; 一 丨 一 ⿱ ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨 𰀁",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh27",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱⿱㇒⿰x⿱{50}{50}&OL3;&ol-十-1;一x⿸⿱㇒丿⿱&OL3;&ol-十-1;一x⿴囗⿱一一§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𨺠",
+        "originIdsTokens": "⿰ ⿱ ⿱ ㇒ ⿰ 丨 ⿱ {50} {50} &OL3; &ol-十-1; 一 丨 ⿸ ⿱ ㇒ 丿 ⿱ &OL3; &ol-十-1; 一 丨 ⿴ 囗 ⿱ 一 一",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh28",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿰&OL3;&ol-木-1;&OL3;x一丨人⿱⿰丿㇏⿰乙丶⿳⺈⿴囗&OL3;x一丨&OL3;&ol-火-1;&s-火-㇒;㇒§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𩸝",
+        "originIdsTokens": "⿱ ⿰ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿱ ⿰ 丿 ㇏ ⿰ 乙 丶 ⿳ ⺈ ⿴ 囗 &OL3; &ol-十-1; 一 丨 &OL3; &ol-火-1; &s-火-㇒; ㇒",
+        "repeatedSerialization": "&ol-十-1;"
+      }
+    },
+    {
+      "name": "gh29",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿵⿰⿰x？？⿰⿱？⿱⿱？&OL3;？？x？？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𨷱",
+        "originIdsTokens": "⿵ ⿰ ⿰ 丨 𫜹 ⿰ 𰀄 亅 ⿰ ⿱ 爪 ⿱ ⿱ 𠂉 &OL3; &ol-十-1; 一 丨 凵 ⿱ ㇒ ⿱ 幺 ⿲ ㇒ 亅 丶",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh30",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿺⿱⿱&OL3;&ol-十-1;一x一⿽⿱⺊一x⿱⿰丿㇈又§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𧺢",
+        "originIdsTokens": "⿺ ⿱ ⿱ &OL3; &ol-十-1; 一 丨 一 ⿽ ⿱ ⺊ 一 丨 ⿱ ⿰ 丿 ㇈ 又",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh31",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿸x口⿸⿱丶x⿱&OL3;&ol-十-1;一丨一§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "䂯",
+        "originIdsTokens": "⿰ ⿸ ⿱ 一 丿 口 ⿸ ⿱ 丶 ⿱ 一 丿 ⿱ &OL3; &ol-十-1; 一 丨 一",
+        "repeatedSerialization": "⿱ 一 丿"
+      }
+    },
+    {
+      "name": "gh32",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱x⿱&OL3;&ol-十-1;x丨x⿱⿱⿰&OL3;&ol-火-1;&s-火-㇒;㇒&OL3;&ol-火-1;&s-火-㇒;㇒冖⿱口口§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𤫎",
+        "originIdsTokens": "⿰ ⿱ 一 ⿱ &OL3; &ol-十-1; 一 丨 一 ⿱ ⿱ ⿰ &OL3; &ol-火-1; &s-火-㇒; ㇒ &OL3; &ol-火-1; &s-火-㇒; ㇒ 冖 ⿱ 口 口",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh33",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿲？⿱？&OL3;？⿱？x？？⿰？&OL3;？x？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "㦣",
+        "originIdsTokens": "⿱ ⿲ ⿱ 𰀪 丨 ⿱ 𭇁 &OL3; &ol-㐄-1; ⿱ 一 乙 丨 ⿱ 一 ⿱ 一 亅 ⿰ ㇒ &OL3; &ol-心-1; 乙 ⿰ 丶 丶",
+        "repeatedSerialization": "乙"
+      }
+    },
+    {
+      "name": "gh34",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿸⿱㇒丿&OL3;&ol-巴-1;己丨⿱⿱x丿⿱⿴囗⿱xx⿰丿㇏§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𩒒",
+        "originIdsTokens": "⿰ ⿸ ⿱ ㇒ 丿 &OL3; &ol-巴-1; 己 丨 ⿱ ⿱ 一 丿 ⿱ ⿴ 囗 ⿱ 一 一 ⿰ 丿 ㇏",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh35",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿶凵x⿱⿰口口&OL3;&ol-單-1;⿴囗&OL3;&ol-十-1;一x一§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𡼤",
+        "originIdsTokens": "⿱ ⿶ 凵 丨 ⿱ ⿰ 口 口 &OL3; &ol-單-1; ⿴ 囗 &OL3; &ol-十-1; 一 丨 一",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh36",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿰⿳？x？？⿸？x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 5,
+      "derivation": {
+        "originUcs": "䃞",
+        "originIdsTokens": "⿱ ⿰ ⿳ ⿱ 丶 一 口 &OL3; &ol-子-1; ⿱ 乙 亅 一 {20} ⿸ ⿱ 一 丿 口",
+        "repeatedSerialization": "口"
+      }
+    },
+    {
+      "name": "gh37",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿳{38}⿰丿㇏⿱⿱&OL3;&ol-𠀎-1;⿱xx⿰丨丨x𧘇§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "嚢",
+        "originIdsTokens": "⿳ {38} ⿰ 丿 ㇏ ⿱ ⿱ &OL3; &ol-𠀎-1; ⿱ 一 一 ⿰ 丨 丨 一 𧘇",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh38",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿰⿵&OL3;&ol-内-1;冂人人⿰人⿱丶&OL3;&ol-隹-1;⿱⿱x丨x⿱xx⿹𠄎丿§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𦞾",
+        "originIdsTokens": "⿱ ⿰ ⿵ &OL3; &ol-内-1; 冂 人 人 ⿰ 人 ⿱ 丶 &OL3; &ol-隹-1; ⿱ ⿱ 一 丨 一 ⿱ 一 一 ⿹ 𠄎 丿",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh39",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿰㇇𰛅⿱⿰䶹&OL3;&ol-屮-1;凵丨⿵⿲丨丶乙⿰人⿱丶&OL3;&ol-隹-1;⿱⿱x丨x⿱xx§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𮳙",
+        "originIdsTokens": "⿰ ⿰ ㇇ 𰛅 ⿱ ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨 ⿵ ⿲ 丨 丶 乙 ⿰ 人 ⿱ 丶 &OL3; &ol-隹-1; ⿱ ⿱ 一 丨 一 ⿱ 一 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh40",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿸⿰⿱丶㇀⿱丶⿱一丿⿱⿲x⿳⿱丶一⿱一一口x⿰㇒&OL3;&ol-心-1;乙⿰丶丶§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𤼣",
+        "originIdsTokens": "⿸ ⿰ ⿱ 丶 ㇀ ⿱ 丶 ⿱ 一 丿 ⿱ ⿲ ⿱ 幺 ⿲ ㇒ 亅 丶 ⿳ ⿱ 丶 一 ⿱ 一 一 口 ⿱ 幺 ⿲ ㇒ 亅 丶 ⿰ ㇒ &OL3; &ol-心-1; 乙 ⿰ 丶 丶",
+        "repeatedSerialization": "⿱ 幺 ⿲ ㇒ 亅 丶"
+      }
+    },
+    {
+      "name": "gh41",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰x⿱⿰丿㇏x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𱐓",
+        "originIdsTokens": "⿰ ⿹ 乙 丿 ⿱ ⿰ 丿 ㇏ ⿹ 乙 丿",
+        "repeatedSerialization": "⿹ 乙 丿"
+      }
+    },
+    {
+      "name": "gh42",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱⿱⿰乙丶口⿱⿱丶x⿰䶹&OL3;&ol-屮-1;凵丨⿹乙x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𬔠",
+        "originIdsTokens": "⿰ ⿱ ⿱ ⿰ 乙 丶 口 ⿱ ⿱ 丶 一 ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨 ⿹ 乙 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh43",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱⿱㇒⿰丨⿱{50}{50}&OL3;&ol-十-1;x丨⿰人⿱丶&OL3;&ol-隹-1;⿱⿱x丨x⿱xx§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 2,
+      "derivation": {
+        "originUcs": "陮",
+        "originIdsTokens": "⿰ ⿱ ⿱ ㇒ ⿰ 丨 ⿱ {50} {50} &OL3; &ol-十-1; 一 丨 ⿰ 人 ⿱ 丶 &OL3; &ol-隹-1; ⿱ ⿱ 一 丨 一 ⿱ 一 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh44",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱㇒&OL3;&ol-手-1;⿱xx亅⿳⿱⿱丶冖⿰丿㇏&OL3;&ol-瓜-1;爪丶⿰&OL3;&ol-瓜-1;爪丶&OL3;&ol-瓜-1;爪丶§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "攨",
+        "originIdsTokens": "⿰ ⿱ ㇒ &OL3; &ol-手-1; ⿱ 一 一 亅 ⿳ ⿱ ⿱ 丶 冖 ⿰ 丿 ㇏ &OL3; &ol-瓜-1; 爪 丶 ⿰ &OL3; &ol-瓜-1; 爪 丶 &OL3; &ol-瓜-1; 爪 丶",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh45",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿺⿱⿳㇒㇒㇒⿽⿱⺊x丨x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "辷",
+        "originIdsTokens": "⿺ ⿱ ⿳ ㇒ ㇒ ㇒ ⿽ ⿱ ⺊ 一 丨 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh46",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱x？⿶？&OL3;？⿱？x？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𡎫",
+        "originIdsTokens": "⿰ ⿱ &OL3; &ol-十-1; 一 丨 一 ⿶ 凵 &OL3; &ol-𠚏-1; ⿱ ㇒ &OL3; &ol-十-1; 一 丨 ⿰ 人 人",
+        "repeatedSerialization": "&OL3; &ol-十-1; 一 丨"
+      }
+    },
+    {
+      "name": "gh47",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰{109}⿱⿱㇒⿰x⿱{50}{50}&OL3;&ol-十-1;一x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "䢴",
+        "originIdsTokens": "⿰ {109} ⿱ ⿱ ㇒ ⿰ 丨 ⿱ {50} {50} &OL3; &ol-十-1; 一 丨",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh48",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱㇒&OL3;&ol-木-1;&OL3;&ol-十-1;一x人⿱⿴囗&OL3;&ol-十-1;一x⿹𠄎丿§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𥟄",
+        "originIdsTokens": "⿰ ⿱ ㇒ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿱ ⿴ 囗 &OL3; &ol-十-1; 一 丨 ⿹ 𠄎 丿",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh49",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱？&OL3;？&OL3;？？x？⿱？⿶？x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 4,
+      "derivation": {
+        "originUcs": "嵇",
+        "originIdsTokens": "⿰ ⿱ ㇒ &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 ⿱ ⿺ ⿸ &OL3; &ol-𠂇-1; 一 丿 乙 丶 ⿶ 凵 丨",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh50",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿱⿰⿱&OL3;？x⿱？x？？⿱&OL3;？x⿱？x？§"
+      ],
+      "stratum": "selective",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𰒘",
+        "originIdsTokens": "⿱ ⿰ ⿱ &OL3; &ol-士-1; 一 ⿱ 丨 一 &OL3; &ol-𠃜-1; ⿰ 丿 {50} 丨 ⿱ ⿰ 丿 ㇈ 又 ⿱ &OL3; &ol-士-1; 一 ⿱ 丨 一 ⿰ ㇒ &OL3; &ol-心-1; 乙 ⿰ 丶 丶",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh51",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱⺌⿱一⿰丿乙⿸⿸{13}〾&OL3;&ol-七-1;一乙⿱&OL3;&ol-业-1;⿰xx⿰丶㇒一§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𧇺",
+        "originIdsTokens": "⿰ ⿱ ⺌ ⿱ 一 ⿰ 丿 乙 ⿸ ⿸ {13} 〾 &OL3; &ol-七-1; 一 乙 ⿱ &OL3; &ol-业-1; ⿰ 丨 丨 ⿰ 丶 ㇒ 一",
+        "repeatedSerialization": "丨"
+      }
+    },
+    {
+      "name": "gh52",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱&OL3;&ol-十-1;x丨x⿱𦥯&OL3;&ol-子-1;⿱乙亅x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "㙾",
+        "originIdsTokens": "⿰ ⿱ &OL3; &ol-十-1; 一 丨 一 ⿱ 𦥯 &OL3; &ol-子-1; ⿱ 乙 亅 一",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh53",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰口⿰&OL3;&ol-車-1;⿱x⿱⿴囗xx丨乙§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𠵣",
+        "originIdsTokens": "⿰ 口 ⿰ &OL3; &ol-車-1; ⿱ 一 ⿱ ⿴ 囗 一 一 丨 乙",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh54",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿸⿱一丿⿱⿹{51}火⿰xx§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𠫑",
+        "originIdsTokens": "⿸ ⿱ 一 丿 ⿱ ⿹ {51} 火 ⿰ ⿹ {51} &OL3; &ol-火-1; &s-火-㇒; ㇒ ⿹ {51} &OL3; &ol-火-1; &s-火-㇒; ㇒",
+        "repeatedSerialization": "⿹ {51} &OL3; &ol-火-1; &s-火-㇒; ㇒"
+      }
+    },
+    {
+      "name": "gh55",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿹⿺𫠠丶⿳⿱丶x⿱xx口§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𰐐",
+        "originIdsTokens": "⿹ ⿺ 𫠠 丶 ⿳ ⿱ 丶 一 ⿱ 一 一 口",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh56",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿵⿰⿰丨𫜹⿰𰀄亅⿱⿴𠂊x⿴𠂊x§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𨴢",
+        "originIdsTokens": "⿵ ⿰ ⿰ 丨 𫜹 ⿰ 𰀄 亅 ⿱ ⿴ 𠂊 丶 ⿴ 𠂊 丶",
+        "repeatedSerialization": "丶"
+      }
+    },
+    {
+      "name": "gh57",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱&OL3;&ol-龶-1;⿱&OL3;x一丨一一⿵冂⿱丨一⿱⿱㇒⿰丨⿱{50}{50}&OL3;x一丨§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "郬",
+        "originIdsTokens": "⿰ ⿱ &OL3; &ol-龶-1; ⿱ &OL3; &ol-十-1; 一 丨 一 一 ⿵ 冂 ⿱ 丨 一 ⿱ ⿱ ㇒ ⿰ 丨 ⿱ {50} {50} &OL3; &ol-十-1; 一 丨",
+        "repeatedSerialization": "&ol-十-1;"
+      }
+    },
+    {
+      "name": "gh58",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿵⿰&OL3;&ol-𠁣-1;&s-𠁣-一;一⿰𰀄亅⿱⿰x𰛅⿰⿰x𰛅⿰x𰛅§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "𨶺",
+        "originIdsTokens": "⿵ ⿰ &OL3; &ol-𠁣-1; &s-𠁣-一; 一 ⿰ 𰀄 亅 ⿱ ⿰ ㇇ 𰛅 ⿰ ⿰ ㇇ 𰛅 ⿰ ㇇ 𰛅",
+        "repeatedSerialization": "㇇"
+      }
+    },
+    {
+      "name": "gh59",
+      "description": "exact-context corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰⿱㇒&OL3;&ol-手-1;⿱xx亅⿳⿵冂⿰㐅㐅⿱x口𧘇§"
+      ],
+      "stratum": "selective",
+      "family": "equality-exact-context",
+      "screeningResultCount": 1,
+      "derivation": {
+        "originUcs": "擐",
+        "originIdsTokens": "⿰ ⿱ ㇒ &OL3; &ol-手-1; ⿱ 一 一 亅 ⿳ ⿵ 冂 ⿰ 㐅 㐅 ⿱ 一 口 𧘇",
+        "repeatedSerialization": "一"
+      }
+    },
+    {
+      "name": "gh60",
+      "description": "minimal-skeleton corpus-derived repeated-subtree query",
+      "ids": [
+        "§⿰？⿱⿱x⿰？x？§"
+      ],
+      "stratum": "medium",
+      "family": "equality-minimal-skeleton",
+      "screeningResultCount": 210,
+      "derivation": {
+        "originUcs": "𢷎",
+        "originIdsTokens": "⿰ ⿱ ㇒ &OL3; &ol-手-1; ⿱ 一 一 亅 ⿱ ⿱ &OL3; &ol-屮-1; 凵 丨 ⿰ 䶹 &OL3; &ol-屮-1; 凵 丨 &OL3; &ol-本-1; &OL3; &ol-木-1; &OL3; &ol-十-1; 一 丨 人 一",
+        "repeatedSerialization": "&OL3; &ol-屮-1; 凵 丨"
+      }
+    }
+  ]
+}

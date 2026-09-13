@@ -1,0 +1,32 @@
+{
+  "caseSetVersion": 1,
+  "description": "Queries used by EIDS and IDSgrep diagnostics before the confirmatory workload freeze",
+  "cases": [
+    { "mojidataQuery": ["木"], "idsgrepQuery": "...木" },
+    { "mojidataQuery": ["⿰亻木"], "idsgrepQuery": "...⿰亻木" },
+    { "mojidataQuery": ["休"], "idsgrepQuery": "...休" },
+    { "mojidataQuery": ["明"], "idsgrepQuery": "...明" },
+    { "mojidataQuery": ["林"], "idsgrepQuery": "...林" },
+    { "mojidataQuery": ["休"], "idsgrepQuery": "...<休>?" },
+    {
+      "mojidataQuery": ["休"],
+      "idsgrepQuery": "...<休>(__IDSGREP_HEAD_PROBE_20260815__)"
+    },
+    {
+      "mojidataQuery": ["明"],
+      "idsgrepQuery": "...<明>(__IDSGREP_HEAD_PROBE_20260815__)"
+    },
+    {
+      "mojidataQuery": ["§休§"],
+      "idsgrepQuery": "<休>(__IDSGREP_HEAD_PROBE_20260815__)"
+    },
+    { "mojidataQuery": ["⿻勹巳"], "idsgrepQuery": "...⿻勹巳" },
+    { "mojidataQuery": ["⿻巳勹"], "idsgrepQuery": "...⿻巳勹" },
+    { "mojidataQuery": ["§⿻勹巳§"], "idsgrepQuery": "⿻勹巳" },
+    { "mojidataQuery": ["⿰火土"], "idsgrepQuery": "...*⿰火土" },
+    { "mojidataQuery": ["§⿰xx§"], "idsgrepQuery": "⿰??" },
+    { "mojidataQuery": ["§⿱xx§"], "idsgrepQuery": "⿱??" },
+    { "mojidataQuery": ["休"], "idsgrepQuery": "...<休>(marker)" },
+    { "mojidataQuery": ["§休§"], "idsgrepQuery": "<休>(marker)" }
+  ]
+}

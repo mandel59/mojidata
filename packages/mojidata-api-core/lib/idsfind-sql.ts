@@ -3,9 +3,139 @@ import {
   type TokenList,
 } from "@mandel59/idsdb-utils"
 
-import { idsfindQuery } from "./idsfind-query"
+import {
+  idsfindDirectQuery,
+  idsfindPatternQuery,
+  idsfindQuery,
+  idsfindWholeLiteralQuery,
+  idsfindWholeLiteralScanQuery,
+} from "./idsfind-query"
 import { tokenizeIdsList } from "./idsfind-tokenize"
+import { getIdsQueryPlan } from "./idsfind-semantics"
 import type { SqlExecutor } from "./sql-executor"
+
+export interface IdsfindQueryPolicy {
+  resolveMaterializedComponents: boolean
+}
+
+const legacyIdsfindQueryPolicy: IdsfindQueryPolicy = {
+  resolveMaterializedComponents: true,
+}
+
+function queryPolicyParams(policy: IdsfindQueryPolicy | undefined) {
+  return {
+    $resolve_materialized_components:
+      (policy ?? legacyIdsfindQueryPolicy).resolveMaterializedComponents ? 1 : 0,
+  }
+}
+
+export interface IdsfindCandidateProvider {
+  getCandidates(
+    db: SqlExecutor,
+    idslist: string[][][],
+    sourceIdslist?: TokenList[][],
+    policy?: IdsfindQueryPolicy,
+  ): Promise<string[]>
+}
+
+export const ftsIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist, _sourceIdslist, policy) {
+    const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
+      $idslist: JSON.stringify(idslist),
+      ...queryPolicyParams(policy),
+    })
+    return rows.flatMap((row) => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
+function isWholeLiteralQuery(idslist: string[][][]) {
+  if (idslist.length !== 1 || idslist[0].length !== 1) return false
+  const tokens = idslist[0][0]
+  if (
+    tokens.length < 3 ||
+    tokens[0] !== "§" ||
+    tokens[tokens.length - 1] !== "§"
+  ) {
+    return false
+  }
+  return tokens.slice(1, -1).every(token =>
+    token !== "？" && !/^[a-zａ-ｚ]$/u.test(token)
+  )
+}
+
+export const wholeLiteralIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist, sourceIdslist, policy) {
+    if (!isWholeLiteralQuery(idslist)) {
+      return ftsIdsfindCandidateProvider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
+    }
+    const rows = await db.query<{ UCS?: unknown }>(idsfindWholeLiteralQuery, {
+      $idslist: JSON.stringify(idslist),
+      ...queryPolicyParams(policy),
+    })
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
+export const wholeLiteralScanIdsfindCandidateProvider: IdsfindCandidateProvider = {
+  async getCandidates(db, idslist, sourceIdslist, policy) {
+    if (!isWholeLiteralQuery(idslist)) {
+      return ftsIdsfindCandidateProvider.getCandidates(
+        db,
+        idslist,
+        sourceIdslist,
+        policy,
+      )
+    }
+    const rows = await db.query<{ UCS?: unknown }>(
+      idsfindWholeLiteralScanQuery,
+      { $idslist: JSON.stringify(idslist), ...queryPolicyParams(policy) },
+    )
+    return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+  },
+}
+
+/**
+ * Compile each normalized IDS query to an FTS MATCH expression once per
+ * database executor, then execute only the direct MATCH query on cache hits.
+ */
+export function createCachedFtsIdsfindCandidateProvider(): IdsfindCandidateProvider {
+  const cacheByDatabase = new WeakMap<SqlExecutor, Map<string, string>>()
+  return {
+    async getCandidates(db, idslist, _sourceIdslist, policy) {
+      let cache = cacheByDatabase.get(db)
+      if (!cache) {
+        cache = new Map()
+        cacheByDatabase.set(db, cache)
+      }
+      const resolveMaterializedComponents =
+        (policy ?? legacyIdsfindQueryPolicy).resolveMaterializedComponents
+      const idslistJson = JSON.stringify(idslist)
+      const key = JSON.stringify([resolveMaterializedComponents, idslist])
+      let pattern = cache.get(key)
+      if (pattern === undefined) {
+        const row = await db.queryOne<{ pattern?: unknown }>(
+          idsfindPatternQuery,
+          {
+            $idslist: idslistJson,
+            ...queryPolicyParams(policy),
+          },
+        )
+        if (typeof row?.pattern !== "string") return []
+        pattern = row.pattern
+        cache.set(key, pattern)
+      }
+      const rows = await db.query<{ UCS?: unknown }>(idsfindDirectQuery, {
+        $pattern: pattern,
+      })
+      return rows.flatMap(row => typeof row.UCS === "string" ? [row.UCS] : [])
+    },
+  }
+}
 
 const idsTokensPrefetchQuery = `
   SELECT UCS, IDS_tokens
@@ -57,6 +187,7 @@ type CompiledPattern = {
 function compileAuditPatterns(
   idslist: TokenList[][],
   getIDSTokens: (ucs: string) => string[],
+  resolveMaterializedComponents: boolean,
 ): CompiledPattern[][] {
   return idslist.map((patterns) =>
     patterns.map((pattern) => ({
@@ -71,7 +202,9 @@ function compileAuditPatterns(
         return {
           kind: "literal",
           value: token,
-          alternatives: getIDSTokens(token).map((ids) => ids.split(" ")),
+          alternatives: resolveMaterializedComponents
+            ? getIDSTokens(token).map((ids) => ids.split(" "))
+            : [],
         }
       }),
     })),
@@ -184,10 +317,35 @@ function postaudit(
   return false
 }
 
-export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
+export interface CreateIdsfindOptions {
+  allowExperimentalQueryPlan?: boolean
+  requireRegisteredQuerySemantics?: boolean
+  onTiming?: (timing: IdsfindPhaseTiming) => void
+}
+
+export interface IdsfindPhaseTiming {
+  compileMs: number
+  candidateMs: number
+  exactAuditMs: number
+  totalMs: number
+}
+
+export function createIdsfind(
+  getDb: () => Promise<SqlExecutor>,
+  candidateProvider: IdsfindCandidateProvider = ftsIdsfindCandidateProvider,
+  options: CreateIdsfindOptions = {},
+) {
   return async (idslist: string[]): Promise<string[]> => {
+    const totalStartedAt = options.onTiming ? performance.now() : undefined
     const db = await getDb()
-    const tokenized = tokenizeIdsList(idslist)
+    const tokenized = tokenizeIdsList(idslist, await getIdsQueryPlan(db, {
+      allowExperimental: options.allowExperimentalQueryPlan,
+      requireRegisteredSchema3: options.requireRegisteredQuerySemantics,
+    }))
+    const compileFinishedAt = options.onTiming ? performance.now() : undefined
+    const policy: IdsfindQueryPolicy = {
+      resolveMaterializedComponents: tokenized.resolveMaterializedComponents,
+    }
     const idsTokensCache = new Map<string, string[]>()
 
     const prefetchIDSTokens = async (ucsValues: Iterable<string>) => {
@@ -226,23 +384,44 @@ export function createIdsfind(getDb: () => Promise<SqlExecutor>) {
     }
 
     const out: string[] = []
-    const rows = await db.query<{ UCS?: string }>(idsfindQuery, {
-      $idslist: JSON.stringify(tokenized.forQuery),
-    })
+    const candidateStartedAt = options.onTiming ? performance.now() : undefined
+    const candidates = await candidateProvider.getCandidates(
+      db,
+      tokenized.forQuery,
+      tokenized.forAudit,
+      policy,
+    )
+    const candidateFinishedAt = options.onTiming ? performance.now() : undefined
     await prefetchIDSTokens([
-      ...rows.flatMap((row) => (typeof row.UCS === "string" ? [row.UCS] : [])),
-      ...collectAuditLookupUcs(tokenized.forAudit),
+      ...candidates,
+      ...(policy.resolveMaterializedComponents
+        ? collectAuditLookupUcs(tokenized.forAudit)
+        : []),
     ])
     const compiledAudit = compileAuditPatterns(
       tokenized.forAudit,
       getIDSTokensForUcs,
+      policy.resolveMaterializedComponents,
     )
-    for (const row of rows) {
-      const ucs = row.UCS
-      if (typeof ucs !== "string") continue
+    for (const ucs of candidates) {
       if (postaudit(ucs, compiledAudit, getIDSTokensForUcs)) {
         out.push(ucs)
       }
+    }
+    if (
+      options.onTiming &&
+      totalStartedAt !== undefined &&
+      compileFinishedAt !== undefined &&
+      candidateStartedAt !== undefined &&
+      candidateFinishedAt !== undefined
+    ) {
+      const totalFinishedAt = performance.now()
+      options.onTiming({
+        compileMs: compileFinishedAt - totalStartedAt,
+        candidateMs: candidateFinishedAt - candidateStartedAt,
+        exactAuditMs: totalFinishedAt - candidateFinishedAt,
+        totalMs: totalFinishedAt - totalStartedAt,
+      })
     }
     return out
   }

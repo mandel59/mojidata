@@ -1,13 +1,32 @@
 #!/bin/bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
+WORKSPACE_ROOT="$(cd ../.. && pwd)"
+export MOJIDATA_IDSDB_BASE_DIR="$WORKSPACE_ROOT"
 
-STAMP=".idsdb.input.sha256"
+if [ -n "${MOJIDATA_IDSDB_OUT_DIR:-}" ]; then
+  OUT_DIR="$MOJIDATA_IDSDB_OUT_DIR"
+  if [[ "$OUT_DIR" != /* ]]; then
+    OUT_DIR="$WORKSPACE_ROOT/$OUT_DIR"
+  fi
+else
+  OUT_DIR="$PWD"
+fi
+export MOJIDATA_IDSDB_OUT_DIR="$OUT_DIR"
+mkdir -p "$OUT_DIR"
+
+if [ -n "${MOJIDATA_IDSDB_RECIPE:-}" ]; then
+  echo "idsdb prepare: building from IDSFlow recipe"
+  node --import tsx prepare.ts
+  exit 0
+fi
+
+STAMP="$OUT_DIR/.idsdb.input.sha256"
 FTS_VERSION="${MOJIDATA_IDSDB_FTS_VERSION:-4}"
 
 CURRENT_HASH="$(python3 scripts/input-hash.py)"
 
-if [ -f idsfind.db ] && [ -f idsdecompose.db ] && [ -f "$STAMP" ]; then
+if [ -f "$OUT_DIR/idsfind.db" ] && [ -f "$OUT_DIR/idsdecompose.db" ] && [ -f "$STAMP" ]; then
   PREV_HASH="$(cat "$STAMP")"
   if [ "$CURRENT_HASH" = "$PREV_HASH" ]; then
     echo "idsdb prepare (fts${FTS_VERSION}): inputs unchanged, skipping rebuild"
@@ -18,4 +37,4 @@ fi
 echo "idsdb prepare (fts${FTS_VERSION}): inputs changed (or first build), rebuilding"
 node --import tsx prepare.ts
 FINAL_HASH="$(python3 scripts/input-hash.py)"
-echo "$FINAL_HASH" > "$STAMP"
+printf '%s\n' "$FINAL_HASH" > "$STAMP"

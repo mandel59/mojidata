@@ -49,6 +49,7 @@ async function initWorker(init: WorkerInit) {
       byteLength: init.sqliteWasm?.idsfindDbByteLength,
       manifestDirectory,
     },
+    idsfindOptions: init.idsfindOptions,
   })
 }
 

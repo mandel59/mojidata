@@ -1,0 +1,12 @@
+version: 1
+datasets:
+  input:
+    read:
+      kind: records-jsonl
+      path: minimal.idsflow.jsonl
+  expanded:
+    decompose:
+      input: input
+      expand_z_variants: false
+      normalize_kdpv_radical_variants: false
+output: expanded

@@ -26,7 +26,11 @@ async function initWorker(init: WorkerInit) {
   const getIdsfindDb = createCachedPromise(async () =>
     createSqlJsExecutor(await openDatabaseFromUrl(init.idsfindDbUrl, init.sqlWasmUrl)),
   )
-  api = createSqlApiDb({ getMojidataDb, getIdsfindDb })
+  api = createSqlApiDb({
+    getMojidataDb,
+    getIdsfindDb,
+    idsfindOptions: init.idsfindOptions,
+  })
 }
 
 self.addEventListener("message", async (ev: MessageEvent) => {

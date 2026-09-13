@@ -1,0 +1,13 @@
+version: 1
+datasets:
+  babelstone:
+    read: { kind: moji-ids }
+  usource:
+    read: { kind: moji-usource }
+  roots:
+    union: { inputs: [babelstone, usource] }
+  expanded:
+    decompose:
+      input: roots
+      using: babelstone
+output: expanded
