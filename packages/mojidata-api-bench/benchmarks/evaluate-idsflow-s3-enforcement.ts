@@ -416,9 +416,10 @@ const deploymentBoundaries = [
     strictCapability: "factory-option",
   },
   {
-    runtime: "D1 deployed worker",
+    runtime: "D1 worker entrypoint",
     locator: "packages/mojidata-api-d1-worker/src/index.ts",
-    strictCapability: "deployment-default",
+    // Enable strict mode only after deployed databases have been qualified.
+    strictCapability: "compatibility-default",
   },
 ]
 
@@ -434,7 +435,8 @@ async function main() {
   const expectedRejections = cases.filter(item => item.expected.kind === "reject").length
   const expectedAccepts = cases.filter(item => item.expected.kind === "accept").length
   const deploymentGaps = deploymentBoundaries.filter(item =>
-    item.strictCapability === "unavailable"
+    item.strictCapability === "unavailable" ||
+    item.strictCapability === "compatibility-default"
   )
   const passed = rejected === expectedRejections &&
     accepted === expectedAccepts &&

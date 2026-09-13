@@ -3,9 +3,7 @@ import {
   type MojidataApiD1Env,
 } from "@mandel59/mojidata-api-d1"
 
-const handleFetch = createD1FetchHandler({
-  requireRegisteredQuerySemantics: true,
-})
+const handleFetch = createD1FetchHandler()
 
 export default {
   fetch(request: Request, env: MojidataApiD1Env): Promise<Response> | Response {

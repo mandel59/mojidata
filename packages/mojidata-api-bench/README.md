@@ -4,6 +4,12 @@ Internal benchmark tooling for comparing `mojidata-api` backends and deployments
 
 This workspace is private and is not published to npm.
 
+The S3 enforcement evaluator reports a deployment gap while the D1 worker
+entrypoint retains compatibility mode. Strict-mode library support is available,
+but passing the deployment gate requires qualifying the deployed databases and
+explicitly enabling strict mode. Archived research results describe their pinned
+revisions, not the current production deployment.
+
 The benchmark scenario set is versioned in [benchmarks/scenarios.json](benchmarks/scenarios.json).
 
 Common commands from the repository root:
