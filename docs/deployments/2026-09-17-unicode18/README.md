@@ -36,7 +36,7 @@ create a fresh inactive pair; never import over this live pair.
 The configured `production` environment still contains bootstrap placeholders;
 the existing public deployment uses the top-level/default target.
 
-The former public DB pair remains available for rollback:
+The former public DB pair was deleted after release verification on 2026-09-17 JST:
 
 - mojidata: `869556cd-9a42-4423-9b22-cff4c1eafca2`
 - idsfind: `18e0c4f7-006c-474c-87e2-a00de91bec98`
@@ -60,23 +60,23 @@ This is a small deployment observation, not a load test or a CPU-only comparison
 The JSON Git metadata identifies the local benchmark runner; the actual deployed
 Worker version was verified separately above.
 
-## Rollback
+## Old database cleanup — 2026-09-17 JST
 
-From the repository root, restore the former public DB pair and deploy:
+At the owner's request, all four superseded databases were deleted after
+confirming that both public/default and staging served 100% from the new Worker
+versions and referenced only the new release pair.
 
-```sh
-node scripts/promote-mojidata-api-d1-release.mjs \
-  --release-manifest docs/deployments/2026-09-17-unicode18/default-rollback.json
-npx wrangler deploy --env='' --config packages/mojidata-api-d1-worker/wrangler.jsonc
-node scripts/smoke-mojidata-api-remote.mjs \
-  --base-url https://mojidata-api-d1.mandel59.workers.dev
-```
+| Former use | Deleted database ID |
+| --- | --- |
+| Public mojidata | `869556cd-9a42-4423-9b22-cff4c1eafca2` |
+| Public idsfind | `18e0c4f7-006c-474c-87e2-a00de91bec98` |
+| Staging mojidata | `517ba6a8-42a1-4020-b8c3-2129bed129e2` |
+| Staging idsfind | `0013717e-8868-4eff-b9d2-49f056f928b2` |
 
-This restores data bindings while keeping the current Worker code. If the
-Worker code itself must also be reverted, the previous public version is
-recorded above. The [staging rollback manifest](staging-rollback.json) restores
-the former staging bindings independently.
+Only the two live Unicode 18 databases remain. The rollback manifests targeting
+deleted databases were removed; release manifests retain previous IDs solely as
+historical deployment records. Restoring an old Worker version would reference
+deleted databases and is no longer a valid rollback procedure. Returning to
+older data requires creating fresh databases and importing that release's data.
 
-The promotion helper rejects a stale manifest if current bindings have changed.
-Retain these rollback databases until the release has been accepted; none were
-deleted during this deployment.
+After deletion, all four smoke cases passed on both public/default and staging.

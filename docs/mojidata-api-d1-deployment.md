@@ -7,9 +7,11 @@ of `mojidata-api` and the contract used by `mojidata-web-app`.
 
 The public/default Worker now serves the final Unicode 18 release. A fresh D1
 pair was imported from published `mojidata@1.9.0` and `idsdb-fts5@1.10.0`,
-validated through staging, and promoted to the existing public URL. The old
-pair is retained for rollback. See the [deployment record](deployments/2026-09-17-unicode18/README.md)
-for Worker versions, database IDs, verification results, and rollback manifests.
+validated through staging, and promoted to the existing public URL. The four
+superseded public/staging databases were subsequently deleted at the owner's
+request after verification; only the live pair remains. See the [deployment record](deployments/2026-09-17-unicode18/README.md)
+for Worker versions, database IDs, verification results, and cleanup details.
+Direct rollback to the deleted DBs or old Worker versions is no longer available.
 
 Staging and public/default currently read this same release pair. Future import
 tests must create new inactive databases. The named `production` environment
