@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.1
+
+### Patch Changes
+
+- [#63](https://github.com/mandel59/mojidata/pull/63) [`5f15a50`](https://github.com/mandel59/mojidata/commit/5f15a508a81acc0e18280b9ed77a9aa73958f77b) Thanks [@mandel59](https://github.com/mandel59)! - Allow code point searches throughout planes 2 and 3 regardless of the JavaScript runtime Unicode version, including newly assigned characters such as U+2B81E.
+
 ## 1.10.0
 
 ### Minor Changes
