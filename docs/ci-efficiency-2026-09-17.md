@@ -36,3 +36,27 @@ Actions preparation summary records phase timings and exact cache matches for
 future comparisons. Documentation-only changes now bypass these phases entirely.
 Regression tests cover event classification; the workflow explicitly completes
 the required `validate` check even when heavy jobs are skipped.
+
+## Actions after merging #61
+
+Both [PR validation](https://github.com/mandel59/mojidata/actions/runs/35148999025)
+and the [main Release run](https://github.com/mandel59/mojidata/actions/runs/35150099289)
+completed successfully. Their preparation phase timings were:
+
+| Phase | PR, Node 22 (seconds) | main, Node 24 (seconds) |
+| --- | ---: | ---: |
+| mojidata | 46.21 | 39.05 |
+| idsdb-utils | 2.79 | 2.05 |
+| idsdb | 189.79 | 76.95 |
+| idsdb-fts5 | 2.63 | 3.07 |
+| idsdb-bvec | 3.98 | 4.46 |
+
+The main preparation job took 2m39s including setup and cache saving. Its release
+job restored exact cache matches and all DB prepare calls in test/pack skipped
+regeneration. PR and main runners/runtime versions differ, so their FTS4 times
+are not a controlled speed comparison. Both demonstrate that the derived FTS5
+and bvec paths avoid repeating IDS expansion.
+
+Changesets reported only empty changesets on main: it neither created a release
+PR nor ran publishing. The previous summary incorrectly claimed a PR update;
+the follow-up summary uses the actual PR number and publish step outcome.
