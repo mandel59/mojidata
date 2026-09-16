@@ -4,6 +4,10 @@
 
 The benchmark scenario set is defined and versioned in [packages/mojidata-api-bench/benchmarks/scenarios.json](../packages/mojidata-api-bench/benchmarks/scenarios.json). Keep that version stable when comparing historical results. If the scenario set changes, bump `scenarioSetVersion` in the manifest so older result files can be identified correctly.
 
+## Latest recorded results
+
+[2026-09-17 release-candidate measurements](benchmarks/2026-09-17/README.md) include local backend mean/p95 latency, eight FTS4/FTS5 result-parity comparisons, input DB fingerprints, and a separate small deployed-D1 HTTP sample. Raw samples and reproduction commands are included. Earlier Wiki measurements used different hardware and data and are not a before/after baseline.
+
 ## Prepare
 
 Run the benchmark dependency preparation once before local runs:

@@ -1,0 +1,80 @@
+{
+  "formatVersion": 1,
+  "scenarioSetVersion": 1,
+  "selectedScenarios": [
+    "mojidata-select",
+    "ivs-list",
+    "idsfind-ids"
+  ],
+  "mode": "remote",
+  "label": "deployed-d1-20260917",
+  "baseUrl": "https://mojidata-api-d1.mandel59.workers.dev",
+  "iterations": 5,
+  "warmupIterations": 1,
+  "coldIterations": 0,
+  "environment": {
+    "timestamp": "2026-09-16T18:08:18.699Z",
+    "nodeVersion": "v24.13.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cwd": "/home/mandel59/ws/mojidata/packages/mojidata-api-bench",
+    "gitRevision": "d945ba09dc3a7676d312abbbee2981bf2328bfdc",
+    "gitDirty": false
+  },
+  "results": [
+    {
+      "name": "mojidata-select",
+      "description": "mojidata lookup with select filter",
+      "samplesMs": [
+        37.71530700000005,
+        54.894497,
+        40.632948000000056,
+        44.288212000000044,
+        38.23534699999993
+      ],
+      "summary": {
+        "minMs": 37.71530700000005,
+        "avgMs": 43.153262200000015,
+        "p50Ms": 40.632948000000056,
+        "p95Ms": 54.894497,
+        "maxMs": 54.894497
+      }
+    },
+    {
+      "name": "ivs-list",
+      "description": "IVS list lookup",
+      "samplesMs": [
+        50.478562999999895,
+        43.57887200000005,
+        43.72369700000013,
+        43.29828399999997,
+        44.13724899999988
+      ],
+      "summary": {
+        "minMs": 43.29828399999997,
+        "avgMs": 45.04333299999998,
+        "p50Ms": 43.72369700000013,
+        "p95Ms": 50.478562999999895,
+        "maxMs": 50.478562999999895
+      }
+    },
+    {
+      "name": "idsfind-ids",
+      "description": "IDS fragment search",
+      "samplesMs": [
+        61.931830999999875,
+        69.0975699999999,
+        60.413851999999906,
+        68.17161499999997,
+        61.17468399999984
+      ],
+      "summary": {
+        "minMs": 60.413851999999906,
+        "avgMs": 64.1579103999999,
+        "p50Ms": 61.931830999999875,
+        "p95Ms": 69.0975699999999,
+        "maxMs": 69.0975699999999
+      }
+    }
+  ]
+}

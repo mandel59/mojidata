@@ -10,6 +10,7 @@ Keep dual support.
 - `@mandel59/idsdb` remains the FTS4 package for the `sql.js` path.
 - `@mandel59/idsdb-fts5` is the preferred package for native SQLite backends
   such as `better-sqlite3`, `node:sqlite`, and Cloudflare D1.
+- SQLite WASM requires the FTS5 database; its runtime rejects an FTS4 IDS index with `SqliteWasmIdsfindSchemaError`.
 
 We are not unifying on FTS5 today because the official `sql.js` build used in
 this repository still does not provide FTS5 support.
@@ -32,34 +33,43 @@ For the selected comparison set:
 - result ordering also matched
 - no user-visible behavior difference was found in the tested cases
 
-## Performance summary
+## Latest measured comparison (2026-09-17)
 
-The native `better-sqlite3` comparison showed that FTS5 is often materially
-faster on selective queries.
+The Unicode 18 release candidate `d945ba09` was measured on Node.js v24.13.0, linux-x64 / WSL2, Ryzen 7 3700X, with 30 measured iterations and five warmups. All eight tested queries returned identical result sets and ordering between FTS4 and FTS5.
 
-| Query | Final hits | FTS candidates | FTS4 avg | FTS5 avg | FTS5 vs FTS4 |
+Mean latency in milliseconds. Delta is `(FTS5 / FTS4 - 1) × 100`.
+
+| Query | Hits | Candidates | FTS4 | FTS5 | Delta |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `["§⿰？魚§"]` | 35 | 55 | 61.10 ms | 17.75 ms | -70.95% |
-| `["§⿰？魚§", "火"]` | 35 | 55 | 70.16 ms | 18.41 ms | -73.76% |
-| `["§⿱x⿰xx§"]` | 161 | 20638 | 588.19 ms | 599.52 ms | +1.93% |
-| `["§⿱x⿰xx§", "口"]` | 18 | 4862 | 155.66 ms | 151.10 ms | -2.93% |
-| `["§⿱x⿰xx§", "木"]` | 6 | 2570 | 111.43 ms | 88.71 ms | -20.38% |
-| `["耳*3"]` | 51 | 1372 | 71.32 ms | 63.87 ms | -10.44% |
-| `["木", "耳*3"]` | 4 | 89 | 34.47 ms | 12.21 ms | -64.57% |
-| `["§⿱艹⿰日月§", "日", "月"]` | 1 | 1 | 89.76 ms | 24.48 ms | -72.72% |
+| `["§⿰？魚§"]` | 35 | 55 | 67.36 | 11.32 | -83.20% |
+| `["§⿰？魚§", "火"]` | 35 | 55 | 73.58 | 11.97 | -83.73% |
+| `["§⿱x⿰xx§"]` | 162 | 20575 | 190.53 | 191.62 | +0.57% |
+| `["§⿱x⿰xx§", "口"]` | 18 | 4857 | 61.51 | 49.97 | -18.77% |
+| `["§⿱x⿰xx§", "木"]` | 7 | 2568 | 61.01 | 36.21 | -40.65% |
+| `["耳*3"]` | 51 | 1373 | 20.29 | 13.59 | -33.03% |
+| `["木", "耳*3"]` | 4 | 89 | 28.04 | 5.60 | -80.02% |
+| `["§⿱艹⿰日月§", "日", "月"]` | 1 | 1 | 97.40 | 17.95 | -81.57% |
 
-The broad variable query `§⿱x⿰xx§` is the main exception: its candidate set
-is so large that post-audit dominates total runtime, so FTS5 does not improve
-end-to-end time there.
+FTS5 substantially reduces latency for selective whole-pattern queries. The broad `§⿱x⿰xx§` query remains approximately tied: candidate verification dominates the full call. A broad pattern therefore does not inherit the speedup of a selective pattern.
 
-## Size difference
+Prefilter-only mean latency (the harness counts the `results` CTE rather than running full result verification):
 
-For the compared generated databases:
+| Query | FTS4 ms | FTS5 ms |
+| --- | ---: | ---: |
+| `["§⿰？魚§"]` | 67.01 | 10.37 |
+| `["§⿱x⿰xx§"]` | 29.67 | 30.49 |
+| `["§⿱x⿰xx§", "口"]` | 24.31 | 13.97 |
+| `["§⿱艹⿰日月§", "日", "月"]` | 97.02 | 17.34 |
 
-- FTS4 `idsfind.db`: `32,757,760 bytes`
-- FTS5 `idsfind.db`: `32,993,280 bytes`
+Generated IDS database sizes (4096-byte pages):
 
-That is an increase of `235,520 bytes` (`+0.72%`).
+| Index | Bytes |
+| --- | ---: |
+| FTS4 | 31,506,432 |
+| FTS5 | 31,440,896 |
+
+FTS5 is 65,536 bytes smaller (-0.21%) in this build. The older Wiki size increase is a historical result, not the size of these artifacts. [Raw FTS results](benchmarks/2026-09-17/fts.json).
+See the [complete report and raw samples](benchmarks/2026-09-17/README.md) for input fingerprints, measurement definitions, and limitations. The [previous recorded comparison](idsfind-fts-comparison-archive.md) remains available as historical evidence. Its values and the April Wiki values are separate recorded runs; neither is a matched before/after baseline for this release candidate.
 
 ## Reproducing the comparison
 

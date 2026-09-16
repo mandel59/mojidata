@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "d945ba09dc3a7676d312abbbee2981bf2328bfdc",
+  "platform": "Linux-6.18.35.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "cpu": "AMD Ryzen 7 3700X 8-Core Processor",
+  "inputs": {
+    "packages/mojidata/dist/moji.db": {
+      "bytes": 102735872,
+      "sha256": "e25751d99efccb4a875fda109715740293c0bd9cedd52f9a319e0d40c93730ac"
+    },
+    "packages/idsdb/idsfind.db": {
+      "bytes": 31506432,
+      "sha256": "3bd624ad11f27c59f1ff0bd894cc9eaa8b4aa8d86524a8be69d81ac98095a47d"
+    },
+    "packages/idsdb-fts5/idsfind.db": {
+      "bytes": 31440896,
+      "sha256": "d8df4edde88187c8389861acf4c055b3fd3d94bc11c4a21ffe5a168964bda47c"
+    },
+    "packages/idsdb-bvec/idsfind.db": {
+      "bytes": 24178688,
+      "sha256": "c89d43405783e1b351c9bb1b80095eb420cbaeb12ef95e70664c4781d9c8e908"
+    },
+    "packages/mojidata/download.txt": {
+      "bytes": 8902,
+      "sha256": "cea3257f6f44368487e4d93f5d2ff0c6a92ddb0d42ac5f71cef9b69bf09a8723"
+    },
+    "yarn.lock": {
+      "bytes": 237925,
+      "sha256": "030d3da4e56bc6eb49d2cf02245de4650484f9a7e448e6538dc3ce890476a327"
+    }
+  }
+}

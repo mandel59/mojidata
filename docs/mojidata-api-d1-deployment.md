@@ -3,6 +3,10 @@
 This document tracks the current deployment shape for the Cloudflare D1 backend
 of `mojidata-api` and the contract used by `mojidata-web-app`.
 
+## Latest HTTP observation (2026-09-17)
+
+A [small deployed-D1 benchmark](benchmarks/2026-09-17/README.md#deployed-d1-observation) succeeded for three scenarios at the existing default Worker URL. It records client-observed latency only, not the current Worker version, database bindings, SQL rows-read budget, or a Unicode 18 deployment. Keep this evidence separate from local release-candidate results and historical Free-plan validation.
+
 ## Scope
 
 The current target is a bounded D1 rollout path:
