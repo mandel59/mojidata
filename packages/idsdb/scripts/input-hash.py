@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
-import hashlib
 import os
 import pathlib
+import sys
 
 root = pathlib.Path(__file__).resolve().parent.parent
 workspace_root = root.parent
-h = hashlib.sha256()
+sys.path.insert(0, str(workspace_root.parent / "scripts"))
+from db_build_inputs import BuildInputs
 
+inputs = BuildInputs(workspace_root.parent)
+add_file = inputs.add_file
+add_line = lambda value: inputs.add("option", value)
 
-def add_line(s: str):
-    h.update(s.encode("utf-8"))
-    h.update(b"\n")
-
-
-def add_file(path: pathlib.Path):
-    rel = path.relative_to(workspace_root)
-    add_line(f"FILE\t{rel.as_posix()}")
-    h.update(path.read_bytes())
-    h.update(b"\n")
+# Builder wrappers and derivation tools also affect the output and reuse rules.
+for package in ["idsdb", "idsdb-fts5", "idsdb-bvec"]:
+    for file in sorted((workspace_root / package / "scripts").glob("*")):
+        if file.is_file():
+            add_file(file)
+for file in sorted(root.glob("build-*-derived.ts")):
+    add_file(file)
 
 for rel in [
     pathlib.Path("idsdb/package.json"),
@@ -56,4 +57,4 @@ add_line(f"ENV\tMOJIDATA_IDSDB_DATA_SOURCES={os.getenv('MOJIDATA_IDSDB_DATA_SOUR
 add_line(f"ENV\tMOJIDATA_IDSDB_EXPAND_Z_VARIANTS={os.getenv('MOJIDATA_IDSDB_EXPAND_Z_VARIANTS', '1')}")
 add_line(f"ENV\tMOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS={os.getenv('MOJIDATA_IDSDB_NORMALIZE_KDPV_RADICAL_VARIANTS', '1')}")
 
-print(h.hexdigest())
+print(inputs.hexdigest())

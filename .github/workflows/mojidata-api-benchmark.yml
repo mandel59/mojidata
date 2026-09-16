@@ -58,6 +58,10 @@ jobs:
           node-version: 22
           cache: yarn
 
+      - name: Compute database cache keys
+        id: db-cache-key
+        run: python3 scripts/db-cache-key.py
+
       - name: Restore mojidata build cache
         uses: actions/cache@v4
         with:
@@ -65,9 +69,9 @@ jobs:
             packages/mojidata/dist
             packages/mojidata/cache
             packages/mojidata/resources
-          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
           restore-keys: |
-            mojidata-${{ runner.os }}-
+            mojidata-v2-${{ runner.os }}-
 
       - name: Install dependencies
         run: corepack yarn install --immutable

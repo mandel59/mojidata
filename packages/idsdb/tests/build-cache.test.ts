@@ -48,7 +48,11 @@ for (const name of ["idsdb", "idsdb-fts5", "idsdb-bvec"]) {
 test("IDSDB input hash tracks builder libraries and semantics manifests", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "idsdb-hash-"))
   try {
-    const script = path.join(root, "idsdb/scripts/input-hash.py")
+    const script = path.join(root, "packages/idsdb/scripts/input-hash.py")
+    fs.mkdirSync(path.join(root, "scripts"), { recursive: true })
+    fs.copyFileSync(path.join(packages, "../scripts/db_build_inputs.py"), path.join(root, "scripts/db_build_inputs.py"))
+    fs.copyFileSync(path.join(packages, "../yarn.lock"), path.join(root, "yarn.lock"))
+    fs.writeFileSync(path.join(root, "package.json"), "{}")
     fs.mkdirSync(path.dirname(script), { recursive: true })
     fs.copyFileSync(path.join(packages, "idsdb/scripts/input-hash.py"), script)
     const files = [
@@ -58,14 +62,14 @@ test("IDSDB input hash tracks builder libraries and semantics manifests", () => 
       ...["package.json", "tsconfig.json", "index.ts", "index.js", "index.d.ts", "node.ts", "node.js", "node.d.ts", "lib/idsflow.ts"].map(file => `idsdb-utils/${file}`),
     ]
     for (const file of files) {
-      fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true })
-      fs.writeFileSync(path.join(root, file), file)
+      fs.mkdirSync(path.dirname(path.join(root, "packages", file)), { recursive: true })
+      fs.writeFileSync(path.join(root, "packages", file), file.endsWith("package.json") ? "{}" : file)
     }
     const hash = () => execFileSync("python3", [script], { encoding: "utf8" }).trim()
     let previous = hash()
     assert.equal(hash(), previous)
     for (const file of ["idsfind-semantics-manifest.ts", "idsfind-bvec-db.ts"]) {
-      fs.appendFileSync(path.join(root, "idsdb/lib", file), "changed")
+      fs.appendFileSync(path.join(root, "packages/idsdb/lib", file), "changed")
       const next = hash()
       assert.notEqual(next, previous)
       previous = next

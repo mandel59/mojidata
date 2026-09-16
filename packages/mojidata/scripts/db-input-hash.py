@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
-import hashlib
 import pathlib
+import sys
 
 root = pathlib.Path(__file__).resolve().parent.parent
-h = hashlib.sha256()
+sys.path.insert(0, str(root.parent.parent / "scripts"))
+from db_build_inputs import BuildInputs
 
-
-def add_line(s: str):
-    h.update(s.encode("utf-8"))
-    h.update(b"\n")
-
-
-def add_file(path: pathlib.Path):
-    rel = path.relative_to(root)
-    add_line(f"FILE\t{rel.as_posix()}")
-    h.update(path.read_bytes())
-    h.update(b"\n")
-
+inputs = BuildInputs(root.parent.parent)
+add_file = inputs.add_file
+add_line = lambda value: inputs.add("cache", value)
 
 for rel in [
     pathlib.Path("download.txt"),
@@ -49,4 +41,4 @@ for line in (root / "download.txt").read_text(encoding="utf-8").splitlines():
             target = "PRESENT"
     add_line(f"CACHE\t{name}\t{digest}\t{url}\t{target}")
 
-print(h.hexdigest())
+print(inputs.hexdigest())

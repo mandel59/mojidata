@@ -75,3 +75,18 @@ whole before/after range; PR comparisons use the merge base. Missing history,
 new branches, malformed events and empty comparisons conservatively run checks.
 Manual `workflow_dispatch` runs always enable release checks, even if the last
 commit changed only documentation, so a failed publish can still be retried.
+
+## Database cache inputs
+
+Actions cache keys and local DB stamps use `scripts/db_build_inputs.py` to
+normalize package metadata. Release versions, descriptions and local workspace
+version ranges do not invalidate the DB cache. Build commands, external
+dependency requirements, external lockfile resolutions/checksums, Yarn patches,
+Node/Python versions and source/build inputs remain part of the fingerprint.
+The immutable install check still rejects manifests that disagree with the lock.
+Changes to unrelated external dependencies can conservatively invalidate caches.
+
+Actions computes source-based keys before restoring artifacts; local prepare
+scripts additionally check generated inputs (including the actual mojidata DB
+for IDS builds) before deciding to skip. PR caches follow GitHub's cache scope:
+a PR-created cache must not be assumed available to a subsequent main run.

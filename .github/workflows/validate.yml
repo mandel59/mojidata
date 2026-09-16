@@ -26,6 +26,8 @@ jobs:
         run: node scripts/ci-change-scope.mjs
       - name: Check CI change classification
         run: node --test scripts/ci-change-scope.test.mjs
+      - name: Check database cache fingerprints
+        run: python3 scripts/db-build-inputs.test.py
 
   prepare-db-cache:
     needs: changes
@@ -48,6 +50,10 @@ jobs:
           node-version: 22
           cache: yarn
 
+      - name: Compute database cache keys
+        id: db-cache-key
+        run: python3 scripts/db-cache-key.py
+
       - name: Restore mojidata build cache
         uses: actions/cache@v4
         with:
@@ -55,9 +61,9 @@ jobs:
             packages/mojidata/dist
             packages/mojidata/cache
             packages/mojidata/resources
-          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
           restore-keys: |
-            mojidata-${{ runner.os }}-
+            mojidata-v2-${{ runner.os }}-
 
       - name: Restore idsdb build cache
         uses: actions/cache@v4
@@ -69,9 +75,9 @@ jobs:
             packages/idsdb-fts5/idsfind.db
             packages/idsdb-fts5/idsdecompose.db
             packages/idsdb-fts5/.idsdb-fts5.input.sha256
-          key: idsdb-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json', 'packages/idsdb/package.json', 'packages/idsdb/tsconfig.json', 'packages/idsdb/prepare.ts', 'packages/idsdb/lib/**', 'packages/idsdb/scripts/**', 'packages/idsdb-fts5/package.json', 'packages/idsdb-fts5/scripts/**', 'packages/idsdb-utils/package.json', 'packages/idsdb-utils/tsconfig.json', 'packages/idsdb-utils/index.ts', 'packages/idsdb-utils/node.ts', 'packages/idsdb-utils/lib/**', 'packages/idsdb-utils/recipes/**') }}
+          key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
           restore-keys: |
-            idsdb-${{ runner.os }}-
+            idsdb-v2-${{ runner.os }}-
 
       - name: Install dependencies
         run: corepack yarn install --immutable
@@ -102,6 +108,10 @@ jobs:
           node-version: 22
           cache: yarn
 
+      - name: Compute database cache keys
+        id: db-cache-key
+        run: python3 scripts/db-cache-key.py
+
       - name: Restore mojidata build cache
         uses: actions/cache@v4
         with:
@@ -109,9 +119,9 @@ jobs:
             packages/mojidata/dist
             packages/mojidata/cache
             packages/mojidata/resources
-          key: mojidata-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json') }}
+          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
           restore-keys: |
-            mojidata-${{ runner.os }}-
+            mojidata-v2-${{ runner.os }}-
 
       - name: Restore idsdb build cache
         uses: actions/cache@v4
@@ -123,9 +133,9 @@ jobs:
             packages/idsdb-fts5/idsfind.db
             packages/idsdb-fts5/idsdecompose.db
             packages/idsdb-fts5/.idsdb-fts5.input.sha256
-          key: idsdb-${{ runner.os }}-${{ hashFiles('packages/mojidata/download.txt', 'packages/mojidata/package.json', 'packages/mojidata/scripts/**', 'packages/mojidata/build-data/unihan-tr38-properties.json', 'packages/idsdb/package.json', 'packages/idsdb/tsconfig.json', 'packages/idsdb/prepare.ts', 'packages/idsdb/lib/**', 'packages/idsdb/scripts/**', 'packages/idsdb-fts5/package.json', 'packages/idsdb-fts5/scripts/**', 'packages/idsdb-utils/package.json', 'packages/idsdb-utils/tsconfig.json', 'packages/idsdb-utils/index.ts', 'packages/idsdb-utils/node.ts', 'packages/idsdb-utils/lib/**', 'packages/idsdb-utils/recipes/**') }}
+          key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
           restore-keys: |
-            idsdb-${{ runner.os }}-
+            idsdb-v2-${{ runner.os }}-
 
       - name: Install dependencies
         run: corepack yarn install --immutable
