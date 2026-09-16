@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/idsdb-bvec",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Bloom-vector idsfind database package for mojidata backends",
   "repository": {
     "type": "git",

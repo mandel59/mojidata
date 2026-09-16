@@ -1,5 +1,30 @@
 # Change Log
 
+## 1.10.0
+
+### Minor Changes
+
+- [`65dc878`](https://github.com/mandel59/mojidata/commit/65dc878f67f4effdaa4a1f9a540f99767c0c5938) Thanks [@mandel59](https://github.com/mandel59)! - Add a versioned IDSgrep-inspired BV128 encoder and an opt-in Bloom-vector
+  candidate provider while retaining exact IDS verification and FTS defaults.
+
+- [`679de31`](https://github.com/mandel59/mojidata/commit/679de31ef324825e0f43e9733fb90ad4c401b488) Thanks [@mandel59](https://github.com/mandel59)! - Integrate IDS search improvements with 4 KiB database pages, cycle detection
+  before recursive decomposition, optional candidate providers, and versioned
+  query semantics shared by database builders and API backends. Existing
+  databases retain legacy query behavior; strict registered semantics and
+  experimental query plans require explicit opt-in.
+
+  Invalidate derived database caches after recipe builds or failed builds and
+  when builder libraries change. Fix source-cache pruning when several resource
+  links share one download. Unicode input pins and deployed D1 bindings are
+  unchanged by this integration.
+
+### Patch Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`d272a29`](https://github.com/mandel59/mojidata/commit/d272a29bad0038622b704d5f045664957ea5a77a) Thanks [@mandel59](https://github.com/mandel59)! - Split variant-relation expansion into D1-safe query batches while preserving transitive search semantics.
+
+- Updated dependencies [[`65dc878`](https://github.com/mandel59/mojidata/commit/65dc878f67f4effdaa4a1f9a540f99767c0c5938), [`fbb8fca`](https://github.com/mandel59/mojidata/commit/fbb8fca29b73c437f5eb92e992eaf688e35ed5d8), [`08b3899`](https://github.com/mandel59/mojidata/commit/08b38995c8fe5cc136415bae5fcd5cc0ff8d5294), [`d2b7bca`](https://github.com/mandel59/mojidata/commit/d2b7bcaad55dfb8d237f0d993c48560558d8bb62), [`679de31`](https://github.com/mandel59/mojidata/commit/679de31ef324825e0f43e9733fb90ad4c401b488)]:
+  - @mandel59/idsdb-utils@1.8.0
+
 ## 1.9.2
 
 ### Patch Changes

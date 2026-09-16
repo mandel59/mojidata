@@ -1,5 +1,16 @@
 # Change Log
 
+## 3.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`65dc878`](https://github.com/mandel59/mojidata/commit/65dc878f67f4effdaa4a1f9a540f99767c0c5938), [`d272a29`](https://github.com/mandel59/mojidata/commit/d272a29bad0038622b704d5f045664957ea5a77a), [`679de31`](https://github.com/mandel59/mojidata/commit/679de31ef324825e0f43e9733fb90ad4c401b488)]:
+  - @mandel59/mojidata-api-core@1.10.0
+  - @mandel59/mojidata-api-better-sqlite3@1.10.0
+  - @mandel59/mojidata-api-node-sqlite@1.10.0
+  - @mandel59/mojidata-api-runtime@2.1.0
+  - @mandel59/mojidata-api-sqljs@1.9.0
+
 ## 2.0.0
 
 ### Major Changes

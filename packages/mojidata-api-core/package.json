@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-core",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "Core backend-neutral composition utilities for mojidata-api",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
   "author": "Ryusei Yamaguchi",
   "license": "MIT",
   "dependencies": {
-    "@mandel59/idsdb-utils": "^1.7.0"
+    "@mandel59/idsdb-utils": "^1.8.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.4",
