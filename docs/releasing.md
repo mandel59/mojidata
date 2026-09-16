@@ -58,7 +58,9 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
 - `id-token: write` is required because npm Trusted Publishing uses GitHub Actions OIDC.
 - The release workflow uses Node.js 24 so npm meets Trusted Publishing's current runtime requirements.
 - `packages/mojidata` build artifacts are restored from cache before release work to reduce repeated DB rebuild cost.
-- The release workflow writes either the "trusted publishing executed" or the "release PR updated" outcome into the GitHub Actions job summary.
+- The release summary distinguishes an actual release PR update, empty changesets
+  without a PR update, publishing success, and incomplete/failed release steps.
+  A successful publishing command can still mean no unpublished versions existed.
 
 ## CI for documentation changes
 
@@ -103,3 +105,9 @@ the full builder. Each output retains its own input stamp.
 Both CI jobs cache all three index variants. The preparation job writes per-phase
 elapsed times and exact cache-match results to the Actions summary; a non-exact
 match can still restore an older cache whose inputs are checked locally.
+
+`scripts/run-ci-phase.mjs` records elapsed time and exit status for Validate's
+build/test/pack commands and Release's test/pack/version/publish commands, including
+failed commands. It preserves command failures. Test and publish timings include
+any nested builds; publishing still uses the existing `yarn release` path until
+reuse of all verified package artifacts is implemented.

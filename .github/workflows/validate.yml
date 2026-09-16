@@ -25,7 +25,7 @@ jobs:
         id: scope
         run: node scripts/ci-change-scope.mjs
       - name: Check CI change classification
-        run: node --test scripts/ci-change-scope.test.mjs
+        run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs
       - name: Check database cache fingerprints
         run: python3 scripts/db-build-inputs.test.py
 
@@ -159,52 +159,52 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: corepack yarn ci:build:affected
+        run: node scripts/run-ci-phase.mjs build corepack yarn ci:build:affected
 
       - name: Build affected workspace for branch pushes
         if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
         env:
           CI_BASE_SHA: ${{ github.event.before }}
           CI_HEAD_SHA: ${{ github.sha }}
-        run: corepack yarn ci:build:affected
+        run: node scripts/run-ci-phase.mjs build corepack yarn ci:build:affected
 
       - name: Build full workspace for branch creation pushes
         if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
-        run: corepack yarn ci:build
+        run: node scripts/run-ci-phase.mjs build corepack yarn ci:build
 
       - name: Check publish artifacts for pull requests
         if: github.event_name == 'pull_request'
         env:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: corepack yarn ci:pack:affected
+        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack:affected
 
       - name: Check affected publish artifacts for branch pushes
         if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
         env:
           CI_BASE_SHA: ${{ github.event.before }}
           CI_HEAD_SHA: ${{ github.sha }}
-        run: corepack yarn ci:pack:affected
+        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack:affected
 
       - name: Check full publish artifacts for branch creation pushes
         if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
-        run: corepack yarn ci:pack
+        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack
 
       - name: Run affected tests for pull requests
         if: github.event_name == 'pull_request'
         env:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: corepack yarn ci:test:affected
+        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test:affected
 
       - name: Run affected tests for branch pushes
         if: github.event_name != 'pull_request' && github.event.before != '0000000000000000000000000000000000000000'
         env:
           CI_BASE_SHA: ${{ github.event.before }}
           CI_HEAD_SHA: ${{ github.sha }}
-        run: corepack yarn ci:test:affected
+        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test:affected
 
       - name: Run full test suite for branch creation pushes
         if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
-        run: corepack yarn ci:test
+        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test
 
   # Keep the required check named "validate" completing even for docs-only PRs,
   # and fail it if classification or any required heavy job fails.

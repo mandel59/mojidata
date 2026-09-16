@@ -25,7 +25,7 @@ jobs:
         id: scope
         run: node scripts/ci-change-scope.mjs
       - name: Check CI change classification
-        run: node --test scripts/ci-change-scope.test.mjs
+        run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs
       - name: Check database cache fingerprints
         run: python3 scripts/db-build-inputs.test.py
 
@@ -156,40 +156,31 @@ jobs:
         run: corepack yarn install --immutable
 
       - name: Run test suite before release actions
-        run: corepack yarn ci:test
+        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test
 
       - name: Check publish artifacts before release actions
-        run: corepack yarn ci:pack
+        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack
 
       - name: Create or update release pull request
         id: changesets
         uses: changesets/action@v1
         with:
-          version: corepack yarn version-packages
+          version: node scripts/run-ci-phase.mjs version corepack yarn version-packages
           commit: Version Packages
           title: Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages with trusted publishing
+        id: publish
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: corepack yarn release
+        run: node scripts/run-ci-phase.mjs publish corepack yarn release
 
       - name: Summarize release result
+        if: always()
         env:
+          CHANGESETS_OUTCOME: ${{ steps.changesets.outcome }}
           CHANGESETS_HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
-        run: |
-          {
-            echo "## Release Result"
-            if [ "$CHANGESETS_HAS_CHANGESETS" = "false" ]; then
-              echo
-              echo "Trusted publishing path executed."
-              echo
-              echo "Check the publish step logs and npm registry results for the exact package versions."
-            else
-              echo
-              echo "Release pull request created or updated."
-              echo
-              echo "No npm publish happened in this run."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          CHANGESETS_PULL_REQUEST_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+        run: node scripts/release-summary.mjs
