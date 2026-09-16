@@ -50,6 +50,7 @@ limit and were corrected before these measurements. No repeated remote benchmark
 or old full-scan SQL was run. The old D1 Insights average of 233,628 rows for the
 first group aggregates different executions and is not a same-input measurement.
 
-These checks validate SQL execution on D1. Production Worker rollout and a full
-HTTP smoke check after quota recovery remain separate steps; this change does
+These checks validate SQL execution on D1. The Worker rollout completed on
+2026-09-17 JST; see the [deployment record](deployments/2026-09-17-variant-read-optimization.md).
+A full HTTP smoke check after quota recovery remains pending; this change does
 not restore already-consumed daily quota.
