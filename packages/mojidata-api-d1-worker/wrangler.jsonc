@@ -13,13 +13,13 @@
   "d1_databases": [
     {
       "binding": "MOJIDATA_DB",
-      "database_name": "mojidata-api-d1-mojidata-20260503-bg-20260504-d1-indexes-r20260507-unihan-views",
-      "database_id": "869556cd-9a42-4423-9b22-cff4c1eafca2"
+      "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
+      "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
     },
     {
       "binding": "IDSFIND_DB",
-      "database_name": "mojidata-api-d1-idsfind-20260503-bg-20260504-d1-indexes",
-      "database_id": "18e0c4f7-006c-474c-87e2-a00de91bec98"
+      "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+      "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
     }
   ],
   "env": {
@@ -31,13 +31,13 @@
       "d1_databases": [
         {
           "binding": "MOJIDATA_DB",
-          "database_name": "mojidata-api-d1-mojidata-staging-u18-beta-20260815-query-perf",
-          "database_id": "517ba6a8-42a1-4020-b8c3-2129bed129e2"
+          "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
+          "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
         },
         {
           "binding": "IDSFIND_DB",
-          "database_name": "mojidata-api-d1-idsfind-staging-u18-beta-20260815-query-perf",
-          "database_id": "0013717e-8868-4eff-b9d2-49f056f928b2"
+          "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+          "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
         }
       ]
     },

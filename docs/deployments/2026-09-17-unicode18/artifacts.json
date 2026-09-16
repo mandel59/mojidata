@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-09-16T19:16:35.306Z",
+  "entries": [
+    {
+      "name": "mojidata",
+      "sourceDbPath": "mojidata/package/dist/moji.db",
+      "sourceByteLength": 102735872,
+      "sourceSha256": "e25751d99efccb4a875fda109715740293c0bd9cedd52f9a319e0d40c93730ac",
+      "outputPath": "sql/mojidata.sql",
+      "outputByteLength": 150891864,
+      "outputSha256": "13e30c08764ce31d1dd9d22c8c09ad95525c66fa029b94cd6138d3eebe70feee"
+    },
+    {
+      "name": "idsdb-fts5",
+      "sourceDbPath": "idsdb-fts5/package/idsfind.db",
+      "sourceByteLength": 31440896,
+      "sourceSha256": "d8df4edde88187c8389861acf4c055b3fd3d94bc11c4a21ffe5a168964bda47c",
+      "outputPath": "sql/idsdb-fts5.sql",
+      "outputByteLength": 23038842,
+      "outputSha256": "4f58d923e3010c2010b4dc3af073da10a3b71369f93634e0a4b2da7d30c5ccb5"
+    }
+  ]
+}

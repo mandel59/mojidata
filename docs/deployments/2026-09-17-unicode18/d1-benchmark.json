@@ -1,0 +1,80 @@
+{
+  "formatVersion": 1,
+  "scenarioSetVersion": 1,
+  "selectedScenarios": [
+    "mojidata-select",
+    "ivs-list",
+    "idsfind-ids"
+  ],
+  "mode": "remote",
+  "label": "unicode18-blue-green",
+  "baseUrl": "https://mojidata-api-d1.mandel59.workers.dev",
+  "iterations": 5,
+  "warmupIterations": 1,
+  "coldIterations": 0,
+  "environment": {
+    "timestamp": "2026-09-16T19:24:11.401Z",
+    "nodeVersion": "v24.13.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cwd": "/home/mandel59/ws/mojidata/packages/mojidata-api-bench",
+    "gitRevision": "7c4f44d2a6995daca761e5659543127304db1894",
+    "gitDirty": true
+  },
+  "results": [
+    {
+      "name": "mojidata-select",
+      "description": "mojidata lookup with select filter",
+      "samplesMs": [
+        36.42780800000003,
+        44.28771800000004,
+        40.18010200000003,
+        42.3805789999999,
+        44.226220999999896
+      ],
+      "summary": {
+        "minMs": 36.42780800000003,
+        "avgMs": 41.500485599999976,
+        "p50Ms": 42.3805789999999,
+        "p95Ms": 44.28771800000004,
+        "maxMs": 44.28771800000004
+      }
+    },
+    {
+      "name": "ivs-list",
+      "description": "IVS list lookup",
+      "samplesMs": [
+        40.706645999999864,
+        46.54217900000003,
+        41.931450999999925,
+        39.59571499999993,
+        34.719053999999915
+      ],
+      "summary": {
+        "minMs": 34.719053999999915,
+        "avgMs": 40.69900899999993,
+        "p50Ms": 40.706645999999864,
+        "p95Ms": 46.54217900000003,
+        "maxMs": 46.54217900000003
+      }
+    },
+    {
+      "name": "idsfind-ids",
+      "description": "IDS fragment search",
+      "samplesMs": [
+        69.23607700000002,
+        82.932951,
+        72.88374199999976,
+        69.19569700000011,
+        67.928942
+      ],
+      "summary": {
+        "minMs": 67.928942,
+        "avgMs": 72.43548179999998,
+        "p50Ms": 69.23607700000002,
+        "p95Ms": 82.932951,
+        "maxMs": 82.932951
+      }
+    }
+  ]
+}

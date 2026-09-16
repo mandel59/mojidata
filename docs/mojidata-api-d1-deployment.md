@@ -3,7 +3,19 @@
 This document tracks the current deployment shape for the Cloudflare D1 backend
 of `mojidata-api` and the contract used by `mojidata-web-app`.
 
-## Latest HTTP observation (2026-09-17)
+## Latest deployment (2026-09-17)
+
+The public/default Worker now serves the final Unicode 18 release. A fresh D1
+pair was imported from published `mojidata@1.9.0` and `idsdb-fts5@1.10.0`,
+validated through staging, and promoted to the existing public URL. The old
+pair is retained for rollback. See the [deployment record](deployments/2026-09-17-unicode18/README.md)
+for Worker versions, database IDs, verification results, and rollback manifests.
+
+Staging and public/default currently read this same release pair. Future import
+tests must create new inactive databases. The named `production` environment
+still has placeholder IDs; the public Worker uses the top-level/default config.
+
+## HTTP observation before this deployment (2026-09-17)
 
 A [small deployed-D1 benchmark](benchmarks/2026-09-17/README.md#deployed-d1-observation) succeeded for three scenarios at the existing default Worker URL. It records client-observed latency only, not the current Worker version, database bindings, SQL rows-read budget, or a Unicode 18 deployment. Keep this evidence separate from local release-candidate results and historical Free-plan validation.
 

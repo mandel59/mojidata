@@ -1,0 +1,39 @@
+{
+  "kind": "mojidata-api-d1-blue-green-release",
+  "version": 1,
+  "release": "u18-20260917",
+  "createdAt": "2026-09-16T19:21:20.069Z",
+  "env": null,
+  "target": "default",
+  "configPath": "packages/mojidata-api-d1-worker/wrangler.jsonc",
+  "previousDatabases": [
+    {
+      "binding": "MOJIDATA_DB",
+      "database_name": "mojidata-api-d1-mojidata-20260503-bg-20260504-d1-indexes-r20260507-unihan-views",
+      "database_id": "869556cd-9a42-4423-9b22-cff4c1eafca2"
+    },
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind-20260503-bg-20260504-d1-indexes",
+      "database_id": "18e0c4f7-006c-474c-87e2-a00de91bec98"
+    }
+  ],
+  "releaseDatabases": [
+    {
+      "binding": "MOJIDATA_DB",
+      "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
+      "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
+    },
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+      "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
+    }
+  ],
+  "selectedBindings": [
+    "MOJIDATA_DB",
+    "IDSFIND_DB"
+  ],
+  "unchangedDatabases": [],
+  "validatedOn": "https://mojidata-api-d1-staging.mandel59.workers.dev"
+}
