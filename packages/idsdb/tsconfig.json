@@ -9,6 +9,7 @@
     "lib": ["ES2019"]
   },
   "include": [
-    "./prepare.ts"
+    "./prepare.ts",
+    "./build-index-derived.ts"
   ]
 }

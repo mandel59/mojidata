@@ -3,6 +3,7 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { isDocumentationFile } from "./ci-change-scope.mjs";
 
 const repoRoot = process.cwd();
 const packagesRoot = path.join(repoRoot, "packages");
@@ -111,15 +112,6 @@ function getWorkspaceByFile(filePath) {
   return null;
 }
 
-function isIgnoredRootFile(filePath) {
-  return (
-    filePath === "README.md" ||
-    filePath === "AGENTS.md" ||
-    filePath === ".gitignore" ||
-    filePath.startsWith("docs/")
-  );
-}
-
 function requiresFullWorkspaceRun(filePath) {
   if (filePath.startsWith(".github/")) {
     return true;
@@ -162,7 +154,7 @@ for (const filePath of changedFiles) {
     directlyChanged.add(workspaceName);
     continue;
   }
-  if (isIgnoredRootFile(filePath)) {
+  if (isDocumentationFile(filePath)) {
     continue;
   }
   if (requiresFullWorkspaceRun(filePath)) {
