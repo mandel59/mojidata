@@ -90,3 +90,16 @@ Actions computes source-based keys before restoring artifacts; local prepare
 scripts additionally check generated inputs (including the actual mojidata DB
 for IDS builds) before deciding to skip. PR caches follow GitHub's cache scope:
 a PR-created cache must not be assumed available to a subsequent main run.
+
+## Shared IDS database preparation
+
+`node scripts/prepare-ci-databases.mjs` prepares mojidata, IDS utilities, FTS4,
+FTS5 and bvec in that order. When the FTS4 input stamp matches the current
+sources and transformation options, FTS5 and bvec reuse its expanded IDS rows
+and decomposition database and build only their own search indexes. Custom
+recipes, missing or stale base artifacts and incompatible options fall back to
+the full builder. Each output retains its own input stamp.
+
+Both CI jobs cache all three index variants. The preparation job writes per-phase
+elapsed times and exact cache-match results to the Actions summary; a non-exact
+match can still restore an older cache whose inputs are checked locally.

@@ -78,3 +78,28 @@ test("IDSDB input hash tracks builder libraries and semantics manifests", () => 
     fs.rmSync(root, { recursive: true, force: true })
   }
 })
+
+test("derived index reuse requires a current base stamp and compatible options", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "idsdb-derive-cache-"))
+  try {
+    const pkg = path.join(root, "idsdb")
+    const bin = path.join(root, "bin")
+    fs.mkdirSync(path.join(pkg, "scripts"), { recursive: true })
+    fs.mkdirSync(bin)
+    fs.copyFileSync(path.join(packages, "idsdb/scripts/derive-index"), path.join(pkg, "scripts/derive-index"))
+    fs.writeFileSync(path.join(bin, "python3"), '#!/bin/bash\nprintf "%s\\n" "${MOJIDATA_IDSDB_SOURCE:-default}"\n', { mode: 0o755 })
+    fs.writeFileSync(path.join(bin, "node"), '#!/bin/bash\necho derived\n', { mode: 0o755 })
+    const env = { ...process.env, PATH: `${bin}:${process.env.PATH}` }
+    for (const key of Object.keys(env)) if (key.startsWith("MOJIDATA_IDSDB_")) delete env[key]
+    const run = (extra = {}) => execFileSync("bash", [path.join(pkg, "scripts/derive-index"), "fts5", path.join(root, "output")], { env: { ...env, ...extra }, encoding: "utf8" })
+    assert.throws(() => run())
+    for (const name of ["idsfind.db", "idsdecompose.db"]) fs.writeFileSync(path.join(pkg, name), "base")
+    fs.writeFileSync(path.join(pkg, ".idsdb.input.sha256"), "default\n")
+    assert.match(run(), /derived/)
+    assert.throws(() => run({ MOJIDATA_IDSDB_SOURCE: "J" }))
+    assert.throws(() => run({ MOJIDATA_IDSDB_RECIPE: "experimental" }))
+    assert.throws(() => run({ MOJIDATA_IDSDB_INDEX_MODE: "bvec" }))
+    fs.writeFileSync(path.join(pkg, ".idsdb.input.sha256"), "stale\n")
+    assert.throws(() => run())
+  } finally { fs.rmSync(root, { recursive: true, force: true }) }
+})

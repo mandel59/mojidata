@@ -55,6 +55,7 @@ jobs:
         run: python3 scripts/db-cache-key.py
 
       - name: Restore mojidata build cache
+        id: mojidata-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -66,6 +67,7 @@ jobs:
             mojidata-v2-${{ runner.os }}-
 
       - name: Restore idsdb build cache
+        id: idsdb-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -75,6 +77,9 @@ jobs:
             packages/idsdb-fts5/idsfind.db
             packages/idsdb-fts5/idsdecompose.db
             packages/idsdb-fts5/.idsdb-fts5.input.sha256
+            packages/idsdb-bvec/idsfind.db
+            packages/idsdb-bvec/idsdecompose.db
+            packages/idsdb-bvec/.idsdb-bvec.input.sha256
           key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
           restore-keys: |
             idsdb-v2-${{ runner.os }}-
@@ -83,9 +88,10 @@ jobs:
         run: corepack yarn install --immutable
 
       - name: Prepare mojidata and IDS database artifacts
-        run: |
-          corepack yarn build:idsdb-stack
-          corepack yarn workspace @mandel59/idsdb-fts5 run prepare
+        env:
+          MOJIDATA_CACHE_HIT: ${{ steps.mojidata-cache.outputs.cache-hit }}
+          IDSDB_CACHE_HIT: ${{ steps.idsdb-cache.outputs.cache-hit }}
+        run: node scripts/prepare-ci-databases.mjs
 
   release:
     runs-on: ubuntu-latest
@@ -117,6 +123,7 @@ jobs:
         run: python3 scripts/db-cache-key.py
 
       - name: Restore mojidata build cache
+        id: mojidata-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -128,6 +135,7 @@ jobs:
             mojidata-v2-${{ runner.os }}-
 
       - name: Restore idsdb build cache
+        id: idsdb-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -137,6 +145,9 @@ jobs:
             packages/idsdb-fts5/idsfind.db
             packages/idsdb-fts5/idsdecompose.db
             packages/idsdb-fts5/.idsdb-fts5.input.sha256
+            packages/idsdb-bvec/idsfind.db
+            packages/idsdb-bvec/idsdecompose.db
+            packages/idsdb-bvec/.idsdb-bvec.input.sha256
           key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
           restore-keys: |
             idsdb-v2-${{ runner.os }}-

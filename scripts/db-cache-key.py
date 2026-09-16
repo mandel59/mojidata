@@ -10,6 +10,7 @@ root = pathlib.Path(__file__).resolve().parent.parent
 def cache_key(packages):
     inputs = BuildInputs(root)
     inputs.add_file(pathlib.Path(__file__).resolve())
+    inputs.add_file(root / "scripts/prepare-ci-databases.mjs")
     for package in packages:
         directory = root / "packages" / package
         for name in ["package.json", "tsconfig.json", "download.txt", "prepare.ts", "index.ts", "node.ts"]:
