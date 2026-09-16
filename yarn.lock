@@ -876,7 +876,7 @@ __metadata:
     "@mandel59/idsdb-utils": "workspace:^"
     "@mandel59/idsflow-eids": "workspace:^"
     "@mandel59/mojidata-api-better-sqlite3": "npm:^1.10.0"
-    "@mandel59/mojidata-api-core": "npm:^1.10.1"
+    "@mandel59/mojidata-api-core": "npm:^1.10.2"
     "@mandel59/mojidata-api-node-sqlite": "npm:^1.10.0"
     "@mandel59/mojidata-api-sqljs": "npm:^1.9.0"
     "@types/better-sqlite3": "npm:^5.4.1"
@@ -907,7 +907,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mandel59/mojidata-api-core@npm:^1.10.0, @mandel59/mojidata-api-core@npm:^1.10.1, @mandel59/mojidata-api-core@npm:^1.9.0, @mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
+"@mandel59/mojidata-api-core@npm:^1.10.0, @mandel59/mojidata-api-core@npm:^1.10.2, @mandel59/mojidata-api-core@npm:^1.9.0, @mandel59/mojidata-api-core@workspace:packages/mojidata-api-core":
   version: 0.0.0-use.local
   resolution: "@mandel59/mojidata-api-core@workspace:packages/mojidata-api-core"
   dependencies:
