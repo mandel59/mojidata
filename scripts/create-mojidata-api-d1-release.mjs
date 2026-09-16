@@ -183,6 +183,7 @@ function getDatabaseIdFromInfo(databaseName) {
     const message = String(error)
     if (
       message.includes("Couldn't find DB") ||
+      message.includes("Couldn't find a D1 DB") ||
       message.includes("does not exist") ||
       message.includes("Not Found")
     ) {
