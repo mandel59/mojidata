@@ -1,7 +1,7 @@
 import { appendFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-export function releaseSummary({ changesetsOutcome, hasChangesets, pullRequestNumber, publishOutcome }) {
+export function releaseSummary({ changesetsOutcome, hasChangesets, pullRequestNumber, pendingOutcome, pendingPublish, publishOutcome }) {
   if (changesetsOutcome !== "success") {
     return "Release PR/publish selection did not complete successfully. See the preceding steps.";
   }
@@ -11,6 +11,12 @@ export function releaseSummary({ changesetsOutcome, hasChangesets, pullRequestNu
       : "No release pull request was created or updated (for example, only empty changesets remain). No npm publish ran.";
   }
   if (hasChangesets === "false") {
+    if (pendingOutcome === "success" && pendingPublish === "false") {
+      return "All public workspace versions are already published. Heavy checks and npm publishing were skipped.";
+    }
+    if (pendingOutcome !== "success" || pendingPublish !== "true") {
+      return "The unpublished-version check did not complete successfully. No npm publish ran.";
+    }
     return publishOutcome === "success"
       ? "Trusted publishing command completed successfully. It may have found no unpublished versions; see the publish log for package results."
       : `Trusted publishing did not complete successfully (step outcome: ${["failure", "cancelled", "skipped"].includes(publishOutcome) ? publishOutcome : "unknown"}). See the publish log before retrying.`;
@@ -23,6 +29,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     changesetsOutcome: process.env.CHANGESETS_OUTCOME,
     hasChangesets: process.env.CHANGESETS_HAS_CHANGESETS,
     pullRequestNumber: process.env.CHANGESETS_PULL_REQUEST_NUMBER,
+    pendingOutcome: process.env.PENDING_OUTCOME,
+    pendingPublish: process.env.PENDING_PUBLISH,
     publishOutcome: process.env.PUBLISH_OUTCOME,
   }) + "\n";
   console.log(text);

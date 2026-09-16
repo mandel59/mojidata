@@ -39,7 +39,7 @@ For the FTS5 IDS database package, use the same bootstrap flow for:
 
 `yarn version-packages` applies Changesets and refreshes `yarn.lock` without
 running builds. The generated release PR must include both package manifest
-changes and the matching lockfile; validation still uses `yarn install --immutable`.
+changes and the matching lockfile; Release uses `yarn install --immutable`.
 
 1. Merge feature pull requests with a normal or empty changeset.
 2. Wait for the `Release` workflow on `main` to create or update the release pull request.
@@ -54,7 +54,7 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
 
 ## Notes
 
-- The `Validate` workflow runs for pull requests and direct pushes to `develop`. Direct pushes to `main` are checked inside the `Release` workflow to avoid duplicate `test` and `pack` runs.
+- `Validate` runs only dependency-free CI control checks on PRs and `develop`. It does not install workspace dependencies, generate databases, or run application tests. Full validation gates npm publishing in `Release`.
 - `id-token: write` is required because npm Trusted Publishing uses GitHub Actions OIDC.
 - The release workflow uses Node.js 24 so npm meets Trusted Publishing's current runtime requirements.
 - `packages/mojidata` build artifacts are restored from cache before release work to reduce repeated DB rebuild cost.
@@ -62,21 +62,33 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
   without a PR update, publishing success, and incomplete/failed release steps.
   A successful publishing command can still mean no unpublished versions existed.
 
-## CI for documentation changes
+## CI policy
 
-Release and Validate classify the complete event diff before installing packages
-or preparing databases. Changes confined to `docs/`, the root `README.md`, and
-`AGENTS.md` skip DB preparation, workspace builds, tests, packing and automatic
-release work. The lightweight classification tests still run and Actions shows
-the decision in its summary. The required `validate` check completes explicitly
-and fails if classification or required validation fails.
+PRs and `develop` pushes run one lightweight `validate` job: CI control-script
+regressions and database fingerprint tests, without dependency installation or DB
+preparation. This deliberately allows application failures to reach main; the
+full suite is required before publishing, not before merging each development PR.
 
-Package documentation and licenses, `.changeset/`, dependency metadata, workflow
-files and unknown paths still run the normal checks. Push comparisons use the
-whole before/after range; PR comparisons use the merge base. Missing history,
-new branches, malformed events and empty comparisons conservatively run checks.
-Manual `workflow_dispatch` runs always enable release checks, even if the last
-commit changed only documentation, so a failed publish can still be retried.
+On main, Release first handles Changesets. Updating a release PR (or encountering
+only empty changesets) does not run builds, application tests or packing. If no
+changesets remain, it queries npm for the exact public workspace versions. If all
+are already published, it skips heavy checks and publishing. Registry failures
+stop the workflow instead of being treated as an empty release.
+
+When unpublished versions exist, one job restores caches, prepares all DB variants,
+builds the workspace, runs the full test suite, checks packages, and finally runs
+`changeset publish`. Failure in any earlier step prevents publishing. Build and
+validation use the same checkout and filesystem; there is no additional root
+build between package validation and publishing. Local `yarn release` retains its
+build step for standalone use. Partial publishing failures can be retried: already
+published versions are excluded by Changesets.
+
+Release skips dependency installation and release planning for changes confined
+to `docs/`, the root `README.md`, and `AGENTS.md`. Other paths use the release flow
+above. Missing history, new branches and unknown diffs conservatively enable
+release planning. Manual `workflow_dispatch` always enables planning and retries,
+including after documentation-only commits; it still skips heavy checks if npm
+has no pending versions.
 
 ## Database cache inputs
 
@@ -102,12 +114,10 @@ and decomposition database and build only their own search indexes. Custom
 recipes, missing or stale base artifacts and incompatible options fall back to
 the full builder. Each output retains its own input stamp.
 
-Both CI jobs cache all three index variants. The preparation job writes per-phase
+The release job caches all three index variants and writes per-phase
 elapsed times and exact cache-match results to the Actions summary; a non-exact
 match can still restore an older cache whose inputs are checked locally.
 
-`scripts/run-ci-phase.mjs` records elapsed time and exit status for Validate's
-build/test/pack commands and Release's test/pack/version/publish commands, including
-failed commands. It preserves command failures. Test and publish timings include
-any nested builds; publishing still uses the existing `yarn release` path until
-reuse of all verified package artifacts is implemented.
+`scripts/run-ci-phase.mjs` records elapsed time and exit status for Release's
+build/test/pack/version/publish commands, including failures. Test timings include
+nested package builds; further deduplication within test commands remains in #59.

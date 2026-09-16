@@ -2,8 +2,7 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -11,92 +10,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  changes:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      run-checks: ${{ steps.scope.outputs.run-checks }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Classify changed files
-        id: scope
-        run: node scripts/ci-change-scope.mjs
-      - name: Check CI change classification
-        run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs
-      - name: Check database cache fingerprints
-        run: python3 scripts/db-build-inputs.test.py
-
-  prepare-db-cache:
-    needs: changes
-    if: needs.changes.outputs.run-checks == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      NO_UPDATE_NOTIFIER: "1"
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: yarn
-
-      - name: Compute database cache keys
-        id: db-cache-key
-        run: python3 scripts/db-cache-key.py
-
-      - name: Restore mojidata build cache
-        id: mojidata-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            packages/mojidata/dist
-            packages/mojidata/cache
-            packages/mojidata/resources
-          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
-          restore-keys: |
-            mojidata-v2-${{ runner.os }}-
-
-      - name: Restore idsdb build cache
-        id: idsdb-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            packages/idsdb/idsfind.db
-            packages/idsdb/idsdecompose.db
-            packages/idsdb/.idsdb.input.sha256
-            packages/idsdb-fts5/idsfind.db
-            packages/idsdb-fts5/idsdecompose.db
-            packages/idsdb-fts5/.idsdb-fts5.input.sha256
-            packages/idsdb-bvec/idsfind.db
-            packages/idsdb-bvec/idsdecompose.db
-            packages/idsdb-bvec/.idsdb-bvec.input.sha256
-          key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
-          restore-keys: |
-            idsdb-v2-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: corepack yarn install --immutable
-
-      - name: Prepare mojidata and IDS database artifacts
-        env:
-          MOJIDATA_CACHE_HIT: ${{ steps.mojidata-cache.outputs.cache-hit }}
-          IDSDB_CACHE_HIT: ${{ steps.idsdb-cache.outputs.cache-hit }}
-        run: node scripts/prepare-ci-databases.mjs
-
   release:
     runs-on: ubuntu-latest
-    needs: [changes, prepare-db-cache]
-    if: needs.changes.outputs.run-checks == 'true'
     permissions:
       contents: write
       id-token: write
@@ -104,64 +19,30 @@ jobs:
       packages: write
     env:
       NO_UPDATE_NOTIFIER: "1"
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Classify changed files
+        id: scope
+        run: node scripts/ci-change-scope.mjs
+      - name: Check CI control scripts
+        run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs scripts/pending-npm-releases.test.mjs
+      - name: Check database cache fingerprints
+        run: python3 scripts/db-build-inputs.test.py
 
       - name: Set up Node.js
+        if: steps.scope.outputs.run-checks == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: yarn
           registry-url: https://registry.npmjs.org
-
-      - name: Compute database cache keys
-        id: db-cache-key
-        run: python3 scripts/db-cache-key.py
-
-      - name: Restore mojidata build cache
-        id: mojidata-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            packages/mojidata/dist
-            packages/mojidata/cache
-            packages/mojidata/resources
-          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
-          restore-keys: |
-            mojidata-v2-${{ runner.os }}-
-
-      - name: Restore idsdb build cache
-        id: idsdb-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            packages/idsdb/idsfind.db
-            packages/idsdb/idsdecompose.db
-            packages/idsdb/.idsdb.input.sha256
-            packages/idsdb-fts5/idsfind.db
-            packages/idsdb-fts5/idsdecompose.db
-            packages/idsdb-fts5/.idsdb-fts5.input.sha256
-            packages/idsdb-bvec/idsfind.db
-            packages/idsdb-bvec/idsdecompose.db
-            packages/idsdb-bvec/.idsdb-bvec.input.sha256
-          key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
-          restore-keys: |
-            idsdb-v2-${{ runner.os }}-
-
       - name: Install dependencies
+        if: steps.scope.outputs.run-checks == 'true'
         run: corepack yarn install --immutable
-
-      - name: Run test suite before release actions
-        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test
-
-      - name: Check publish artifacts before release actions
-        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack
-
       - name: Create or update release pull request
+        if: steps.scope.outputs.run-checks == 'true'
         id: changesets
         uses: changesets/action@v1
         with:
@@ -170,17 +51,74 @@ jobs:
           title: Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish packages with trusted publishing
-        id: publish
+      - name: Check for unpublished package versions
         if: steps.changesets.outputs.hasChangesets == 'false'
-        run: node scripts/run-ci-phase.mjs publish corepack yarn release
+        id: pending
+        run: node scripts/pending-npm-releases.mjs
 
+      - name: Compute database cache keys
+        if: steps.pending.outputs.publish == 'true'
+        id: db-cache-key
+        run: python3 scripts/db-cache-key.py
+
+      - name: Restore mojidata build cache
+        if: steps.pending.outputs.publish == 'true'
+        id: mojidata-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/mojidata/dist
+            packages/mojidata/cache
+            packages/mojidata/resources
+          key: mojidata-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.mojidata }}
+          restore-keys: |
+            mojidata-v2-${{ runner.os }}-
+
+      - name: Restore idsdb build cache
+        if: steps.pending.outputs.publish == 'true'
+        id: idsdb-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/idsdb/idsfind.db
+            packages/idsdb/idsdecompose.db
+            packages/idsdb/.idsdb.input.sha256
+            packages/idsdb-fts5/idsfind.db
+            packages/idsdb-fts5/idsdecompose.db
+            packages/idsdb-fts5/.idsdb-fts5.input.sha256
+            packages/idsdb-bvec/idsfind.db
+            packages/idsdb-bvec/idsdecompose.db
+            packages/idsdb-bvec/.idsdb-bvec.input.sha256
+          key: idsdb-v2-${{ runner.os }}-${{ steps.db-cache-key.outputs.idsdb }}
+          restore-keys: |
+            idsdb-v2-${{ runner.os }}-
+
+      - name: Prepare database artifacts
+        if: steps.pending.outputs.publish == 'true'
+        env:
+          MOJIDATA_CACHE_HIT: ${{ steps.mojidata-cache.outputs.cache-hit }}
+          IDSDB_CACHE_HIT: ${{ steps.idsdb-cache.outputs.cache-hit }}
+        run: node scripts/prepare-ci-databases.mjs
+      - name: Build all publishable artifacts
+        if: steps.pending.outputs.publish == 'true'
+        run: node scripts/run-ci-phase.mjs build corepack yarn ci:build
+      - name: Run test suite before publishing
+        if: steps.pending.outputs.publish == 'true'
+        run: node scripts/run-ci-phase.mjs test corepack yarn ci:test
+      - name: Check publish artifacts
+        if: steps.pending.outputs.publish == 'true'
+        run: node scripts/run-ci-phase.mjs pack corepack yarn ci:pack
+      - name: Publish validated packages with trusted publishing
+        if: steps.pending.outputs.publish == 'true'
+        id: publish
+        run: node scripts/run-ci-phase.mjs publish corepack yarn changeset publish
       - name: Summarize release result
-        if: always()
+        if: always() && steps.scope.outputs.run-checks == 'true'
         env:
           CHANGESETS_OUTCOME: ${{ steps.changesets.outcome }}
           CHANGESETS_HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
           CHANGESETS_PULL_REQUEST_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
+          PENDING_OUTCOME: ${{ steps.pending.outcome }}
+          PENDING_PUBLISH: ${{ steps.pending.outputs.publish }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
         run: node scripts/release-summary.mjs

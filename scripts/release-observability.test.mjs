@@ -14,13 +14,15 @@ test("empty changesets do not claim a release PR was created", () => {
 });
 
 test("summary distinguishes publish failure, successful no-op and incomplete selection", () => {
-  const input = { changesetsOutcome: "success", hasChangesets: "false" };
+  const input = { changesetsOutcome: "success", hasChangesets: "false", pendingOutcome: "success", pendingPublish: "true" };
   assert.match(releaseSummary({ ...input, publishOutcome: "success" }), /may have found no unpublished versions/);
   for (const publishOutcome of ["failure", "cancelled", "skipped", undefined]) {
     assert.match(releaseSummary({ ...input, publishOutcome }), /did not complete successfully/);
   }
   assert.match(releaseSummary({ changesetsOutcome: "failure" }), /selection did not complete/);
   assert.match(releaseSummary({ changesetsOutcome: "success" }), /no recognized result/);
+  assert.match(releaseSummary({ ...input, pendingPublish: "false" }), /already published/);
+  assert.match(releaseSummary({ ...input, pendingOutcome: "failure" }), /unpublished-version check did not complete/);
 });
 
 test("phase runner preserves success and failure codes and writes timing summaries", () => {
