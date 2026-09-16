@@ -37,6 +37,10 @@ For the FTS5 IDS database package, use the same bootstrap flow for:
 
 ## Normal flow
 
+`yarn version-packages` applies Changesets and refreshes `yarn.lock` without
+running builds. The generated release PR must include both package manifest
+changes and the matching lockfile; validation still uses `yarn install --immutable`.
+
 1. Merge feature pull requests with a normal or empty changeset.
 2. Wait for the `Release` workflow on `main` to create or update the release pull request.
 3. Review the generated version and changelog updates in that release pull request.
