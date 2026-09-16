@@ -86,6 +86,22 @@ describe('libsearch query key resolution', () => {
     assert.deepEqual(args, ['一', '1'])
   })
 
+  test('allows all plane 2 and 3 code points independently of runtime Unicode data', () => {
+    for (const codePoint of [0x20000, 0x2b81e, 0x2ffff, 0x30000, 0x3ffff]) {
+      for (const prefix of ['', 'U+']) {
+        const [, args] = getQueryAndArgs('UCS', prefix + codePoint.toString(16))
+        assert.deepEqual(args, [String.fromCodePoint(codePoint), '1'])
+      }
+    }
+  })
+
+  test('preserves exclusions outside planes 2 and 3 and rejects invalid input', () => {
+    for (const query of ['1FFFF', '40000', '0020', 'D800', '110000', 'invalid']) {
+      const [, args] = getQueryAndArgs('UCS', query)
+      assert.deepEqual(args, ['', '0'], query)
+    }
+  })
+
   test('supports .ne and .notGlob key resolution', () => {
     const [neQuery, neArgs] = getQueryAndArgs('unihan.kTraditionalVariant.ne', '線')
     assert.ok(neQuery.includes('SELECT DISTINCT UCS AS r'))

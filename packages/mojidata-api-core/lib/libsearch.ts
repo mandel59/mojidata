@@ -9,7 +9,9 @@ type QuerySpec = {
 
 const noArgs = (): string[] => []
 
-const ucsSearchCharPattern = /^[\p{L}\p{N}\p{S}]$/u
+// Allow planes 2 and 3 even when the runtime Unicode tables predate new CJK
+// assignments. This also intentionally permits unassigned code points there.
+const ucsSearchCharPattern = /^[\p{L}\p{N}\p{S}\u{20000}-\u{3FFFF}]$/u
 
 function parseUnicodeCodePoint(q: string): number | null {
   const match = /^(?:U\+)?([0-9A-Fa-f]{1,6})$/.exec(q.trim())
