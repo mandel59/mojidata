@@ -59,3 +59,19 @@ Use the `workflow_dispatch` trigger on the `Release` workflow when you need to r
 - The release workflow uses Node.js 24 so npm meets Trusted Publishing's current runtime requirements.
 - `packages/mojidata` build artifacts are restored from cache before release work to reduce repeated DB rebuild cost.
 - The release workflow writes either the "trusted publishing executed" or the "release PR updated" outcome into the GitHub Actions job summary.
+
+## CI for documentation changes
+
+Release and Validate classify the complete event diff before installing packages
+or preparing databases. Changes confined to `docs/`, the root `README.md`, and
+`AGENTS.md` skip DB preparation, workspace builds, tests, packing and automatic
+release work. The lightweight classification tests still run and Actions shows
+the decision in its summary. The required `validate` check completes explicitly
+and fails if classification or required validation fails.
+
+Package documentation and licenses, `.changeset/`, dependency metadata, workflow
+files and unknown paths still run the normal checks. Push comparisons use the
+whole before/after range; PR comparisons use the merge base. Missing history,
+new branches, malformed events and empty comparisons conservatively run checks.
+Manual `workflow_dispatch` runs always enable release checks, even if the last
+commit changed only documentation, so a failed publish can still be retried.

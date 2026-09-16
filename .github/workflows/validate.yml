@@ -11,7 +11,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      run-checks: ${{ steps.scope.outputs.run-checks }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Classify changed files
+        id: scope
+        run: node scripts/ci-change-scope.mjs
+      - name: Check CI change classification
+        run: node --test scripts/ci-change-scope.test.mjs
+
   prepare-db-cache:
+    needs: changes
+    if: needs.changes.outputs.run-checks == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -63,9 +81,10 @@ jobs:
           corepack yarn build:idsdb-stack
           corepack yarn workspace @mandel59/idsdb-fts5 run prepare
 
-  validate:
+  validate-workspaces:
     runs-on: ubuntu-latest
-    needs: prepare-db-cache
+    needs: [changes, prepare-db-cache]
+    if: needs.changes.outputs.run-checks == 'true'
     permissions:
       contents: read
     env:
@@ -165,3 +184,31 @@ jobs:
       - name: Run full test suite for branch creation pushes
         if: github.event_name != 'pull_request' && github.event.before == '0000000000000000000000000000000000000000'
         run: corepack yarn ci:test
+
+  # Keep the required check named "validate" completing even for docs-only PRs,
+  # and fail it if classification or any required heavy job fails.
+  validate:
+    runs-on: ubuntu-latest
+    needs: [changes, prepare-db-cache, validate-workspaces]
+    if: always()
+    permissions: {}
+    steps:
+      - name: Report validation result
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          RUN_CHECKS: ${{ needs.changes.outputs.run-checks }}
+          PREPARE_RESULT: ${{ needs.prepare-db-cache.result }}
+          VALIDATE_RESULT: ${{ needs.validate-workspaces.result }}
+        run: |
+          if [[ "$CHANGES_RESULT" != "success" ]]; then
+            echo "Change classification failed."
+            exit 1
+          fi
+          if [[ "$RUN_CHECKS" == "false" ]]; then
+            echo "Documentation-only change: heavy validation was skipped." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$RUN_CHECKS" == "true" && "$PREPARE_RESULT" == "success" && "$VALIDATE_RESULT" == "success" ]]; then
+            echo "All required validation passed." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Required validation failed or did not finish."
+            exit 1
+          fi
