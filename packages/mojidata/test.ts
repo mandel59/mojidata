@@ -40,6 +40,20 @@ test('applies the Unicode 18 IDS delta', t => {
     ])
 })
 
+test('includes final Unicode 18 U-Source and Unihan corrections', t => {
+    const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
+    try {
+        t.deepEqual(db.prepare(`
+            SELECT UCS, IDS FROM usource WHERE U_source_ID = ?
+        `).get('UK-01469'), { UCS: '\u{300BB}', IDS: '⿰亻𬂉' })
+        t.is(db.prepare(`
+            SELECT value FROM unihan WHERE UCS = ? AND property = 'kJinmeiyoKanji'
+        `).pluck().get('勒'), '2026')
+    } finally {
+        db.close()
+    }
+})
+
 test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
     const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
     const legacy = db.prepare(`

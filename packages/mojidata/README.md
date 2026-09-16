@@ -2,6 +2,8 @@
 
 This package provides a SQLite database with CJKV character data.
 
+The Unicode Character Database inputs use the final [Unicode 18.0.0 release](https://www.unicode.org/versions/Unicode18.0.0/) (September 16, 2026). Source URLs and SHA256 checksums are pinned in `download.txt`.
+
 The following data are included:
 
 - [Adobe], [Adobe-Japan1 CMap Resources](https://github.com/adobe-type-tools/cmap-resources) (aj1)
