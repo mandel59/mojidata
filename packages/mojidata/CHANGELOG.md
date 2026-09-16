@@ -1,5 +1,30 @@
 # Change Log
 
+## 1.9.0
+
+### Minor Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`6581b2d`](https://github.com/mandel59/mojidata/commit/6581b2d4b78db8c520f4a66cf3873e53f7a8475c) Thanks [@mandel59](https://github.com/mandel59)! - Apply the Unicode 18.0 IDS delta after the Unicode 17.0 IDS patch when building the character database.
+
+  Use the finalized `ids/unicode-18.0.txt` path from mojidata-ids, pinned to its release-preparation commit.
+
+  Refresh Standardized Variants, U-Source, and Unihan from the final Unicode 18.0.0 release, including the corrected UK-01469 mapping and updated Unihan readings and variants. Pin the release data checksums and remove superseded source caches.
+
+### Patch Changes
+
+- [#53](https://github.com/mandel59/mojidata/pull/53) [`1917b8b`](https://github.com/mandel59/mojidata/commit/1917b8bb56a852af275d0fe2c2ba6dd1356b8a73) Thanks [@mandel59](https://github.com/mandel59)! - Update the bundled Unicode License v3 notice to the 2026 copyright year.
+
+- [`679de31`](https://github.com/mandel59/mojidata/commit/679de31ef324825e0f43e9733fb90ad4c401b488) Thanks [@mandel59](https://github.com/mandel59)! - Integrate IDS search improvements with 4 KiB database pages, cycle detection
+  before recursive decomposition, optional candidate providers, and versioned
+  query semantics shared by database builders and API backends. Existing
+  databases retain legacy query behavior; strict registered semantics and
+  experimental query plans require explicit opt-in.
+
+  Invalidate derived database caches after recipe builds or failed builds and
+  when builder libraries change. Fix source-cache pruning when several resource
+  links share one download. Unicode input pins and deployed D1 bindings are
+  unchanged by this integration.
+
 ## 1.8.1
 
 ### Patch Changes

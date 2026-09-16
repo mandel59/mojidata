@@ -1,5 +1,21 @@
 # Change Log
 
+## 1.8.0
+
+### Minor Changes
+
+- [`fbb8fca`](https://github.com/mandel59/mojidata/commit/fbb8fca29b73c437f5eb92e992eaf688e35ed5d8) Thanks [@mandel59](https://github.com/mandel59)! - Normalize BabelStone IDS source expressions to Unicode IRG source prefix bases
+  when building and querying IDSDB data. Source filters and IDS decomposition now
+  use canonical tokens such as `KP`, `SAT`, `SG`, `UK`, and `UTC`, while
+  `@mandel59/mojidata` continues to preserve the original BabelStone source
+  expression.
+
+### Patch Changes
+
+- Updated dependencies [[`65dc878`](https://github.com/mandel59/mojidata/commit/65dc878f67f4effdaa4a1f9a540f99767c0c5938), [`fbb8fca`](https://github.com/mandel59/mojidata/commit/fbb8fca29b73c437f5eb92e992eaf688e35ed5d8), [`08b3899`](https://github.com/mandel59/mojidata/commit/08b38995c8fe5cc136415bae5fcd5cc0ff8d5294), [`d2b7bca`](https://github.com/mandel59/mojidata/commit/d2b7bcaad55dfb8d237f0d993c48560558d8bb62), [`679de31`](https://github.com/mandel59/mojidata/commit/679de31ef324825e0f43e9733fb90ad4c401b488)]:
+  - @mandel59/idsdb-utils@1.8.0
+  - @mandel59/mojidata-api-sqljs@1.9.0
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
@@ -165,7 +181,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - ids-decompose: Skip IDS including "&s-".
 - ids-find: Fix a problem a Kanji character would not be found in cases
-    where no IDS existed for the pair of component and the source.
+  where no IDS existed for the pair of component and the source.
 - ids-find: Ignore variation selectors in IDS queries.
 - ids-find: Fix a bug that queries with placeholders (`？`) without `--whole` option don't work.
 - ids-find: Change to search by IDS containing 〾
@@ -173,7 +189,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [1.1.0]: https://github.com/mandel59/mojidata/compare/v1.0.0...v1.1.0
 
 ## [1.0.0] - 2022-10-12
+
 ### Changed
+
 - Update mojidata
 
 [1.0.0]: https://github.com/mandel59/mojidata/releases/tag/v1.0.0
