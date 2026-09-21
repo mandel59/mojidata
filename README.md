@@ -64,6 +64,8 @@ See [docs/mojidata-api-d1-deployment.md](docs/mojidata-api-d1-deployment.md) for
 
 ## Release
 
+For Unicode data updates, follow [docs/unicode-update.md](docs/unicode-update.md), including the property difference checks before release.
+
 - `yarn changeset`: create a release note for changed packages
 - `yarn version-packages`: apply pending changesets to package versions and changelogs
 - `yarn release`: build the workspace and publish packages through Changesets
