@@ -6,12 +6,45 @@ import test from "node:test"
 import Database from "better-sqlite3"
 import { createSqlApiDb } from "../../mojidata-api-core/lib/mojidata-api-db-sql"
 import { getMojidataVariantEdgeQueries } from "../../mojidata-api-core/lib/mojidata-variant-queries"
+import { getQueryAndArgs } from "../../mojidata-api-core/lib/libsearch"
 import { createBetterSqlite3Executor } from "../lib/better-sqlite3-executor"
 import type { SqlExecutor, SqlParams, SqlRow } from "@mandel59/mojidata-api-core"
 
 // Freeze the pre-optimization SQL as an independent semantic reference.
 const legacy: string[] = JSON.parse(fs.readFileSync(path.join(__dirname, "fixtures/legacy-variant-queries.json"), "utf8"))
 const canonical = (rows: unknown[]) => [...new Set(rows.map(row => JSON.stringify(row)))].sort()
+
+test("Japanese variant edges and searches include new and multiple old forms", () => {
+  const db = new Database(require.resolve("@mandel59/mojidata/dist/moji.db"), { readonly: true })
+  try {
+    const expected = [
+      { c1: "弁", c2: "瓣", r: "kJapaneseOldVariant" },
+      { c1: "弁", c2: "辨", r: "kJapaneseOldVariant" },
+      { c1: "弁", c2: "辯", r: "kJapaneseOldVariant" },
+      { c1: "瓣", c2: "弁", r: "kJapaneseNewVariant" },
+      { c1: "辨", c2: "弁", r: "kJapaneseNewVariant" },
+      { c1: "辯", c2: "弁", r: "kJapaneseNewVariant" },
+    ]
+    const query = getMojidataVariantEdgeQueries(["弁"])[0]
+    const rows = db.prepare(query).all({ args: '["弁"]' }) as { r: string }[]
+    assert.deepEqual(canonical(rows.filter(row => /^kJapanese(New|Old)Variant$/.test(row.r))), canonical(expected))
+
+    for (const [property, value, code, sources] of [
+      ["kJapaneseNewVariant", "弁", "U+5F01", ["瓣", "辨", "辯"]],
+      ["kJapaneseOldVariant", "瓣", "U+74E3", ["弁"]],
+    ] as const) {
+      for (const [suffix, input] of [["", value], ["", code], [".eq", code], [".glob", value]]) {
+        const [sql, args] = getQueryAndArgs(`unihan.${property}${suffix}`, input)
+        assert.deepEqual(db.prepare(sql).pluck().all(...args).sort(), [...sources].sort())
+      }
+      const [sql, args] = getQueryAndArgs(`unihan.${property}.has`, "")
+      assert.deepEqual(
+        db.prepare(sql).pluck().all(...args).sort(),
+        db.prepare("SELECT UCS FROM unihan WHERE property = ?").pluck().all(property).sort(),
+      )
+    }
+  } finally { db.close() }
+})
 
 test("indexed variant queries preserve every edge and recursive graph results", async () => {
   const db = new Database(require.resolve("@mandel59/mojidata/dist/moji.db"), { readonly: true })
