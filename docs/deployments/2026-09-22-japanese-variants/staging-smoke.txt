@@ -1,0 +1,11 @@
+Smoke-testing https://mojidata-api-d1-staging.mandel59.workers.dev
+ok mojidata 190.2ms /api/v1/mojidata?char=%E6%BC%A2&select=char&select=UCS
+ok ivs-list 40.9ms /api/v1/ivs-list?char=%E4%B8%80
+ok mojidata-variants 292.7ms /api/v1/mojidata-variants?char=%E6%BC%A2&char=%EF%A9%87
+ok idsfind 189.9ms /api/v1/idsfind?ids=%E2%BF%B0%E4%BA%BB%E8%A8%80&limit=20
+
+Smoke test summary:
+- mojidata: 190.2 ms
+- ivs-list: 40.9 ms
+- mojidata-variants: 292.7 ms
+- idsfind: 189.9 ms

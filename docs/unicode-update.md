@@ -61,6 +61,7 @@ For Unihan variants, check these independently:
 | Consumer | Implementation | Check |
 | --- | --- | --- |
 | DB variant view | `packages/mojidata/scripts/create-db.ts`, `variantTables` | Inclusion in `unihan_variant`, code point decoding, token splitting, and additional data |
+| D1 import materialization | `scripts/prepare-mojidata-d1-import.mjs`, `buildUnihanVariantMaterializationStatementsFromRelations` | Inclusion in the materialized `unihan_variant` table; compare imported relations with the published SQLite view |
 | API variant graph | `packages/mojidata-api-core/lib/mojidata-variant-queries.ts`, `variantQueries` | Inclusion in graph edges and correct underlying table |
 | Property search | `packages/mojidata-api-core/lib/libsearch.ts`, `unihanVariantProperties` | Exact, glob, and existence search registration |
 | Character details | `packages/mojidata-api-core/lib/query-expressions.ts` | Forward `unihan_variant` and reverse `unihan_variant_inverse` output |
@@ -73,7 +74,7 @@ the wrong table family can fail even when the DB variant view works.
 
 Unicode 18.0 illustrates the required check: `kJapaneseNewVariant` is
 single-valued, while `kJapaneseOldVariant` is space-delimited. Both must be
-considered in all three explicit lists above. Raw data and metadata ingestion
+considered in all four explicit lists above. Raw data and metadata ingestion
 alone do not expose their variant relations. Keep existing special handling for
 `kCompatibilityVariant`, `kJoyoKanji`, and `kJinmeiyoKanji`; the TR38 `Variants`
 category alone does not describe every relation currently exposed by Mojidata.

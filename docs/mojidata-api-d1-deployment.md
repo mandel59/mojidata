@@ -3,7 +3,22 @@
 This document tracks the current deployment shape for the Cloudflare D1 backend
 of `mojidata-api` and the contract used by `mojidata-web-app`.
 
-## Latest deployment (2026-09-17)
+## Latest deployment (2026-09-22)
+
+The public/default and staging Workers now serve Japanese new/old variant
+relations from published `mojidata@1.9.1` and API core `1.10.2`. A new mojidata
+D1 database was imported and verified on staging before public promotion; the
+existing `idsdb-fts5@1.10.0` database was retained. Both targets passed the four
+standard smoke cases and Japanese variant detail, graph, and search checks.
+See the [deployment record](deployments/2026-09-22-japanese-variants/README.md)
+for Worker versions, artifact hashes, the D1 materialization correction, and
+rollback manifests. The previous mojidata database remains available for rollback.
+
+The public Worker uses the top-level/default config. The named `production`
+environment still contains placeholder IDs. Future imports must use inactive
+databases; public/default and staging currently share the new release data.
+
+## Previous Unicode 18 deployment (2026-09-17)
 
 The public/default Worker now serves the final Unicode 18 release. A fresh D1
 pair was imported from published `mojidata@1.9.0` and `idsdb-fts5@1.10.0`,
@@ -13,9 +28,7 @@ request after verification; only the live pair remains. See the [deployment reco
 for Worker versions, database IDs, verification results, and cleanup details.
 Direct rollback to the deleted DBs or old Worker versions is no longer available.
 
-Staging and public/default currently read this same release pair. Future import
-tests must create new inactive databases. The named `production` environment
-still has placeholder IDs; the public Worker uses the top-level/default config.
+At that deployment, staging and public/default read the same release pair.
 
 ## HTTP observation before this deployment (2026-09-17)
 

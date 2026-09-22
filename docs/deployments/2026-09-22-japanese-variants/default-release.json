@@ -1,0 +1,43 @@
+{
+  "kind": "mojidata-api-d1-blue-green-release",
+  "version": 1,
+  "release": "jp-variants-20260922",
+  "createdAt": "2026-09-22T01:23:10.855Z",
+  "env": null,
+  "target": "default",
+  "configPath": "packages/mojidata-api-d1-worker/wrangler.jsonc",
+  "previousDatabases": [
+    {
+      "binding": "MOJIDATA_DB",
+      "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
+      "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
+    },
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+      "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
+    }
+  ],
+  "releaseDatabases": [
+    {
+      "binding": "MOJIDATA_DB",
+      "database_name": "mojidata-api-d1-mojidata-jp-variants-20260922",
+      "database_id": "eec0b92b-22f1-436a-8290-71c10dd68977"
+    },
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+      "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
+    }
+  ],
+  "selectedBindings": [
+    "MOJIDATA_DB"
+  ],
+  "unchangedDatabases": [
+    {
+      "binding": "IDSFIND_DB",
+      "database_name": "mojidata-api-d1-idsfind-staging-u18-20260917",
+      "database_id": "095c69ab-48be-4323-8fb1-a00af7ed931c"
+    }
+  ]
+}

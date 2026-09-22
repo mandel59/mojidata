@@ -156,4 +156,30 @@ describe("buildUnihanVariantMaterializationStatementsFromRelations", () => {
 
     assert.equal(sql, "")
   })
+
+  test("materializes Japanese new forms and multiple view-backed old forms", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mojidata-d1-import-test-"))
+    const dbPath = path.join(tempDir, "moji.db")
+    try {
+      execFileSync(sqlite3Command, [dbPath, [
+        `CREATE TABLE unihan_kJapaneseNewVariant (UCS TEXT, value TEXT);`,
+        `INSERT INTO unihan_kJapaneseNewVariant VALUES ('瓣', 'U+5F01'), ('辨', 'U+5F01'), ('辯', 'U+5F01');`,
+        `CREATE TABLE unihan_each_kJapaneseOldVariant (UCS TEXT, i INTEGER, value TEXT);`,
+        `INSERT INTO unihan_each_kJapaneseOldVariant VALUES ('弁', 1, 'U+74E3'), ('弁', 2, 'U+8FA8'), ('弁', 3, 'U+8FAF');`,
+        `CREATE VIEW unihan_kJapaneseOldVariant AS SELECT UCS, group_concat(value, ' ') AS value FROM unihan_each_kJapaneseOldVariant GROUP BY UCS;`,
+        buildUnihanVariantMaterializationStatementsFromRelations([
+          "unihan_kJapaneseNewVariant", "unihan_kJapaneseOldVariant",
+        ]),
+      ].join("\n")])
+      const rows = JSON.parse(execFileSync(sqlite3Command, ["-json", dbPath,
+        `SELECT UCS, property, value, additional_data FROM unihan_variant ORDER BY property, UCS, value;`,
+      ], { encoding: "utf8" }))
+      assert.deepEqual(rows, [
+        ...["瓣", "辨", "辯"].map(UCS => ({ UCS, property: "kJapaneseNewVariant", value: "弁", additional_data: null })),
+        ...["瓣", "辨", "辯"].map(value => ({ UCS: "弁", property: "kJapaneseOldVariant", value, additional_data: null })),
+      ])
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true })
+    }
+  })
 })
