@@ -291,6 +291,8 @@ export function buildUnihanVariantMaterializationStatementsFromRelations(relatio
   const tables = new Set(relations)
   const sources = [
     ["kCompatibilityVariant", `SELECT UCS, value FROM "unihan_kCompatibilityVariant"`],
+    ["kJapaneseNewVariant", `SELECT UCS, value FROM "unihan_kJapaneseNewVariant"`],
+    ["kJapaneseOldVariant", `SELECT UCS, value FROM "unihan_kJapaneseOldVariant"`],
     ["kSemanticVariant", `SELECT UCS, value FROM "unihan_kSemanticVariant"`],
     ["kSimplifiedVariant", `SELECT UCS, value FROM "unihan_kSimplifiedVariant"`],
     ["kSpecializedSemanticVariant", `SELECT UCS, value FROM "unihan_kSpecializedSemanticVariant"`],
