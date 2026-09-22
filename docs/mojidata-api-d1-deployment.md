@@ -173,6 +173,56 @@ with the resolved IDs.
 Routine data refreshes should use the blue/green release helpers instead of
 importing into the active bindings.
 
+## Import work and account quotas
+
+Blue/green isolates data changes, but both databases share the account's D1
+read/write allowance. Creating an inactive database does not isolate quota use.
+The September 22 import read 5,494,879 rows and wrote 13,437,184 rows, enough to
+exceed the Free allowances even before ordinary API traffic.
+
+Import preparation now evaluates materialized views and IDS token grouping on
+the local source SQLite database. It emits literal `INSERT ... VALUES` statements
+and creates indexes while tables are empty, eliminating remote full-table
+materialization and index backfills. Generated columns are omitted from insert
+values, and IDS rowids are preserved. The source artifacts remain read-only.
+
+The import manifest records the recipe, source/output hashes, data row counts,
+and a lower bound on row writes including non-partial indexes. Import validates
+all selected artifacts and their combined write budget before invoking Wrangler.
+Old manifests, missing plans, and modified SQL dumps are rejected even with
+`--skip-prepare`; regenerate them using the current preparation script.
+
+`--max-rows-written` defaults to 100,000, the entire Free daily write allowance.
+This is a ceiling, **not a measurement of remaining account quota**. Subtract
+the day's existing usage and reserve capacity for live traffic before choosing
+a budget. FTS segment maintenance and other engine work can add writes beyond
+the manifest's lower bound; a passing preflight does not guarantee that a nearly
+exhausted account can accept an import. The manifest does not claim an exact
+Cloudflare `rows_read` count or zero total billed reads.
+
+Full mojidata imports still require millions of writes and are rejected by the
+default budget. Do not simply increase the flag on a Free account to force a
+release through. Use a reviewed, bounded data/schema delta for small changes, or
+provision sufficient account quota before planning a full import. The helper
+does not automatically generate or apply deltas. Code-only releases should reuse
+the existing DB bindings. Promote the same validated release database from
+staging to public without re-importing it.
+
+Plan without any remote DB write:
+
+```sh
+node scripts/import-mojidata-api-d1.mjs \
+  --release-manifest /tmp/mojidata-api-d1-release.json \
+  --output-dir /tmp/mojidata-d1-import --skip-prepare --dry-run
+```
+
+An over-budget plan exits nonzero and reports its minimum row writes. On an
+account with sufficient confirmed quota, pass `--max-rows-written N` to both
+the dry-run and actual import, where `N` is the allocated import write budget.
+Do not use repeated full remote imports as tests: round-trip artifacts locally
+and use bounded remote checks after deployment. Current checks cover literal
+data, generated columns, FTS matching/rowids, and preflight rejection in CI.
+
 ## Blue/green standalone Worker setup
 
 1. Prepare SQL dumps:
@@ -227,6 +277,10 @@ importing into the active bindings.
    longer than 96 characters.
 
 3. Import the generated SQL into the release pair:
+
+   First run the dry-run above and confirm account capacity. The example below
+   uses the default write budget; full production dumps will be rejected unless
+   a sufficient, verified `--max-rows-written N` budget is supplied.
 
    ```sh
    corepack yarn mojidata-api:d1:import \
@@ -376,7 +430,7 @@ Use `--env production` for the production Worker. Keep staging and production
 D1 database names separate; do not reuse the same D1 databases for import tests
 and public traffic.
 
-The safest production pattern is to run the full release flow on staging first,
-including remote smoke checks, then repeat the same release label for
-production. The production import still targets inactive release databases; only
-the final Worker deploy changes live traffic.
+Run the import once into inactive release databases, validate them through
+staging, then promote those same databases to the public target. Do not repeat
+the import for public promotion: it consumes the same account-wide quota again.
+Only the final Worker deployment changes public traffic.

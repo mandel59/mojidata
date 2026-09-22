@@ -76,16 +76,8 @@ function preparePackage(packageDir) {
   run("bash", ["scripts/prepare"], packageDir)
 }
 
-function dumpSqliteDatabase(dbPath) {
-  return execFileSync(sqlite3Command, [dbPath, ".dump"], {
-    cwd: rootDir,
-    encoding: "utf8",
-    maxBuffer: 512 * 1024 * 1024,
-  })
-}
-
 function querySqlite(dbPath, sql) {
-  return execFileSync(sqlite3Command, [dbPath, sql], {
+  return execFileSync(sqlite3Command, ["-readonly", dbPath, sql], {
     cwd: rootDir,
     encoding: "utf8",
     maxBuffer: 512 * 1024 * 1024,
@@ -93,9 +85,15 @@ function querySqlite(dbPath, sql) {
 }
 
 function dumpTableAsInsertStatements(dbPath, tableName) {
+  // SELECT * includes generated columns, which cannot be inserted. table_info
+  // excludes them (unlike table_xinfo), matching SQLite's .dump behavior.
+  const columns = JSON.parse(querySqlite(dbPath, `SELECT json_group_array(name)
+    FROM pragma_table_info(${encodeSqliteStringLiteral(tableName)})`))
+  const selectSql = `SELECT ${columns.map(name => `"${name.replaceAll('"', '""')}"`).join(',')}
+    FROM "${tableName.replaceAll('"', '""')}";`
   return execFileSync(
     sqlite3Command,
-    [dbPath, "-cmd", `.mode insert ${tableName}`, `SELECT * FROM "${tableName}";`],
+    ["-readonly", dbPath, "-cmd", `.mode insert '${tableName.replaceAll("'", "''")}'`, selectSql],
     {
       cwd: rootDir,
       encoding: "utf8",
@@ -430,100 +428,114 @@ function buildNyukanMaterializationStatements(sourceDbPath) {
   return `${lines.join("\n")}\n`
 }
 
-function sanitizeDumpForD1(dumpText, { sourceDbPath } = {}) {
-  const lines = dumpText.replaceAll("\r\n", "\n").split("\n")
-  const kept = []
-  let skippingCfKv = false
-  let skippedViewName = null
+// Keep D1 work to empty-schema creation and literal inserts. In particular,
+// neither view expansion nor index backfills should scan uploaded tables.
+export const importRecipe = "literal-values-indexes-first-v1"
 
-  for (const line of lines) {
-    const trimmed = line.trim()
-
-    if (skippingCfKv) {
-      if (trimmed === ") WITHOUT ROWID;") {
-        skippingCfKv = false
-      }
-      continue
-    }
-
-    if (skippedViewName) {
-      if (trimmed.endsWith(";")) {
-        skippedViewName = null
-      }
-      continue
-    }
-
-    if (trimmed === "BEGIN TRANSACTION;" || trimmed === "COMMIT;") {
-      continue
-    }
-
-    if (trimmed === "CREATE TABLE _cf_KV (") {
-      skippingCfKv = true
-      continue
-    }
-
-    if (
-      trimmed.startsWith('CREATE VIEW "unihan" AS') ||
-      trimmed.startsWith('CREATE VIEW "kdpv" AS') ||
-      trimmed.startsWith('CREATE VIEW "ivs" AS') ||
-      trimmed.startsWith('CREATE VIEW "mjsm" AS') ||
-      trimmed.startsWith('CREATE VIEW "unihan_variant" AS') ||
-      trimmed.startsWith('CREATE VIEW "unihan_source" AS') ||
-      trimmed.startsWith('CREATE VIEW "nyukan" AS')
-    ) {
-      skippedViewName = trimmed.endsWith(";") ? null : trimmed
-      continue
-    }
-
-    kept.push(line)
-  }
-
-  let sanitized = replaceUnsupportedFunctionsForD1(kept.join("\n")).trimEnd()
-
-  if (sourceDbPath) {
-    const extras = [
-      buildUnihanMaterializationStatements(sourceDbPath).trimEnd(),
-      buildKdpvMaterializationStatements(sourceDbPath).trimEnd(),
-      buildIvsMaterializationStatements(sourceDbPath).trimEnd(),
-      buildMjsmMaterializationStatements(sourceDbPath).trimEnd(),
-      buildUnihanVariantMaterializationStatements(sourceDbPath).trimEnd(),
-      buildUnihanSourceMaterializationStatements(sourceDbPath).trimEnd(),
-      buildNyukanMaterializationStatements(sourceDbPath).trimEnd(),
-    ].filter(Boolean)
-    if (extras.length > 0) {
-      sanitized += `\n${extras.join("\n")}`
-    }
-  }
-
-  return `${sanitized.trimEnd()}\n`
+function readSchema(sourceDbPath) {
+  return JSON.parse(querySqlite(sourceDbPath, `
+    SELECT json_group_array(json_object('type', type, 'name', name, 'table', tbl_name, 'sql', sql))
+    FROM sqlite_schema WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' AND name <> '_cf_KV'
+    ORDER BY name
+  `))
 }
 
-function buildIdsdbFts5ImportSql(sourceDbPath) {
-  const createIdsfindTable = querySqlite(
-    sourceDbPath,
-    `SELECT sql FROM sqlite_schema WHERE type = 'table' AND name = 'idsfind'`,
-  ).trim()
-  const createFtsTable = querySqlite(
-    sourceDbPath,
-    `SELECT sql FROM sqlite_schema WHERE name = 'idsfind_fts'`,
-  ).trim()
+function countRows(sourceDbPath, table) {
+  return Number(querySqlite(sourceDbPath, `SELECT count(*) FROM "${table.replaceAll('"', '""')}"`))
+}
 
-  if (!createIdsfindTable || !createFtsTable) {
-    throw new Error(`Could not read idsfind schema from ${sourceDbPath}`)
+function indexCount(sourceDbPath, table) {
+  // Include implicit primary-key/unique indexes as well as explicit indexes.
+  // Partial indexes are omitted from this lower bound, since not every row
+  // contributes an index entry.
+  return Number(querySqlite(sourceDbPath, `SELECT count(*) FROM
+    pragma_index_list(${encodeSqliteStringLiteral(table)}) WHERE partial = 0`))
+}
+
+function writeSql(outputPath, text, append = true) {
+  const sql = replaceUnsupportedFunctionsForD1(text).trimEnd() + "\n"
+  if (append) fs.appendFileSync(outputPath, sql)
+  else fs.writeFileSync(outputPath, sql)
+}
+
+function materializedRelations(sourceDbPath, schema) {
+  const builders = [
+    ['unihan', buildUnihanMaterializationStatements],
+    ['kdpv', buildKdpvMaterializationStatements],
+    ['ivs', buildIvsMaterializationStatements],
+    ['mjsm', buildMjsmMaterializationStatements],
+    ['unihan_variant', buildUnihanVariantMaterializationStatements],
+    ['unihan_source', buildUnihanSourceMaterializationStatements],
+    ['nyukan', buildNyukanMaterializationStatements],
+  ]
+  return builders.flatMap(([name, build]) => {
+    if (!schema.some(row => row.type === 'view' && row.name === name)) return []
+    const oldPlan = build(sourceDbPath)
+    const insertStart = oldPlan.indexOf('INSERT INTO')
+    if (insertStart < 0) throw new Error(`Cannot materialize source view ${name}`)
+    // Only the schema is retained. Values come from the source view locally,
+    // so the exported data follows the published DB, not another property list.
+    return [{ name, ddl: oldPlan.slice(0, insertStart) }]
+  })
+}
+
+function writeMojidataImport(sourceDbPath, outputPath) {
+  const schema = readSchema(sourceDbPath)
+  if (schema.some(row => row.type === 'trigger' || /CREATE VIRTUAL TABLE/i.test(row.sql))) {
+    throw new Error('Unsupported trigger or virtual table in mojidata source; review its import cost first')
+  }
+  const materialized = materializedRelations(sourceDbPath, schema)
+  const names = new Set(materialized.map(row => row.name))
+  const tables = schema.filter(row => row.type === 'table')
+  writeSql(outputPath, 'PRAGMA foreign_keys=OFF;', false)
+  for (const row of tables) writeSql(outputPath, row.sql + ';')
+  // All indexes are installed while their tables are empty.
+  for (const row of schema.filter(row => row.type === 'index')) writeSql(outputPath, row.sql + ';')
+  for (const row of materialized) writeSql(outputPath, row.ddl)
+  for (const row of schema.filter(row => row.type === 'view' && !names.has(row.name))) {
+    writeSql(outputPath, row.sql + ';')
   }
 
-  const idsfindInserts = dumpTableAsInsertStatements(sourceDbPath, "idsfind").trimEnd()
-  return [
-    `PRAGMA foreign_keys=OFF;`,
-    `${createIdsfindTable};`,
-    idsfindInserts,
-    `CREATE INDEX "idsfind_UCS" ON "idsfind" ("UCS");`,
-    `${createFtsTable};`,
-    `INSERT INTO "idsfind_fts" (rowid, IDS_tokens)`,
-    `SELECT rowid, '§ ' || group_concat(IDS_tokens, ' § ') || ' §'`,
-    `FROM "idsfind"`,
-    `GROUP BY UCS;`,
-  ].join("\n")
+  const counts = []
+  for (const row of [...tables, ...materialized]) {
+    const rows = countRows(sourceDbPath, row.name)
+    const indexes = row.ddl
+      ? (row.ddl.match(/CREATE INDEX/g) ?? []).length
+      : indexCount(sourceDbPath, row.name)
+    writeSql(outputPath, dumpTableAsInsertStatements(sourceDbPath, row.name))
+    counts.push({ table: row.name, rows, indexes })
+  }
+  return { recipe: importRecipe, dataRows: counts.reduce((sum, row) => sum + row.rows, 0),
+    minimumRowsWritten: counts.reduce((sum, row) => sum + row.rows * (1 + row.indexes), 0),
+    tables: counts }
+}
+
+function writeIdsdbFts5Import(sourceDbPath, outputPath) {
+  const schema = readSchema(sourceDbPath)
+  const idsfind = schema.find(row => row.name === 'idsfind' && row.type === 'table')
+  const fts = schema.find(row => row.name === 'idsfind_fts' && /CREATE VIRTUAL TABLE/i.test(row.sql))
+  if (!idsfind || !fts) throw new Error(`Could not read idsfind schema from ${sourceDbPath}`)
+  writeSql(outputPath, `PRAGMA foreign_keys=OFF;\n${idsfind.sql};
+CREATE INDEX "idsfind_UCS" ON "idsfind" ("UCS");
+${fts.sql};`, false)
+  // Preserve rowids: FTS result rowids point into idsfind.
+  const columns = JSON.parse(querySqlite(sourceDbPath,
+    `SELECT json_group_array(name) FROM pragma_table_info('idsfind')`))
+  const quoted = columns.map(name => `quote("${name.replaceAll('"', '""')}")`)
+  writeSql(outputPath, querySqlite(sourceDbPath, `SELECT
+    'INSERT INTO "idsfind" (rowid,${columns.map(name => '"' + name.replaceAll('"', '""') + '"').join(',')}) VALUES(' || quote(rowid) || ',' ||
+    ${quoted.join(" || ',' || ")} || ');' FROM idsfind ORDER BY rowid`))
+  // GROUP BY and token concatenation run on the local artifact, never on D1.
+  writeSql(outputPath, querySqlite(sourceDbPath, `SELECT
+    'INSERT INTO "idsfind_fts" (rowid, IDS_tokens) VALUES(' || quote(rowid) || ',' ||
+    quote('§ ' || group_concat(IDS_tokens, ' § ') || ' §') || ');'
+    FROM idsfind GROUP BY UCS`))
+  const rows = countRows(sourceDbPath, 'idsfind')
+  const ftsRows = Number(querySqlite(sourceDbPath, 'SELECT count(DISTINCT UCS) FROM idsfind'))
+  return { recipe: importRecipe, dataRows: rows + ftsRows,
+    // FTS segment maintenance adds further writes; this is a lower bound.
+    minimumRowsWritten: rows * 2 + ftsRows,
+    tables: [{ table: 'idsfind', rows }, { table: 'idsfind_fts', rows: ftsRows }] }
 }
 
 export function isIdsfindDbPath(sourceDbPath) {
@@ -532,14 +544,13 @@ export function isIdsfindDbPath(sourceDbPath) {
   )
 }
 
-function writeDumpFile(sourceDbPath, outputPath) {
+export function writeDumpFile(sourceDbPath, outputPath) {
   if (!fs.existsSync(sourceDbPath)) {
     throw new Error(`Missing SQLite database file: ${sourceDbPath}`)
   }
-  const sanitized = isIdsfindDbPath(sourceDbPath)
-    ? buildIdsdbFts5ImportSql(sourceDbPath)
-    : sanitizeDumpForD1(dumpSqliteDatabase(sourceDbPath), { sourceDbPath })
-  fs.writeFileSync(outputPath, sanitized)
+  return isIdsfindDbPath(sourceDbPath)
+    ? writeIdsdbFts5Import(sourceDbPath, outputPath)
+    : writeMojidataImport(sourceDbPath, outputPath)
 }
 
 function writeManifest(outputDir, entries) {
@@ -548,6 +559,7 @@ function writeManifest(outputDir, entries) {
     manifestPath,
     `${JSON.stringify(
       {
+        formatVersion: 2,
         generatedAt: new Date().toISOString(),
         entries,
       },
@@ -588,12 +600,12 @@ function main() {
 
   for (const target of dumpTargets) {
     console.log(`Preparing D1 import dump for ${target.name}: ${target.outputPath}`)
-    writeDumpFile(target.sourceDbPath, target.outputPath)
+    target.importPlan = writeDumpFile(target.sourceDbPath, target.outputPath)
   }
 
   writeManifest(
     outputDir,
-    dumpTargets.map(({ name, sourceDbPath, outputPath }) => {
+    dumpTargets.map(({ name, sourceDbPath, outputPath, importPlan }) => {
       const sourceStat = fs.statSync(sourceDbPath)
       const outputStat = fs.statSync(outputPath)
       return {
@@ -604,6 +616,7 @@ function main() {
         outputPath,
         outputByteLength: outputStat.size,
         outputSha256: fileSha256(outputPath),
+        importPlan,
       }
     }),
   )

@@ -20,5 +20,7 @@ jobs:
         run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs scripts/pending-npm-releases.test.mjs
       - name: Check database cache fingerprints
         run: python3 scripts/db-build-inputs.test.py
+      - name: Check D1 import planning
+        run: node --test scripts/prepare-mojidata-d1-import.test.mjs scripts/d1-import-preflight.test.mjs
       - name: Summarize lightweight validation
         run: echo "PR/develop checks are intentionally lightweight. Full build, tests and pack checks run before npm publishing." >> "$GITHUB_STEP_SUMMARY"

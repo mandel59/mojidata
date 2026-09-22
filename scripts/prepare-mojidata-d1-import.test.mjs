@@ -11,9 +11,80 @@ import {
   buildUnihanVariantMaterializationStatementsFromRelations,
   isIdsfindDbPath,
   parseArgs,
+  writeDumpFile,
 } from "./prepare-mojidata-d1-import.mjs"
 
 const sqlite3Command = process.env.SQLITE3 ?? "sqlite3"
+
+describe("literal D1 artifacts", () => {
+  test("materializes source views locally and creates indexes before inserting any rows", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mojidata-d1-literal-"))
+    const source = path.join(tempDir, "moji.db")
+    const target = path.join(tempDir, "imported.db")
+    const output = path.join(tempDir, "mojidata.sql")
+    try {
+      execFileSync(sqlite3Command, [source, `
+        CREATE TABLE unihan_kJapaneseNewVariant (UCS TEXT PRIMARY KEY, value TEXT);
+        INSERT INTO unihan_kJapaneseNewVariant VALUES ('瓣', 'U+5F01'), ('辨', 'U+5F01'), ('辯', 'U+5F01');
+        CREATE INDEX new_value ON unihan_kJapaneseNewVariant(value);
+        CREATE TABLE unihan_each_kJapaneseOldVariant (UCS TEXT, i INTEGER, value TEXT);
+        INSERT INTO unihan_each_kJapaneseOldVariant VALUES ('弁',1,'U+74E3'),('弁',2,'U+8FA8'),('弁',3,'U+8FAF');
+        CREATE VIEW unihan_kJapaneseOldVariant AS SELECT UCS,group_concat(value,' ') AS value FROM unihan_each_kJapaneseOldVariant GROUP BY UCS;
+        CREATE VIEW unihan AS
+          SELECT UCS,'kJapaneseNewVariant' AS property,value FROM unihan_kJapaneseNewVariant UNION ALL
+          SELECT UCS,'kJapaneseOldVariant',value FROM unihan_kJapaneseOldVariant;
+        CREATE VIEW unihan_variant AS
+          SELECT UCS,'kJapaneseNewVariant' AS property,'弁' AS value,NULL AS additional_data FROM unihan_kJapaneseNewVariant UNION ALL
+          SELECT '弁','kJapaneseOldVariant',UCS,NULL FROM unihan_kJapaneseNewVariant;
+        CREATE TABLE text_values (value TEXT, nullable TEXT, bytes BLOB, calculated TEXT GENERATED ALWAYS AS (value || '!') VIRTUAL);
+        INSERT INTO text_values VALUES ('literal SELECT; INSERT INTO ''quoted'' ' || char(10) || '𠮷', NULL, x'0001FF');
+      `])
+      const plan = writeDumpFile(source, output)
+      assert.equal(plan.recipe, "literal-values-indexes-first-v1")
+      assert.equal(plan.tables.find(row => row.table === "unihan_variant").rows, 6)
+      const sql = fs.readFileSync(output, "utf8")
+      assert.ok(sql.lastIndexOf("CREATE INDEX") < sql.indexOf("INSERT INTO"))
+      assert.doesNotMatch(sql, /INSERT INTO[^;]*\bSELECT\b[^;]*\bFROM\b/)
+      execFileSync(sqlite3Command, [target], { input: sql })
+      const query = `SELECT UCS,property,value,additional_data FROM unihan_variant ORDER BY property,UCS,value;`
+      assert.equal(execFileSync(sqlite3Command, [target, query], { encoding: "utf8" }),
+        execFileSync(sqlite3Command, [source, query], { encoding: "utf8" }))
+      const values = `SELECT hex(value),nullable IS NULL,hex(bytes),hex(calculated) FROM text_values;`
+      assert.equal(execFileSync(sqlite3Command, [target, values], { encoding: "utf8" }),
+        execFileSync(sqlite3Command, [source, values], { encoding: "utf8" }))
+      assert.equal(execFileSync(sqlite3Command, [source, `SELECT type FROM sqlite_schema WHERE name='unihan_variant'`], { encoding: "utf8" }).trim(), "view")
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true })
+    }
+  })
+
+  test("groups FTS tokens locally and preserves sparse source rowids", () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mojidata-d1-fts-"))
+    const source = path.join(tempDir, "idsfind.db")
+    const target = path.join(tempDir, "imported.db")
+    const output = path.join(tempDir, "idsdb-fts5.sql")
+    try {
+      execFileSync(sqlite3Command, [source, `
+        CREATE TABLE idsfind (UCS TEXT, IDS_tokens TEXT);
+        CREATE INDEX idsfind_UCS ON idsfind(UCS);
+        INSERT INTO idsfind(rowid,UCS,IDS_tokens) VALUES (3,'信','亻 言'),(8,'信','人 言'),(12,'休','亻 木');
+        CREATE VIRTUAL TABLE idsfind_fts USING fts5(content='', IDS_tokens);
+      `])
+      const plan = writeDumpFile(source, output)
+      assert.equal(plan.dataRows, 5)
+      const sql = fs.readFileSync(output, "utf8")
+      assert.doesNotMatch(sql, /GROUP BY|INSERT INTO[^;]*SELECT/)
+      assert.ok(sql.indexOf("CREATE INDEX") < sql.indexOf("INSERT INTO"))
+      execFileSync(sqlite3Command, [target], { input: sql })
+      assert.equal(execFileSync(sqlite3Command, [target,
+        `SELECT DISTINCT UCS FROM idsfind WHERE rowid IN (SELECT rowid FROM idsfind_fts WHERE idsfind_fts MATCH '言');`,
+      ], { encoding: "utf8" }).trim(), "信")
+      assert.equal(execFileSync(sqlite3Command, [target, 'SELECT group_concat(rowid) FROM (SELECT rowid FROM idsfind ORDER BY rowid);'], { encoding: "utf8" }).trim(), "3,8,12")
+    } finally {
+      fs.rmSync(tempDir, { recursive: true, force: true })
+    }
+  })
+})
 
 describe("parseArgs", () => {
   test("accepts a pair of externally built database artifacts", () => {

@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process"
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { checkImportArtifacts, defaultWriteBudget } from "./d1-import-preflight.mjs"
 
 const rootDir = path.resolve(fileURLToPath(new URL("..", import.meta.url)))
 const npxCommand =
@@ -26,6 +27,11 @@ Prepares SQL dumps if needed and imports mojidata / idsfind data into the D1
 databases in a blue/green release manifest. Pass --binding one or more times to
 import only selected bindings.
 
+--dry-run prepares and validates artifacts without contacting D1.
+--max-rows-written N sets the available write budget (default: 100000).
+The local write count is a lower bound, not a guarantee of billable usage.
+All selected dumps must have a current, hash-matched import manifest.
+
 Importing directly into active wrangler bindings is disabled by default because
 it is not a zero-downtime operation.`)
 }
@@ -38,6 +44,8 @@ function parseArgs(argv) {
   let releaseManifestPath
   let unsafeActive = false
   const bindings = []
+  let dryRun = false
+  let maxRowsWritten = defaultWriteBudget
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]
@@ -62,6 +70,14 @@ function parseArgs(argv) {
     }
     if (arg === "--skip-prepare") {
       skipPrepare = true
+      continue
+    }
+    if (arg === "--dry-run") {
+      dryRun = true
+      continue
+    }
+    if (arg === "--max-rows-written") {
+      maxRowsWritten = Number(argv[++i])
       continue
     }
     if (arg === "--unsafe-active") {
@@ -91,6 +107,8 @@ function parseArgs(argv) {
     releaseManifestPath,
     unsafeActive,
     bindings,
+    dryRun,
+    maxRowsWritten,
   }
 }
 
@@ -167,6 +185,8 @@ async function main() {
     releaseManifestPath,
     unsafeActive,
     bindings,
+    dryRun,
+    maxRowsWritten,
   } = parseArgs(process.argv.slice(2))
   const cwd = path.dirname(configPath)
   const config = parseJsonc(fs.readFileSync(configPath, "utf8"))
@@ -200,11 +220,14 @@ async function main() {
     run("node", ["./scripts/prepare-mojidata-d1-import.mjs", "--output-dir", outputDir], rootDir)
   }
 
+  // Check every selected artifact and the combined budget before the first
+  // remote write, including when --skip-prepare reuses an existing directory.
+  const plan = checkImportArtifacts(outputDir, selectedDatabases.map(db => db.binding), maxRowsWritten)
+  console.log(JSON.stringify({ ...plan, plans: plan.plans.map(({ tables, ...summary }) => summary) }, null, 2))
+  if (dryRun) return
+
   for (const database of selectedDatabases) {
     const sqlPath = getSqlPathForBinding(outputDir, database.binding)
-    if (!fs.existsSync(sqlPath)) {
-      throw new Error(`expected SQL dump for ${database.binding}: ${sqlPath}`)
-    }
     run(
       npxCommand.command,
       [
