@@ -765,6 +765,8 @@ async function createUnihan(db: import("better-sqlite3").Database, prefix = "uni
     // Create view unihan_variant
     const variantTables = [
         ['kCompatibilityVariant', `value FROM "${prefix}_kCompatibilityVariant"`],
+        ['kJapaneseNewVariant', `value FROM "${prefix}_kJapaneseNewVariant"`],
+        ['kJapaneseOldVariant', `value FROM "${prefix}_kJapaneseOldVariant"`],
         ['kSemanticVariant', `value FROM "${prefix}_kSemanticVariant"`],
         ['kSimplifiedVariant', `value FROM "${prefix}_kSimplifiedVariant"`],
         ['kSpecializedSemanticVariant', `value FROM "${prefix}_kSpecializedSemanticVariant"`],

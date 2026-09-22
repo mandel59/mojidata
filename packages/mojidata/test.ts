@@ -54,6 +54,49 @@ test('includes final Unicode 18 U-Source and Unihan corrections', t => {
     }
 })
 
+test('exposes Japanese new and old forms in unihan_variant', t => {
+    const db = new Database(path.join(__dirname, 'dist', 'moji.db'), { readonly: true })
+    try {
+        const forward = db.prepare(`
+            SELECT value, additional_data FROM unihan_variant
+            WHERE UCS = ? AND property = ? ORDER BY value
+        `)
+        t.deepEqual(forward.all('國', 'kJapaneseNewVariant'), [
+            { value: '国', additional_data: null },
+        ])
+        t.deepEqual(forward.all('国', 'kJapaneseOldVariant'), [
+            { value: '國', additional_data: null },
+        ])
+        t.deepEqual(forward.all('弁', 'kJapaneseOldVariant'), [
+            { value: '瓣', additional_data: null },
+            { value: '辨', additional_data: null },
+            { value: '辯', additional_data: null },
+        ])
+        t.deepEqual(db.prepare(`
+            SELECT UCS FROM unihan_variant
+            WHERE value = ? AND property = ? ORDER BY UCS
+        `).pluck().all('弁', 'kJapaneseNewVariant'), ['瓣', '辨', '辯'])
+
+        for (const property of ['kJapaneseNewVariant', 'kJapaneseOldVariant']) {
+            const expected = (db.prepare(`
+                SELECT UCS, value FROM unihan WHERE property = ? ORDER BY UCS
+            `).all(property) as { UCS: string, value: string }[]).flatMap(row =>
+                row.value.split(' ').map(value => ({
+                    UCS: row.UCS,
+                    value: String.fromCodePoint(Number.parseInt(value.slice(2), 16)),
+                    additional_data: null,
+                })))
+            t.true(expected.length > 0)
+            t.deepEqual(db.prepare(`
+                SELECT UCS, value, additional_data FROM unihan_variant
+                WHERE property = ? ORDER BY UCS, value
+            `).all(property), expected)
+        }
+    } finally {
+        db.close()
+    }
+})
+
 test('unihan_value_ref matches legacy unihan_fts scan semantics', t => {
     const db = new Database(path.join(__dirname, 'dist', 'moji.db'))
     const legacy = db.prepare(`

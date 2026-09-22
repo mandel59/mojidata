@@ -16,6 +16,7 @@ function groupedUnion(name: string, branches: string[]) {
 }
 
 const variantQueries = [
+  "kJapaneseNewVariant", "kJapaneseOldVariant",
   "kCompatibilityVariant", "kSemanticVariant", "kSimplifiedVariant",
   "kSpecializedSemanticVariant", "kSpoofingVariant", "kTraditionalVariant", "kZVariant",
   "kJoyoKanji", "kJinmeiyoKanji",
@@ -23,7 +24,7 @@ const variantQueries = [
   const value = property === "kJinmeiyoKanji" ? "substr(value, 6)" : "value"
   const restriction = property === "kJoyoKanji" ? " AND value GLOB 'U+*'"
     : property === "kJinmeiyoKanji" ? " AND value GLOB '20??:U+*'" : ""
-  const table = ["kCompatibilityVariant", "kJoyoKanji", "kJinmeiyoKanji"].includes(property)
+  const table = ["kCompatibilityVariant", "kJapaneseNewVariant", "kJoyoKanji", "kJinmeiyoKanji"].includes(property)
     ? `unihan_${property}` : `unihan_each_${property}`
   return `SELECT UCS, '${property}' AS property, ${value} AS value
     FROM ${table} WHERE (${sourceFilter})${restriction}`

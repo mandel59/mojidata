@@ -12,6 +12,8 @@
 
 - When using Jujutsu, create a commit each time a coherent unit of work is completed.  
 
+- When updating Unicode data, follow [the Unicode update workflow](docs/unicode-update.md). Compare property definitions and actual data with the previous version, and check DB views, API relation queries, and search registrations before considering the update complete.
+
 - Sandbox/approval note: in restricted environments, these typically require permission escalation:
   - `jj commit` (needs to write to `.git/objects` to create commit objects)
   - Integration tests that start local servers / bind ports (e.g. Vite) or launch browsers (e.g. Playwright)

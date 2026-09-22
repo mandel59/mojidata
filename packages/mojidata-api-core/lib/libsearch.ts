@@ -255,6 +255,8 @@ function addUnihanVariantProperty(property: string) {
 
 const unihanVariantProperties = [
   'kCompatibilityVariant',
+  'kJapaneseNewVariant',
+  'kJapaneseOldVariant',
   'kSemanticVariant',
   'kSimplifiedVariant',
   'kSpecializedSemanticVariant',
