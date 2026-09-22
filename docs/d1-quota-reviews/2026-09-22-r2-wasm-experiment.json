@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Isolated private npm experiment under experiments/mojidata-api-r2 plus a credential-free local workerd CI workflow. The Worker has only a local R2 binding; the native baseline opens explicit local SQLite files. No production package, shared SQL, DB generator, root dependency or D1 deployment path changes.",
+  "beforeAfter": "D1 reads and writes added before/after are both zero. 42 local workerd API requests across three block sizes produce 36 equivalent successful responses and six bounded failures. Source SQLite files total 134176768 bytes. Range counts and byte counts are in the local benchmark evidence; they are not Cloudflare D1 billing estimates.",
+  "accountBudget": "Zero remote D1 reads/writes for implementation, tests, CI, benchmarks or rollback. No remote R2 mode or deploy command exists. Existing daily usage, traffic reserves and billing plan remain unchanged and are not queried. Any future remote experiment or shared-code change requires a fresh scope and budget review.",
+  "validation": "Six unit/workerd integration tests cover range boundaries, EOF zero fill, LRU, immutable ETags, short/invalid reads, operation/byte exhaustion, VM interruption, cache reuse, concurrent requests and write rejection. Eight real-data API cases use a fresh isolate then warm repeat and deep comparison to the same native core/DBs. Raw JSON evidence records file SHA-256, limits, failures and local-only timing.",
+  "rolloutAndStop": "No production rollout: a private local experiment and read-only fixture CI only. Request caps stop at 512 R2 operations, 32 MiB, 10 million SQLite VM instructions, 256 queries or 20000 SQL rows, with elapsed-time checkpoints. Failures discard runtime caches. Stop before any remote deployment, import, remote quota measurement or plan change; those require separately reviewed evidence. Removing the experimental directory/workflow is the rollback.",
+  "evidence": [
+    "docs/experiments/2026-09-22-r2-wasm/README.md",
+    "docs/experiments/2026-09-22-r2-wasm/benchmarks.json",
+    "experiments/mojidata-api-r2/README.md"
+  ],
+  "files": {
+    ".github/workflows/r2-wasm-experiment.yml": "6e63c335defff851f8dc72fe1ced6eedd0521632355ae41615213a8301d4706c",
+    "experiments/mojidata-api-r2/README.md": "af7a03d03bc764de59b2fd8b3b73643447d3a8521f0fe8dd1a8bf15812c63a72",
+    "experiments/mojidata-api-r2/bench.mjs": "db0797ea20380ad580a4265bdabb69dc23dc8c94e94ff83153bff37a0a17627c",
+    "experiments/mojidata-api-r2/harness.mjs": "754000efce71addd3030d7023e8ad8e1198b6f122d13b4b136a0ede6f7248736",
+    "experiments/mojidata-api-r2/package-lock.json": "f725e868d9fb8b6e048ae6a48bd9101c80351c705e6683bea6b58cc2ae6144c8",
+    "experiments/mojidata-api-r2/package.json": "4272bfe8c7288def61173c019ce2dfd9132917c0020b1bcd808c1d69ca14762e",
+    "experiments/mojidata-api-r2/src/r2-vfs.mjs": "42f25852be111096a9165a96c6bf2cb213f2ab931b6c7842d4912a4059dba54b",
+    "experiments/mojidata-api-r2/src/range-store.mjs": "663e01675f2d7d7880af88f67695c34628faabb2e00f63395e3b81c77b8038fc",
+    "experiments/mojidata-api-r2/src/worker.mjs": "c54779ac04f98a6ea72c9f96963db7507c064d1fb393f89b5d8749ba7ee27ce2",
+    "experiments/mojidata-api-r2/test/range-store.test.mjs": "f98f940e8a81d102cc76d7809e6857d1426b8e3ed902c02ebf35d4705244fb8e",
+    "experiments/mojidata-api-r2/test/worker.test.mjs": "c725bec9700d267de0ff2c5522ca2f82fde39d0bfc9757ecc1f0f07837232a37"
+  }
+}

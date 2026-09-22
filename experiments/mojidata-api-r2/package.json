@@ -1,0 +1,20 @@
+{
+  "name": "mojidata-api-r2-experiment",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "bench": "node bench.mjs"
+  },
+  "dependencies": {
+    "@mandel59/mojidata-api-core": "1.10.2",
+    "@mandel59/mojidata-api-hono": "1.8.1",
+    "wa-sqlite": "npm:@journeyapps/wa-sqlite@2.0.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "miniflare": "5.20260921.0-alpha"
+  }
+}

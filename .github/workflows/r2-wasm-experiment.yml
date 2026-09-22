@@ -1,0 +1,27 @@
+name: R2 SQLite Wasm experiment
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/mojidata-api-r2/**'
+      - '.github/workflows/r2-wasm-experiment.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  local-workerd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: experiments/mojidata-api-r2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: experiments/mojidata-api-r2/package-lock.json
+      - run: npm ci --ignore-scripts --workspaces=false
+      - run: npm test
