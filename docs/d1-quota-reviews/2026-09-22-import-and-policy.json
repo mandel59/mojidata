@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "decision": "blocked",
+  "scope": "PR #72 changes import preparation and adds local-only quota review enforcement. No API query or active Worker is changed. Workflows invoke local tests and the evidence checker only; they do not access D1. Full import remains blocked under the default Free write budget.",
+  "beforeAfter": "The old mojidata upload measured 5,494,879 D1 reads and 13,437,184 writes. New published-artifact local plans require at least 13,439,302 mojidata writes plus 433,848 IDS writes. Remote materialization/index backfills are eliminated, but actual remote reads and FTS write upper bounds are unmeasured. These lower bounds cannot justify execution. Runtime request costs are unchanged.",
+  "accountBudget": "Baseline is 5,000,000 reads and 100,000 writes per UTC day across the account. Full import fails even with zero prior usage, zero retries and zero traffic reserve. Current account usage is not queried because no remote operation is planned or authorized by this record. Gate/tests consume zero D1 reads or writes. A future delta requires fresh usage, traffic reserve and a bounded validation/retry/rollback workload before execution.",
+  "validation": "52 local tests pass, including stale/missing review refusal, deletion/rename coverage, unknown upper bounds and combined budget overflow. The previous full local round-trip matched 4,365,166 mojidata rows and 3,686,329 FTS token instances; see the verification record. Missing history fails closed via changedFiles. No remote load test or import was used.",
+  "rolloutAndStop": "Merge tooling and policy without Worker deployment or DB import. Import preflight refuses the full artifacts under the default 100,000-write budget; do not override it on Free. The review gate runs before PR acceptance and publishing. Require validate on main, including administrators, to prevent merging failed checks. Unknown or exceeded cost stops execution; old importer rollback is not an acceptable recovery because it repeats quota exhaustion.",
+  "evidence": [
+    "docs/deployments/2026-09-22-japanese-variants/import-flow-verification.md",
+    "scripts/check-d1-quota-review.test.mjs",
+    "scripts/d1-import-preflight.test.mjs"
+  ],
+  "files": {
+    ".github/workflows/release.yml": "19e136e7ac1dd42a3da03ef1e8ddece41f3ecbd64dc46390e4eabade9d1854b9",
+    ".github/workflows/validate.yml": "d12bf954d5e3efb25e165fbd4a128dc7acf5d4435a2dc3d54494c0261610d4da",
+    "AGENTS.md": "45ae11c718b10051f4b975d636c41476671f18eaa0cb9745ca71f466e3e83bfd",
+    "docs/d1-quota-policy.md": "9d514b6fbb97b531412dad2f8496d6210f02ceba123abfff0e4cf14adde8e7ff",
+    "package.json": "284fa8ac115f29d957c3bfadcbfad531821eded9a031478d7e982abf52899e0a",
+    "scripts/check-d1-quota-review.mjs": "345d3f18fa984842f2ec281c26e77eb6730d02c9e8592501f1090a29e2dc0f89",
+    "scripts/check-d1-quota-review.test.mjs": "65f59900a72d4935d3f38c0867627e80dee2cb2ffe4ba5aa0111d85efd0da15f",
+    "scripts/d1-import-preflight.mjs": "38dd785259df51bcbc063e673f217dfac34556316ccf8ebf170bf23e479f4ac8",
+    "scripts/d1-import-preflight.test.mjs": "a2806c2357fdea012ff5c5f05b0e9ab96a55d52cde2bcafbe7a1e8c6b103c213",
+    "scripts/import-mojidata-api-d1.mjs": "74cf3a91157c5f79c3ffe6a06fa5263d1dca154ca4c5e35c27abeab30a8b5705",
+    "scripts/prepare-mojidata-d1-import.mjs": "e47339dca119078a353f1fd41b7674d06a0631796794584aa0c390b10a744c56",
+    "scripts/prepare-mojidata-d1-import.test.mjs": "2b491a0a607a1e1fa03044e2a9cccef3f115278819f4a7c774cc7a2ca18c68e2"
+  }
+}

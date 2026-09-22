@@ -101,3 +101,7 @@ search, and any format-specific parsers in the same way.
 - Include the property review results and validation in the update description,
   then follow the normal release workflow and deployment checks. Do not mark an
   update complete while a required consumer remains unhandled.
+
+- Before release, follow [the D1 quota policy](d1-quota-policy.md). Measure the
+  impact of added rows/relations on complete requests and recursive traversal,
+  even when SQL is unchanged, and budget the import/delta and validation together.

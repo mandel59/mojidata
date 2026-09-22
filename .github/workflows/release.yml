@@ -28,6 +28,10 @@ jobs:
         run: node scripts/ci-change-scope.mjs
       - name: Check CI control scripts
         run: node --test scripts/ci-change-scope.test.mjs scripts/release-observability.test.mjs scripts/pending-npm-releases.test.mjs
+      - name: Test D1 quota review gate
+        run: node --test scripts/check-d1-quota-review.test.mjs
+      - name: Require current D1 quota evidence
+        run: node scripts/check-d1-quota-review.mjs
       - name: Check database cache fingerprints
         run: python3 scripts/db-build-inputs.test.py
       - name: Check D1 import planning

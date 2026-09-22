@@ -14,6 +14,8 @@
 
 - When updating Unicode data, follow [the Unicode update workflow](docs/unicode-update.md). Compare property definitions and actual data with the previous version, and check DB views, API relation queries, and search registrations before considering the update complete.
 
+- For any change that can affect D1 (including shared SQL, data growth, API fan-out, imports, validation and operational tools), follow [the D1 quota policy](docs/d1-quota-policy.md) before implementation. Treat account-wide read/write limits as availability constraints. Include current, file-fingerprinted quota evidence in the PR; correctness tests, low latency and free storage are not sufficient. Unknown cost blocks remote execution. Do not spend remote quota to discover whether a full scan/import is expensive.
+
 - Sandbox/approval note: in restricted environments, these typically require permission escalation:
   - `jj commit` (needs to write to `.git/objects` to create commit objects)
   - Integration tests that start local servers / bind ports (e.g. Vite) or launch browsers (e.g. Playwright)
