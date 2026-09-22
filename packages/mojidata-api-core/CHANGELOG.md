@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.10.2
+
+### Patch Changes
+
+- [#66](https://github.com/mandel59/mojidata/pull/66) [`cad73a7`](https://github.com/mandel59/mojidata/commit/cad73a727d8919389d92f853e3bcaa448051f601) Thanks [@mandel59](https://github.com/mandel59)! - Filter variant relation sources using existing indexes before decoding Unihan values and joining MJ mappings, avoiding full relation scans that exhaust Cloudflare D1 read quotas.
+
+- [#69](https://github.com/mandel59/mojidata/pull/69) [`dabda2f`](https://github.com/mandel59/mojidata/commit/dabda2ffcbb4f9de9fffb9fd03fa06a4480bc86f) Thanks [@mandel59](https://github.com/mandel59)! - Include Unicode 18 kJapaneseNewVariant and kJapaneseOldVariant relations in unihan_variant, API variant traversal, and property searches, including multiple old forms per character.
+
 ## 1.10.1
 
 ### Patch Changes

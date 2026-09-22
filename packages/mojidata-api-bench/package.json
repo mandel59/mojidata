@@ -40,7 +40,7 @@
     "@mandel59/idsdb-bvec": "workspace:^",
     "@mandel59/idsdb-fts5": "^1.10.0",
     "@mandel59/mojidata-api-better-sqlite3": "^1.10.0",
-    "@mandel59/mojidata-api-core": "^1.10.1",
+    "@mandel59/mojidata-api-core": "^1.10.2",
     "@mandel59/mojidata-api-node-sqlite": "^1.10.0",
     "@mandel59/mojidata-api-sqljs": "^1.9.0"
   },

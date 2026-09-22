@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.9.1
+
+### Patch Changes
+
+- [#69](https://github.com/mandel59/mojidata/pull/69) [`dabda2f`](https://github.com/mandel59/mojidata/commit/dabda2ffcbb4f9de9fffb9fd03fa06a4480bc86f) Thanks [@mandel59](https://github.com/mandel59)! - Include Unicode 18 kJapaneseNewVariant and kJapaneseOldVariant relations in unihan_variant, API variant traversal, and property searches, including multiple old forms per character.
+
 ## 1.9.0
 
 ### Minor Changes
