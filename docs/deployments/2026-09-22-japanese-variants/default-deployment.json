@@ -1,0 +1,16 @@
+{
+  "id": "5d620162-5b3f-4999-9918-fc8428eb6d88",
+  "source": "wrangler",
+  "strategy": "percentage",
+  "author_email": "mandel59@gmail.com",
+  "annotations": {
+    "workers/triggered_by": "deployment"
+  },
+  "versions": [
+    {
+      "version_id": "518b1f73-35ca-4dbf-8f9b-cf6b4e7be9ea",
+      "percentage": 100
+    }
+  ],
+  "created_on": "2026-09-22T01:23:36.970852Z"
+}

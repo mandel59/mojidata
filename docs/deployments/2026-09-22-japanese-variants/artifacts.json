@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-09-22T01:18:39.689Z",
+  "entries": [
+    {
+      "name": "mojidata",
+      "sourceDbPath": "mojidata/moji.db",
+      "sourceByteLength": 102735872,
+      "sourceSha256": "c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b",
+      "outputPath": "import/mojidata.sql",
+      "outputByteLength": 150891864,
+      "outputSha256": "13e30c08764ce31d1dd9d22c8c09ad95525c66fa029b94cd6138d3eebe70feee",
+      "imported": true
+    },
+    {
+      "name": "idsdb-fts5",
+      "sourceDbPath": "idsfind/idsfind.db",
+      "sourceByteLength": 31440896,
+      "sourceSha256": "d8df4edde88187c8389861acf4c055b3fd3d94bc11c4a21ffe5a168964bda47c",
+      "outputPath": "import/idsdb-fts5.sql",
+      "outputByteLength": 23038842,
+      "outputSha256": "4f58d923e3010c2010b4dc3af073da10a3b71369f93634e0a4b2da7d30c5ccb5",
+      "imported": false
+    }
+  ],
+  "supplement": {
+    "path": "japanese-variant-patch.sql",
+    "sha256": "c43e964148215d43f7dd83b67312fc6f06cdd01391377e2938fe1aa9b63b1bec",
+    "relations": 728,
+    "reason": "The initial dump used the previous D1 materializer; the supplement adds the two Japanese properties using the corrected generator."
+  },
+  "packages": {
+    "@mandel59/mojidata": "1.9.1",
+    "@mandel59/idsdb-fts5": "1.10.0",
+    "@mandel59/mojidata-api-core": "1.10.2"
+  }
+}

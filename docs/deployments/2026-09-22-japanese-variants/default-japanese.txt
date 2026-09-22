@@ -1,0 +1,7 @@
+ok Japanese forward/reverse detail fields
+ok Japanese variant graph labels and multiple old forms
+ok search kJapaneseNewVariant
+ok search kJapaneseOldVariant
+ok search kJapaneseOldVariant.glob
+ok search kJapaneseNewVariant.has: 364
+ok search kJapaneseOldVariant.has: 362

@@ -13,8 +13,8 @@
   "d1_databases": [
     {
       "binding": "MOJIDATA_DB",
-      "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
-      "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
+      "database_name": "mojidata-api-d1-mojidata-jp-variants-20260922",
+      "database_id": "eec0b92b-22f1-436a-8290-71c10dd68977"
     },
     {
       "binding": "IDSFIND_DB",
@@ -31,8 +31,8 @@
       "d1_databases": [
         {
           "binding": "MOJIDATA_DB",
-          "database_name": "mojidata-api-d1-mojidata-staging-u18-20260917",
-          "database_id": "6f957b62-6475-46fd-bfec-8f49238478d8"
+          "database_name": "mojidata-api-d1-mojidata-jp-variants-20260922",
+          "database_id": "eec0b92b-22f1-436a-8290-71c10dd68977"
         },
         {
           "binding": "IDSFIND_DB",
