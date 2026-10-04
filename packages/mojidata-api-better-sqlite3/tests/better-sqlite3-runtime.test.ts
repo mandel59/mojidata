@@ -7,6 +7,43 @@ import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-con
 import { createBetterSqlite3App, createBetterSqlite3Db } from "../index"
 
 describe("createBetterSqlite3Db", () => {
+  test("includes KDPV comments in an unselected full response", async () => {
+    const db = createBetterSqlite3Db()
+    const result = JSON.parse((await db.getMojidataJson("充", [])) ?? "{}")
+    assert.deepEqual(result.kdpv_comment, [
+      { subject: "充", rel: "hydzd/variant", object: "𠑽", comment: "[充=⿱亠厶]" },
+    ])
+  })
+
+  test("matches IVS endpoints and preserves distinct comments without duplicating self relations", () => {
+    const db = new Database(":memory:")
+    try {
+      db.exec("CREATE TABLE kdpv (subject TEXT, rel TEXT, object TEXT, comment TEXT); CREATE INDEX kdpv_subject ON kdpv(subject); CREATE INDEX kdpv_object ON kdpv(object)")
+      const insert = db.prepare("INSERT INTO kdpv VALUES (?, 'test/variant', ?, ?)")
+      for (const row of [
+        ["A", "B", "first"], ["A", "B", "second"], ["A", "B", "first"],
+        ["A", "A", "self"], ["A󠄀", "B", "forward IVS"], ["C", "A󠄀", "reverse IVS"],
+        ["A", "D", null], ["A", "E", ""], ["B", "Z", "unrelated"],
+      ]) insert.run(...row)
+      const query = buildMojidataSelectQuery(["kdpv_comment"])
+      const result = JSON.parse((db.prepare(query).get({ ucs: "A" }) as { vs: string }).vs)
+      assert.deepEqual(result.kdpv_comment, [
+        { subject: "A", rel: "test/variant", object: "A", comment: "self" },
+        { subject: "A", rel: "test/variant", object: "B", comment: "first" },
+        { subject: "A", rel: "test/variant", object: "B", comment: "second" },
+        { subject: "A󠄀", rel: "test/variant", object: "B", comment: "forward IVS" },
+        { subject: "C", rel: "test/variant", object: "A󠄀", comment: "reverse IVS" },
+      ])
+      const plan = db.prepare(`EXPLAIN QUERY PLAN ${query}`).all({ ucs: "A" }) as { detail: string }[]
+      assert.ok(plan.some(row => /SEARCH kdpv USING INDEX kdpv_subject/.test(row.detail)))
+      assert.ok(plan.some(row => /SEARCH kdpv USING INDEX kdpv_object/.test(row.detail)))
+      assert.ok(!plan.some(row => /SCAN kdpv\b/.test(row.detail)))
+      assert.ok(!buildMojidataSelectQuery(["kdpv"]).includes("'kdpv_comment'"))
+    } finally {
+      db.close()
+    }
+  })
+
   test("includes shrink-map reference notes in an unselected full response", async () => {
     const db = createBetterSqlite3Db()
     const result = JSON.parse((await db.getMojidataJson("鐥", [])) ?? "{}")

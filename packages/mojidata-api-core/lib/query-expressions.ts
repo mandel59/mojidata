@@ -263,4 +263,24 @@ export const queryExpressions = [
         )
     )`,
   ],
+  [
+    'kdpv_comment',
+    `(
+        SELECT json_group_array(json_object(
+            'subject', subject,
+            'rel', rel,
+            'object', object,
+            'comment', comment
+        )) FROM (
+            SELECT subject, rel, object, comment FROM kdpv
+            WHERE subject >= @ucs AND subject < char(unicode(@ucs) + 1)
+              AND comment IS NOT NULL AND comment <> ''
+            UNION
+            SELECT subject, rel, object, comment FROM kdpv
+            WHERE object >= @ucs AND object < char(unicode(@ucs) + 1)
+              AND comment IS NOT NULL AND comment <> ''
+            ORDER BY subject, rel, object, comment
+        )
+    )`,
+  ],
 ]

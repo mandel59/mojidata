@@ -105,6 +105,33 @@ export function runMojidataApiConformanceTests(
       assert.deepEqual(glyph.読み, [])
     })
 
+    test('serves KDPV comments from either endpoint with the original relation direction', async () => {
+      for (const char of ['充', '𠑽']) {
+        const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+          char,
+          select: ['kdpv', 'kdpv_comment'],
+        })
+
+        assertJsonResponse(response)
+        assert.deepEqual(Object.keys(json.results), ['kdpv', 'kdpv_comment'])
+        assertIncludesRecord(json.results.kdpv_comment, {
+          subject: '充', rel: 'hydzd/variant', object: '𠑽', comment: '[充=⿱亠厶]',
+        })
+        const rel = char === '充' ? 'hydzd/variant' : 'hydzd/proper'
+        assert.ok(json.results.kdpv[rel].includes(char === '充' ? '𠑽' : '充'))
+        assert.ok(json.results.kdpv_comment.every((row: any) => typeof row.comment === 'string' && row.comment.length > 0))
+      }
+    })
+
+    test('serves an empty KDPV comment array for a character with no notes', async () => {
+      const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+        char: 'A',
+        select: 'kdpv_comment',
+      })
+      assertJsonResponse(response)
+      assert.deepEqual(json.results, { kdpv_comment: [] })
+    })
+
     test('serves null when a glyph has no shrink-map reference note', async () => {
       const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
         char: '一',

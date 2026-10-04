@@ -86,6 +86,25 @@ function createFakeMojidataDb() {
       return { vs: JSON.stringify({ mji: glyphs[String(values[0])] }) }
     }
 
+    if (normalizedSql.startsWith("SELECT json_object('kdpv'")) {
+      assert.equal(mode, "first")
+      assert.equal(values.length, 1)
+      assert.ok(values[0] === "充" || values[0] === "𠑽")
+      assert.match(normalizedSql, /'kdpv_comment'/)
+      assert.match(normalizedSql, /comment IS NOT NULL AND comment <> ''/)
+      const forward = values[0] === "充"
+      return { vs: JSON.stringify({
+        kdpv: { [forward ? "hydzd/variant" : "hydzd/proper"]: [forward ? "𠑽" : "充"] },
+        kdpv_comment: [{ subject: "充", rel: "hydzd/variant", object: "𠑽", comment: "[充=⿱亠厶]" }],
+      }) }
+    }
+
+    if (normalizedSql.startsWith("SELECT json_object('kdpv_comment'")) {
+      assert.equal(mode, "first")
+      assert.deepEqual(values, ["A"])
+      return { vs: JSON.stringify({ kdpv_comment: [] }) }
+    }
+
     if (normalizedSql.startsWith("SELECT json_object('ids_similar'")) {
       assert.equal(mode, "first")
       if (values[0] === "卍") {

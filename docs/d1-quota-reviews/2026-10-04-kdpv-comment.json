@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "decision": "bounded",
+  "scope": "Add selectable kdpv_comment records through shared API SQL. Existing kdpv shape and relation queries are preserved. The extra SQL expression makes two indexed endpoint range searches within the same statement. No changes to search registrations, Unicode data, indexes, import, request fan-out or DB writes. Test/mock and API-schema changes execute locally or document the added field only.",
+  "beforeAfter": "The fingerprinted source has 103,205 KDPV rows and 3,782 nonempty comments. Added candidate visits are bounded by 2,105 on this artifact, measured by both endpoint prefixes including IVS/IDS strings and self edges; the widest prefix is ⿰ and returns zero comments. All nine measured full responses have unchanged fullscan steps; added VM work ranges from 43 to 10,588 steps. D1-style materialization uses subject/object indexes; source views also use indexed ranges. Request statement counts stay one when selected or four for a full response. Excluding kdpv_comment adds zero work. Local SQLite statistics do not establish D1 billing; recompute data-dependent bounds on data changes.",
+  "accountBudget": "This record allocates only local implementation and tests: operationUpperBound is zero remote reads/writes, including staging, validation, rollout, retries, rollback and imports. Existing conservatively allocates the complete 5,000,000-read/100,000-write Free allowance to existing usage plus remaining normal traffic across all DBs, leaving zero remote capacity. It is not measured usage. Unknown live usage and complete remote workload costs require a fresh review before deployment or measurements; no remote query is performed.",
+  "validation": "47 tests pass across better-sqlite3, default Node, sql.js and mocked D1, plus the selected SQL executor test file. Core, facade, D1 and better-sqlite3 TypeScript checks pass. Regressions cover forward/reverse raw direction, null/empty notes, self-edge/identical-record deduplication, distinct comments, IVS, unrelated edges, full responses, field exclusion and subject/object indexed plans. Final SQL matches the pre-implementation local measurements exactly.",
+  "rolloutAndStop": "Commit/package the locally validated bounded expression without remote operation. Existing DB materialization already exports KDPV comments and both indexes: reuse it in a future code-only release. Verify indexes/artifact and refresh aggregate account usage, complete traffic/validation/retry/rollback budget before deployment. Stop on absent indexes, unknown cost/usage or insufficient allowance. Roll back code without DB import. Remote scans, repeated benchmarks and imports are not authorized.",
+  "evidence": [
+    "docs/benchmarks/2026-10-04-kdpv-comment.md",
+    "packages/mojidata-api-better-sqlite3/tests/better-sqlite3-runtime.test.ts",
+    "packages/mojidata-api/tests/api-conformance.ts"
+  ],
+  "budget": {
+    "reads": {
+      "limit": 5000000,
+      "existing": 5000000,
+      "trafficReserve": 0,
+      "operationUpperBound": 0
+    },
+    "writes": {
+      "limit": 100000,
+      "existing": 100000,
+      "trafficReserve": 0,
+      "operationUpperBound": 0
+    }
+  },
+  "files": {
+    "packages/mojidata-api-core/lib/query-expressions.ts": "7ecd74d2e7bbd85792a95ab553eb5c9dec492e7407d34ab6ebeda76e63d1a206",
+    "packages/mojidata-api/openapi.yaml": "a64f4674c278060af5c0ca7ace0ab716d9276a70bf67829b2a174596cfcf0d7d",
+    "packages/mojidata-api/tests/api-conformance.ts": "1bcc0dba6bb9fb894c7619ee5f47bb05a6b60f295e56b0fb3442f49d03e97fd1",
+    "packages/mojidata-api-better-sqlite3/tests/better-sqlite3-runtime.test.ts": "717c0323e933a3505247567382b378cb742434e2b83911bb6b62402933c7aedb",
+    "packages/mojidata-api-d1/tests/d1-app.test.ts": "80b215fc197baa6b4a9e5706f7c8c9b5af781efbd694034cf11401b3f7fd2a39"
+  }
+}
