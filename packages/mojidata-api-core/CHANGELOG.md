@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.11.0
+
+### Minor Changes
+
+- [#75](https://github.com/mandel59/mojidata/pull/75) [`394cb2d`](https://github.com/mandel59/mojidata/commit/394cb2d9b70f4b38ebaf927e51bac4ea7708dfcc) Thanks [@mandel59](https://github.com/mandel59)! - Add the selectable `kdpv_comment` field for KDPV relations with nonempty
+  comments. Match either endpoint, preserve original relation direction and IVS,
+  and include the field in full responses.
+
+- [#75](https://github.com/mandel59/mojidata/pull/75) [`269de53`](https://github.com/mandel59/mojidata/commit/269de532c1908d59653c6c580da2e12a218d5721) Thanks [@mandel59](https://github.com/mandel59)! - Include MJ shrink-map reference information as `mjsm_note` on each `mji` record,
+  including notes for glyphs without a shrink target. Return `null` when absent.
+
 ## 1.10.2
 
 ### Patch Changes
