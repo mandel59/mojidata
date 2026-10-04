@@ -1,6 +1,6 @@
 {
   "name": "@mandel59/mojidata-api-core",
-  "version": "1.10.2",
+  "version": "1.11.0",
   "description": "Core backend-neutral composition utilities for mojidata-api",
   "repository": {
     "type": "git",

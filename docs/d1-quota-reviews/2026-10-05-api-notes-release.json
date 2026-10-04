@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "PR #76 versions the already merged notes release: API core 1.10.2 to 1.11.0, facade 3.0.0 to 3.1.0, benchmark/facade internal core ranges and workspace lock descriptors. The baseline is main fc2f9bda821cd07205fe04aef8228c65f4a17bea. No runtime source, SQL, exports, scripts, Unicode data, DB inputs, indexes, imports, bindings or request fan-out are changed by this metadata PR.",
+  "beforeAfter": "Parsed manifests are equal after only the expected two version edits and two core dependency-range edits. Lockfile equality was checked after only the benchmark/facade core range changes and grouped core descriptor replacement, scoped to those package entries. Workspace resolution remains local; all external versions, checksums and dependencies are unchanged. Runtime queries/costs are identical to reviewed main. Relative to published npm versions, note fields are new and their bounds are covered by the existing feature reviews and deployed verification; this metadata review grants no new workload or remote-operation allowance.",
+  "accountBudget": "Versioning, validation, builds and publishing execute locally or on GitHub/npm and consume zero Cloudflare D1 reads/writes account-wide, including retries. The release workflow does not query/import D1 or deploy Workers. Live account usage is unnecessary for this zero-D1 metadata operation. Client and Worker rollouts remain separate operations requiring applicable review, live usage, traffic reserve and bounded complete verification/rollback budgets.",
+  "validation": "Reproduced the original gate failure locally for exactly the four fingerprinted paths. Verified parsed manifest equality and scoped exact lockfile equality after the enumerated metadata edits. The PR-wide gate now has a current review. Existing quota-gate regression tests, CI control-script tests, DB cache fingerprints and D1 import-planning tests validate the unchanged gate and local tooling. Already merged source passed 47 API/runtime tests and bounded staging/public checks; npm Release still runs full build/test/pack before publishing. Completed locally: PR-wide gate passes, 52 related Node tests and 5 DB input-fingerprint tests pass; child-process tests used the CI Node command outside the restricted sandbox.",
+  "rolloutAndStop": "Rebase Version Packages onto latest main, retaining deployment records; add this explicit fingerprinted review and require successful remote Validate. No policy exception or gate bypass. Stop if unexpected manifest/lockfile or source edits occur, fingerprints become stale or checks fail. This metadata correction performs no D1 work and needs no database rollback. It does not deploy the web app, update browser assets or add display components. npm publishing remains governed by the existing main release workflow.",
+  "evidence": [
+    "docs/benchmarks/2026-10-05-api-notes-release.md",
+    "docs/d1-quota-reviews/2026-10-04-mjsm-note.json",
+    "docs/d1-quota-reviews/2026-10-04-kdpv-comment.json",
+    "docs/deployments/2026-10-04-api-notes/README.md",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    "packages/mojidata-api-bench/package.json": "34affc71194f4454e05b70af615fe708929549b59cd67de4befc3324eb604f97",
+    "packages/mojidata-api-core/package.json": "fdca635a382aa6999018f14b99b7f98ea4ac372692ab5b259ebc35fe7abcedc9",
+    "packages/mojidata-api/package.json": "e29c4a47f790e3d000dd021a9f5a2af8ed81dc49de5d29d42c5694fbbc6f6c9f",
+    "yarn.lock": "31218462965c40fe061285a946a0cf841ffa3f57c5adafffc43f0e22dd06ec3f"
+  }
+}
