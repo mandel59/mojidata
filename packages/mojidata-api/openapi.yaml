@@ -531,6 +531,12 @@ components:
           type: array
           items:
             type: object
+            properties:
+              mjsm_note:
+                type: string
+                nullable: true
+                description: MJ縮退マップの参考情報。該当MJ文字図形の参考情報がない場合はnull。
+                example: "国字:みずかね"
             additionalProperties: true
         mjsm_inverse:
           type: array

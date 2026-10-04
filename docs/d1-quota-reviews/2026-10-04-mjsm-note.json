@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "decision": "bounded",
+  "scope": "Expose MJ shrink-map reference notes as mji[].mjsm_note through the shared SQL used by all API backends, including D1. One indexed scalar lookup per matching MJ glyph; no changes to data, import, schema, search registration, recursion or request fan-out. Test/mock changes execute locally only. API schema documentation has no runtime work.",
+  "beforeAfter": "Local fingerprinted DB has 58,862 mji rows and 1,776 mjsm_note rows. Before: zero note lookups; after: at most 16 unique indexed point lookups per select=mji or full request on this artifact, zero when mji is excluded. Fullscan steps are unchanged on seven representative/worst-case/no-hit/Latin-1/IVS inputs. MJI/full-response VM increases range from 1 to 164 steps. SQLite VM/fullscan steps do not establish D1 billing. No additional SQL invocations or writes; existing full-response work is retained. The data-dependent 16 bound must be rechecked on data updates.",
+  "accountBudget": "Only local implementation and verification are covered: operationUpperBound is zero remote reads and writes, including staging, validation, deployment, retry and rollback. Existing is a conservative upper allocation of the entire Free allowance (5,000,000 reads and 100,000 writes), covering aggregate existing use plus remaining normal traffic across every DB, not a claim of measured usage. No spare remote quota is allocated. Account usage is unknown and must be refreshed and budgeted for the complete workload before a future remote operation; this review does not authorize deployment or remote measurements.",
+  "validation": "Core, API facade, better-sqlite3 and D1 TypeScript checks pass. Selected better-sqlite3, default Node, sql.js, D1 adapter and SQL executor tests pass locally. Notes without shrink targets, null for missing notes, multiple MJ glyphs, default full response and indexed note lookup are covered. D1 tests use mocks and spend no remote quota. Local before/after plans and complete SQL response measurements are recorded in the evidence.",
+  "rolloutAndStop": "Commit and package the locally validated bounded lookup; no remote operation is performed. Existing importer preserves mjsm_note and its primary-key index, so reuse the DB with a future code-only deployment. Before deployment verify schema/artifact, current account plan, fresh aggregate usage and full normal-traffic/validation/retry/rollback budget. Stop on absent indexes, unknown cost/usage or exhausted quota. Roll back code without database import. No full remote scans/imports/benchmarks are authorized.",
+  "evidence": [
+    "docs/benchmarks/2026-10-04-mjsm-note.md",
+    "packages/mojidata-api-better-sqlite3/tests/better-sqlite3-runtime.test.ts",
+    "packages/mojidata-api/tests/api-conformance.ts"
+  ],
+  "budget": {
+    "reads": {
+      "limit": 5000000,
+      "existing": 5000000,
+      "trafficReserve": 0,
+      "operationUpperBound": 0
+    },
+    "writes": {
+      "limit": 100000,
+      "existing": 100000,
+      "trafficReserve": 0,
+      "operationUpperBound": 0
+    }
+  },
+  "files": {
+    "packages/mojidata-api-core/lib/query-expressions.ts": "149875c290fba7e31be512d2b7ac0dfb88596e4f82b8ce1afd4f0974bc3194e0",
+    "packages/mojidata-api/openapi.yaml": "ed4b3d4b3daaaa5b069fb84c97afdc14139bfc0d1b7a7e79568d1bb20095e2f3",
+    "packages/mojidata-api/tests/api-conformance.ts": "05b82d1e723125dcd34d84304fa7a053ceac0877da4d22c139edec0b18356826",
+    "packages/mojidata-api-better-sqlite3/tests/better-sqlite3-runtime.test.ts": "753b210d2e0eaa538ec4a0ff19f83340ff99320646b78a39379f8ae0fa40f7f0",
+    "packages/mojidata-api-d1/tests/d1-app.test.ts": "2e0fd8076e44cd3f42133b4a13d6936c9d0302caa501cd878fbf5b4687b37cb2"
+  }
+}

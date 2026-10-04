@@ -1,10 +1,32 @@
 import assert from "node:assert/strict"
 import { describe, test } from "node:test"
+import Database from "better-sqlite3"
+import { buildMojidataSelectQuery } from "@mandel59/mojidata-api-core/lib/mojidata-query"
 
 import { runMojidataApiConformanceTests } from "../../mojidata-api/tests/api-conformance"
 import { createBetterSqlite3App, createBetterSqlite3Db } from "../index"
 
 describe("createBetterSqlite3Db", () => {
+  test("includes shrink-map reference notes in an unselected full response", async () => {
+    const db = createBetterSqlite3Db()
+    const result = JSON.parse((await db.getMojidataJson("鐥", [])) ?? "{}")
+    assert.equal(result.mji.find((row: any) => row.MJ文字図形名 === "MJ068046").mjsm_note, "国字:みずかね")
+  })
+
+  test("retrieves shrink-map notes by their unique MJ glyph index", () => {
+    const db = new Database(require.resolve("@mandel59/mojidata/dist/moji.db"), { readonly: true })
+    try {
+      const query = buildMojidataSelectQuery(["mji"])
+      const plan = db.prepare(`EXPLAIN QUERY PLAN ${query}`).all({ ucs: "邉" }) as { detail: string }[]
+      const notePlan = plan.filter(row => row.detail.includes("mjsm_note"))
+      assert.equal(notePlan.length, 1)
+      assert.match(notePlan[0].detail, /SEARCH mjsm_note USING INDEX sqlite_autoindex_mjsm_note_1 \(MJ文字図形名=\?\)/)
+      assert.ok(!buildMojidataSelectQuery(["char", "UCS"]).includes("mjsm_note"))
+    } finally {
+      db.close()
+    }
+  })
+
   test("supports better-sqlite3 as an explicit native backend", async () => {
     const db = createBetterSqlite3Db()
 

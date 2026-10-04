@@ -2,6 +2,11 @@
 
 Backend-neutral SQL composition utilities for `mojidata-api`.
 
+The `mji` field includes `mjsm_note`, the MJ shrink-map reference note for each
+MJ glyph. For example, `/api/v1/mojidata?char=鐥&select=mji` returns
+`"mjsm_note": "国字:みずかね"` for `MJ068046`. The value is `null` when no
+reference note exists. It is also included when `select` is omitted.
+
 `createIdsfind` and `createSqlApiDb` use the existing FTS candidate query by
 default. A backend that opens `@mandel59/idsdb-bvec/idsfind.db` can opt in to
 the packed Bloom-vector scanner:

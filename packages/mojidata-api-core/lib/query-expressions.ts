@@ -196,6 +196,7 @@ export const queryExpressions = [
             '大漢語林', 大漢語林,
             '更新履歴', (SELECT json_group_array(更新履歴) FROM mji_changelog WHERE mji_changelog.MJ文字図形名 = mji.MJ文字図形名),
             '備考', 備考,
+            'mjsm_note', (SELECT 参考情報 FROM mjsm_note WHERE mjsm_note.MJ文字図形名 = mji.MJ文字図形名),
             'mjsm', (
                 SELECT json_group_array(json_array(
                     mjsm.表,
