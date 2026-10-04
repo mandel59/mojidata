@@ -1,0 +1,50 @@
+{
+  "observedAt": "2026-10-04T13:39:16.707273+00:00",
+  "date": "2026-10-04",
+  "accountId": "49875f33dc7d86c02b9daf2358924096",
+  "databases": [
+    {
+      "dimensions": {
+        "databaseId": "eec0b92b-22f1-436a-8290-71c10dd68977",
+        "date": "2026-10-04"
+      },
+      "sum": {
+        "readQueries": 8809,
+        "rowsRead": 1369775,
+        "rowsWritten": 0,
+        "writeQueries": 0
+      }
+    },
+    {
+      "dimensions": {
+        "databaseId": "095c69ab-48be-4323-8fb1-a00af7ed931c",
+        "date": "2026-10-04"
+      },
+      "sum": {
+        "readQueries": 186,
+        "rowsRead": 15493,
+        "rowsWritten": 0,
+        "writeQueries": 0
+      }
+    }
+  ],
+  "usage": {
+    "rowsRead": 1385268,
+    "rowsWritten": 0
+  },
+  "limits": {
+    "rowsRead": 5000000,
+    "rowsWritten": 100000
+  },
+  "trafficReserve": {
+    "rowsRead": 2500000,
+    "rowsWritten": 10000
+  },
+  "operationUpperBound": {
+    "rowsRead": 100000,
+    "rowsWritten": 0
+  },
+  "operation": "One bounded metadata query, two direct selected SQL checks, six HTTP checks each on staging and public (two full responses per target), and a reserve for one rollback/retry cycle. No DB writes/imports.",
+  "plan": "Workers account and existing Worker usage_model are standard. Billing-subscription API is denied to the existing OAuth credential, so use the smaller verified published Free limits with no paid-plan headroom.",
+  "stop": "Abort on schema/index mismatch, SQL reads above preallocated case limits, unknown query costs, nonzero writes, failed verification or account allowance too small. Refresh usage immediately before each deployment."
+}

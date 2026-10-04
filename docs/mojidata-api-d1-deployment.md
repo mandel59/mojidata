@@ -3,7 +3,18 @@
 This document tracks the current deployment shape for the Cloudflare D1 backend
 of `mojidata-api` and the contract used by `mojidata-web-app`.
 
-## Latest deployment (2026-09-22)
+## Latest deployment (2026-10-04)
+
+The public/default and staging Workers serve MJ shrink-map reference notes as
+`mji[].mjsm_note` and selectable KDPV notes as `kdpv_comment`, from merged
+[PR #75](https://github.com/mandel59/mojidata/pull/75) at
+`977b05bf32ffb0b73e7f3d5b08476df066620fb5`. Both existing database bindings are
+unchanged; no imports or migrations were performed. Six fixed checks passed on
+each target, including selected fields and full responses. See the
+[deployment record](deployments/2026-10-04-api-notes/README.md) for versions,
+rollback instructions and account-wide quota evidence.
+
+## Previous deployment (2026-09-22)
 
 The public/default and staging Workers now serve Japanese new/old variant
 relations from published `mojidata@1.9.1` and API core `1.10.2`. A new mojidata

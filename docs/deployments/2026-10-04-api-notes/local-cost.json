@@ -1,0 +1,678 @@
+{
+  "sourceSha256": "c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b",
+  "materializations": {
+    "unihan": [
+      [
+        "UCS",
+        [
+          "UCS"
+        ]
+      ],
+      [
+        "property_UCS",
+        [
+          "property",
+          "UCS"
+        ]
+      ],
+      [
+        "property_value",
+        [
+          "property",
+          "value"
+        ]
+      ]
+    ],
+    "kdpv": [
+      [
+        "subject",
+        [
+          "subject"
+        ]
+      ],
+      [
+        "object",
+        [
+          "object"
+        ]
+      ],
+      [
+        "rel_subject",
+        [
+          "rel",
+          "subject"
+        ]
+      ]
+    ],
+    "ivs": [
+      [
+        "IVS",
+        [
+          "IVS"
+        ]
+      ],
+      [
+        "collection_code",
+        [
+          "collection",
+          "code"
+        ]
+      ]
+    ],
+    "mjsm": [
+      [
+        "MJ文字図形名",
+        [
+          "MJ文字図形名"
+        ]
+      ],
+      [
+        "縮退UCS",
+        [
+          "縮退UCS"
+        ]
+      ],
+      [
+        "表",
+        [
+          "表"
+        ]
+      ]
+    ],
+    "unihan_variant": [
+      [
+        "UCS",
+        [
+          "UCS"
+        ]
+      ],
+      [
+        "value",
+        [
+          "value"
+        ]
+      ],
+      [
+        "property_UCS",
+        [
+          "property",
+          "UCS"
+        ]
+      ]
+    ],
+    "unihan_source": [
+      [
+        "UCS",
+        [
+          "UCS"
+        ]
+      ],
+      [
+        "source",
+        [
+          "source"
+        ]
+      ]
+    ],
+    "nyukan": [
+      [
+        "簡体字等のUCS",
+        [
+          "簡体字等のUCS"
+        ]
+      ],
+      [
+        "正字のUCS",
+        [
+          "正字のUCS"
+        ]
+      ]
+    ]
+  },
+  "measurements": [
+    {
+      "char": "鐥",
+      "select": [
+        "mji"
+      ],
+      "fullscanSteps": 0,
+      "vmSteps": 6860,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "SCALAR SUBQUERY 6",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH mji USING INDEX mji_対応するUCS (対応するUCS=?)",
+        "INDEX 2",
+        "SEARCH mji USING INDEX mji_実装したUCS (実装したUCS=?)",
+        "CORRELATED SCALAR SUBQUERY 1",
+        "SEARCH mji_rsindex USING INDEX mji_rsindex_MJ文字図形名 (MJ文字図形名=?)",
+        "BLOOM FILTER ON radicals (部首=?)",
+        "SEARCH radicals USING AUTOMATIC COVERING INDEX (部首=?)",
+        "CORRELATED SCALAR SUBQUERY 2",
+        "SEARCH mji_reading USING INDEX mji_reading_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 3",
+        "SEARCH mji_changelog USING INDEX mji_changelog_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 4",
+        "SEARCH mjsm_note USING INDEX sqlite_autoindex_mjsm_note_1 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 5",
+        "SEARCH mjsm USING INDEX mjsm_MJ文字図形名 (MJ文字図形名=?)"
+      ]
+    },
+    {
+      "char": "充",
+      "select": [
+        "kdpv",
+        "kdpv_comment"
+      ],
+      "fullscanSteps": 0,
+      "vmSteps": 457,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "SCALAR SUBQUERY 4",
+        "CO-ROUTINE (subquery-3)",
+        "CO-ROUTINE (subquery-2)",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "SEARCH kdpv_rels USING INDEX sqlite_autoindex_kdpv_rels_1 (rel=?) LEFT-JOIN",
+        "SCAN (subquery-2)",
+        "USE TEMP B-TREE FOR GROUP BY",
+        "SCAN (subquery-3)",
+        "SCALAR SUBQUERY 7",
+        "CO-ROUTINE (subquery-6)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-6)"
+      ]
+    },
+    {
+      "char": "𠑽",
+      "select": [
+        "kdpv_comment"
+      ],
+      "fullscanSteps": 0,
+      "vmSteps": 126,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "SCALAR SUBQUERY 3",
+        "CO-ROUTINE (subquery-2)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-2)"
+      ]
+    },
+    {
+      "char": "A",
+      "select": [
+        "kdpv_comment"
+      ],
+      "fullscanSteps": 0,
+      "vmSteps": 69,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "SCALAR SUBQUERY 3",
+        "CO-ROUTINE (subquery-2)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-2)"
+      ]
+    },
+    {
+      "char": "鐥",
+      "select": [],
+      "fullscanSteps": 0,
+      "vmSteps": 7924,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "USING INDEX aj1_UCS FOR IN-OPERATOR",
+        "SCALAR SUBQUERY 2",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCALAR SUBQUERY 3",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 4",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 5",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 6",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 7",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 8",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 9",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 10",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 11",
+        "SEARCH ids USING INDEX ids_UCS (UCS=?)",
+        "SCALAR SUBQUERY 12",
+        "SEARCH ids USING INDEX ids_IDS (IDS=?)",
+        "SCALAR SUBQUERY 13",
+        "SEARCH ids_comment USING INDEX ids_comment_UCS (UCS=?)",
+        "SCALAR SUBQUERY 14",
+        "SEARCH ivs USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SCALAR SUBQUERY 15",
+        "SEARCH ivs1 USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SEARCH ivs2 USING INDEX ivs_collection_code (collection=? AND code=?)",
+        "SCALAR SUBQUERY 16",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH svs_cjkci USING INDEX sqlite_autoindex_svs_cjkci_1 (SVS>? AND SVS<?)",
+        "INDEX 2",
+        "SEARCH svs_cjkci USING INDEX svs_cjkci_CJKCI (CJKCI=?)",
+        "SCALAR SUBQUERY 17",
+        "SEARCH unihan USING INDEX unihan_UCS (UCS=?)",
+        "SCALAR SUBQUERY 19",
+        "CO-ROUTINE (subquery-18)",
+        "SEARCH unihan_value_ref USING INDEX unihan_value_ref_ref_UCS (ref=?)",
+        "SCAN (subquery-18)",
+        "SCALAR SUBQUERY 20",
+        "SEARCH unihan_variant USING INDEX unihan_variant_UCS (UCS=?)",
+        "SCALAR SUBQUERY 21",
+        "SEARCH unihan_variant USING INDEX unihan_variant_value (value=?)",
+        "SCALAR SUBQUERY 22",
+        "SEARCH joyo USING INDEX joyo_漢字 (漢字=?)",
+        "SCALAR SUBQUERY 23",
+        "SEARCH joyo_kangxi USING COVERING INDEX sqlite_autoindex_joyo_kangxi_1 (漢字=?)",
+        "SCALAR SUBQUERY 24",
+        "SEARCH joyo_kangxi USING INDEX joyo_kangxi_康熙字典体 (康熙字典体=?)",
+        "SCALAR SUBQUERY 25",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH doon USING INDEX doon_書きかえる漢字 (書きかえる漢字=?)",
+        "INDEX 2",
+        "SEARCH doon USING INDEX doon_書きかえた漢字 (書きかえた漢字=?)",
+        "SCALAR SUBQUERY 26",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH nyukan USING INDEX nyukan_簡体字等のUCS (簡体字等のUCS=?)",
+        "INDEX 2",
+        "SEARCH nyukan USING INDEX nyukan_正字のUCS (正字のUCS=?)",
+        "SCALAR SUBQUERY 29",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "INDEX 2",
+        "LIST SUBQUERY 28",
+        "SEARCH v USING INDEX tghb_variants_异体字 (异体字=?)",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "CORRELATED SCALAR SUBQUERY 27",
+        "SEARCH v USING INDEX tghb_variants_规范字 (规范字=?)",
+        "SCALAR SUBQUERY 35",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH mji USING INDEX mji_対応するUCS (対応するUCS=?)",
+        "INDEX 2",
+        "SEARCH mji USING INDEX mji_実装したUCS (実装したUCS=?)",
+        "CORRELATED SCALAR SUBQUERY 30",
+        "SEARCH mji_rsindex USING INDEX mji_rsindex_MJ文字図形名 (MJ文字図形名=?)",
+        "BLOOM FILTER ON radicals (部首=?)",
+        "SEARCH radicals USING AUTOMATIC COVERING INDEX (部首=?)",
+        "CORRELATED SCALAR SUBQUERY 31",
+        "SEARCH mji_reading USING INDEX mji_reading_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 32",
+        "SEARCH mji_changelog USING INDEX mji_changelog_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 33",
+        "SEARCH mjsm_note USING INDEX sqlite_autoindex_mjsm_note_1 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 34",
+        "SEARCH mjsm USING INDEX mjsm_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 36",
+        "SEARCH mjsm USING INDEX mjsm_縮退UCS (縮退UCS=?)",
+        "SEARCH mji USING INDEX sqlite_autoindex_mji_1 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 41",
+        "SEARCH mjih USING INDEX sqlite_autoindex_mjih_1 (MJ文字図形名=?)",
+        "LIST SUBQUERY 40",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH mjih USING INDEX mjih_文字 (文字=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih USING INDEX mjih_字母 (字母=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih_phonetic USING INDEX mjih_phonetic_音価 (音価=?)",
+        "CORRELATED SCALAR SUBQUERY 37",
+        "SEARCH p USING INDEX mjih_phonetic_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 45",
+        "CO-ROUTINE (subquery-44)",
+        "CO-ROUTINE (subquery-43)",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "SEARCH kdpv_rels USING INDEX sqlite_autoindex_kdpv_rels_1 (rel=?) LEFT-JOIN",
+        "SCAN (subquery-43)",
+        "USE TEMP B-TREE FOR GROUP BY",
+        "SCAN (subquery-44)",
+        "SCALAR SUBQUERY 48",
+        "CO-ROUTINE (subquery-47)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-47)"
+      ]
+    },
+    {
+      "char": "充",
+      "select": [],
+      "fullscanSteps": 0,
+      "vmSteps": 9364,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "USING INDEX aj1_UCS FOR IN-OPERATOR",
+        "SCALAR SUBQUERY 2",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCALAR SUBQUERY 3",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 4",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 5",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 6",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 7",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 8",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 9",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 10",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 11",
+        "SEARCH ids USING INDEX ids_UCS (UCS=?)",
+        "SCALAR SUBQUERY 12",
+        "SEARCH ids USING INDEX ids_IDS (IDS=?)",
+        "SCALAR SUBQUERY 13",
+        "SEARCH ids_comment USING INDEX ids_comment_UCS (UCS=?)",
+        "SCALAR SUBQUERY 14",
+        "SEARCH ivs USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SCALAR SUBQUERY 15",
+        "SEARCH ivs1 USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SEARCH ivs2 USING INDEX ivs_collection_code (collection=? AND code=?)",
+        "SCALAR SUBQUERY 16",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH svs_cjkci USING INDEX sqlite_autoindex_svs_cjkci_1 (SVS>? AND SVS<?)",
+        "INDEX 2",
+        "SEARCH svs_cjkci USING INDEX svs_cjkci_CJKCI (CJKCI=?)",
+        "SCALAR SUBQUERY 17",
+        "SEARCH unihan USING INDEX unihan_UCS (UCS=?)",
+        "SCALAR SUBQUERY 19",
+        "CO-ROUTINE (subquery-18)",
+        "SEARCH unihan_value_ref USING INDEX unihan_value_ref_ref_UCS (ref=?)",
+        "SCAN (subquery-18)",
+        "SCALAR SUBQUERY 20",
+        "SEARCH unihan_variant USING INDEX unihan_variant_UCS (UCS=?)",
+        "SCALAR SUBQUERY 21",
+        "SEARCH unihan_variant USING INDEX unihan_variant_value (value=?)",
+        "SCALAR SUBQUERY 22",
+        "SEARCH joyo USING INDEX joyo_漢字 (漢字=?)",
+        "SCALAR SUBQUERY 23",
+        "SEARCH joyo_kangxi USING COVERING INDEX sqlite_autoindex_joyo_kangxi_1 (漢字=?)",
+        "SCALAR SUBQUERY 24",
+        "SEARCH joyo_kangxi USING INDEX joyo_kangxi_康熙字典体 (康熙字典体=?)",
+        "SCALAR SUBQUERY 25",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH doon USING INDEX doon_書きかえる漢字 (書きかえる漢字=?)",
+        "INDEX 2",
+        "SEARCH doon USING INDEX doon_書きかえた漢字 (書きかえた漢字=?)",
+        "SCALAR SUBQUERY 26",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH nyukan USING INDEX nyukan_簡体字等のUCS (簡体字等のUCS=?)",
+        "INDEX 2",
+        "SEARCH nyukan USING INDEX nyukan_正字のUCS (正字のUCS=?)",
+        "SCALAR SUBQUERY 29",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "INDEX 2",
+        "LIST SUBQUERY 28",
+        "SEARCH v USING INDEX tghb_variants_异体字 (异体字=?)",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "CORRELATED SCALAR SUBQUERY 27",
+        "SEARCH v USING INDEX tghb_variants_规范字 (规范字=?)",
+        "SCALAR SUBQUERY 35",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH mji USING INDEX mji_対応するUCS (対応するUCS=?)",
+        "INDEX 2",
+        "SEARCH mji USING INDEX mji_実装したUCS (実装したUCS=?)",
+        "CORRELATED SCALAR SUBQUERY 30",
+        "SEARCH mji_rsindex USING INDEX mji_rsindex_MJ文字図形名 (MJ文字図形名=?)",
+        "BLOOM FILTER ON radicals (部首=?)",
+        "SEARCH radicals USING AUTOMATIC COVERING INDEX (部首=?)",
+        "CORRELATED SCALAR SUBQUERY 31",
+        "SEARCH mji_reading USING INDEX mji_reading_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 32",
+        "SEARCH mji_changelog USING INDEX mji_changelog_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 33",
+        "SEARCH mjsm_note USING INDEX sqlite_autoindex_mjsm_note_1 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 34",
+        "SEARCH mjsm USING INDEX mjsm_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 36",
+        "SEARCH mjsm USING INDEX mjsm_縮退UCS (縮退UCS=?)",
+        "SEARCH mji USING INDEX sqlite_autoindex_mji_1 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 41",
+        "SEARCH mjih USING INDEX sqlite_autoindex_mjih_1 (MJ文字図形名=?)",
+        "LIST SUBQUERY 40",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH mjih USING INDEX mjih_文字 (文字=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih USING INDEX mjih_字母 (字母=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih_phonetic USING INDEX mjih_phonetic_音価 (音価=?)",
+        "CORRELATED SCALAR SUBQUERY 37",
+        "SEARCH p USING INDEX mjih_phonetic_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 45",
+        "CO-ROUTINE (subquery-44)",
+        "CO-ROUTINE (subquery-43)",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "SEARCH kdpv_rels USING INDEX sqlite_autoindex_kdpv_rels_1 (rel=?) LEFT-JOIN",
+        "SCAN (subquery-43)",
+        "USE TEMP B-TREE FOR GROUP BY",
+        "SCAN (subquery-44)",
+        "SCALAR SUBQUERY 48",
+        "CO-ROUTINE (subquery-47)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-47)"
+      ]
+    },
+    {
+      "char": "⿰",
+      "select": [],
+      "fullscanSteps": 0,
+      "vmSteps": 87050,
+      "baseTableScans": [
+        "SCAN CONSTANT ROW"
+      ],
+      "plan": [
+        "SCAN CONSTANT ROW",
+        "USING INDEX aj1_UCS FOR IN-OPERATOR",
+        "SCALAR SUBQUERY 2",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCALAR SUBQUERY 3",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 4",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 5",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 6",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 7",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 8",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 9",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 10",
+        "SEARCH aj1 USING INDEX aj1_UCS (UCS=?)",
+        "SCALAR SUBQUERY 11",
+        "SEARCH ids USING INDEX ids_UCS (UCS=?)",
+        "SCALAR SUBQUERY 12",
+        "SEARCH ids USING INDEX ids_IDS (IDS=?)",
+        "SCALAR SUBQUERY 13",
+        "SEARCH ids_comment USING INDEX ids_comment_UCS (UCS=?)",
+        "SCALAR SUBQUERY 14",
+        "SEARCH ivs USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SCALAR SUBQUERY 15",
+        "SEARCH ivs1 USING INDEX ivs_IVS (IVS>? AND IVS<?)",
+        "SEARCH ivs2 USING INDEX ivs_collection_code (collection=? AND code=?)",
+        "SCALAR SUBQUERY 16",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH svs_cjkci USING INDEX sqlite_autoindex_svs_cjkci_1 (SVS>? AND SVS<?)",
+        "INDEX 2",
+        "SEARCH svs_cjkci USING INDEX svs_cjkci_CJKCI (CJKCI=?)",
+        "SCALAR SUBQUERY 17",
+        "SEARCH unihan USING INDEX unihan_UCS (UCS=?)",
+        "SCALAR SUBQUERY 19",
+        "CO-ROUTINE (subquery-18)",
+        "SEARCH unihan_value_ref USING INDEX unihan_value_ref_ref_UCS (ref=?)",
+        "SCAN (subquery-18)",
+        "SCALAR SUBQUERY 20",
+        "SEARCH unihan_variant USING INDEX unihan_variant_UCS (UCS=?)",
+        "SCALAR SUBQUERY 21",
+        "SEARCH unihan_variant USING INDEX unihan_variant_value (value=?)",
+        "SCALAR SUBQUERY 22",
+        "SEARCH joyo USING INDEX joyo_漢字 (漢字=?)",
+        "SCALAR SUBQUERY 23",
+        "SEARCH joyo_kangxi USING COVERING INDEX sqlite_autoindex_joyo_kangxi_1 (漢字=?)",
+        "SCALAR SUBQUERY 24",
+        "SEARCH joyo_kangxi USING INDEX joyo_kangxi_康熙字典体 (康熙字典体=?)",
+        "SCALAR SUBQUERY 25",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH doon USING INDEX doon_書きかえる漢字 (書きかえる漢字=?)",
+        "INDEX 2",
+        "SEARCH doon USING INDEX doon_書きかえた漢字 (書きかえた漢字=?)",
+        "SCALAR SUBQUERY 26",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH nyukan USING INDEX nyukan_簡体字等のUCS (簡体字等のUCS=?)",
+        "INDEX 2",
+        "SEARCH nyukan USING INDEX nyukan_正字のUCS (正字のUCS=?)",
+        "SCALAR SUBQUERY 29",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "INDEX 2",
+        "LIST SUBQUERY 28",
+        "SEARCH v USING INDEX tghb_variants_异体字 (异体字=?)",
+        "SEARCH tghb USING INDEX tghb_规范字 (规范字=?)",
+        "CORRELATED SCALAR SUBQUERY 27",
+        "SEARCH v USING INDEX tghb_variants_规范字 (规范字=?)",
+        "SCALAR SUBQUERY 35",
+        "MULTI-INDEX OR",
+        "INDEX 1",
+        "SEARCH mji USING INDEX mji_対応するUCS (対応するUCS=?)",
+        "INDEX 2",
+        "SEARCH mji USING INDEX mji_実装したUCS (実装したUCS=?)",
+        "CORRELATED SCALAR SUBQUERY 30",
+        "SEARCH mji_rsindex USING INDEX mji_rsindex_MJ文字図形名 (MJ文字図形名=?)",
+        "BLOOM FILTER ON radicals (部首=?)",
+        "SEARCH radicals USING AUTOMATIC COVERING INDEX (部首=?)",
+        "CORRELATED SCALAR SUBQUERY 31",
+        "SEARCH mji_reading USING INDEX mji_reading_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 32",
+        "SEARCH mji_changelog USING INDEX mji_changelog_MJ文字図形名 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 33",
+        "SEARCH mjsm_note USING INDEX sqlite_autoindex_mjsm_note_1 (MJ文字図形名=?)",
+        "CORRELATED SCALAR SUBQUERY 34",
+        "SEARCH mjsm USING INDEX mjsm_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 36",
+        "SEARCH mjsm USING INDEX mjsm_縮退UCS (縮退UCS=?)",
+        "SEARCH mji USING INDEX sqlite_autoindex_mji_1 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 41",
+        "SEARCH mjih USING INDEX sqlite_autoindex_mjih_1 (MJ文字図形名=?)",
+        "LIST SUBQUERY 40",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH mjih USING INDEX mjih_文字 (文字=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih USING INDEX mjih_字母 (字母=?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH mjih_phonetic USING INDEX mjih_phonetic_音価 (音価=?)",
+        "CORRELATED SCALAR SUBQUERY 37",
+        "SEARCH p USING INDEX mjih_phonetic_MJ文字図形名 (MJ文字図形名=?)",
+        "SCALAR SUBQUERY 45",
+        "CO-ROUTINE (subquery-44)",
+        "CO-ROUTINE (subquery-43)",
+        "COMPOUND QUERY",
+        "LEFT-MOST SUBQUERY",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "UNION USING TEMP B-TREE",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "SEARCH kdpv_rels USING INDEX sqlite_autoindex_kdpv_rels_1 (rel=?) LEFT-JOIN",
+        "SCAN (subquery-43)",
+        "USE TEMP B-TREE FOR GROUP BY",
+        "SCAN (subquery-44)",
+        "SCALAR SUBQUERY 48",
+        "CO-ROUTINE (subquery-47)",
+        "MERGE (UNION)",
+        "LEFT",
+        "SEARCH kdpv USING INDEX kdpv_subject (subject>? AND subject<?)",
+        "USE TEMP B-TREE FOR RIGHT PART OF ORDER BY",
+        "RIGHT",
+        "SEARCH kdpv USING INDEX kdpv_object (object>? AND object<?)",
+        "USE TEMP B-TREE FOR ORDER BY",
+        "SCAN (subquery-47)"
+      ]
+    }
+  ],
+  "localDb": "/tmp/mojidata-api-notes-deploy/local-d1.db"
+}

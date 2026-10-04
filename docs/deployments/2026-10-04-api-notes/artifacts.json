@@ -1,0 +1,34 @@
+{
+  "deployedAt": "2026-10-04T13:41:07.070304+00:00",
+  "sourceCommit": "977b05bf32ffb0b73e7f3d5b08476df066620fb5",
+  "pullRequest": "https://github.com/mandel59/mojidata/pull/75",
+  "wrangler": "4.136.1",
+  "inputSha256": "c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b",
+  "bundleSha256": "3b25241fa6b416faad264654899cc464bc4b463885b1e7693c9aaf90437050a6",
+  "bindings": {
+    "MOJIDATA_DB": "eec0b92b-22f1-436a-8290-71c10dd68977",
+    "IDSFIND_DB": "095c69ab-48be-4323-8fb1-a00af7ed931c"
+  },
+  "targets": {
+    "staging": {
+      "worker": "mojidata-api-d1-staging",
+      "version": "2da1cf6a-2177-4366-b3ee-3f16f56661bd",
+      "rollbackVersion": "61fc7dbe-d001-4292-8a52-d2ad557a62a9"
+    },
+    "public": {
+      "worker": "mojidata-api-d1",
+      "version": "8d43a3a3-9074-4dfa-9ecd-0682dfa31643",
+      "rollbackVersion": "518b1f73-35ca-4dbf-8f9b-cf6b4e7be9ea"
+    }
+  },
+  "imports": 0,
+  "directSql": {
+    "rowsRead": 559,
+    "rowsWritten": 0
+  },
+  "httpChecks": {
+    "staging": 6,
+    "public": 6
+  },
+  "note": "No migrations or DB imports. HTTP responses do not expose D1 billed row counts; local plans, preallocated caps and account usage are retained separately."
+}

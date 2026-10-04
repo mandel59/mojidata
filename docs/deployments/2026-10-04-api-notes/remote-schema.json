@@ -1,0 +1,71 @@
+{
+  "result": [
+    {
+      "results": [
+        {
+          "type": "table",
+          "name": "mji",
+          "tbl_name": "mji",
+          "sql": "CREATE TABLE \"mji\" (\n  \"MJ文字図形名\" TEXT PRIMARY KEY,\n  \"対応するUCS\" TEXT,\n  \"実装したUCS\" TEXT,\n  \"実装したMoji_JohoコレクションIVS\" TEXT,\n  \"実装したSVS\" TEXT,\n  \"戸籍統一文字番号\" TEXT,\n  \"住基ネット統一文字コード\" TEXT,\n  \"入管正字コード\" TEXT,\n  \"入管外字コード\" TEXT,\n  \"漢字施策\" TEXT,\n  \"対応する互換漢字\" TEXT,\n  \"X0213\" TEXT,\n  \"X0213_包摂連番\" TEXT,\n  \"X0213_包摂区分\" INTEGER,\n  \"X0212\" TEXT,\n  \"MJ文字図形バージョン\" TEXT,\n  \"登記統一文字番号\" TEXT,\n  \"総画数\" INTEGER,\n  \"大漢和\" INTEGER,\n  \"日本語漢字辞典\" INTEGER,\n  \"新大字典\" INTEGER,\n  \"大字源\" INTEGER,\n  \"大漢語林\" INTEGER,\n  \"備考\" TEXT\n)"
+        },
+        {
+          "type": "table",
+          "name": "mjsm_note",
+          "tbl_name": "mjsm_note",
+          "sql": "CREATE TABLE \"mjsm_note\" (\"MJ文字図形名\" TEXT PRIMARY KEY, \"参考情報\" TEXT)"
+        },
+        {
+          "type": "index",
+          "name": "sqlite_autoindex_mjsm_note_1",
+          "tbl_name": "mjsm_note",
+          "sql": null
+        },
+        {
+          "type": "index",
+          "name": "mji_実装したUCS",
+          "tbl_name": "mji",
+          "sql": "CREATE INDEX \"mji_実装したUCS\" ON \"mji\" (\"実装したUCS\")"
+        },
+        {
+          "type": "table",
+          "name": "kdpv",
+          "tbl_name": "kdpv",
+          "sql": "CREATE TABLE \"kdpv\" (\n  \"subject\" TEXT NOT NULL,\n  \"rel\" TEXT NOT NULL,\n  \"object\" TEXT NOT NULL,\n  \"comment\" TEXT\n)"
+        },
+        {
+          "type": "index",
+          "name": "kdpv_subject",
+          "tbl_name": "kdpv",
+          "sql": "CREATE INDEX \"kdpv_subject\" ON \"kdpv\" (\"subject\")"
+        },
+        {
+          "type": "index",
+          "name": "kdpv_object",
+          "tbl_name": "kdpv",
+          "sql": "CREATE INDEX \"kdpv_object\" ON \"kdpv\" (\"object\")"
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "APAC",
+        "served_by_colo": "KIX",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.4517
+        },
+        "duration": 0.4517,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 297078784,
+        "rows_read": 548,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ],
+  "errors": [],
+  "messages": [],
+  "success": true
+}
