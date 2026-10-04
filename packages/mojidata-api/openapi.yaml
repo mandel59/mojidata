@@ -326,6 +326,7 @@ components:
         - mjsm_inverse
         - mjih
         - kdpv
+        - kdpv_comment
     IvsListItem:
       type: object
       required: [IVS, unicode, collection, code]
@@ -531,6 +532,12 @@ components:
           type: array
           items:
             type: object
+            properties:
+              mjsm_note:
+                type: string
+                nullable: true
+                description: MJ縮退マップの参考情報。該当MJ文字図形の参考情報がない場合はnull。
+                example: "国字:みずかね"
             additionalProperties: true
         mjsm_inverse:
           type: array
@@ -546,6 +553,22 @@ components:
           type: object
           description: Map of relation to arrays of related characters/strings.
           additionalProperties: true
+        kdpv_comment:
+          type: array
+          description: |
+            KDPV relations with nonempty comments whose subject or object starts with the requested character.
+            Original subject, relation and object are preserved, including for reverse matches and IVS.
+            Identical records are deduplicated; distinct comments on the same relation are preserved.
+            Returns an empty array when no commented relations match.
+          items:
+            type: object
+            required: [subject, rel, object, comment]
+            properties:
+              subject: { type: string }
+              rel: { type: string }
+              object: { type: string }
+              comment: { type: string, minLength: 1 }
+            additionalProperties: false
       additionalProperties: false
     SearchPropertyKey:
       type: string

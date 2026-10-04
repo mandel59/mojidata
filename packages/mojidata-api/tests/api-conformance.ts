@@ -88,6 +88,80 @@ export function runMojidataApiConformanceTests(
       assert.deepEqual(json.results, { char: '漢', UCS: 'U+6F22' })
     })
 
+    test('serves shrink-map notes even when no shrink target or reading exists', async () => {
+      const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+        char: '鐥',
+        select: 'mji',
+      })
+
+      assertJsonResponse(response)
+      assert.deepEqual(Object.keys(json.results), ['mji'])
+      assertIncludesRecord(json.results.mji, {
+        MJ文字図形名: 'MJ068046',
+        mjsm_note: '国字:みずかね',
+      })
+      const glyph = json.results.mji.find((row: any) => row.MJ文字図形名 === 'MJ068046')
+      assert.deepEqual(glyph.mjsm, [])
+      assert.deepEqual(glyph.読み, [])
+    })
+
+    test('serves KDPV comments from either endpoint with the original relation direction', async () => {
+      for (const char of ['充', '𠑽']) {
+        const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+          char,
+          select: ['kdpv', 'kdpv_comment'],
+        })
+
+        assertJsonResponse(response)
+        assert.deepEqual(Object.keys(json.results), ['kdpv', 'kdpv_comment'])
+        assertIncludesRecord(json.results.kdpv_comment, {
+          subject: '充', rel: 'hydzd/variant', object: '𠑽', comment: '[充=⿱亠厶]',
+        })
+        const rel = char === '充' ? 'hydzd/variant' : 'hydzd/proper'
+        assert.ok(json.results.kdpv[rel].includes(char === '充' ? '𠑽' : '充'))
+        assert.ok(json.results.kdpv_comment.every((row: any) => typeof row.comment === 'string' && row.comment.length > 0))
+      }
+    })
+
+    test('serves an empty KDPV comment array for a character with no notes', async () => {
+      const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+        char: 'A',
+        select: 'kdpv_comment',
+      })
+      assertJsonResponse(response)
+      assert.deepEqual(json.results, { kdpv_comment: [] })
+    })
+
+    test('serves null when a glyph has no shrink-map reference note', async () => {
+      const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+        char: '一',
+        select: 'mji',
+      })
+
+      assertJsonResponse(response)
+      assertIncludesRecord(json.results.mji, {
+        MJ文字図形名: 'MJ006294',
+        mjsm_note: null,
+      })
+    })
+
+    test('keeps shrink-map notes associated with the correct MJ glyph', async () => {
+      const { response, json } = await fetchJson(await getApp(), '/api/v1/mojidata', {
+        char: '邉',
+        select: 'mji',
+      })
+
+      assertJsonResponse(response)
+      assertIncludesRecord(json.results.mji, {
+        MJ文字図形名: 'MJ058866',
+        mjsm_note: '地名外字',
+      })
+      assertIncludesRecord(json.results.mji, {
+        MJ文字図形名: 'MJ026190',
+        mjsm_note: null,
+      })
+    })
+
     test('serves ids_similar entries for current IDS mirror and rotation operators', async () => {
       const mirror = await fetchJson(await getApp(), '/api/v1/mojidata', {
         char: '卍',

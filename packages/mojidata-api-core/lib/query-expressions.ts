@@ -196,6 +196,7 @@ export const queryExpressions = [
             '大漢語林', 大漢語林,
             '更新履歴', (SELECT json_group_array(更新履歴) FROM mji_changelog WHERE mji_changelog.MJ文字図形名 = mji.MJ文字図形名),
             '備考', 備考,
+            'mjsm_note', (SELECT 参考情報 FROM mjsm_note WHERE mjsm_note.MJ文字図形名 = mji.MJ文字図形名),
             'mjsm', (
                 SELECT json_group_array(json_array(
                     mjsm.表,
@@ -259,6 +260,26 @@ export const queryExpressions = [
                 WHERE object >= @ucs AND object < char(unicode(@ucs) + 1)
             )
             GROUP BY rel
+        )
+    )`,
+  ],
+  [
+    'kdpv_comment',
+    `(
+        SELECT json_group_array(json_object(
+            'subject', subject,
+            'rel', rel,
+            'object', object,
+            'comment', comment
+        )) FROM (
+            SELECT subject, rel, object, comment FROM kdpv
+            WHERE subject >= @ucs AND subject < char(unicode(@ucs) + 1)
+              AND comment IS NOT NULL AND comment <> ''
+            UNION
+            SELECT subject, rel, object, comment FROM kdpv
+            WHERE object >= @ucs AND object < char(unicode(@ucs) + 1)
+              AND comment IS NOT NULL AND comment <> ''
+            ORDER BY subject, rel, object, comment
         )
     )`,
   ],

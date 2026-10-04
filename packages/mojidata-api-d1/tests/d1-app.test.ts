@@ -70,6 +70,41 @@ function createFakeMojidataDb() {
       return { vs: JSON.stringify({ UCS: "U+6F22" }) }
     }
 
+    if (normalizedSql.startsWith("SELECT json_object('mji'")) {
+      assert.equal(mode, "first")
+      assert.equal(values.length, 1)
+      assert.match(normalizedSql, /SELECT 参考情報 FROM mjsm_note WHERE mjsm_note.MJ文字図形名 = mji.MJ文字図形名/)
+      const glyphs: Record<string, unknown[]> = {
+        鐥: [{ MJ文字図形名: "MJ068046", mjsm_note: "国字:みずかね", mjsm: [], 読み: [] }],
+        一: [{ MJ文字図形名: "MJ006294", mjsm_note: null }],
+        邉: [
+          { MJ文字図形名: "MJ058866", mjsm_note: "地名外字" },
+          { MJ文字図形名: "MJ026190", mjsm_note: null },
+        ],
+      }
+      assert.ok(Object.hasOwn(glyphs, String(values[0])))
+      return { vs: JSON.stringify({ mji: glyphs[String(values[0])] }) }
+    }
+
+    if (normalizedSql.startsWith("SELECT json_object('kdpv'")) {
+      assert.equal(mode, "first")
+      assert.equal(values.length, 1)
+      assert.ok(values[0] === "充" || values[0] === "𠑽")
+      assert.match(normalizedSql, /'kdpv_comment'/)
+      assert.match(normalizedSql, /comment IS NOT NULL AND comment <> ''/)
+      const forward = values[0] === "充"
+      return { vs: JSON.stringify({
+        kdpv: { [forward ? "hydzd/variant" : "hydzd/proper"]: [forward ? "𠑽" : "充"] },
+        kdpv_comment: [{ subject: "充", rel: "hydzd/variant", object: "𠑽", comment: "[充=⿱亠厶]" }],
+      }) }
+    }
+
+    if (normalizedSql.startsWith("SELECT json_object('kdpv_comment'")) {
+      assert.equal(mode, "first")
+      assert.deepEqual(values, ["A"])
+      return { vs: JSON.stringify({ kdpv_comment: [] }) }
+    }
+
     if (normalizedSql.startsWith("SELECT json_object('ids_similar'")) {
       assert.equal(mode, "first")
       if (values[0] === "卍") {
