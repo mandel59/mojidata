@@ -1,0 +1,32 @@
+{
+  "result": [
+    {
+      "results": [
+        {
+          "参考情報": "国字:みずかね"
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "APAC",
+        "served_by_colo": "KIX",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 0.7259
+        },
+        "duration": 0.7259,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 297078784,
+        "rows_read": 1,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ],
+  "errors": [],
+  "messages": [],
+  "success": true
+}

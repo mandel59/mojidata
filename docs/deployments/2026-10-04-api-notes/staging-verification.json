@@ -1,0 +1,753 @@
+{
+  "observedAt": "2026-10-04T13:40:13.008Z",
+  "base": "https://mojidata-api-d1-staging.mandel59.workers.dev",
+  "checks": [
+    {
+      "char": "鐥",
+      "select": [
+        "mji"
+      ],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=%E9%90%A5&select=mji",
+      "status": 200,
+      "results": {
+        "mji": [
+          {
+            "文字": "鐥",
+            "MJ文字図形名": "MJ068046",
+            "対応するUCS": "U+9425",
+            "実装したUCS": "U+9425",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null,
+            "戸籍統一文字番号": null,
+            "住基ネット統一文字コード": "J+C182",
+            "入管正字コード": "0x9425",
+            "入管外字コード": "0xE5CB",
+            "漢字施策": null,
+            "対応する互換漢字": null,
+            "X0213": null,
+            "X0213_包摂連番": null,
+            "X0213_包摂区分": null,
+            "X0212": null,
+            "MJ文字図形バージョン": "2",
+            "登記統一文字番号": "01094380",
+            "部首・内画数": [
+              [
+                167,
+                12,
+                "金"
+              ]
+            ],
+            "総画数": 20,
+            "読み": [],
+            "大漢和": null,
+            "日本語漢字辞典": null,
+            "新大字典": null,
+            "大字源": null,
+            "大漢語林": null,
+            "更新履歴": [
+              "Ver.002.01 MJ068046を新規追加"
+            ],
+            "備考": null,
+            "mjsm_note": "国字:みずかね",
+            "mjsm": []
+          }
+        ]
+      }
+    },
+    {
+      "char": "充",
+      "select": [
+        "kdpv",
+        "kdpv_comment"
+      ],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=%E5%85%85&select=kdpv&select=kdpv_comment",
+      "status": 200,
+      "results": {
+        "kdpv": {
+          "cjkvi/non-cognate": [
+            "𠘺"
+          ],
+          "cjkvi/variant": [
+            "𠘺"
+          ],
+          "hydzd/variant": [
+            "𠑽"
+          ],
+          "koseki/variant": [
+            "𠑽"
+          ],
+          "twedu/variant": [
+            "𠑽",
+            "𠘺"
+          ]
+        },
+        "kdpv_comment": [
+          {
+            "subject": "充",
+            "rel": "hydzd/variant",
+            "object": "𠑽",
+            "comment": "[充=⿱亠厶]"
+          }
+        ]
+      }
+    },
+    {
+      "char": "𠑽",
+      "select": [
+        "kdpv_comment"
+      ],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=%F0%A0%91%BD&select=kdpv_comment",
+      "status": 200,
+      "results": {
+        "kdpv_comment": [
+          {
+            "subject": "充",
+            "rel": "hydzd/variant",
+            "object": "𠑽",
+            "comment": "[充=⿱亠厶]"
+          }
+        ]
+      }
+    },
+    {
+      "char": "A",
+      "select": [
+        "kdpv_comment"
+      ],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=A&select=kdpv_comment",
+      "status": 200,
+      "results": {
+        "kdpv_comment": []
+      }
+    },
+    {
+      "char": "鐥",
+      "select": [],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=%E9%90%A5",
+      "status": 200,
+      "results": {
+        "char": "鐥",
+        "UCS": "U+9425",
+        "aj1": null,
+        "ids": [
+          {
+            "IDS": "⿰釒善",
+            "source": "GHTKP"
+          }
+        ],
+        "ids_similar": [],
+        "ids_comment": [],
+        "ivs": [],
+        "ivs_duplicate": [],
+        "svs_cjkci": [],
+        "unihan": {
+          "kCCCII": "234738",
+          "kCangjie": "CTGR",
+          "kCantonese": "sin3",
+          "kDefinition": "to swing a sickle to cut (grass or wheat)",
+          "kGB5": "8611",
+          "kHanYu": "64258.090",
+          "kHangul": "선:0N",
+          "kHanyuPinyin": "64258.090:shàn",
+          "kIICore": "AKP",
+          "kIRGHanyuDaZidian": "64258.090",
+          "kIRG_GSource": "G5-762B",
+          "kIRG_HSource": "H-90E2",
+          "kIRG_JSource": "JMJ-068046",
+          "kIRG_KPSource": "KP0-E2CD",
+          "kIRG_KSource": "K0-6056",
+          "kIRG_TSource": "TF-6657",
+          "kKangXi": "1323.121",
+          "kKorean": "SEN",
+          "kKoreanName": "2015",
+          "kMandarin": "shàn",
+          "kMojiJoho": "MJ068046",
+          "kPhonetic": "1203*",
+          "kPseudoGB1": "9345",
+          "kRSUnicode": "167.12",
+          "kSMSZD2003Index": "738.12",
+          "kSimplifiedVariant": "U+4985",
+          "kTotalStrokes": "20",
+          "kUnihanCore2020": "HKP",
+          "kXHC1983": "1000.071:shàn"
+        },
+        "unihan_fts": [
+          [
+            "U+4985",
+            "䦅",
+            "kTraditionalVariant",
+            "U+9425"
+          ]
+        ],
+        "unihan_variant": [
+          [
+            "kSimplifiedVariant",
+            "U+4985",
+            "䦅"
+          ]
+        ],
+        "unihan_variant_inverse": [
+          [
+            "kTraditionalVariant",
+            "U+4985",
+            "䦅"
+          ]
+        ],
+        "joyo": [],
+        "joyo_kangxi": [],
+        "joyo_kangxi_inverse": [],
+        "doon": [],
+        "nyukan": [
+          {
+            "正字の種類": "異体字",
+            "簡体字等の文字コード等": "4985",
+            "簡体字等のUCS": "䦅",
+            "正字の文字コード等": "9425",
+            "正字のUCS": "鐥",
+            "順位": 1
+          }
+        ],
+        "tghb": [],
+        "mji": [
+          {
+            "文字": "鐥",
+            "MJ文字図形名": "MJ068046",
+            "対応するUCS": "U+9425",
+            "実装したUCS": "U+9425",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null,
+            "戸籍統一文字番号": null,
+            "住基ネット統一文字コード": "J+C182",
+            "入管正字コード": "0x9425",
+            "入管外字コード": "0xE5CB",
+            "漢字施策": null,
+            "対応する互換漢字": null,
+            "X0213": null,
+            "X0213_包摂連番": null,
+            "X0213_包摂区分": null,
+            "X0212": null,
+            "MJ文字図形バージョン": "2",
+            "登記統一文字番号": "01094380",
+            "部首・内画数": [
+              [
+                167,
+                12,
+                "金"
+              ]
+            ],
+            "総画数": 20,
+            "読み": [],
+            "大漢和": null,
+            "日本語漢字辞典": null,
+            "新大字典": null,
+            "大字源": null,
+            "大漢語林": null,
+            "更新履歴": [
+              "Ver.002.01 MJ068046を新規追加"
+            ],
+            "備考": null,
+            "mjsm_note": "国字:みずかね",
+            "mjsm": []
+          }
+        ],
+        "mjsm_inverse": [],
+        "mjih": [],
+        "kdpv": {
+          "cjkvi/simplified": [
+            "䦅"
+          ],
+          "hydzd/simplified": [
+            "䦅"
+          ],
+          "~cjkvi/traditional": [
+            "䦅"
+          ]
+        },
+        "kdpv_comment": [],
+        "unihan_rs": {
+          "kRSAdobe_Japan1_6": null,
+          "kRSUnicode": [
+            [
+              167,
+              12,
+              "金",
+              "167"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "char": "充",
+      "select": [],
+      "url": "https://mojidata-api-d1-staging.mandel59.workers.dev/api/v1/mojidata?char=%E5%85%85",
+      "status": 200,
+      "results": {
+        "char": "充",
+        "UCS": "U+5145",
+        "aj1": {
+          "CID": 2374,
+          "jp90": 2374,
+          "jp90_V": null,
+          "jp04": 2374,
+          "jp04_V": null,
+          "mac_jp90": 2374,
+          "mac_jp90_V": null,
+          "mac_jp04": 2374,
+          "mac_jp04_V": null
+        },
+        "ids": [
+          {
+            "IDS": "⿱亠允",
+            "source": "GHTJKPV"
+          }
+        ],
+        "ids_similar": [],
+        "ids_comment": [],
+        "ivs": [
+          {
+            "char": "充󠄀",
+            "IVS": "5145_E0100",
+            "collection": "Adobe-Japan1",
+            "code": "CID+2374"
+          },
+          {
+            "char": "充󠄁",
+            "IVS": "5145_E0101",
+            "collection": "Hanyo-Denshi",
+            "code": "JA2928"
+          },
+          {
+            "char": "充󠄁",
+            "IVS": "5145_E0101",
+            "collection": "Moji_Joho",
+            "code": "MJ007216"
+          },
+          {
+            "char": "充󠄂",
+            "IVS": "5145_E0102",
+            "collection": "Hanyo-Denshi",
+            "code": "KS015560"
+          },
+          {
+            "char": "充󠄂",
+            "IVS": "5145_E0102",
+            "collection": "Moji_Joho",
+            "code": "MJ007215"
+          }
+        ],
+        "ivs_duplicate": [],
+        "svs_cjkci": [
+          {
+            "SVS_char": "充︀",
+            "SVS": "5145_FE00",
+            "CJKCI_char": "充",
+            "CJKCI": "U+FA74"
+          }
+        ],
+        "unihan": {
+          "kBigFive": "A552",
+          "kCCCII": "21326F",
+          "kCNS1986": "1-4572",
+          "kCNS1992": "1-4572",
+          "kCangjie": "YIHU",
+          "kCantonese": "cung1",
+          "kCihaiT": "133.601 134.201",
+          "kCowles": "634",
+          "kDaeJaweon": "0260.010",
+          "kDefinition": "fill, be full, supply",
+          "kEACC": "21326F",
+          "kFanqie": "昌終",
+          "kFenn": "870C",
+          "kFennIndex": "110.05",
+          "kFourCornerCode": "0021.3",
+          "kGB0": "1968",
+          "kGB1": "1968",
+          "kGSR": "1011a",
+          "kGradeLevel": "3",
+          "kHKGlyph": "0264",
+          "kHanYu": "10266.010 10269.020",
+          "kHangul": "충:0E",
+          "kHanyuPinlu": "chōng(375)",
+          "kHanyuPinyin": "10269.020:chōng",
+          "kIICore": "AGTJHKMP",
+          "kIRGHanyuDaZidian": "10269.020",
+          "kIRG_GSource": "G0-3364",
+          "kIRG_HSource": "HB1-A552",
+          "kIRG_JSource": "J0-3D3C",
+          "kIRG_KPSource": "KP0-EEDB",
+          "kIRG_KSource": "K0-7576",
+          "kIRG_TSource": "T1-4572",
+          "kIRG_VSource": "V1-4C39",
+          "kJapanese": "ジュウ シュウ あてる みたす みちる",
+          "kJapaneseKun": "ATERU MICHIRU MITASU",
+          "kJapaneseOn": "JUU SHUU",
+          "kJis0": "2928",
+          "kJoyoKanji": "2010",
+          "kKangXi": "0124.010",
+          "kKorean": "CHWUNG",
+          "kKoreanEducationHanja": "2007",
+          "kLau": "430",
+          "kMainlandTelegraph": "0339",
+          "kMandarin": "chōng",
+          "kMatthews": "1520",
+          "kMeyerWempe": "427",
+          "kMojiJoho": "MJ007216 MJ007216:E0101 MJ007215:E0102",
+          "kMorohashi": "01345 01345:E0101 01344:E0102",
+          "kNelson": "0289",
+          "kPhonetic": "325",
+          "kRSAdobe_Japan1_6": "C+2374+10.2.4",
+          "kRSUnicode": "10.4",
+          "kSBGY": "027.12",
+          "kSMSZD2003Index": "44.02 14.06",
+          "kSMSZD2003Readings": "chōng粵cung1",
+          "kTGH": "2013:525",
+          "kTGHZ2013": "047.020:chōng",
+          "kTaiwanTelegraph": "0339",
+          "kTang": "chiung",
+          "kTotalStrokes": "6",
+          "kUnihanCore2020": "GHJKMPT",
+          "kVietnamese": "sung",
+          "kXHC1983": "0147.030:chōng",
+          "kXerox": "245:135"
+        },
+        "unihan_fts": [
+          [
+            "U+FA74",
+            "充",
+            "kCompatibilityVariant",
+            "U+5145"
+          ]
+        ],
+        "unihan_variant": [],
+        "unihan_variant_inverse": [
+          [
+            "kCompatibilityVariant",
+            "U+FA74",
+            "充"
+          ]
+        ],
+        "joyo": [
+          {
+            "音訓": "ジュウ",
+            "例": [
+              "充実",
+              "充電",
+              "補充"
+            ],
+            "備考": ""
+          },
+          {
+            "音訓": "あてる",
+            "例": [
+              "充てる"
+            ],
+            "備考": "⇔ 当てる，宛てる"
+          }
+        ],
+        "joyo_kangxi": [],
+        "joyo_kangxi_inverse": [],
+        "doon": [],
+        "nyukan": [
+          {
+            "正字の種類": "類字",
+            "簡体字等の文字コード等": "39e4",
+            "簡体字等のUCS": "㧤",
+            "正字の文字コード等": "5145",
+            "正字のUCS": "充",
+            "順位": 1
+          },
+          {
+            "正字の種類": "類字",
+            "簡体字等の文字コード等": "f161",
+            "簡体字等のUCS": null,
+            "正字の文字コード等": "5145",
+            "正字のUCS": "充",
+            "順位": 2
+          }
+        ],
+        "tghb": [
+          {
+            "序号": "0525",
+            "规范字": "充",
+            "级": 1,
+            "笔画": 6,
+            "註解": null,
+            "异体字": []
+          }
+        ],
+        "mji": [
+          {
+            "文字": "充󠄂",
+            "MJ文字図形名": "MJ007215",
+            "対応するUCS": "U+5145",
+            "実装したUCS": null,
+            "実装したMoji_JohoコレクションIVS": "5145_E0102",
+            "実装したSVS": null,
+            "戸籍統一文字番号": "015560",
+            "住基ネット統一文字コード": null,
+            "入管正字コード": null,
+            "入管外字コード": null,
+            "漢字施策": null,
+            "対応する互換漢字": null,
+            "X0213": "1-29-28",
+            "X0213_包摂連番": "U105",
+            "X0213_包摂区分": 2,
+            "X0212": null,
+            "MJ文字図形バージョン": "1",
+            "登記統一文字番号": "00015560",
+            "部首・内画数": [
+              [
+                10,
+                3,
+                "儿"
+              ]
+            ],
+            "総画数": 5,
+            "読み": [
+              "ジュウ",
+              "シュウ",
+              "シュ",
+              "あてる"
+            ],
+            "大漢和": 1344,
+            "日本語漢字辞典": 653,
+            "新大字典": 843,
+            "大字源": 512,
+            "大漢語林": 663,
+            "更新履歴": [],
+            "備考": null,
+            "mjsm_note": null,
+            "mjsm": [
+              [
+                "JIS包摂規準UCS統合規則",
+                "U+5145",
+                "充"
+              ],
+              [
+                "戸籍統一文字情報_親字正字",
+                "U+5145",
+                "充"
+              ]
+            ]
+          },
+          {
+            "文字": "充",
+            "MJ文字図形名": "MJ007216",
+            "対応するUCS": "U+5145",
+            "実装したUCS": "U+5145",
+            "実装したMoji_JohoコレクションIVS": "5145_E0101",
+            "実装したSVS": null,
+            "戸籍統一文字番号": "015620",
+            "住基ネット統一文字コード": "J+5145",
+            "入管正字コード": "0x5145",
+            "入管外字コード": null,
+            "漢字施策": "常用漢字",
+            "対応する互換漢字": null,
+            "X0213": "1-29-28",
+            "X0213_包摂連番": null,
+            "X0213_包摂区分": 0,
+            "X0212": null,
+            "MJ文字図形バージョン": "1",
+            "登記統一文字番号": "00015620",
+            "部首・内画数": [
+              [
+                10,
+                4,
+                "儿"
+              ]
+            ],
+            "総画数": 6,
+            "読み": [
+              "ジュウ",
+              "シュウ",
+              "あてる",
+              "みたす",
+              "みちる"
+            ],
+            "大漢和": 1345,
+            "日本語漢字辞典": 652,
+            "新大字典": 848,
+            "大字源": 515,
+            "大漢語林": 666,
+            "更新履歴": [],
+            "備考": null,
+            "mjsm_note": null,
+            "mjsm": [
+              [
+                "JIS包摂規準UCS統合規則",
+                "U+5145",
+                "充"
+              ]
+            ]
+          }
+        ],
+        "mjsm_inverse": [
+          {
+            "表": "JIS包摂規準UCS統合規則",
+            "文字": "充󠄂",
+            "MJ文字図形名": "MJ007215",
+            "対応するUCS": "U+5145",
+            "実装したUCS": null,
+            "実装したMoji_JohoコレクションIVS": "5145_E0102",
+            "実装したSVS": null
+          },
+          {
+            "表": "JIS包摂規準UCS統合規則",
+            "文字": "充",
+            "MJ文字図形名": "MJ007216",
+            "対応するUCS": "U+5145",
+            "実装したUCS": "U+5145",
+            "実装したMoji_JohoコレクションIVS": "5145_E0101",
+            "実装したSVS": null
+          },
+          {
+            "表": "戸籍統一文字情報_親字正字",
+            "文字": "充󠄂",
+            "MJ文字図形名": "MJ007215",
+            "対応するUCS": "U+5145",
+            "実装したUCS": null,
+            "実装したMoji_JohoコレクションIVS": "5145_E0102",
+            "実装したSVS": null
+          },
+          {
+            "表": "戸籍統一文字情報_親字正字",
+            "文字": "𠑽",
+            "MJ文字図形名": "MJ030909",
+            "対応するUCS": "U+2047D",
+            "実装したUCS": "U+2047D",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "戸籍統一文字情報_親字正字",
+            "文字": "𠑽",
+            "MJ文字図形名": "MJ030909",
+            "対応するUCS": "U+2047D",
+            "実装したUCS": "U+2047D",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "戸籍統一文字情報_親字正字",
+            "文字": "𬽇",
+            "MJ文字図形名": "MJ056889",
+            "対応するUCS": "U+2CF47",
+            "実装したUCS": "U+2CF47",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "戸籍統一文字情報_親字正字",
+            "文字": "𭀚",
+            "MJ文字図形名": "MJ056963",
+            "対応するUCS": "U+2D01A",
+            "実装したUCS": "U+2D01A",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "民一2842号通達別表_誤字俗字正字一覧表_無印",
+            "文字": "𠑽",
+            "MJ文字図形名": "MJ030909",
+            "対応するUCS": "U+2047D",
+            "実装したUCS": "U+2047D",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "民一2842号通達別表_誤字俗字正字一覧表_無印",
+            "文字": "𠘺",
+            "MJ文字図形名": "MJ031168",
+            "対応するUCS": "U+2063A",
+            "実装したUCS": "U+2063A",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "法務省告示582号別表第四_二",
+            "文字": "㧤",
+            "MJ文字図形名": "MJ001362",
+            "対応するUCS": "U+39E4",
+            "実装したUCS": "U+39E4",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "辞書類等による関連字",
+            "文字": "𠑽",
+            "MJ文字図形名": "MJ030909",
+            "対応するUCS": "U+2047D",
+            "実装したUCS": "U+2047D",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "辞書類等による関連字",
+            "文字": "𬽇",
+            "MJ文字図形名": "MJ056889",
+            "対応するUCS": "U+2CF47",
+            "実装したUCS": "U+2CF47",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          },
+          {
+            "表": "辞書類等による関連字",
+            "文字": "𭀚",
+            "MJ文字図形名": "MJ056963",
+            "対応するUCS": "U+2D01A",
+            "実装したUCS": "U+2D01A",
+            "実装したMoji_JohoコレクションIVS": null,
+            "実装したSVS": null
+          }
+        ],
+        "mjih": [],
+        "kdpv": {
+          "cjkvi/non-cognate": [
+            "𠘺"
+          ],
+          "cjkvi/variant": [
+            "𠘺"
+          ],
+          "hydzd/variant": [
+            "𠑽"
+          ],
+          "koseki/variant": [
+            "𠑽"
+          ],
+          "twedu/variant": [
+            "𠑽",
+            "𠘺"
+          ]
+        },
+        "kdpv_comment": [
+          {
+            "subject": "充",
+            "rel": "hydzd/variant",
+            "object": "𠑽",
+            "comment": "[充=⿱亠厶]"
+          }
+        ],
+        "unihan_rs": {
+          "kRSAdobe_Japan1_6": [
+            [
+              10,
+              4,
+              "儿",
+              2,
+              "CID+2374"
+            ]
+          ],
+          "kRSUnicode": [
+            [
+              10,
+              4,
+              "儿",
+              "10"
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

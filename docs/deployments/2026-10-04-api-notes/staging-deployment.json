@@ -1,0 +1,176 @@
+{
+  "result": {
+    "deployments": [
+      {
+        "id": "f0d29585-c52b-4071-8b9a-615506321208",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "2da1cf6a-2177-4366-b3ee-3f16f56661bd",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-10-04T13:40:02.292461Z"
+      },
+      {
+        "id": "158e3cb2-aa22-44f0-a698-34dad67960b0",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "61fc7dbe-d001-4292-8a52-d2ad557a62a9",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-22T01:22:01.771084Z"
+      },
+      {
+        "id": "0b9fa026-6ab7-496c-b987-50b0b4246853",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "590f8ca8-d405-4659-abc6-e0c273b62e5b",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-16T22:09:08.098063Z"
+      },
+      {
+        "id": "15e820cf-c31e-4dbb-a5f6-25d2287bd2db",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "3ad098ca-c86c-44e2-ae9d-66b9237cad8c",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-16T21:41:20.600425Z"
+      },
+      {
+        "id": "2225c0a6-79e3-413e-9df1-c42990217a95",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "ca874934-b9ac-40b6-acbc-426406f5cc26",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-09-16T19:20:25.936112Z"
+      },
+      {
+        "id": "142f1c92-5269-4d3a-8826-a7a02eb772ce",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "34df2858-b41a-4eda-84f6-61830ae288e5",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-08-15T13:22:19.83288Z"
+      },
+      {
+        "id": "74dc5904-0013-4b12-a006-c21fd93c5b21",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "a4d76c16-2eee-46da-8d32-d490c569859c",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-08-15T13:20:23.874699Z"
+      },
+      {
+        "id": "685f2b78-19c2-4571-9c91-7b0eaaf3db01",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "ebd5635c-f3c0-4191-8d5f-7b22cbcb4f23",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-08-15T13:15:04.211969Z"
+      },
+      {
+        "id": "0aa6742a-2460-4f79-a311-dbe3ff15a411",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "79d26ef6-b431-4e63-b29a-61abd135c41f",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-08-15T13:12:36.344419Z"
+      },
+      {
+        "id": "296fd988-19f0-48cb-9562-07abddbcbee6",
+        "source": "wrangler",
+        "strategy": "percentage",
+        "author_email": "mandel59@gmail.com",
+        "annotations": {
+          "workers/triggered_by": "deployment"
+        },
+        "versions": [
+          {
+            "version_id": "8e16ff3e-d4db-46c5-b046-2d3057c8b0be",
+            "percentage": 100
+          }
+        ],
+        "created_on": "2026-08-15T13:10:05.864676Z"
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": [],
+  "result_info": {
+    "page": 1,
+    "per_page": 10,
+    "count": 10,
+    "total_count": 11,
+    "total_pages": 2
+  }
+}

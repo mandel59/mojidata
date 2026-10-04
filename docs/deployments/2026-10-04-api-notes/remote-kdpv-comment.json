@@ -1,0 +1,32 @@
+{
+  "result": [
+    {
+      "results": [
+        {
+          "value": "[{\"subject\":\"充\",\"rel\":\"hydzd/variant\",\"object\":\"𠑽\",\"comment\":\"[充=⿱亠厶]\"}]"
+        }
+      ],
+      "success": true,
+      "meta": {
+        "served_by": "v3-prod",
+        "served_by_region": "APAC",
+        "served_by_colo": "KIX",
+        "served_by_primary": true,
+        "timings": {
+          "sql_duration_ms": 1.353
+        },
+        "duration": 1.353,
+        "changes": 0,
+        "last_row_id": 0,
+        "changed_db": false,
+        "size_after": 297078784,
+        "rows_read": 10,
+        "rows_written": 0,
+        "total_attempts": 1
+      }
+    }
+  ],
+  "errors": [],
+  "messages": [],
+  "success": true
+}

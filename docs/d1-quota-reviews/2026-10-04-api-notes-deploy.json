@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "decision": "bounded",
+  "scope": "Code-only deployment of merged PR #75 to the existing staging and default public Worker, retaining both D1 binding IDs and performing no migrations/imports. Covers selected fields and complete mojidata responses; search, relations, recursion and IDS operations are unchanged and are not remotely exercised.",
+  "beforeAfter": "Existing fingerprinted Sept22 artifact is reused. Local D1-style materialization shows zero fullscan steps for every planned selected/full-response case. Full response JSON VM steps are 7924 for 鐥 and 9364 for 充; these are scaling evidence, not billed reads. Added KDPV candidates are bounded by 2105 on this artifact and MJ note lookups by 16. Planned remote cases use indexed endpoints and primary-key lookups. Allocate 5000 reads for one sqlite_schema metadata query, 1000 each for two direct selected SQL checks, 1000 each for eight selected HTTP checks, 10000 each for four full responses, leaving 45000 for one rollback/retry cycle. Actual SQL metadata is recorded and checked against per-case caps before rollout.",
+  "accountBudget": "Workers account and existing Worker usage_model are standard. Billing-subscription API is denied to the existing OAuth credential, so use the smaller verified published Free limits with no paid-plan headroom. Fresh account-wide GraphQL usage is in budget-before-schema.json and is refreshed before each Worker deployment. At observation, 1385268 reads and 0 writes have been used. Remaining-day baseline projected from today is about 1.06 million reads. Reserve 2.5 million reads (more than twice this baseline plus lag/growth margin) and 10000 writes for normal account traffic; operation budget is 100000 reads and zero writes including retry/rollback. Recheck remaining-day projection against the reserve; abort if it outgrows the reserve or arithmetic fails.",
+  "validation": "47 API conformance/runtime tests, SQL executor tests and affected TypeScript checks passed. Build and Wrangler 4.136.1 dry run passed on merged main 977b05bf32ffb0b73e7f3d5b08476df066620fb5. Local artifact hash and indexed query plans are retained. Bounded remote schema and two direct SQL checks precede deployment. Six HTTP checks per target cover MJ note, KDPV forward/reverse direction, no result and two full responses. Completed: remote schema SELECT read 548 rows, MJ note lookup read 1, KDPV comment lookup read 10; all wrote zero. All twelve HTTP checks passed, and management snapshots confirm both deployed versions at 100%. Analytics lag is documented; no retries or rollback were needed.",
+  "rolloutAndStop": "Refresh account usage, check existing schema/PK/endpoint indexes within the assigned metadata cap, deploy staging and run six fixed checks, refresh usage, deploy default public Worker and run the same checks. Stop on unknown cost, index/binding mismatch, any DB writes, query cap breach, budget/projection failure or incorrect outputs. No remote scan/import. Roll back staging to 61fc7dbe-d001-4292-8a52-d2ad557a62a9 or public to 518b1f73-35ca-4dbf-8f9b-cf6b4e7be9ea with unchanged bindings.",
+  "evidence": [
+    "docs/deployments/2026-10-04-api-notes/budget-before-schema.json",
+    "docs/deployments/2026-10-04-api-notes/local-cost.json",
+    "docs/benchmarks/2026-10-04-kdpv-comment.md",
+    "docs/benchmarks/2026-10-04-mjsm-note.md",
+    "docs/deployments/2026-10-04-api-notes/README.md",
+    "docs/deployments/2026-10-04-api-notes/remote-schema.json",
+    "docs/deployments/2026-10-04-api-notes/remote-mjsm-note.json",
+    "docs/deployments/2026-10-04-api-notes/remote-kdpv-comment.json",
+    "docs/deployments/2026-10-04-api-notes/budget-before-staging.json",
+    "docs/deployments/2026-10-04-api-notes/budget-before-public.json",
+    "docs/deployments/2026-10-04-api-notes/public-verification.json"
+  ],
+  "budget": {
+    "reads": {
+      "limit": 5000000,
+      "existing": 1385268,
+      "trafficReserve": 2500000,
+      "operationUpperBound": 100000
+    },
+    "writes": {
+      "limit": 100000,
+      "existing": 0,
+      "trafficReserve": 10000,
+      "operationUpperBound": 0
+    }
+  },
+  "files": {
+    "packages/mojidata-api-core/lib/query-expressions.ts": "7ecd74d2e7bbd85792a95ab553eb5c9dec492e7407d34ab6ebeda76e63d1a206",
+    "packages/mojidata-api-d1-worker/wrangler.jsonc": "45d4848d1bf4ef7fe0297284dbc689ed472c80df0785c49ca168ccfc1d4bdce7",
+    "packages/mojidata-api-d1-worker/src/index.ts": "14a4e9002e0e1d65b02c0f2115b2a97e3c5aa90e7d60fa5b21034aec2a6fad47",
+    "docs/deployments/2026-10-04-api-notes/verify-api-notes.mjs": "c29d664396016c51d158cd6de64d3284c44f7bcb6843fdbd85a9f023c768947d"
+  }
+}
