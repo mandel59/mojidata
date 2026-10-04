@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Complete the in-memory SQLite WASM conformance fixture for the reference-note and KDPV-comment cases added in PR #75, which blocked npm release after PR #76. Only a test file and an empty infrastructure Changeset change. Package exports, distributed files, runtime source, SQL expressions, databases, indexes, bindings and dependencies remain identical to main.",
+  "beforeAfter": "The fixture previously had only ids/ivs and search tables; five shared conformance cases failed because mji and kdpv were absent. Add four glyph rows, two reference-note rows and one directional KDPV edge with its reverse-relation label, plus the small empty auxiliary schemas needed by the existing mji query. Subject/object indexes and note primary key represent the production lookup paths. Actual production queries and their reviewed data-dependent candidate bounds are unchanged; this is not a live DB migration or import.",
+  "accountBudget": "All fixture tables and inserts exist exclusively in local :memory: SQLite WASM databases initialized by node:test. CI builds, tests, packing and npm publishing use GitHub/local infrastructure and perform zero D1 account reads/writes, including retries. No live Cloudflare operation is introduced or requested by this fix, so live account usage is not required. The existing feature/deployment reviews continue to cover active queries; client deployments still require applicable operational budgeting.",
+  "validation": "The release attempt at c645237f failed with no such table: mji/kdpv in sqlite-wasm API conformance. Existing Node API and SQL.js conformance tests passed in the same attempt. With the completed fixture, all 19 WASM tests pass locally, including five previously failing shared cases for a note without shrink targets/readings, null notes, multiple glyph associations, forward/reverse KDPV comments and an empty comment array. Run the same WASM test file under CI Node 24.21.0 and the unchanged PR-wide fingerprint gate before merge. Completed: all 19 WASM tests also pass under CI Node 24.21.0 (about 1.45 seconds), and the fixture quota review passes with current fingerprints.",
+  "rolloutAndStop": "Merge the test-fixture correction with an explicit empty Changeset and no package-version bump. Consume the validation-only Changeset through the existing versioning workflow before retrying the two pending npm versions. Required Validate and main Release full build/test/pack gates remain enabled. Stop if tests fail, review fingerprints become stale, runtime/source/dependency changes appear or any D1 operation is proposed. No Worker/DB rollback is necessary because this fix cannot change production behavior.",
+  "evidence": [
+    "packages/mojidata-api-sqlite-wasm/tests/sqlite-wasm-executor.test.ts",
+    "docs/d1-quota-reviews/2026-10-05-api-notes-release.json",
+    "docs/benchmarks/2026-10-04-kdpv-comment.md",
+    "docs/benchmarks/2026-10-04-mjsm-note.md",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    "packages/mojidata-api-sqlite-wasm/tests/sqlite-wasm-executor.test.ts": "fb24e328c4e33a895982d1a16b580666d38eb428671a504613ee683b74d51807"
+  }
+}

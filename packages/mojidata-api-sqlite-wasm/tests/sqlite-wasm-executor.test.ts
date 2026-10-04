@@ -101,6 +101,42 @@ runMojidataApiConformanceTests("sqlite-wasm API conformance", async () => {
   mojidataDb.exec("CREATE TABLE ivs (IVS TEXT NOT NULL, collection TEXT NOT NULL, code TEXT NOT NULL)")
   mojidataDb.exec("INSERT INTO ivs (IVS, collection, code) VALUES ('一󠄀', 'ExampleCollection', 'CID+1200')")
 
+  mojidataDb.exec(`
+    CREATE TABLE mji (
+      MJ文字図形名 TEXT PRIMARY KEY, 対応するUCS TEXT, 実装したUCS TEXT,
+      実装したMoji_JohoコレクションIVS TEXT, 実装したSVS TEXT,
+      戸籍統一文字番号 TEXT, 住基ネット統一文字コード TEXT,
+      入管正字コード TEXT, 入管外字コード TEXT, 漢字施策 TEXT,
+      対応する互換漢字 TEXT, X0213 TEXT, X0213_包摂連番 TEXT,
+      X0213_包摂区分 INTEGER, X0212 TEXT, MJ文字図形バージョン TEXT,
+      登記統一文字番号 TEXT, 総画数 INTEGER, 大漢和 INTEGER,
+      日本語漢字辞典 INTEGER, 新大字典 INTEGER, 大字源 INTEGER,
+      大漢語林 INTEGER, 備考 TEXT
+    );
+    CREATE INDEX mji_対応するUCS ON mji (対応するUCS);
+    CREATE INDEX mji_実装したUCS ON mji (実装したUCS);
+    CREATE TABLE mji_rsindex (MJ文字図形名 TEXT, 部首 INTEGER, 内画数 INTEGER);
+    CREATE TABLE radicals (部首 INTEGER, 部首漢字 TEXT);
+    CREATE TABLE mji_reading (MJ文字図形名 TEXT, 読み TEXT);
+    CREATE TABLE mji_changelog (MJ文字図形名 TEXT, 更新履歴 TEXT);
+    CREATE TABLE mjsm (
+      MJ文字図形名 TEXT, 縮退UCS TEXT, 表 TEXT, 順位 INTEGER, ホップ数 INTEGER
+    );
+    CREATE TABLE mjsm_note (MJ文字図形名 TEXT PRIMARY KEY, 参考情報 TEXT);
+    INSERT INTO mji (MJ文字図形名, 対応するUCS, 実装したUCS) VALUES
+      ('MJ068046', '鐥', '鐥'), ('MJ006294', '一', '一'),
+      ('MJ058866', '邉', '邉'), ('MJ026190', '邉', '邉');
+    INSERT INTO mjsm_note (MJ文字図形名, 参考情報) VALUES
+      ('MJ068046', '国字:みずかね'), ('MJ058866', '地名外字');
+
+    CREATE TABLE kdpv (subject TEXT, rel TEXT, object TEXT, comment TEXT);
+    CREATE INDEX kdpv_subject ON kdpv (subject);
+    CREATE INDEX kdpv_object ON kdpv (object);
+    CREATE TABLE kdpv_rels (rel TEXT PRIMARY KEY, rev TEXT);
+    INSERT INTO kdpv VALUES ('充', 'hydzd/variant', '𠑽', '[充=⿱亠厶]');
+    INSERT INTO kdpv_rels VALUES ('hydzd/variant', 'hydzd/proper');
+  `)
+
   idsfindDb.exec("CREATE TABLE idsfind (UCS TEXT NOT NULL, IDS_tokens TEXT NOT NULL)")
   idsfindDb.exec("CREATE VIRTUAL TABLE idsfind_fts USING fts5(IDS_tokens)")
   idsfindDb.exec("INSERT INTO idsfind (rowid, UCS, IDS_tokens) VALUES (1, '信', '⿰ 亻 言')")
