@@ -29,7 +29,7 @@ Unihan.zip 4c93ea9c1f636451729a840978f1667a53886af37ba854fdcce109721c63d43e http
 IVD_Sequences.txt e6168c2ed8e0834d3eccb8a6d43aad004c97c8216e237101f1c2e8347be2b523 https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs <https://babelstone.co.uk/CJK/IDS.TXT>
-## Not copyrighted
+## License: LicenseRef-BabelStone-IDS
 IDS.TXT cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1 https://raw.githubusercontent.com/mandel59/babelstone-ids/6d0989b007bdfa566a864419448b125799ef5f9f/IDS.TXT
 
 ## Mojidata IDS <https://github.com/mandel59/mojidata-ids>
@@ -38,15 +38,15 @@ ids-unicode-17.0.txt 73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3
 ids-unicode-18.0.txt dc37491ccd43c99db08d7334c33bfd4673e3e3212f644f9495469ad57740e7e0 https://raw.githubusercontent.com/mandel59/mojidata-ids/fa6eb609233e09386629b1f44b7b3f5c7fec5b5e/ids/unicode-18.0.txt
 
 ## 同音の漢字による書きかえ <https://github.com/mandel59/doonnokanjiniyorukakikae>
-## Public domain source; processed data: CC0-1.0
+## License: CC0-1.0 (processed data; original source public domain)
 doonnokanjiniyorukakikae1956.txt 9f7db887730480c0371ecbe71c06d34c5621daf6b7a3468c125d3232adc1289b https://raw.githubusercontent.com/mandel59/doonnokanjiniyorukakikae/83802798f46947e2a26967a9a27df4746ccd0050/doonnokanjiniyorukakikae1956.txt
 
 ## 常用漢字表 <https://github.com/mandel59/joyokanjihyo>
-## Public domain
+## License: LicenseRef-Japan-Government-Notice
 ## data is fetched from @mandel59/joyokanjihyo using npm
 
 ## 入国管理局正字 <https://github.com/mandel59/nyukanseiji>
-## Public domain
+## License: LicenseRef-Japan-Government-Notice
 ## data is fetched from @mandel59/nyukanseiji using npm
 
 ## Kanji Database Project <http://kanji-database.sourceforge.net/>
@@ -76,6 +76,6 @@ cjkvi-variants_ucs-scs.txt 23ac40dd12b5d70454197030d01ce017839fa8c99f9e68ddf04ba
 cjkvi-variants_x0212-x0213-variants.txt b1294779e40130780e8a307f2b75d58f7b1185246aaf0c2c3937dfc3d426593a https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/x0212-x0213-variants.txt
 
 ## 通用规范汉字表 <https://github.com/mandel59/tongyongguifanhanzibiao>
-## Public domain source via Wikisource; processed data: CC0-1.0
+## License: CC0-1.0 (processed data; public domain source via Wikisource)
 tghb.txt c69b848cbe46363a82d9432c05dc4cf6aac991494aa00b88d27b05dfaafa7e0a https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/tghb.txt
 tghb_variants.txt 7e7ed4d51f71fa0afd4849d72b79cc5d13828c15a709b75f28914d3a7863ada0 https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/variants.txt

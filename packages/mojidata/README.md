@@ -49,3 +49,10 @@ for the bundled resources and the source URLs of them.
 Each of these resources is available under its own license.
 
 See [LICENSE.md](LICENSE.md) for details.
+
+[data-licenses.json](data-licenses.json) records the data inputs, pinned source
+versions/checksums, licensing notices, transformations, and affected table/view
+patterns. [data-notices.json](data-notices.json) is the generated manifest of
+notices for this distributed database. `LicenseRef-*` values use SPDX's custom
+reference syntax; their definitions are included in `hasExtractedLicensingInfos`.
+The source code's MIT license is separate from the conditions on bundled data.

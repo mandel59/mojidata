@@ -1,0 +1,23 @@
+Mojidata IDS
+
+Prepared by: Ryusei Yamaguchi
+Data license: CC0-1.0
+Full terms: cc0.txt
+Official terms: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+The README at both pinned source revisions states that the data under delta/
+and ids/ are prepared by Ryusei Yamaguchi and licensed under CC0. MIT-0 applies
+to the code under scripts/, not the IDS files imported by Mojidata.
+
+Imported sources:
+- ids/unicode-17.0.txt at d282fc42965b363d37cef23c71d442fcaa29243d
+- ids/unicode-18.0.txt at fa6eb609233e09386629b1f44b7b3f5c7fec5b5e
+
+License declarations:
+https://github.com/mandel59/mojidata-ids/blob/d282fc42965b363d37cef23c71d442fcaa29243d/README.md
+https://github.com/mandel59/mojidata-ids/blob/fa6eb609233e09386629b1f44b7b3f5c7fec5b5e/README.md
+
+Both READMEs have identical contents, preserved in sources/mojidata-ids-README.md.
+Mojidata parses these IDS sequences and comments into ids and ids_comment,
+alongside the separately documented BabelStone IDS data.
+See download.txt for source URLs and file SHA-256 checksums.

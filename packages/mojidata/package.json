@@ -13,6 +13,8 @@
     "CHANGELOG.md",
     "LICENSE.md",
     "download.txt",
+    "data-licenses.json",
+    "data-notices.json",
     "dist/*",
     "licenses/**"
   ],

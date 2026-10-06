@@ -1,0 +1,23 @@
+BabelStone Ideographic Description Sequences (IDS)
+
+Maintained by: Andrew West (魏安)
+File Date: 2025-06-27; Unicode Version: 16.0
+Original source: https://babelstone.co.uk/CJK/IDS.TXT
+Mirror revision: 6d0989b007bdfa566a864419448b125799ef5f9f
+SHA-256: cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1
+
+The following statement is copied from documentation item 2 in the pinned
+IDS.TXT used by Mojidata. It is the upstream use/waiver statement, not CC0.
+
+# 2. Under U.S. copyright law, data (i.e. a collection of facts) is not eligible to copyright protection (see
+#	<https://sco.library.emory.edu/research-data-management/publishing/copyright-data.html>), and as IDS descriptions
+#	for CJK ideographs are facts not original creative compositions, IDS sequences in themselves are not eligible for
+#	copyright protection (that is to say, you could no more copyright 彼 = ⿰彳皮 than you could copyright 1 + 1 = 2).
+#	Therefore, anyone is free to make use of the IDS data provided in this file for personal or commercial purposes
+#	without asking permission or providing attribution. I furthermore waive any copyright claims to the presentation
+#	format of the IDS data used in this file, so anyone is free to fork the file, or use it as the basis for a new IDS
+#	data set.
+#
+
+Mojidata parses the source into ids and ids_comment tables and adds IDS
+from the separately licensed Mojidata IDS inputs.

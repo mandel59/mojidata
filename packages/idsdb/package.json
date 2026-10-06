@@ -16,7 +16,9 @@
     "idsdecompose.db",
     "CHANGELOG.md",
     "README.md",
-    "LICENSE.md"
+    "LICENSE.md",
+    "data-notices.json",
+    "licenses/**"
   ],
   "scripts": {
     "prepare": "bash scripts/prepare",
@@ -25,7 +27,7 @@
     "test:ci": "node --import tsx --test ./tests/*.test.ts"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "MIT",
+  "license": "MIT AND Unicode-3.0 AND CC0-1.0",
   "devDependencies": {
     "@mandel59/idsdb-utils": "^1.8.0",
     "@mandel59/mojidata": "^1.9.0",

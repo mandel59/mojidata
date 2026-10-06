@@ -1,0 +1,794 @@
+{
+  "version": 1,
+  "noticeFiles": {
+    "licenses/cmap-resources.txt": {
+      "sha256": "feb8b068a417681821823ef2e8995072aa111121fa11f8664038f78717f4497c"
+    },
+    "licenses/mj.txt": {
+      "sha256": "6e49ab0b9509e4f9ed335e0551c96d4495682a0e22225f3b3916696da6a81e67"
+    },
+    "licenses/sources/mj-map-Readme.txt": {
+      "sha256": "c986a10bc099ba9e2d36996578bf7478ef1b8628d0be6c190d88d0ac4cbfaf9a"
+    },
+    "licenses/unicode.txt": {
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    },
+    "licenses/babelstone-ids.txt": {
+      "sha256": "edecdd27f655cfd699274a359a3d2300b980b383f35a057fc26572f276331a3a"
+    },
+    "licenses/mojidata-ids.txt": {
+      "sha256": "08062f02f95e3a7438aabfd5217bd734aae90c4f56ba6365a8c5d03c581d6c07"
+    },
+    "licenses/cc0.txt": {
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+    },
+    "licenses/sources/mojidata-ids-README.md": {
+      "sha256": "afa179113426a0f4e6bef70f0bbe0f15f6b96d36046f0ef5768c364a1d8948a8"
+    },
+    "licenses/doon.txt": {
+      "sha256": "7ac14b43fe0af6eee8e0f09915bbfa0330f322af38dc1a67c92f2640770d9280"
+    },
+    "licenses/sources/doon-README.md": {
+      "sha256": "2f0e6d9d58cfcbe770f3e0c485cc51ba858d9f4da47d1826f222a42854031a0c"
+    },
+    "licenses/japanese-government-data.txt": {
+      "sha256": "9d9880d854d828a4afc756f6b6d0f198601a0c4e6d24177db3989e55d0c9ed72"
+    },
+    "licenses/sources/joyo-README.md": {
+      "sha256": "40958ad1bbdea862c95a46a8ef371205a365cf76cb6fffefcfc82de5ff7420b0"
+    },
+    "licenses/sources/nyukan-README.md": {
+      "sha256": "a9c8a34c917ebb921c7a9fe1384ba12b51b81a971aa186e43f3b03b8f7c356ee"
+    },
+    "licenses/cjkvi-variants.txt": {
+      "sha256": "bc2a52b44372210bd94d1dc455e12d18e45b6671ef847b15a701b2be4f4ca135"
+    },
+    "licenses/tghb.txt": {
+      "sha256": "bdd712f8b0bf3c5d9a821f6a2964b8020399d7b46f14aeb8aa83b401d3a88fb2"
+    },
+    "licenses/sources/tghb-README.md": {
+      "sha256": "d302bd48eed2a32ab114052557667ec11b0e10d8e4f24a54ff4e651741d7ab10"
+    },
+    "licenses/unicode-tr38.txt": {
+      "sha256": "5c1ae3287f6e9ceb1f6c9edaebe055881fae2de62ca01ce70de6faae7a8748e1"
+    }
+  },
+  "resources": [
+    {
+      "id": "adobe-cmap",
+      "title": "Adobe-Japan1 CMap Resources",
+      "licenseId": "BSD-3-Clause",
+      "licenseFile": "licenses/cmap-resources.txt",
+      "copyright": "Copyright 1990-2019 Adobe. All rights reserved.",
+      "source": "https://github.com/adobe-type-tools/cmap-resources",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "cid2code.txt",
+          "sha256": "306515b99601832ccb50df199137f53c1358c2f7f5a675ad91036f7e28c0966c",
+          "source": "https://raw.githubusercontent.com/adobe-type-tools/cmap-resources/20190730/Adobe-Japan1-7/cid2code.txt",
+          "version": "20190730"
+        }
+      ],
+      "affectedTables": [
+        "aj1",
+        "aj1_*"
+      ],
+      "changes": "Parse CID mappings into SQLite tables and views.",
+      "noticeFiles": [
+        "licenses/cmap-resources.txt"
+      ]
+    },
+    {
+      "id": "mj-list",
+      "title": "MJ文字情報一覧表",
+      "licenseId": "CC-BY-SA-2.1-JP",
+      "licenseFile": "licenses/mj.txt",
+      "copyright": "Copyright © IPA 独立行政法人情報処理推進機構 Information-technology Promotion Agency, Japan.",
+      "source": "https://moji.or.jp/mojikiban/mjlist/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "mji.00602.xlsx",
+          "sha256": "f79075bf006b66c5e57a6df60503c5a01679cabbcea2f124eb3758593cf6fd3f",
+          "source": "https://moji.or.jp/wp-content/uploads/2024/01/mji.00602.xlsx",
+          "version": "006.02"
+        }
+      ],
+      "affectedTables": [
+        "mji",
+        "mji_reading",
+        "mji_rsindex",
+        "mji_changelog",
+        "mji_duplicated_ivs"
+      ],
+      "changes": "Extract spreadsheet columns, convert UCS/IVS codes to characters, and split multivalued fields.",
+      "noticeFiles": [
+        "licenses/mj.txt"
+      ]
+    },
+    {
+      "id": "mj-map",
+      "title": "MJ縮退マップ",
+      "licenseId": "CC-BY-SA-2.1-JP",
+      "licenseFile": "licenses/mj.txt",
+      "copyright": "Copyright © IPA 独立行政法人情報処理推進機構 Information-technology Promotion Agency, Japan.",
+      "source": "https://moji.or.jp/mojikiban/map/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "MJShrinkMapVer.1.2.0.zip",
+          "sha256": "f109f64aaf357d9d44b8eff39c1c633bc7e5b3f526efc812951732f4ca92014c",
+          "source": "https://moji.or.jp/wp-content/mojikiban/oscdl/MJShrinkMapVer.1.2.0.zip",
+          "version": "1.2.0"
+        }
+      ],
+      "affectedTables": [
+        "mjsm",
+        "mjsm_*"
+      ],
+      "changes": "Extract map JSON into normalized relations and reference notes.",
+      "noticeFiles": [
+        "licenses/mj.txt",
+        "licenses/sources/mj-map-Readme.txt"
+      ]
+    },
+    {
+      "id": "mj-hentaigana",
+      "title": "MJ文字情報一覧表 変体仮名編",
+      "licenseId": "CC-BY-SA-2.1-JP",
+      "licenseFile": "licenses/mj.txt",
+      "copyright": "Copyright © IPA 独立行政法人情報処理推進機構 Information-technology Promotion Agency, Japan.",
+      "source": "https://moji.or.jp/mojikiban/mjlist/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "MJIH00201-xlsx.zip",
+          "sha256": "d4fbeb012d1519a5fd7256084587e7163fe4f89b1a9b789145cbbe1a548b9262",
+          "source": "https://moji.or.jp/wp-content/mojikiban/oscdl/MJIH00201-xlsx.zip",
+          "version": "002.01"
+        }
+      ],
+      "affectedTables": [
+        "mjih",
+        "mjih_phonetic"
+      ],
+      "changes": "Extract spreadsheet fields, normalize codes, and separate phonetic records.",
+      "noticeFiles": [
+        "licenses/mj.txt"
+      ]
+    },
+    {
+      "id": "unicode-ucd",
+      "title": "Unicode Character Database / Unihan",
+      "licenseId": "Unicode-3.0",
+      "licenseFile": "licenses/unicode.txt",
+      "copyright": "Copyright © 1991-2026 Unicode, Inc. All rights reserved.",
+      "source": "https://www.unicode.org/Public/18.0.0/ucd/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "CJKRadicals.txt",
+          "sha256": "689e2e5852699e7115823dc0b6d3e615eb767c7f477b615678f4f989d1f06105",
+          "source": "https://www.unicode.org/Public/18.0.0/ucd/CJKRadicals.txt",
+          "version": "18.0.0"
+        },
+        {
+          "kind": "download",
+          "file": "StandardizedVariants.txt",
+          "sha256": "c7ae634a7e2bb0932258548a1e81df984fbb38e30cecf4269391d6a4f94581ac",
+          "source": "https://www.unicode.org/Public/18.0.0/ucd/StandardizedVariants.txt",
+          "version": "18.0.0"
+        },
+        {
+          "kind": "download",
+          "file": "EquivalentUnifiedIdeograph.txt",
+          "sha256": "c86c80f6a0d1d47c9a5aadfbf1c26f1a732d662d9ccb0ed2d397919ecc47bf72",
+          "source": "https://www.unicode.org/Public/18.0.0/ucd/EquivalentUnifiedIdeograph.txt",
+          "version": "18.0.0"
+        },
+        {
+          "kind": "download",
+          "file": "USourceData.txt",
+          "sha256": "09bd813866c5bd11d1381faac2685e7a648b38c3bf6f0e38d6789fb7ae8302cb",
+          "source": "https://www.unicode.org/Public/18.0.0/ucd/USourceData.txt",
+          "version": "18.0.0"
+        },
+        {
+          "kind": "download",
+          "file": "Unihan.zip",
+          "sha256": "4c93ea9c1f636451729a840978f1667a53886af37ba854fdcce109721c63d43e",
+          "source": "https://www.unicode.org/Public/18.0.0/ucd/Unihan.zip",
+          "version": "18.0.0"
+        }
+      ],
+      "affectedTables": [
+        "radicals",
+        "svs_cjkci",
+        "radeqv",
+        "usource",
+        "usource_source",
+        "unihan*"
+      ],
+      "changes": "Extract selected Unicode data into SQLite tables, derived relations, split values, and reverse lookup indexes.",
+      "noticeFiles": [
+        "licenses/unicode.txt"
+      ]
+    },
+    {
+      "id": "unicode-ivd",
+      "title": "Ideographic Variation Database",
+      "licenseId": "Unicode-3.0",
+      "licenseFile": "licenses/unicode.txt",
+      "copyright": "Copyright © 1991-2026 Unicode, Inc. All rights reserved.",
+      "source": "https://www.unicode.org/ivd/data/2022-09-13/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "IVD_Sequences.txt",
+          "sha256": "e6168c2ed8e0834d3eccb8a6d43aad004c97c8216e237101f1c2e8347be2b523",
+          "source": "https://www.unicode.org/ivd/data/2022-09-13/IVD_Sequences.txt",
+          "version": "2022-09-13"
+        }
+      ],
+      "affectedTables": [
+        "ivs",
+        "ivs_*"
+      ],
+      "changes": "Partition IVS sequences by collection and expose a combined view.",
+      "noticeFiles": [
+        "licenses/unicode.txt"
+      ]
+    },
+    {
+      "id": "babelstone-ids",
+      "title": "BabelStone Ideographic Description Sequences",
+      "licenseId": "LicenseRef-BabelStone-IDS",
+      "licenseFile": "licenses/babelstone-ids.txt",
+      "copyright": "Maintained by Andrew West; upstream permits use without attribution and waives presentation-format copyright claims.",
+      "source": "https://babelstone.co.uk/CJK/IDS.TXT",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "IDS.TXT",
+          "sha256": "cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1",
+          "source": "https://raw.githubusercontent.com/mandel59/babelstone-ids/6d0989b007bdfa566a864419448b125799ef5f9f/IDS.TXT",
+          "version": "6d0989b007bdfa566a864419448b125799ef5f9f"
+        }
+      ],
+      "affectedTables": [
+        "ids",
+        "ids_comment"
+      ],
+      "changes": "Parse IDS sequences and comments; merge with separately licensed Mojidata IDS updates.",
+      "noticeFiles": [
+        "licenses/babelstone-ids.txt"
+      ]
+    },
+    {
+      "id": "mojidata-ids",
+      "title": "Mojidata IDS",
+      "licenseId": "CC0-1.0",
+      "licenseFile": "licenses/mojidata-ids.txt",
+      "copyright": "Prepared by Ryusei Yamaguchi; data rights dedicated under CC0.",
+      "source": "https://github.com/mandel59/mojidata-ids",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "ids-unicode-17.0.txt",
+          "sha256": "73d90600a4956f98e7196f9becd847404d0c30488e4c153b6b251144dc3bd9d8",
+          "source": "https://raw.githubusercontent.com/mandel59/mojidata-ids/d282fc42965b363d37cef23c71d442fcaa29243d/ids/unicode-17.0.txt",
+          "version": "d282fc42965b363d37cef23c71d442fcaa29243d"
+        },
+        {
+          "kind": "download",
+          "file": "ids-unicode-18.0.txt",
+          "sha256": "dc37491ccd43c99db08d7334c33bfd4673e3e3212f644f9495469ad57740e7e0",
+          "source": "https://raw.githubusercontent.com/mandel59/mojidata-ids/fa6eb609233e09386629b1f44b7b3f5c7fec5b5e/ids/unicode-18.0.txt",
+          "version": "fa6eb609233e09386629b1f44b7b3f5c7fec5b5e"
+        }
+      ],
+      "affectedTables": [
+        "ids",
+        "ids_comment"
+      ],
+      "changes": "Merge pinned IDS sequences and comments into the BabelStone-derived tables.",
+      "noticeFiles": [
+        "licenses/mojidata-ids.txt",
+        "licenses/cc0.txt",
+        "licenses/sources/mojidata-ids-README.md"
+      ]
+    },
+    {
+      "id": "doon",
+      "title": "同音の漢字による書きかえ",
+      "licenseId": "CC0-1.0",
+      "licenseFile": "licenses/doon.txt",
+      "copyright": "Original 1956 国語審議会 report; upstream dedicates rights arising from prepared data under CC0.",
+      "source": "https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kakuki/03/bukai03/03.html",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "doonnokanjiniyorukakikae1956.txt",
+          "sha256": "9f7db887730480c0371ecbe71c06d34c5621daf6b7a3468c125d3232adc1289b",
+          "source": "https://raw.githubusercontent.com/mandel59/doonnokanjiniyorukakikae/83802798f46947e2a26967a9a27df4746ccd0050/doonnokanjiniyorukakikae1956.txt",
+          "version": "83802798f46947e2a26967a9a27df4746ccd0050"
+        }
+      ],
+      "affectedTables": [
+        "doon"
+      ],
+      "changes": "Import processed Wikisource TSV into SQLite. Original-report and processing provenance are recorded separately.",
+      "noticeFiles": [
+        "licenses/doon.txt",
+        "licenses/cc0.txt",
+        "licenses/sources/doon-README.md"
+      ]
+    },
+    {
+      "id": "joyo",
+      "title": "常用漢字表",
+      "licenseId": "LicenseRef-Japan-Government-Notice",
+      "licenseFile": "licenses/japanese-government-data.txt",
+      "copyright": "Government-notice data: excluded under Japan Copyright Act Article 13, item 2; extraction programs separately MIT-0.",
+      "source": "https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "npm",
+          "name": "@mandel59/joyokanjihyo",
+          "version": "1.2.0",
+          "file": "joyokanjihyo.json",
+          "sha256": "1b66081e04bf010faf08e9ec2e360f5d6b4abbcb3415423ba629ccd542fab7b8",
+          "yarnChecksum": "10/294b255da9372b5c973e7763eeede019b77dea8ca4824e418ab2362d5984eb14dd519ffe08c4a57d991143762f1c56b292430f5bc0b4e7d887576995489d1385",
+          "source": "https://github.com/mandel59/joyokanjihyo"
+        }
+      ],
+      "affectedTables": [
+        "joyo",
+        "joyo_acceptable",
+        "joyo_kangxi"
+      ],
+      "changes": "Normalize extracted government-notice JSON into SQLite; extraction program is not imported.",
+      "noticeFiles": [
+        "licenses/japanese-government-data.txt",
+        "licenses/sources/joyo-README.md"
+      ]
+    },
+    {
+      "id": "nyukan",
+      "title": "入国管理局正字",
+      "licenseId": "LicenseRef-Japan-Government-Notice",
+      "licenseFile": "licenses/japanese-government-data.txt",
+      "copyright": "Government-notice data: excluded under Japan Copyright Act Article 13, item 2; extraction programs separately MIT-0.",
+      "source": "https://www.moj.go.jp/isa/content/930002422.pdf",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "npm",
+          "name": "@mandel59/nyukanseiji",
+          "version": "1.2.0",
+          "file": "nyukanseiji.json",
+          "sha256": "1c9c83dca4aacea98985612904ef68004bf1f1df8e4a2dd2df2052229e8037aa",
+          "yarnChecksum": "10/c9303c1b4942a522dea42abc382588c11c43ef28fbf3f4f7dd0a16d7ed9702deb309ade67cffb9362b9a77473b1b7dd7d0a2c025ff63cac08f29022152aa38f8",
+          "source": "https://github.com/mandel59/nyukanseiji"
+        }
+      ],
+      "affectedTables": [
+        "nyukan",
+        "nyukan_itaiji",
+        "nyukan_ruiji"
+      ],
+      "changes": "Normalize extracted government-notice JSON into SQLite; extraction program is not imported.",
+      "noticeFiles": [
+        "licenses/japanese-government-data.txt",
+        "licenses/sources/nyukan-README.md"
+      ]
+    },
+    {
+      "id": "cjkvi-variants",
+      "title": "CJKVI Variants",
+      "licenseId": "MIT",
+      "licenseFile": "licenses/cjkvi-variants.txt",
+      "copyright": "Copyright (c) 2014 CJKVI Database; jp-old-style.txt organized by Taichi Kawabata.",
+      "source": "https://kanji-database.sourceforge.net/",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_cjkvi-simplified.txt",
+          "sha256": "607bd46ad674031f5bcd3b1ec891391e85d9cb61a187280e8f3531f70bd3a2fb",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/cjkvi-simplified.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_cjkvi-variants.txt",
+          "sha256": "e366fb832c76a7cc05371b08cac0d12569c180b0a44c302fcb651918421581da",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/cjkvi-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_duplicate-chars.txt",
+          "sha256": "82429c5813e2b7ff61579ad99a68dfd2d4c492cdefc71edffa5acd4c0b1b995f",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/duplicate-chars.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_dypytz-variants.txt",
+          "sha256": "8224bf5060532e113d9b8ac172316432eb02778ee992cbcb87c9e2b3c21f0f8f",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/dypytz-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_hydzd-borrowed.txt",
+          "sha256": "d0f96bb6c16e5f4d95ecf1131a89bc05fd507fb042421106277e0953dd9d2629",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hydzd-borrowed.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_hydzd-variants.txt",
+          "sha256": "3bd15737609cdacc5afbefdb1de26e40d27f725879dbb4b3a258cf6b326fcbf0",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hydzd-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_hyogai-variants.txt",
+          "sha256": "1fb13dfcd96ca212096621cdef5bd27f270ebf8f1fc5834425033be248ce6b3e",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/hyogai-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_jinmei-variants.txt",
+          "sha256": "a4dbe76597ca64e6eb2e2b3ec41bab037cb9f443151d02d97a8edfbd9befc6bb",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jinmei-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_jisx0212-variants.txt",
+          "sha256": "e671cc5b17963ed3599e3e8ff151c2f002d275957aa3c9026e618b7430d99983",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jisx0212-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_jisx0213-variants.txt",
+          "sha256": "5803b937c0dedc49bce5a192ab2f1fe3177e8637d94ff2e4e02c62c43d5fc35a",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jisx0213-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_joyo-variants.txt",
+          "sha256": "da0666d333c330c07efa2184cdc596bb0de245f65b775c0c805b2b11e6b13c4b",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/joyo-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_jp-borrowed.txt",
+          "sha256": "3b659ed7fa75366db1977066467dadba83f0aee14154278030f260518707d65d",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jp-borrowed.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_jp-old-style.txt",
+          "sha256": "712a953f28bd11e142ea3b0e8cc686097b46971fb0ce26149ba2109fe4919206",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/jp-old-style.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_koseki-variants.txt",
+          "sha256": "c33703056001b7b3a01ff860695017ef9cdad0407ee68217fffe538ad68ca032",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/koseki-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_non-cjk.txt",
+          "sha256": "fae4ddcf70ce1928ddd89a754c396463c9aafd5dec49acf97a67c15d4880830b",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/non-cjk.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_non-cognates.txt",
+          "sha256": "bf22d4e25205487245dc010465740a44de3ea771b8a5efaea673c195d3d6ce88",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/non-cognates.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_numeric-variants.txt",
+          "sha256": "546832387b2f1967bac1c1eb9842b6943671eef0aef5ecbd1d75905d9478b9cf",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/numeric-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_radical-variants.txt",
+          "sha256": "a86e84b6e2bcb7ba2238f7008639ba196887e9c5ba36e05b15ad5e648f57e2c6",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/radical-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_sawndip-variants.txt",
+          "sha256": "0015f0982731eff8422fc385c965b445f352b6f701e359ba6e81daad0e494579",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/sawndip-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_twedu-variants.txt",
+          "sha256": "acdda9d67772a95a94cec964fea5ac2e478e364a962429b4cf563e7cd24d4cdb",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/twedu-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_ucs-scs.txt",
+          "sha256": "23ac40dd12b5d70454197030d01ce017839fa8c99f9e68ddf04ba983761cbc3c",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/ucs-scs.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        },
+        {
+          "kind": "download",
+          "file": "cjkvi-variants_x0212-x0213-variants.txt",
+          "sha256": "b1294779e40130780e8a307f2b75d58f7b1185246aaf0c2c3937dfc3d426593a",
+          "source": "https://raw.githubusercontent.com/cjkvi/cjkvi-variants/e4f1da248c9737a243f9930b5dc497cef5d5ae16/x0212-x0213-variants.txt",
+          "version": "e4f1da248c9737a243f9930b5dc497cef5d5ae16"
+        }
+      ],
+      "affectedTables": [
+        "kdpv",
+        "kdpv_*"
+      ],
+      "changes": "Parse variant relations, names, reverse relation metadata, and comments into SQLite.",
+      "noticeFiles": [
+        "licenses/cjkvi-variants.txt"
+      ]
+    },
+    {
+      "id": "tghb",
+      "title": "通用规范汉字表",
+      "licenseId": "CC0-1.0",
+      "licenseFile": "licenses/tghb.txt",
+      "copyright": "Original 国务院 government document; upstream dedicates rights arising from prepared data under CC0.",
+      "source": "http://www.gov.cn/zwgk/2013-08/19/content_2469793.htm",
+      "use": "distributed-data",
+      "inputs": [
+        {
+          "kind": "download",
+          "file": "tghb.txt",
+          "sha256": "c69b848cbe46363a82d9432c05dc4cf6aac991494aa00b88d27b05dfaafa7e0a",
+          "source": "https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/tghb.txt",
+          "version": "8c0896737a618085c0d291b498a66657949ef9eb"
+        },
+        {
+          "kind": "download",
+          "file": "tghb_variants.txt",
+          "sha256": "7e7ed4d51f71fa0afd4849d72b79cc5d13828c15a709b75f28914d3a7863ada0",
+          "source": "https://raw.githubusercontent.com/mandel59/tongyongguifanhanzibiao/8c0896737a618085c0d291b498a66657949ef9eb/variants.txt",
+          "version": "8c0896737a618085c0d291b498a66657949ef9eb"
+        }
+      ],
+      "affectedTables": [
+        "tghb",
+        "tghb_variants"
+      ],
+      "changes": "Import TSV processed through Wikisource and the pinned processing repository; not independently regenerated from the official PDF.",
+      "noticeFiles": [
+        "licenses/tghb.txt",
+        "licenses/cc0.txt",
+        "licenses/sources/tghb-README.md"
+      ]
+    },
+    {
+      "id": "unicode-tr38",
+      "title": "Unihan property build metadata",
+      "licenseId": "LicenseRef-Unicode-Report-Terms",
+      "licenseFile": "licenses/unicode-tr38.txt",
+      "copyright": "Copyright © 1991-2026 Unicode, Inc. All rights reserved.",
+      "source": "https://www.unicode.org/reports/tr38/tr38-41.html",
+      "use": "build-only",
+      "inputs": [
+        {
+          "kind": "repository",
+          "file": "build-data/unihan-tr38-properties.json",
+          "version": "TR38 revision 41 / Unicode 18.0.0",
+          "sha256": "2e7812669a9735cb678628cf856b3b4cffa919b190c090f84d89aa9102639597",
+          "source": "https://www.unicode.org/reports/tr38/tr38-41.html"
+        }
+      ],
+      "affectedTables": [
+        "unihan_each_*"
+      ],
+      "changes": "Build-only property metadata (Description omitted), used to choose table normalization. Report text and cached JSON are not distributed. See source Terms of Use.",
+      "noticeFiles": [
+        "licenses/unicode-tr38.txt"
+      ]
+    }
+  ],
+  "distributions": {
+    "@mandel59/mojidata": {
+      "directory": "packages/mojidata",
+      "scope": "Distributed character database inputs; build-only report metadata is tracked separately in data-licenses.json.",
+      "resources": {
+        "adobe-cmap": [
+          "cid2code.txt"
+        ],
+        "mj-list": [
+          "mji.00602.xlsx"
+        ],
+        "mj-map": [
+          "MJShrinkMapVer.1.2.0.zip"
+        ],
+        "mj-hentaigana": [
+          "MJIH00201-xlsx.zip"
+        ],
+        "unicode-ucd": [
+          "CJKRadicals.txt",
+          "StandardizedVariants.txt",
+          "EquivalentUnifiedIdeograph.txt",
+          "USourceData.txt",
+          "Unihan.zip"
+        ],
+        "unicode-ivd": [
+          "IVD_Sequences.txt"
+        ],
+        "babelstone-ids": [
+          "IDS.TXT"
+        ],
+        "mojidata-ids": [
+          "ids-unicode-17.0.txt",
+          "ids-unicode-18.0.txt"
+        ],
+        "doon": [
+          "doonnokanjiniyorukakikae1956.txt"
+        ],
+        "joyo": [
+          "joyokanjihyo.json"
+        ],
+        "nyukan": [
+          "nyukanseiji.json"
+        ],
+        "cjkvi-variants": [
+          "cjkvi-variants_cjkvi-simplified.txt",
+          "cjkvi-variants_cjkvi-variants.txt",
+          "cjkvi-variants_duplicate-chars.txt",
+          "cjkvi-variants_dypytz-variants.txt",
+          "cjkvi-variants_hydzd-borrowed.txt",
+          "cjkvi-variants_hydzd-variants.txt",
+          "cjkvi-variants_hyogai-variants.txt",
+          "cjkvi-variants_jinmei-variants.txt",
+          "cjkvi-variants_jisx0212-variants.txt",
+          "cjkvi-variants_jisx0213-variants.txt",
+          "cjkvi-variants_joyo-variants.txt",
+          "cjkvi-variants_jp-borrowed.txt",
+          "cjkvi-variants_jp-old-style.txt",
+          "cjkvi-variants_koseki-variants.txt",
+          "cjkvi-variants_non-cjk.txt",
+          "cjkvi-variants_non-cognates.txt",
+          "cjkvi-variants_numeric-variants.txt",
+          "cjkvi-variants_radical-variants.txt",
+          "cjkvi-variants_sawndip-variants.txt",
+          "cjkvi-variants_twedu-variants.txt",
+          "cjkvi-variants_ucs-scs.txt",
+          "cjkvi-variants_x0212-x0213-variants.txt"
+        ],
+        "tghb": [
+          "tghb.txt",
+          "tghb_variants.txt"
+        ]
+      }
+    },
+    "@mandel59/idsdb": {
+      "directory": "packages/idsdb",
+      "scope": "Default IDS database builds use merged BabelStone/Mojidata IDS, Unicode U-source, Unihan Z-variant expansion, and CJKVI radical-variant normalization. Custom recipes or input overrides require their own source/license review.",
+      "resources": {
+        "unicode-ucd": [
+          "USourceData.txt",
+          "Unihan.zip"
+        ],
+        "babelstone-ids": [
+          "IDS.TXT"
+        ],
+        "mojidata-ids": [
+          "ids-unicode-17.0.txt",
+          "ids-unicode-18.0.txt"
+        ],
+        "cjkvi-variants": [
+          "cjkvi-variants_radical-variants.txt"
+        ]
+      }
+    },
+    "@mandel59/idsdb-fts5": {
+      "directory": "packages/idsdb-fts5",
+      "scope": "Default IDS database builds use merged BabelStone/Mojidata IDS, Unicode U-source, Unihan Z-variant expansion, and CJKVI radical-variant normalization. Custom recipes or input overrides require their own source/license review.",
+      "resources": {
+        "unicode-ucd": [
+          "USourceData.txt",
+          "Unihan.zip"
+        ],
+        "babelstone-ids": [
+          "IDS.TXT"
+        ],
+        "mojidata-ids": [
+          "ids-unicode-17.0.txt",
+          "ids-unicode-18.0.txt"
+        ],
+        "cjkvi-variants": [
+          "cjkvi-variants_radical-variants.txt"
+        ]
+      }
+    },
+    "@mandel59/idsdb-bvec": {
+      "directory": "packages/idsdb-bvec",
+      "scope": "Default IDS database builds use merged BabelStone/Mojidata IDS, Unicode U-source, Unihan Z-variant expansion, and CJKVI radical-variant normalization. Custom recipes or input overrides require their own source/license review.",
+      "resources": {
+        "unicode-ucd": [
+          "USourceData.txt",
+          "Unihan.zip"
+        ],
+        "babelstone-ids": [
+          "IDS.TXT"
+        ],
+        "mojidata-ids": [
+          "ids-unicode-17.0.txt",
+          "ids-unicode-18.0.txt"
+        ],
+        "cjkvi-variants": [
+          "cjkvi-variants_radical-variants.txt"
+        ]
+      }
+    }
+  },
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-BabelStone-IDS",
+      "name": "BabelStone Ideographic Description Sequences use terms / rights basis",
+      "extractedText": "BabelStone Ideographic Description Sequences (IDS)\n\nMaintained by: Andrew West (魏安)\nFile Date: 2025-06-27; Unicode Version: 16.0\nOriginal source: https://babelstone.co.uk/CJK/IDS.TXT\nMirror revision: 6d0989b007bdfa566a864419448b125799ef5f9f\nSHA-256: cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1\n\nThe following statement is copied from documentation item 2 in the pinned\nIDS.TXT used by Mojidata. It is the upstream use/waiver statement, not CC0.\n\n# 2. Under U.S. copyright law, data (i.e. a collection of facts) is not eligible to copyright protection (see\n#\t<https://sco.library.emory.edu/research-data-management/publishing/copyright-data.html>), and as IDS descriptions\n#\tfor CJK ideographs are facts not original creative compositions, IDS sequences in themselves are not eligible for\n#\tcopyright protection (that is to say, you could no more copyright 彼 = ⿰彳皮 than you could copyright 1 + 1 = 2).\n#\tTherefore, anyone is free to make use of the IDS data provided in this file for personal or commercial purposes\n#\twithout asking permission or providing attribution. I furthermore waive any copyright claims to the presentation\n#\tformat of the IDS data used in this file, so anyone is free to fork the file, or use it as the basis for a new IDS\n#\tdata set.\n#\n\nMojidata parses the source into ids and ids_comment tables and adds IDS\nfrom the separately licensed Mojidata IDS inputs.\n",
+      "seeAlsos": [
+        "https://babelstone.co.uk/CJK/IDS.TXT"
+      ],
+      "comment": "Extracted from the packaged notice at licenses/babelstone-ids.txt. This records the use statement or rights basis; it does not substitute a standard SPDX license for the upstream terms."
+    },
+    {
+      "licenseId": "LicenseRef-Japan-Government-Notice",
+      "name": "Japanese government notices — statutory rights exclusion",
+      "extractedText": "常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示\n\nSource government notices:\n- 常用漢字表（平成22年内閣告示第2号）\n  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/\n- 在留カード等に係る漢字氏名の表記等に関する告示\n  （平成23年法務省告示第582号）別表第四の一・二\n  https://www.moj.go.jp/isa/content/930002422.pdf\n\nBasis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).\nGovernment notices are excluded from the rights provided in Chapter II.\nhttps://laws.e-gov.go.jp/law/345AC0000000048\nThis reference is to item 2 of Article 13, not to an Article 13-2.\n\nMojidata imports the extracted JSON data from these pinned npm packages:\n- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)\n- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)\n\nThe packages' source declarations are preserved in sources/joyo-README.md and\nsources/nyukan-README.md, including their original article-reference typo.\nTheir MIT-0 statements concern the extraction programs. Mojidata imports the\ngovernment-notice data, not those extraction programs.\n\nAffected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,\nand the nyukan view. The JSON is normalized into SQLite tables.\n",
+      "seeAlsos": [
+        "https://www.moj.go.jp/isa/content/930002422.pdf"
+      ],
+      "comment": "Extracted from the packaged notice at licenses/japanese-government-data.txt. This records the use statement or rights basis; it does not substitute a standard SPDX license for the upstream terms."
+    },
+    {
+      "licenseId": "LicenseRef-Unicode-Report-Terms",
+      "name": "Unihan property build metadata use terms / rights basis",
+      "extractedText": "Unihan property metadata used during the Mojidata build\n\nCopyright © 1991-2026 Unicode, Inc.\nSource: Unicode Standard Annex #38, revision 41 (Unicode 18.0.0)\nhttps://www.unicode.org/reports/tr38/tr38-41.html\nTerms: https://www.unicode.org/copyright.html\n\nThe tracked build-data/unihan-tr38-properties.json is extracted property\nmetadata used internally to choose how Unihan values are split into tables.\nIt omits Description and is not included in the npm package's file allowlist.\nThe report itself is not distributed with the databases. The distributed\nUnihan values come from Unihan.zip and carry the separately included\nUnicode License v3 in unicode.txt.\n\nUnicode's Terms of Use distinguish Technical Reports from Data Files; this\nbuild-only report input is therefore recorded separately rather than assuming\nthat the data-files license grants rights to redistribute report text.\nThe Terms of Use permit report copies for personal or internal business use;\npublic distribution of report material requires a separate applicable grant.\n",
+      "seeAlsos": [
+        "https://www.unicode.org/reports/tr38/tr38-41.html"
+      ],
+      "comment": "Extracted from the packaged notice at licenses/unicode-tr38.txt. This records the use statement or rights basis; it does not substitute a standard SPDX license for the upstream terms."
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+python3 ../../scripts/check-data-licenses.py
+
 STAMP="dist/.moji.db.input.sha256"
 CURRENT_HASH="$(python3 scripts/db-input-hash.py)"
 
