@@ -1,0 +1,19 @@
+Unihan property metadata used during the Mojidata build
+
+Copyright © 1991-2026 Unicode, Inc.
+Source: Unicode Standard Annex #38, revision 41 (Unicode 18.0.0)
+https://www.unicode.org/reports/tr38/tr38-41.html
+Terms: https://www.unicode.org/copyright.html
+
+The tracked build-data/unihan-tr38-properties.json is extracted property
+metadata used internally to choose how Unihan values are split into tables.
+It omits Description and is not included in the npm package's file allowlist.
+The report itself is not distributed with the databases. The distributed
+Unihan values come from Unihan.zip and carry the separately included
+Unicode License v3 in unicode.txt.
+
+Unicode's Terms of Use distinguish Technical Reports from Data Files; this
+build-only report input is therefore recorded separately rather than assuming
+that the data-files license grants rights to redistribute report text.
+The Terms of Use permit report copies for personal or internal business use;
+public distribution of report material requires a separate applicable grant.

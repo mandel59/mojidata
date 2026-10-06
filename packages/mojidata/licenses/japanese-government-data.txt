@@ -1,0 +1,34 @@
+常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示
+
+Source government notices:
+- 常用漢字表（平成22年内閣告示第2号）
+  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/
+- 在留カード等に係る漢字氏名の表記等に関する告示
+  （平成23年法務省告示第582号）別表第四の一・二
+  https://www.moj.go.jp/isa/content/930002422.pdf
+
+Basis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).
+Government notices are excluded from the rights provided in Chapter II.
+https://laws.e-gov.go.jp/law/345AC0000000048
+This reference is to item 2 of Article 13, not to an Article 13-2.
+
+Mojidata imports the extracted JSON data from these pinned npm packages:
+- @mandel59/joyokanjihyo 1.2.1 (joyokanjihyo.json)
+- @mandel59/nyukanseiji 1.2.1 (nyukanseiji.json)
+
+The corrected upstream source declarations are preserved byte for byte from:
+- sources/joyo-README.md:
+  https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md
+- sources/nyukan-README.md:
+  https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md
+
+The pinned npm 1.2.1 packages include these corrected declarations. The patch
+releases correct the Article 13, item 2 reference and update the e-Gov link;
+their JSON data and type definitions are byte-identical to npm 1.2.0.
+Data versions above identify the imported datasets; the separate README
+revisions identify the original documentation fixes.
+Their MIT-0 statements concern the extraction programs. Mojidata imports the
+government-notice data, not those extraction programs.
+
+Affected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,
+and the nyukan view. The JSON is normalized into SQLite tables.

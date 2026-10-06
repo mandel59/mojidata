@@ -14,12 +14,14 @@
     "idsfind.db",
     "CHANGELOG.md",
     "README.md",
-    "LICENSE.md"
+    "LICENSE.md",
+    "data-notices.json",
+    "licenses/**"
   ],
   "scripts": {
     "prepare": "bash scripts/prepare",
     "prepack": "yarn prepare"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "MIT"
+  "license": "MIT AND Unicode-3.0 AND CC0-1.0"
 }

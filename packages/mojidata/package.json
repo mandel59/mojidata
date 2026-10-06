@@ -13,8 +13,10 @@
     "CHANGELOG.md",
     "LICENSE.md",
     "download.txt",
+    "data-licenses.json",
+    "data-notices.json",
     "dist/*",
-    "licenses/*"
+    "licenses/**"
   ],
   "scripts": {
     "dryrun-gc": "ts-node --transpile-only scripts/cache-gc.ts",
@@ -28,10 +30,10 @@
     "update-ids-txt": "ts-node --transpile-only scripts/update-ids-txt.ts download.txt"
   },
   "author": "Ryusei Yamaguchi",
-  "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-3.0",
+  "license": "MIT AND BSD-3-Clause AND CC-BY-SA-2.1-JP AND Unicode-3.0 AND CC0-1.0",
   "devDependencies": {
-    "@mandel59/joyokanjihyo": "1.2.0",
-    "@mandel59/nyukanseiji": "1.2.0",
+    "@mandel59/joyokanjihyo": "1.2.1",
+    "@mandel59/nyukanseiji": "1.2.1",
     "@types/better-sqlite3": "^5.4.1",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^24.10.4",

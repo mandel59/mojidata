@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+The MIT terms above apply to Mojidata's code. The default distributed IDS
+database derives from BabelStone IDS, Mojidata IDS (CC0-1.0), Unicode U-source
+and Unihan (Unicode-3.0), and CJKVI radical variants (MIT). Original data
+conditions and attribution are preserved in [data-notices.json](data-notices.json)
+and the files under [licenses/](licenses/). Custom recipes or input overrides
+require a separate source/license review.

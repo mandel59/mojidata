@@ -1,0 +1,22 @@
+同音の漢字による書きかえ
+
+Original report: 国語審議会, 1956 (昭和31年)
+Official report reference:
+https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kakuki/03/bukai03/03.html
+
+Imported transcription/processing source:
+https://github.com/mandel59/doonnokanjiniyorukakikae
+Revision: 83802798f46947e2a26967a9a27df4746ccd0050
+File: doonnokanjiniyorukakikae1956.txt
+
+The pinned README describes a Wikisource transcription processed into TSV,
+records the source's public-domain reuse basis, and dedicates rights arising
+from the repository's data preparation under CC0-1.0.
+This describes the processing dedication separately from the original report.
+The source declaration and transcription URL are preserved in sources/doon-README.md.
+
+Processed-data dedication: CC0-1.0 (full terms: cc0.txt)
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Mojidata imports the TSV into the doon table.
+See download.txt for the exact source URL and SHA-256 checksum.

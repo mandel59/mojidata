@@ -1,0 +1,39 @@
+CJKVI Variants — Kanji Database Project
+
+MIT License
+
+Copyright (c) 2014 CJKVI Database
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Additional attribution from jp-old-style.txt:
+organized by: Taichi Kawabata
+
+Source: https://github.com/cjkvi/cjkvi-variants
+Revision: e4f1da248c9737a243f9930b5dc497cef5d5ae16
+License declaration: https://kanji-database.sourceforge.net/
+MIT license text: https://opensource.org/license/mit
+
+The upstream project declares its variant data to be MIT-licensed. The
+copyright notice above is reproduced from the data-file headers at the
+specified revision; the license terms are the standard MIT text. This notice
+was assembled for Mojidata, rather than copied from an upstream LICENSE file.
+See download.txt for the individual source files and their SHA-256 checksums.
