@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Refresh only the bundled Joyo/Nyukan upstream README declarations, government-data notice, notice hashes and generated data-notices manifest. Pin the documentation revisions separately from npm 1.2.0 dataset versions. No source data, dependency versions, lock entries, generators, SQL, indexes, API fan-out or D1 operational tools change.",
+  "beforeAfter": "Incremental account-wide D1 cost remains 0 rows read and 0 rows written. Upstream JSON data match the pinned npm inputs byte for byte: Joyo SHA-256 1b66081e04bf010faf08e9ec2e360f5d6b4abbcb3415423ba629ccd542fab7b8 and Nyukan 1c9c83dca4aacea98985612904ef68004bf1f1df8e4a2dd2df2052229e8037aa. Existing moji.db remains c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b. No files used by the DB build fingerprint are edited in this unit.",
+  "accountBudget": "Upstream metadata reads, offline license validation, local read-only SQLite schema inspection and Yarn pack checks consume zero D1 rows across the account, including retries. No remote D1 query/import or Worker deployment is requested or performed. Existing usage and traffic reserves are untouched; this review allocates no remote operation budget.",
+  "validation": "Both corrected source README snapshots match the pinned upstream checkouts byte for byte; their JSON datasets match the cached npm 1.2.0 data. The 22 validator tests, all cached input checksums and local schema checks pass. The real Mojidata Yarn archive contains updated declarations/notices/manifest with exact bytes. IDS manifests and DB bytes remain unchanged; current review fingerprints cover this unit.",
+  "rolloutAndStop": "Release updated notices as a metadata-only Mojidata patch. Stop on mismatched upstream README/data checksums, stale notice hashes or extracted terms, generated manifest drift, missing archive notices, or changes to DB/runtime/input bytes. Correct metadata with a later patch; no DB migration or remote rollback is needed, and no remote import/deployment is authorized.",
+  "evidence": [
+    "docs/licensing/2026-10-06-upstream-government-notices.md",
+    "packages/mojidata/licenses/japanese-government-data.txt",
+    "packages/mojidata/data-licenses.json",
+    "packages/mojidata/scripts/db-input-hash.py",
+    "scripts/db_build_inputs.py"
+  ],
+  "files": {
+    ".changeset/upstream-government-notices.md": "87fc8fa96287df0f2dc63a922954664fc8abf82d610c801161b743977f75b7b8",
+    "packages/mojidata/data-licenses.json": "27a9cd089790df6f0a9be5f9fcdbb79294d95fc3bccbddabb6b20c530d89c077",
+    "packages/mojidata/data-notices.json": "72b5d74ee27ff2d4a1e45b3e1b9e1c7519c8964b4b349ea280347a2ec7e7875e",
+    "packages/mojidata/licenses/japanese-government-data.txt": "aae085c94ec7cff48a2bdaaed87c138d771cfdbbf93f17237083ce380a5ceb46",
+    "packages/mojidata/licenses/sources/joyo-README.md": "cea5094f94c7098a73283a9e693d87cd12bceb3a4c080618a0eeccfe37f631ae",
+    "packages/mojidata/licenses/sources/nyukan-README.md": "1befc3105d338e33b9e8063a578c79f085b8366b60bcaab7fa750294ef2223aa"
+  }
+}

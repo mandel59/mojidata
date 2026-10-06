@@ -32,13 +32,13 @@
       "sha256": "2f0e6d9d58cfcbe770f3e0c485cc51ba858d9f4da47d1826f222a42854031a0c"
     },
     "licenses/japanese-government-data.txt": {
-      "sha256": "9d9880d854d828a4afc756f6b6d0f198601a0c4e6d24177db3989e55d0c9ed72"
+      "sha256": "aae085c94ec7cff48a2bdaaed87c138d771cfdbbf93f17237083ce380a5ceb46"
     },
     "licenses/sources/joyo-README.md": {
-      "sha256": "40958ad1bbdea862c95a46a8ef371205a365cf76cb6fffefcfc82de5ff7420b0"
+      "sha256": "cea5094f94c7098a73283a9e693d87cd12bceb3a4c080618a0eeccfe37f631ae"
     },
     "licenses/sources/nyukan-README.md": {
-      "sha256": "a9c8a34c917ebb921c7a9fe1384ba12b51b81a971aa186e43f3b03b8f7c356ee"
+      "sha256": "1befc3105d338e33b9e8063a578c79f085b8366b60bcaab7fa750294ef2223aa"
     },
     "licenses/cjkvi-variants.txt": {
       "sha256": "bc2a52b44372210bd94d1dc455e12d18e45b6671ef847b15a701b2be4f4ca135"
@@ -775,9 +775,11 @@
     {
       "licenseId": "LicenseRef-Japan-Government-Notice",
       "name": "Japanese government notices — statutory rights exclusion",
-      "extractedText": "常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示\n\nSource government notices:\n- 常用漢字表（平成22年内閣告示第2号）\n  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/\n- 在留カード等に係る漢字氏名の表記等に関する告示\n  （平成23年法務省告示第582号）別表第四の一・二\n  https://www.moj.go.jp/isa/content/930002422.pdf\n\nBasis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).\nGovernment notices are excluded from the rights provided in Chapter II.\nhttps://laws.e-gov.go.jp/law/345AC0000000048\nThis reference is to item 2 of Article 13, not to an Article 13-2.\n\nMojidata imports the extracted JSON data from these pinned npm packages:\n- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)\n- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)\n\nThe packages' source declarations are preserved in sources/joyo-README.md and\nsources/nyukan-README.md, including their original article-reference typo.\nTheir MIT-0 statements concern the extraction programs. Mojidata imports the\ngovernment-notice data, not those extraction programs.\n\nAffected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,\nand the nyukan view. The JSON is normalized into SQLite tables.\n",
+      "extractedText": "常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示\n\nSource government notices:\n- 常用漢字表（平成22年内閣告示第2号）\n  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/\n- 在留カード等に係る漢字氏名の表記等に関する告示\n  （平成23年法務省告示第582号）別表第四の一・二\n  https://www.moj.go.jp/isa/content/930002422.pdf\n\nBasis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).\nGovernment notices are excluded from the rights provided in Chapter II.\nhttps://laws.e-gov.go.jp/law/345AC0000000048\nThis reference is to item 2 of Article 13, not to an Article 13-2.\n\nMojidata imports the extracted JSON data from these pinned npm packages:\n- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)\n- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)\n\nThe corrected upstream source declarations are preserved byte for byte from:\n- sources/joyo-README.md:\n  https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md\n- sources/nyukan-README.md:\n  https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md\n\nThese documentation revisions correct the Article 13, item 2 reference and\nupdate the e-Gov link. They are newer than the npm 1.2.0 README files; their\nJSON data are byte-identical to the pinned npm inputs. Data versions above\nidentify the imported datasets, not the separately pinned README revisions.\nTheir MIT-0 statements concern the extraction programs. Mojidata imports the\ngovernment-notice data, not those extraction programs.\n\nAffected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,\nand the nyukan view. The JSON is normalized into SQLite tables.\n",
       "seeAlsos": [
-        "https://www.moj.go.jp/isa/content/930002422.pdf"
+        "https://www.moj.go.jp/isa/content/930002422.pdf",
+        "https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md",
+        "https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md"
       ],
       "comment": "Extracted from the packaged notice at licenses/japanese-government-data.txt. This records the use statement or rights basis; it does not substitute a standard SPDX license for the upstream terms."
     },

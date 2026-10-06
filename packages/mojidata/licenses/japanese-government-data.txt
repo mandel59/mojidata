@@ -16,8 +16,16 @@ Mojidata imports the extracted JSON data from these pinned npm packages:
 - @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)
 - @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)
 
-The packages' source declarations are preserved in sources/joyo-README.md and
-sources/nyukan-README.md, including their original article-reference typo.
+The corrected upstream source declarations are preserved byte for byte from:
+- sources/joyo-README.md:
+  https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md
+- sources/nyukan-README.md:
+  https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md
+
+These documentation revisions correct the Article 13, item 2 reference and
+update the e-Gov link. They are newer than the npm 1.2.0 README files; their
+JSON data are byte-identical to the pinned npm inputs. Data versions above
+identify the imported datasets, not the separately pinned README revisions.
 Their MIT-0 statements concern the extraction programs. Mojidata imports the
 government-notice data, not those extraction programs.
 
