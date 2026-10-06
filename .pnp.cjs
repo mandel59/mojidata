@@ -1162,10 +1162,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/joyokanjihyo", [\
-      ["npm:1.2.0", {\
-        "packageLocation": "./.yarn/cache/@mandel59-joyokanjihyo-npm-1.2.0-26e467457b-294b255da9.zip/node_modules/@mandel59/joyokanjihyo/",\
+      ["npm:1.2.1", {\
+        "packageLocation": "./.yarn/cache/@mandel59-joyokanjihyo-npm-1.2.1-f13700c1b4-eeef028816.zip/node_modules/@mandel59/joyokanjihyo/",\
         "packageDependencies": [\
-          ["@mandel59/joyokanjihyo", "npm:1.2.0"]\
+          ["@mandel59/joyokanjihyo", "npm:1.2.1"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -1174,9 +1174,9 @@ const RAW_RUNTIME_STATE =
       ["workspace:packages/mojidata", {\
         "packageLocation": "./packages/mojidata/",\
         "packageDependencies": [\
-          ["@mandel59/joyokanjihyo", "npm:1.2.0"],\
+          ["@mandel59/joyokanjihyo", "npm:1.2.1"],\
           ["@mandel59/mojidata", "workspace:packages/mojidata"],\
-          ["@mandel59/nyukanseiji", "npm:1.2.0"],\
+          ["@mandel59/nyukanseiji", "npm:1.2.1"],\
           ["@types/better-sqlite3", "npm:5.4.2"],\
           ["@types/jsdom", "npm:21.1.7"],\
           ["@types/node", "npm:24.10.4"],\
@@ -1405,10 +1405,10 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["@mandel59/nyukanseiji", [\
-      ["npm:1.2.0", {\
-        "packageLocation": "./.yarn/cache/@mandel59-nyukanseiji-npm-1.2.0-15ff5f7ead-c9303c1b49.zip/node_modules/@mandel59/nyukanseiji/",\
+      ["npm:1.2.1", {\
+        "packageLocation": "./.yarn/cache/@mandel59-nyukanseiji-npm-1.2.1-66d3fa9405-47e43774a3.zip/node_modules/@mandel59/nyukanseiji/",\
         "packageDependencies": [\
-          ["@mandel59/nyukanseiji", "npm:1.2.0"]\
+          ["@mandel59/nyukanseiji", "npm:1.2.1"]\
         ],\
         "linkType": "HARD"\
       }]\

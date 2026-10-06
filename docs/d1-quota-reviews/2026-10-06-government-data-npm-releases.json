@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Pin Joyo/Nyukan npm inputs to the publicly verified 1.2.1 patch releases; update only the two lock/PnP/cache entries, dataset provenance and generated license notices. Published JSON and type declarations are byte-identical to 1.2.0. No generators, table values, SQL, indexes, runtime/API fan-out, D1 tools or Worker bindings change.",
+  "beforeAfter": "Incremental account-wide D1 reads and writes remain 0 rows each. Joyo dataset SHA-256 remains 1b66081e04bf010faf08e9ec2e360f5d6b4abbcb3415423ba629ccd542fab7b8 and Nyukan remains 1c9c83dca4aacea98985612904ef68004bf1f1df8e4a2dd2df2052229e8037aa. Existing moji.db remains c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b. Lock/manifest version changes invalidate local DB cache keys, but any local rebuild reads identical data with unchanged extraction code; runtime scan sizes and request work cannot increase from this documentation-only upstream patch.",
+  "accountBudget": "Public npm publishing, registry metadata/archive reads, local Yarn installation with builds skipped, tests and packing consume zero D1 rows across the account, including retries. No D1 query/import or Worker deployment occurs. Account usage is not sampled because the operation D1 upper bound is zero; existing traffic reserves are untouched and subsequent remote work is not authorized.",
+  "validation": "Verified latest tags at 1.2.1, registry integrity and served archive bytes against the validated tarballs. New archive JSON/types equal 1.2.0; corrected READMEs match the preserved snapshots. The 22 license tests, five DB fingerprint tests, cached-input hash and read-only schema checks pass. A real Mojidata archive preserves updated notices/manifests. Only the two intended dependency resolutions change; unrelated platform cache deletions were restored.",
+  "rolloutAndStop": "Consume the published documentation fixes through a normal Mojidata patch release. Stop on changed JSON/type checksums, unexpected dependency resolution changes, missing/stale notices or quota fingerprints, or any runtime/SQL/input-value edits. Restore prior 1.2.0 dependency metadata if integration fails; no D1 migration/rollback is needed. Upstream versions are published, and no later remote import/deployment is permitted by this record.",
+  "evidence": [
+    "docs/licensing/2026-10-06-government-data-npm-releases.md",
+    "packages/mojidata/data-licenses.json",
+    "packages/mojidata/licenses/japanese-government-data.txt",
+    "packages/mojidata/scripts/db-input-hash.py",
+    "scripts/db_build_inputs.py",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    ".changeset/government-data-patch-releases.md": "973ee4a2d7336abd9958d14faedd65531ef13f175de9eb7ec710766853dd761d",
+    ".pnp.cjs": "e046339455c195ccbf7a0bd5769bd8a4cad5b22faade4b0daef5300a9a093088",
+    ".yarn/cache/@mandel59-joyokanjihyo-npm-1.2.0-26e467457b-294b255da9.zip": "deleted",
+    ".yarn/cache/@mandel59-joyokanjihyo-npm-1.2.1-f13700c1b4-eeef028816.zip": "d16a7bc63228d463c54bcd3dd0618c4bb8bc0d4b9ae8ec46e076738d569ba266",
+    ".yarn/cache/@mandel59-nyukanseiji-npm-1.2.0-15ff5f7ead-c9303c1b49.zip": "deleted",
+    ".yarn/cache/@mandel59-nyukanseiji-npm-1.2.1-66d3fa9405-47e43774a3.zip": "c5463c6fda0e57e2048b73841a71737315e6257f85b904df2dbc62fff4a6a081",
+    "packages/mojidata/data-licenses.json": "31199ebae3e121c82c8bed7a2ec87b9a43dbf048765fd15a13fdb28acd6040b7",
+    "packages/mojidata/data-notices.json": "0ba175518f0f466beca1606ec721c8fb37147f602ccbed801a4a9049eab03e47",
+    "packages/mojidata/licenses/japanese-government-data.txt": "89f1bfb88db10c9d8af3b4c2354462b42b53cc14a38e1d88d5dabdeb0e42d945",
+    "packages/mojidata/package.json": "f668fc64141947233a1d4ef1c8d0666f38df6bef89c4c8ddb0dcbf4775d1ec7d",
+    "yarn.lock": "029a2d242c1a3830607678ccce2ad66d7f2cb36d6f81395d4b6668c287f1786b"
+  }
+}

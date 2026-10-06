@@ -13,8 +13,8 @@ https://laws.e-gov.go.jp/law/345AC0000000048
 This reference is to item 2 of Article 13, not to an Article 13-2.
 
 Mojidata imports the extracted JSON data from these pinned npm packages:
-- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)
-- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)
+- @mandel59/joyokanjihyo 1.2.1 (joyokanjihyo.json)
+- @mandel59/nyukanseiji 1.2.1 (nyukanseiji.json)
 
 The corrected upstream source declarations are preserved byte for byte from:
 - sources/joyo-README.md:
@@ -22,10 +22,11 @@ The corrected upstream source declarations are preserved byte for byte from:
 - sources/nyukan-README.md:
   https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md
 
-These documentation revisions correct the Article 13, item 2 reference and
-update the e-Gov link. They are newer than the npm 1.2.0 README files; their
-JSON data are byte-identical to the pinned npm inputs. Data versions above
-identify the imported datasets, not the separately pinned README revisions.
+The pinned npm 1.2.1 packages include these corrected declarations. The patch
+releases correct the Article 13, item 2 reference and update the e-Gov link;
+their JSON data and type definitions are byte-identical to npm 1.2.0.
+Data versions above identify the imported datasets; the separate README
+revisions identify the original documentation fixes.
 Their MIT-0 statements concern the extraction programs. Mojidata imports the
 government-notice data, not those extraction programs.
 

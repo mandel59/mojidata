@@ -295,10 +295,10 @@
         {
           "kind": "npm",
           "name": "@mandel59/joyokanjihyo",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "file": "joyokanjihyo.json",
           "sha256": "1b66081e04bf010faf08e9ec2e360f5d6b4abbcb3415423ba629ccd542fab7b8",
-          "yarnChecksum": "10/294b255da9372b5c973e7763eeede019b77dea8ca4824e418ab2362d5984eb14dd519ffe08c4a57d991143762f1c56b292430f5bc0b4e7d887576995489d1385",
+          "yarnChecksum": "10/eeef0288163f9071a48b5a0114e58b6ce3085ac5836212c79556be9ea3bf6ea48764bd20f1fefce074e946b0859b1fa3a7847504a007f8f3ce4a55522fba73f2",
           "source": "https://github.com/mandel59/joyokanjihyo"
         }
       ],
@@ -325,10 +325,10 @@
         {
           "kind": "npm",
           "name": "@mandel59/nyukanseiji",
-          "version": "1.2.0",
+          "version": "1.2.1",
           "file": "nyukanseiji.json",
           "sha256": "1c9c83dca4aacea98985612904ef68004bf1f1df8e4a2dd2df2052229e8037aa",
-          "yarnChecksum": "10/c9303c1b4942a522dea42abc382588c11c43ef28fbf3f4f7dd0a16d7ed9702deb309ade67cffb9362b9a77473b1b7dd7d0a2c025ff63cac08f29022152aa38f8",
+          "yarnChecksum": "10/47e43774a350a1080ff8b778fc06766a7a4a8e1518bdf28527de09c15a374e40a0d3320b13d7407bfc5a377119db71fa352a6f651a007a069da8c8da3946abaf",
           "source": "https://github.com/mandel59/nyukanseiji"
         }
       ],
@@ -569,7 +569,7 @@
       "sha256": "7ac14b43fe0af6eee8e0f09915bbfa0330f322af38dc1a67c92f2640770d9280"
     },
     "licenses/japanese-government-data.txt": {
-      "sha256": "aae085c94ec7cff48a2bdaaed87c138d771cfdbbf93f17237083ce380a5ceb46"
+      "sha256": "89f1bfb88db10c9d8af3b4c2354462b42b53cc14a38e1d88d5dabdeb0e42d945"
     },
     "licenses/mj.txt": {
       "sha256": "6e49ab0b9509e4f9ed335e0551c96d4495682a0e22225f3b3916696da6a81e67"
@@ -615,7 +615,7 @@
     {
       "licenseId": "LicenseRef-Japan-Government-Notice",
       "name": "Japanese government notices — statutory rights exclusion",
-      "extractedText": "常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示\n\nSource government notices:\n- 常用漢字表（平成22年内閣告示第2号）\n  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/\n- 在留カード等に係る漢字氏名の表記等に関する告示\n  （平成23年法務省告示第582号）別表第四の一・二\n  https://www.moj.go.jp/isa/content/930002422.pdf\n\nBasis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).\nGovernment notices are excluded from the rights provided in Chapter II.\nhttps://laws.e-gov.go.jp/law/345AC0000000048\nThis reference is to item 2 of Article 13, not to an Article 13-2.\n\nMojidata imports the extracted JSON data from these pinned npm packages:\n- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)\n- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)\n\nThe corrected upstream source declarations are preserved byte for byte from:\n- sources/joyo-README.md:\n  https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md\n- sources/nyukan-README.md:\n  https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md\n\nThese documentation revisions correct the Article 13, item 2 reference and\nupdate the e-Gov link. They are newer than the npm 1.2.0 README files; their\nJSON data are byte-identical to the pinned npm inputs. Data versions above\nidentify the imported datasets, not the separately pinned README revisions.\nTheir MIT-0 statements concern the extraction programs. Mojidata imports the\ngovernment-notice data, not those extraction programs.\n\nAffected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,\nand the nyukan view. The JSON is normalized into SQLite tables.\n",
+      "extractedText": "常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示\n\nSource government notices:\n- 常用漢字表（平成22年内閣告示第2号）\n  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/\n- 在留カード等に係る漢字氏名の表記等に関する告示\n  （平成23年法務省告示第582号）別表第四の一・二\n  https://www.moj.go.jp/isa/content/930002422.pdf\n\nBasis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).\nGovernment notices are excluded from the rights provided in Chapter II.\nhttps://laws.e-gov.go.jp/law/345AC0000000048\nThis reference is to item 2 of Article 13, not to an Article 13-2.\n\nMojidata imports the extracted JSON data from these pinned npm packages:\n- @mandel59/joyokanjihyo 1.2.1 (joyokanjihyo.json)\n- @mandel59/nyukanseiji 1.2.1 (nyukanseiji.json)\n\nThe corrected upstream source declarations are preserved byte for byte from:\n- sources/joyo-README.md:\n  https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md\n- sources/nyukan-README.md:\n  https://github.com/mandel59/nyukanseiji/blob/3ecf5860ea0755dae5933361f5ca9c6930523956/README.md\n\nThe pinned npm 1.2.1 packages include these corrected declarations. The patch\nreleases correct the Article 13, item 2 reference and update the e-Gov link;\ntheir JSON data and type definitions are byte-identical to npm 1.2.0.\nData versions above identify the imported datasets; the separate README\nrevisions identify the original documentation fixes.\nTheir MIT-0 statements concern the extraction programs. Mojidata imports the\ngovernment-notice data, not those extraction programs.\n\nAffected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,\nand the nyukan view. The JSON is normalized into SQLite tables.\n",
       "seeAlsos": [
         "https://www.moj.go.jp/isa/content/930002422.pdf",
         "https://github.com/mandel59/joyokanjihyo/blob/e6bbe8a0ea2648f9c4001b43f4b0fdafc6b7ec37/README.md",
