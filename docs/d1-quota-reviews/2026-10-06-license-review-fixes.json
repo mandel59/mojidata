@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Fix local license validation of single-quoted/multiline npm imports and preserve the official MJ list license/disclaimer paragraph in packaged notices. Only the offline checker, its fixture tests, MJ notice metadata and a patch changeset change; imported data, builders, SQL, indexes, API fan-out, runtime dependencies and D1 tooling are unchanged.",
+  "beforeAfter": "Incremental account-wide D1 reads and writes are 0 rows before and after. The checker reads local source files, caches and read-only local sqlite_schema; tests use temporary local fixtures. Existing moji.db SHA-256 is unchanged at c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b. Only packaged documentation bytes and offline import coverage change; data size and runtime scan workloads cannot increase.",
+  "accountBudget": "No D1 query, import, deployment or usage probe occurs. Local tests, notice generation and Yarn packing consume zero account-wide D1 rows, including retries. Current usage is not sampled because the operation upper bound is zero; public traffic reserves and existing operational budgets are untouched. This evidence does not allocate quota for subsequent remote operations.",
+  "validation": "All 24 license tests pass, including 16 combinations of registered/unregistered imports with both quote styles and four whitespace forms. Full cached-input hash and read-only schema checks pass for 14 resources and four distributions. The MJ paragraph text exactly matches the official page retrieved on 2026-10-06 after HTML tag removal. A real Mojidata Yarn archive passes the notice/manifest validator. Both original reviewers confirmed their findings are resolved without new findings.",
+  "rolloutAndStop": "Ship the notice update through the normal patch release; the checker update applies to offline validation. No D1 migration or deployment is performed by this change. Stop on inconsistent source notice text, altered DB/input hashes, failed archive checks or stale file fingerprints. Revert checker/notice metadata edits if needed; no database rollback is required. Any later remote execution needs separate current quota evidence.",
+  "evidence": [
+    "docs/licensing/2026-10-06-license-review-fixes.md",
+    "scripts/check-data-licenses.py",
+    "scripts/check-data-licenses.test.py",
+    "packages/mojidata/licenses/mj.txt",
+    "packages/mojidata/data-notices.json"
+  ],
+  "files": {
+    "scripts/check-data-licenses.py": "6e0dba83042cbe207c4f6922bde20aea8f18843574964cf35581a5d143eef9fc",
+    "scripts/check-data-licenses.test.py": "defc53875da48d95bf0ca08f2ae53a2a6128db9b2ed8c1ad43b7412d5fe2c9fc",
+    "packages/mojidata/licenses/mj.txt": "66c8b52071d691459383148ec5e29e884998b1fd0becead1748556a908010f70",
+    "packages/mojidata/data-licenses.json": "64f58fc65ad04ccfe689fc18edc68af87a27a4f7e31281317199318f6491c556",
+    "packages/mojidata/data-notices.json": "5ea9f2a9820db51e66e1312bd8a31f56297e9f36b73ca0b14667dd8ebc7ac3ec",
+    ".changeset/license-review-fixes.md": "9972a5cfb0f6d5a6d726ecfc78f133760011b5b2259015fd2ec9ff8b1bf2fdbe"
+  }
+}

@@ -188,7 +188,7 @@ def load_registry(root=ROOT):
     require(set(rows) == registered_downloads,
             f"Unregistered download inputs: {sorted(set(rows) - registered_downloads)}")
     builder = (base / "scripts/create-db.ts").read_text()
-    imports = set(re.findall(r'from "(@mandel59/[^\"]+)"', builder))
+    imports = {match[1] for match in re.findall(r"""\bfrom\s+(["'])(@mandel59/[^"'\s]+)\1""", builder)}
     require(imports == npm_names, f"npm dataset imports/registry mismatch: {sorted(imports ^ npm_names)}")
     require(set(notices) == referenced_notices, "Unreferenced noticeFiles in registry")
     require(set(custom_ids) == used_custom_ids, "Unreferenced LicenseRef definitions")

@@ -196,6 +196,23 @@ class DataLicenseTest(unittest.TestCase):
         archive = next((self.root / ".yarn/cache").glob("*.zip"))
         self.registry["resources"][1]["inputs"][0]["yarnChecksum"] = "10/" + hashlib.sha512(archive.read_bytes()).hexdigest()
 
+    def test_registered_npm_import_quotes_and_whitespace(self):
+        for quote in ('"', "'"):
+            for space in (" ", "  ", "\t", "\n  "):
+                with self.subTest(quote=quote, space=space):
+                    (self.base / "scripts/create-db.ts").write_text(
+                        f"import sample from{space}{quote}@mandel59/sample{quote}\n")
+                    self.load()
+
+    def test_unregistered_npm_import_quotes_and_whitespace(self):
+        for quote in ('"', "'"):
+            for space in (" ", "  ", "\t", "\n  "):
+                with self.subTest(quote=quote, space=space):
+                    (self.base / "scripts/create-db.ts").write_text(
+                        'import sample from "@mandel59/sample"\n'
+                        f"import extra from{space}{quote}@mandel59/unregistered-data{quote}\n")
+                    self.fails("npm dataset imports/registry mismatch.*unregistered-data")
+
     def test_tracked_input_hash(self):
         (self.base / "report.json").write_text("changed")
         self.fails("Tracked input hash mismatch")

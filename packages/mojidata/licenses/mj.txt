@@ -31,3 +31,10 @@ The original MJ map Readme.txt, including its license declaration, is preserved
 in sources/mj-map-Readme.txt.
 Retain attribution and the license reference when redistributing these works;
 apply the license's conditions to adaptations of these works.
+
+Original MJ list license and disclaimer notice (unchanged paragraph text):
+Source: https://moji.or.jp/mojikiban/mjlist/
+Retrieved: 2026-10-06
+License link in the original paragraph: http://creativecommons.org/licenses/by-sa/2.1/jp/
+
+文字情報技術促進協議会は、文字情報基盤 文字情報一覧表（MJ文字情報一覧表） をクリエイティブ・コモンズ 表示 – 継承 2.1 日本 ライセンスによって提供しています。利用に際してはIPA の著作物であることを明記してください。なお、本成果物の内容を適用した結果生じたこと、また、適用できなかった結果について、文字情報技術促進協議会は一切の責任を負いませんのでご了承ください。
