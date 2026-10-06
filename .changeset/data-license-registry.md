@@ -1,8 +1,7 @@
 ---
-"@mandel59/mojidata": patch
 "@mandel59/idsdb": patch
 "@mandel59/idsdb-fts5": patch
 "@mandel59/idsdb-bvec": patch
 ---
 
-Ship source-version and license manifests with the character and IDS databases. Preserve the notices for the default IDS inputs and correct the IDS packages' aggregate SPDX license summaries.
+Bundle `data-notices.json` and license notices for the default IDS source data. Record source versions and hashes, and correct the packages' aggregate SPDX license expressions to reflect the bundled datasets.
