@@ -1,0 +1,33 @@
+MJ文字情報一覧表 / MJ縮退マップ / MJ文字情報一覧表 変体仮名編
+List of MJ Characters / MJ Map / List of MJ Hentaigana Characters
+
+Copyright © IPA 独立行政法人情報処理推進機構
+Information-technology Promotion Agency, Japan.
+These are IPA works, distributed by the Character Information Technology
+Promotion Council (一般社団法人 文字情報技術促進協議会).
+
+License: Creative Commons Attribution-ShareAlike 2.1 Japan (CC-BY-SA-2.1-JP)
+Legal terms: https://creativecommons.org/licenses/by-sa/2.1/jp/legalcode
+Summary: https://creativecommons.org/licenses/by-sa/2.1/jp/
+
+Sources and versions:
+- MJ文字情報一覧表 Ver.006.02: mji.00602.xlsx
+  https://moji.or.jp/mojikiban/mjlist/
+- MJ縮退マップ Ver.1.2.0: MJShrinkMapVer.1.2.0.zip
+  https://moji.or.jp/mojikiban/map/
+- MJ文字情報一覧表 変体仮名編 Ver.002.01: MJIH00201-xlsx.zip
+  https://moji.or.jp/mojikiban/mjlist/
+
+Mojidata changes the representation of these works: spreadsheet sheets and
+JSON records are extracted, selected columns are imported into SQLite, UCS and
+variation-sequence codes are converted to characters, and multivalued fields
+are split into related tables. These are processed data, not unchanged copies
+of the source spreadsheets or map. The source authors do not endorse Mojidata.
+
+Affected data: mji, mji_reading, mji_rsindex, mji_changelog, mji_duplicated_ivs;
+mjsm_* and the mjsm view; mjih and mjih_phonetic.
+See download.txt for the exact download URLs and SHA-256 checksums.
+The original MJ map Readme.txt, including its license declaration, is preserved
+in sources/mj-map-Readme.txt.
+Retain attribution and the license reference when redistributing these works;
+apply the license's conditions to adaptations of these works.

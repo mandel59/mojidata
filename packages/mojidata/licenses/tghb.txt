@@ -1,0 +1,25 @@
+通用规范汉字表
+
+Original document: 国务院关于公布《通用规范汉字表》的通知 (2013)
+Official references recorded by the pinned source repository:
+http://www.gov.cn/zwgk/2013-08/19/content_2469793.htm
+http://www.gov.cn/gzdt/att/att/site1/20130819/tygfhzb.pdf
+
+Imported transcription/processing source:
+https://github.com/mandel59/tongyongguifanhanzibiao
+Revision: 8c0896737a618085c0d291b498a66657949ef9eb
+Files: tghb.txt, variants.txt (downloaded as tghb_variants.txt)
+
+The pinned README describes data processed from a Wikisource transcription,
+records its public-domain reuse statement, and dedicates rights arising from
+the repository's data preparation under CC0-1.0. Its MIT-0 statement applies
+to process.js, not to these processed data. The full source declaration and
+transcription URL are preserved in sources/tghb-README.md.
+
+Processed-data dedication: CC0-1.0 (full terms: cc0.txt)
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+Mojidata imports these files into tghb and tghb_variants. The current input
+still passes through Wikisource and this processing repository; it has not
+been regenerated from, or verified against, the official government PDF.
+See download.txt for exact download URLs and SHA-256 checksums.

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Correct data-license comments and the package license expression; add MJ, BabelStone, CC0, Japanese government-data, Doon and TGHB notices with pinned source declarations. Expand only the package notice allowlist to include nested provenance snapshots and add a patch changeset. No source-data rows, generators, SQL, indexes, API fan-out, imports or bindings change.",
+  "beforeAfter": "Incremental account-wide D1 cost remains 0 rows read and 0 rows written. All 38 input file hashes match and ordered download rows are identical; moji.db SHA-256 remains c8cd43031d6a48bde6b131f0fd0fb778301627846c4b65ff038937884c21ea6b. Comment changes invalidate the existing local DB input key, so CI may rebuild locally, but extraction/data and resulting request cost are unchanged; no remote import is triggered by package release.",
+  "accountBudget": "Notice edits, local verification/pack and GitHub/npm release validation use zero D1 rows account-wide, including retries. The release workflow performs no D1 queries, imports or Worker deployment. Live usage and traffic reserves need not be read for this zero-D1 operation; this review grants no allowance for subsequent remote rollout.",
+  "validation": "Verified CC0 declarations at both pinned IDS revisions and at pinned Doon/TGHB revisions; preserved npm source READMEs and the MJ map archive notice. All 38 cached input checksums and baseline download rows/DB bytes match. The Yarn archive contains every notice and provenance snapshot byte for byte; parsed package manifest matches. The quota gate validates this complete fingerprinted change.",
+  "rolloutAndStop": "Release notices through the ordinary patch npm workflow. No remote DB operation or Worker deployment is executed. Stop on missing archive notices, changed source rows or DB bytes, stale review hashes, or unexpected data/runtime edits. Correct notification errors with a subsequent package release; no DB migration or rollback is needed.",
+  "evidence": [
+    "docs/licensing/2026-10-06-data-notices.md",
+    "packages/mojidata/scripts/db-input-hash.py",
+    "scripts/db_build_inputs.py",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    ".changeset/data-license-notices.md": "92df29c16f46eb6d526172a3416f3bf6ad2605258bcc558d506890128c2d9698",
+    "packages/mojidata/LICENSE.md": "c7620e4c6a692efcf67b3cbf263df2527452e513cf25e76447031f880f52d6a7",
+    "packages/mojidata/download.txt": "5a27c1601a8dd701a0857038507a0c874b8b9bc67b8e533e34275de11edcda33",
+    "packages/mojidata/licenses/babelstone-ids.txt": "edecdd27f655cfd699274a359a3d2300b980b383f35a057fc26572f276331a3a",
+    "packages/mojidata/licenses/cc0.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+    "packages/mojidata/licenses/doon.txt": "7ac14b43fe0af6eee8e0f09915bbfa0330f322af38dc1a67c92f2640770d9280",
+    "packages/mojidata/licenses/japanese-government-data.txt": "9d9880d854d828a4afc756f6b6d0f198601a0c4e6d24177db3989e55d0c9ed72",
+    "packages/mojidata/licenses/mj.txt": "6e49ab0b9509e4f9ed335e0551c96d4495682a0e22225f3b3916696da6a81e67",
+    "packages/mojidata/licenses/mojidata-ids.txt": "08062f02f95e3a7438aabfd5217bd734aae90c4f56ba6365a8c5d03c581d6c07",
+    "packages/mojidata/licenses/sources/doon-README.md": "2f0e6d9d58cfcbe770f3e0c485cc51ba858d9f4da47d1826f222a42854031a0c",
+    "packages/mojidata/licenses/sources/joyo-README.md": "40958ad1bbdea862c95a46a8ef371205a365cf76cb6fffefcfc82de5ff7420b0",
+    "packages/mojidata/licenses/sources/mj-map-Readme.txt": "c986a10bc099ba9e2d36996578bf7478ef1b8628d0be6c190d88d0ac4cbfaf9a",
+    "packages/mojidata/licenses/sources/mojidata-ids-README.md": "afa179113426a0f4e6bef70f0bbe0f15f6b96d36046f0ef5768c364a1d8948a8",
+    "packages/mojidata/licenses/sources/nyukan-README.md": "a9c8a34c917ebb921c7a9fe1384ba12b51b81a971aa186e43f3b03b8f7c356ee",
+    "packages/mojidata/licenses/sources/tghb-README.md": "d302bd48eed2a32ab114052557667ec11b0e10d8e4f24a54ff4e651741d7ab10",
+    "packages/mojidata/licenses/tghb.txt": "bdd712f8b0bf3c5d9a821f6a2964b8020399d7b46f14aeb8aa83b401d3a88fb2",
+    "packages/mojidata/package.json": "befd915d3c4d01b9b1d036025689fad5632a8a98baaeecffc1a9341b7556086b"
+  }
+}

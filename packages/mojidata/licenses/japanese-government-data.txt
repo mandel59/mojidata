@@ -1,0 +1,25 @@
+常用漢字表 / 在留カード等に係る漢字氏名の表記等に関する告示
+
+Source government notices:
+- 常用漢字表（平成22年内閣告示第2号）
+  https://www.bunka.go.jp/kokugo_nihongo/sisaku/joho/joho/kijun/naikaku/kanji/
+- 在留カード等に係る漢字氏名の表記等に関する告示
+  （平成23年法務省告示第582号）別表第四の一・二
+  https://www.moj.go.jp/isa/content/930002422.pdf
+
+Basis: Japan's Copyright Act, Article 13, item 2 (著作権法第13条第2号).
+Government notices are excluded from the rights provided in Chapter II.
+https://laws.e-gov.go.jp/law/345AC0000000048
+This reference is to item 2 of Article 13, not to an Article 13-2.
+
+Mojidata imports the extracted JSON data from these pinned npm packages:
+- @mandel59/joyokanjihyo 1.2.0 (joyokanjihyo.json)
+- @mandel59/nyukanseiji 1.2.0 (nyukanseiji.json)
+
+The packages' source declarations are preserved in sources/joyo-README.md and
+sources/nyukan-README.md, including their original article-reference typo.
+Their MIT-0 statements concern the extraction programs. Mojidata imports the
+government-notice data, not those extraction programs.
+
+Affected data: joyo, joyo_acceptable, joyo_kangxi; nyukan_itaiji, nyukan_ruiji,
+and the nyukan view. The JSON is normalized into SQLite tables.
