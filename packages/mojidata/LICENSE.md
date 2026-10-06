@@ -68,21 +68,13 @@ See the notes in the text file (IDS.TXT).
 
 ---
 
-## 漢字データベースプロジェクト Kanji Database Project
+## CJKVI Variants — 漢字データベースプロジェクト Kanji Database Project
 
-Copyright (c) 2014-2018 CJKVI Database
+Copyright (c) 2014 CJKVI Database
 
-The files of this project are available under the GNU GPL or the MIT License depending on files:
+The CJKVI variant data listed in [download.txt](download.txt) and their derivations
+are available under the MIT License.  
+See [licenses/cjkvi-variants.txt](licenses/cjkvi-variants.txt) for the copyright
+notice, complete license terms, and additional attribution.
 
-- Available under the GNU GPL:
-    - IDSデータ (ids.txt)
-    - 説文解字注（六書音均表等を含む）データ (swjz.xml)
-    - 宋本廣韻データ (sbgy.xml)
-    - 學生字典データ (xszd.txt)
-- Available under the MIT License:
-    - All data not listed above including:
-        - 解字IDSデータ (ids-analysis.txt)
-        - 大漢和辞典関連データ
-        - 異体字データ
-
-See <http://kanji-database.sourceforge.net/index.html>
+Upstream license declaration: <https://kanji-database.sourceforge.net/>.

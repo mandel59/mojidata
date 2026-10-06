@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Add the bundled CJKVI variant MIT notice, correct its summary to the pinned source copyright year, preserve the jp-old-style author credit, and add a patch changeset. Only license files, changeset metadata and review documentation change; download manifests, all source data, DB generators, SQL, API fan-out, dependencies, indexes, import/deployment tools and Worker bindings remain identical.",
+  "beforeAfter": "Incremental D1 cost is exactly 0 rows read and 0 rows written before and after, since no changed file is executed by a D1 request or operation. All 22 cached CJKVI sources match the pinned SHA-256 values. Local moji.db, download.txt and the DB input fingerprint retain the exact baseline hashes recorded in the evidence. Only the npm archive gains a notice and updated summary; existing licenses/* packaging already covers the new file.",
+  "accountBudget": "This notice-only change and its local packaging verification consume zero account-wide Cloudflare D1 reads and writes, including retries. The normal GitHub/npm package release does not query/import D1 or deploy Workers. No remote operation is requested or permitted by this review, so live account usage and traffic reserves need not be sampled for the zero-D1 operation.",
+  "validation": "Verify copyright and author notices across all 22 checksum-verified cached inputs, compare the complete MIT terms with the repository MIT text, and compare download.txt, local moji.db and DB input hashes with the pre-edit baseline. Pack locally using Yarn and compare the archived LICENSE.md and licenses/cjkvi-variants.txt byte for byte with the workspace. Run the quota gate on exactly the current changed files with this fingerprinted record.",
+  "rolloutAndStop": "Ship the notice through a patch package release under the existing npm release workflow. This work performs no npm publication, Worker deployment, D1 query or import. Stop if packaging omits the notice, review fingerprints fail, baseline data hashes differ, or changes unexpectedly extend to runtime/data/operational files. Correct notice errors in a subsequent package release; no DB migration or rollback is required.",
+  "evidence": [
+    "docs/licensing/2026-10-06-cjkvi-variants.md",
+    "packages/mojidata/package.json",
+    "packages/mojidata/download.txt",
+    "packages/mojidata/scripts/db-input-hash.py",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    "packages/mojidata/LICENSE.md": "a6e62744ab4a5bd43f594d0ffb550e948995095835afffea9eec592f811e40c4",
+    "packages/mojidata/licenses/cjkvi-variants.txt": "bc2a52b44372210bd94d1dc455e12d18e45b6671ef847b15a701b2be4f4ca135",
+    ".changeset/cjkvi-license-notice.md": "77318266dd2012c30e67301e6b56c62312cfa43c63627ded1311580e5a0f53bf"
+  }
+}
