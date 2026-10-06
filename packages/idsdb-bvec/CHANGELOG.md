@@ -1,5 +1,11 @@
 # @mandel59/idsdb-bvec
 
+## 0.2.1
+
+### Patch Changes
+
+- [#81](https://github.com/mandel59/mojidata/pull/81) [`4e84f76`](https://github.com/mandel59/mojidata/commit/4e84f76fba3ec4f2d1a5e564f45088f6eb14d677) Thanks [@mandel59](https://github.com/mandel59)! - Bundle `data-notices.json` and license notices for the default IDS source data. Record source versions and hashes, and correct the packages' aggregate SPDX license expressions to reflect the bundled datasets.
+
 ## 0.2.0
 
 ### Minor Changes
