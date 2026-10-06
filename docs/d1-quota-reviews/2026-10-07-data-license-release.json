@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Release PR #82 versions the already reviewed license-notice changes from main 0c9ef0d720c15515f5a78c8f88124c5a63f70b09: Mojidata 1.9.2, IDS 1.8.1, FTS5 1.10.1 and bvec 0.2.1. Only four package versions, two local workspace dependency ranges, their workspace lock descriptors, changelogs and consumed changesets change. Source code, datasets, SQL, indexes, API fan-out, operational tools and bindings are identical to main.",
+  "beforeAfter": "Incremental account-wide D1 reads and writes remain 0 rows each. Automated comparisons confirm each changed manifest differs only in its planned version or workspace range and all external lock blocks are byte-identical to main. Normalized DB build manifests are equal before/after; versions and local workspace ranges are excluded from build fingerprints, so no data or cache inputs change and runtime request cost cannot increase.",
+  "accountBudget": "Release preparation, local immutable installation with network disabled and builds skipped, tests and GitHub validation use zero D1 rows across the account, including retries. The normal npm Release workflow does not query/import D1 or deploy Workers. Current D1 usage is not probed because the operation upper bound is zero; existing traffic reserves are untouched. This record permits no subsequent remote deployment or quota-consuming operation.",
+  "validation": "Reviewed the generated four patch versions and package-specific changelogs against the two consolidated changesets. Structural manifest and external lock-block comparisons pass; normalized DB build inputs are unchanged. Five DB fingerprint tests, the 14-resource/four-distribution license check and offline Yarn immutable installation pass. The source PR #81 remote Validate and main Release workflow succeeded; require PR #82 Validate before merge and full build/test/archive gates before eventual npm publishing.",
+  "rolloutAndStop": "Push this current fingerprinted evidence to the generated release branch and require successful Validate before merging. This task prepares the release PR; no npm publish or D1 operation is executed. A later approved merge uses the existing full Release checks. Stop on unexpected manifest/lock/source edits, stale fingerprints, missing notices or failed CI; correct or revert release metadata before publishing. No database rollback is needed.",
+  "evidence": [
+    "docs/licensing/2026-10-07-data-license-release.md",
+    "scripts/db_build_inputs.py",
+    "scripts/db-build-inputs.test.py",
+    "packages/mojidata/data-licenses.json",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    "packages/mojidata/package.json": "f67d5880c371277b1138370e4915982fcd6cf26a7e8a279c78b6bddbcbd5578f",
+    "packages/idsdb/package.json": "db1fb9363f707cb5c8d32917b6f568803cbc03f9417309d029a3c43edc959ebc",
+    "packages/idsdb-fts5/package.json": "9661f6aed9a614f62189a7a8731379e2d9610fc0dcc9be05550705e1d772cc12",
+    "packages/idsdb-bvec/package.json": "e80bcccc7fbe9afc775b27e0c2f19d30497d3c48ca46bb66530ed4b2399ddeb0",
+    "packages/mojidata-api-bench/package.json": "e0e3ca75d3a254489e9790810c361ec955aa8d855f753e989cab74b95f744bbd",
+    "yarn.lock": "5b624d9b5a50a11bc361eb08f8f0625ead3a852ea5d2e45d48deb18c1e7eb323"
+  }
+}
