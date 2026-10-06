@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.9.2
+
+### Patch Changes
+
+- [#81](https://github.com/mandel59/mojidata/pull/81) [`2171bb2`](https://github.com/mandel59/mojidata/commit/2171bb2e23b2304c7a600528d253044e7e04ee91) Thanks [@mandel59](https://github.com/mandel59)! - Bundle license notices, attribution and pinned source metadata for the included datasets, including CJKVI's complete MIT notice and MJ's original license and disclaimer. Correct the Mojidata IDS data license declaration to CC0 and ship `data-notices.json` with SPDX-compatible license identifiers, source versions and hashes.
+
+  Update the Joyo and Nyukan npm datasets to 1.2.1, which corrects the Copyright Act reference to Article 13, item 2. Refresh the source declarations and archive checksums; character data are unchanged.
+
 ## 1.9.1
 
 ### Patch Changes
