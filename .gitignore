@@ -2,6 +2,7 @@ node_modules
 *.tgz
 *.tar.gz
 *.db
+/var/
 
 .vscode/settings.json
 .workspaces/
