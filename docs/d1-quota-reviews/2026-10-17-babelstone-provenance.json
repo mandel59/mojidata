@@ -22,8 +22,8 @@
     "packages/idsdb-fts5/data-notices.json": "0699b9f32e92ad692a426b5ffdca02c664635fb65198ebc6dd89d8cfa99d4f2a",
     "packages/idsdb-fts5/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8",
     "packages/mojidata/LICENSE.md": "8c21c157b5723e749f938f1162cfc8b7df9ccee09a5c590ba0bb1562dba01be8",
-    "packages/mojidata/data-licenses.json": "95a7458724188557e1b036af3f27251a63934c2501c64072c51739c9c3c1a80e",
-    "packages/mojidata/data-notices.json": "6c2bae93a0caf44ed26a6684c697abc53aee17a482903ea10cc389b74810b030",
+    "packages/mojidata/data-licenses.json": "0baaeba0c12ee67ab0f2bbb376d109d18681fb834402824ec8a12522501d1a82",
+    "packages/mojidata/data-notices.json": "e27a851d2e3df83505142d2270aaf06a42be7002a43aa935a591826e54a8c083",
     "packages/mojidata/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8"
   }
 }
