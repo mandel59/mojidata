@@ -1,5 +1,11 @@
 # @mandel59/idsdb-fts5
 
+## 1.10.2
+
+### Patch Changes
+
+- [#84](https://github.com/mandel59/mojidata/pull/84) [`b0886e8`](https://github.com/mandel59/mojidata/commit/b0886e88cff42a57f6974790e53664e0397cf0c6) Thanks [@mandel59](https://github.com/mandel59)! - Include BabelStone IDS documentation item 1 alongside item 2 in the packaged notices, preserving the original data providers, editing history, and contributor acknowledgments. Update provenance summaries and generated license manifests.
+
 ## 1.10.1
 
 ### Patch Changes
