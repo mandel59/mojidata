@@ -6,9 +6,19 @@ Original source: https://babelstone.co.uk/CJK/IDS.TXT
 Mirror revision: 6d0989b007bdfa566a864419448b125799ef5f9f
 SHA-256: cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1
 
-The following statement is copied from documentation item 2 in the pinned
-IDS.TXT used by Mojidata. It is the upstream use/waiver statement, not CC0.
+The following statements are copied from documentation items 1 and 2 in the
+pinned IDS.TXT used by Mojidata. They preserve the upstream data provenance,
+acknowledgments, and use/waiver statement. The use/waiver statement is not CC0.
 
+# 1. This file is based on IDS data provided by Kawabata Taichi <https://github.com/kawabata/ids>, John Knightley,
+#	and Andrew West, and from data provided in encoding submissions by IRG member bodies. However, the format of this
+#	file was designed by myself, and the file does not reproduce the format or presentation form of any pre-existing IDS
+#	data sources. I (Andrew West) have edited the original raw IDS data to conform to the format used in this file, and
+#	have made a very large number of changes and corrections to the original data. My thanks to Eiso Chan (陈永聪), James
+#	Kass, Huáng Jùnliàng (黄俊亮), Jaemin Chung, and Jerry You (游程宇) for providing numerous corrections and improvements
+#	to the data; and my especial thanks to Michel Mariani who has provided thousands of corrections and improvements which
+#	have immeasurably improved the quality of the IDS data.
+#
 # 2. Under U.S. copyright law, data (i.e. a collection of facts) is not eligible to copyright protection (see
 #	<https://sco.library.emory.edu/research-data-management/publishing/copyright-data.html>), and as IDS descriptions
 #	for CJK ideographs are facts not original creative compositions, IDS sequences in themselves are not eligible for
