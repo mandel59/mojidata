@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Related: #80. Prepare the four Changesets-generated BabelStone notice patch releases. Only package versions, two internal workspace dependency ranges, matching lockfile entries, changelogs and changeset removal change. No source data, SQL, index, API request fan-out, D1 operational tools or deployment paths change.",
+  "beforeAfter": "Incremental account-wide D1 cost before and after remains 0 rows read and 0 rows written. All five normalized build manifests and external lockfile blocks are identical to main. Version and workspace range changes are excluded by existing DB fingerprint normalization, so no data growth or request cost change follows from versioning.",
+  "accountBudget": "Local release preparation, GitHub validation and normal npm publishing use zero D1 reads and writes account-wide, including retries. The release workflow performs no remote D1 queries, imports, migrations or Worker deployment. Current usage and traffic reserve need no remote probe for this zero-D1 operation; this review grants no later rollout budget.",
+  "validation": "Verified four expected patch versions, normalized build manifest equality for all five changed packages, and identical external lockfile blocks. All five DB fingerprint tests and license registry/generated notice checks passed. Require remote Validate and the ordinary Release build, full test suite and archive checks before publishing.",
+  "rolloutAndStop": "Merge release PR #85 after Validate succeeds; rely on the normal Release trusted-publishing workflow and verify actual npm versions. Stop on unexpected data/runtime edits, dependency changes, stale fingerprints, failed checks or npm authentication failures. Fix metadata before publishing or issue a corrective package release afterward; no D1 rollback is required.",
+  "evidence": [
+    "docs/licensing/2026-10-17-babelstone-release.md",
+    "scripts/db_build_inputs.py",
+    "packages/mojidata/scripts/db-input-hash.py",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    "packages/mojidata/package.json": "5827e815b6d16f8e5c432b2c6feacbcba2b5aff3dbe0603f304685fd539d03ea",
+    "packages/idsdb/package.json": "1c6468a93317462ac607a146ca694a0ffd4377e7e39a754d940280b94543febe",
+    "packages/idsdb-fts5/package.json": "380f249f9532fa3184a2abda37c786bc3d62190802dc7c48a4ea0ec62a86e228",
+    "packages/idsdb-bvec/package.json": "4df8b8e7061441dc2c20e90c31c5a717b25adf6f5e06d474488e7e7ca95f347c",
+    "packages/mojidata-api-bench/package.json": "db804ea6c4fa8fa506a1f1b51f5a2c00f2926718de7cca70003c2893e7fba3a4",
+    "yarn.lock": "bb2abb5e679a10e4097b47a62c775739212b2b9d9ea2eeb5f9c9bfbb1738fcd6"
+  }
+}
