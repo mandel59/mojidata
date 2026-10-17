@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "decision": "unchanged",
+  "scope": "Related: #80. Preserve BabelStone IDS documentation item 1 alongside item 2 in four distributed notices. Update provenance summaries, notice hashes, LicenseRef extracted text, generated manifests, and a patch changeset. These metadata files do not alter data inputs, DB builders, SQL, indexes, API fan-out, imports, or deployment configuration.",
+  "beforeAfter": "Incremental account-wide D1 cost before and after is 0 rows read and 0 rows written. Pinned IDS.TXT SHA-256 remains cc2a0a97e6a51ed6ebe59870ef2af66e83f3c3c27387d79b4441bb2d791d78b1; all existing local inputs verify. Only packaged notice bytes and provenance metadata grow. Notices and the registry are outside the enumerated DB fingerprint inputs; no data update or Mojidata rebuild is required.",
+  "accountBudget": "Local notice generation, validation, packing, and ordinary GitHub/npm release operations consume zero D1 rows account-wide, including retries. No remote query, import, migration or Worker deployment runs. Live usage and traffic reserves do not need querying for this zero-D1 operation; this review provides no budget for any later remote action.",
+  "validation": "Verified the pinned source checksum before extraction. All four notices match original documentation items 1 and 2 after CRLF normalization. All 24 existing license tests passed; local cached inputs and read-only sqlite_schema checks passed for 14 resources and four distributions. Actual Yarn archives passed notice-byte, manifest, and license-summary checks for all four packages. The quota gate verified current file fingerprints.",
+  "rolloutAndStop": "Ship corrected notices through patch package releases. Stop on changed source data or runtime paths, mismatched archive notices, or stale review fingerprints. Do not run remote imports, migrations, queries or deployment under this review. Correct notice errors with a subsequent package release; database rollback is unnecessary.",
+  "evidence": [
+    "docs/licensing/2026-10-17-babelstone-provenance.md",
+    "packages/mojidata/scripts/db-input-hash.py",
+    "packages/idsdb/scripts/input-hash.py",
+    "scripts/check-data-licenses.py",
+    ".github/workflows/release.yml"
+  ],
+  "files": {
+    ".changeset/babelstone-provenance.md": "6e51919f7ccfc78432d94ec86966a536b26567c0867e1ce93c9db4483296f539",
+    "packages/idsdb/data-notices.json": "3601b8f467e76e6e6311c6e4685bf5fc13d76b3a95725e12082a9dc7062555a5",
+    "packages/idsdb/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8",
+    "packages/idsdb-bvec/data-notices.json": "ad96f6dd26fe6889235bc8370a9d7d616d5b911b04847b21470592cd2873db41",
+    "packages/idsdb-bvec/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8",
+    "packages/idsdb-fts5/data-notices.json": "0699b9f32e92ad692a426b5ffdca02c664635fb65198ebc6dd89d8cfa99d4f2a",
+    "packages/idsdb-fts5/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8",
+    "packages/mojidata/LICENSE.md": "8c21c157b5723e749f938f1162cfc8b7df9ccee09a5c590ba0bb1562dba01be8",
+    "packages/mojidata/data-licenses.json": "0baaeba0c12ee67ab0f2bbb376d109d18681fb834402824ec8a12522501d1a82",
+    "packages/mojidata/data-notices.json": "e27a851d2e3df83505142d2270aaf06a42be7002a43aa935a591826e54a8c083",
+    "packages/mojidata/licenses/babelstone-ids.txt": "9a06ba3d08893f98f3ab231225c923718a136f50ed0a4258b6013161647b54f8"
+  }
+}

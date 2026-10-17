@@ -63,10 +63,13 @@ See [licenses/unicode.txt](licenses/unicode.txt)
 
 ## Ideographic Description Sequences (IDS) for CJK Unified Ideographs
 
-The pinned BabelStone IDS file permits personal and commercial use without
+The pinned BabelStone IDS file is based on data from Kawabata Taichi, John
+Knightley, Andrew West, and IRG member-body encoding submissions, with edits
+and corrections by Andrew West and contributors acknowledged in the notice.
+It permits personal and commercial use without
 permission or attribution, and its maintainer waives copyright claims to its
 presentation format. See [licenses/babelstone-ids.txt](licenses/babelstone-ids.txt)
-for the original statement preserved from that file.
+for the original provenance, acknowledgments, and use/waiver statements.
 
 The `ids` and `ids_comment` tables also include Mojidata IDS data under CC0-1.0.
 
